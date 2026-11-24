@@ -123,6 +123,7 @@ export interface IncidentTriageRepo {
         inputsJson: unknown;
         operatorDecision: "pending";
         engineVersion: string;
+        generatedAt: Date;
       };
     }): Promise<TriageRow>;
     update(args: {
@@ -231,6 +232,13 @@ export async function buildTriageGenerateResponse(
     const safeInputs = {
       ...input.engineInputs,
       now: input.engineInputs.now.toISOString(),
+      responseTarget: {
+        incidentId:incident.id,
+        releaseId:input.engineInputs.release.id,
+        reportedAt:input.engineInputs.incident.reportedAtIso,
+        generatedAt:output.generatedAtIso,
+        deadline:output.responseDeadlineIso,
+      },
     };
 
     const row = await repo.incidentTriage.create({
@@ -247,6 +255,7 @@ export async function buildTriageGenerateResponse(
         inputsJson: safeInputs as unknown,
         operatorDecision: "pending",
         engineVersion: INCIDENT_TRIAGE_ENGINE_VERSION,
+        generatedAt: input.engineInputs.now,
       },
     });
 

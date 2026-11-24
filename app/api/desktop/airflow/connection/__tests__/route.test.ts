@@ -26,3 +26,30 @@ it('rechecks authority before the transaction writes',async()=>{m.auth.mockResol
 it('does not downgrade the committed connection when audit recording fails',async()=>{m.audit.mockRejectedValue(new Error('private-audit'));expect((await PUT(request())).ok).toBe(false);expect(m.cas).toHaveBeenCalledTimes(1);expect(row.status).toBe('active')});
 
 it.each(['revoke','reconnect'])('refuses a connection changed during DNS validation: %s',async change=>{m.url.mockImplementation(async(v:string)=>{if(change==='revoke'){row.revokedAt=new Date();row.status='revoked'}else{row.encryptedCredential='newer-cipher';row.updatedAt=new Date('2026-10-26T00:00:01Z')}return v});await expect(loadAirflowClient('tenant')).rejects.toThrow();expect(m.decrypt).not.toHaveBeenCalled()});
+
+it("returns the same workspace's recorded validation without accessing credentials", async () => {
+  row.lastValidatedAt = new Date("2026-11-22T09:00:00Z");
+  const response = await GET(request("GET"));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  expect((await response.json()).data).toMatchObject({connected:true, status:"active", lastValidatedAt:row.lastValidatedAt.toISOString()});
+  expect(m.auth).toHaveBeenCalledTimes(2);
+  expect(m.auth).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({recordHeartbeat:false, allowApiKey:false, requiredCapability:"workspace:read"}));
+  expect(m.decrypt).not.toHaveBeenCalled();
+  expect(m.validate).not.toHaveBeenCalled();
+});
+it("withholds pending metadata when the paired session changes", async () => {
+  m.auth.mockResolvedValueOnce(actor).mockResolvedValueOnce({...actor, id:"replaced"});
+  const response = await GET(request("GET"));
+  expect(response.status).toBe(401);
+  expect(await response.json()).toEqual({ok:false,error:"desktop_session_required"});
+});
+it("separates unavailable Airflow storage from a verified missing connection", async () => {
+  m.find.mockRejectedValueOnce(new Error("private database failure")).mockResolvedValueOnce(null);
+  const outage=await GET(request("GET"));
+  expect(outage.status).toBe(503);
+  expect(await outage.json()).toEqual({ok:false,error:"airflow_connection_unavailable"});
+  const missing=await GET(request("GET"));
+  expect(missing.status).toBe(200);
+  expect(await missing.json()).toEqual({ok:true,data:{connected:false,status:"not_connected"}});
+});

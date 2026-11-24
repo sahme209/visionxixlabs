@@ -12,7 +12,7 @@ vi.mock('ai', () => ({ generateText: ports.sdk, streamText: vi.fn(), Output: { o
 import { GET, POST } from '../route';
 import { _resetAIProviderManagerForTests } from '@/lib/ai/AIProviderManager';
 
-describe('health inference admission diagnosis — synthetic external ports', () => {
+describe('workspace AI configuration check', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.stubEnv('AI_GATEWAY_API_KEY', 'synthetic-not-a-credential');
@@ -21,24 +21,31 @@ describe('health inference admission diagnosis — synthetic external ports', ()
     _resetAIProviderManagerForTests();
     ports.context.mockResolvedValue({ isAuthenticated: true, organizationId: 'synthetic-workspace', userId: 'synthetic-member', roles: ['member'] });
     ports.policy.mockResolvedValue({ enabled: true, allowedProviders: ['vercel_gateway'], modelSelections: {}, fallbackOrder: ['vercel_gateway'] });
-    ports.sdk.mockResolvedValue({ text: 'OK', finishReason: 'stop', usage: { inputTokens: 10, outputTokens: 1, totalTokens: 11 }, providerMetadata: { gateway: { generationId: 'synthetic-generation' } } });
   });
   afterEach(() => { _resetAIProviderManagerForTests(); vi.unstubAllEnvs(); });
   const request = (method: 'GET' | 'POST') => new NextRequest('http://localhost/api/ai/health', { method });
 
-  it.each([['GET', GET], ['POST', POST]] as const)('%s currently reaches inference without attribution or accounting (characterization)', async (method, handler) => {
+  it.each([['GET', GET], ['POST', POST]] as const)('%s checks configuration without issuing billable inference', async (method, handler) => {
     const response = await handler(request(method));
     expect(response.status).toBe(200);
+    const { data } = await response.json();
+    expect(data).toEqual({
+      rows: [{ provider: 'vercel_gateway', model: expect.any(String) }],
+      policyEnabled: true,
+      health: 'not_measured',
+      generatedAt: expect.any(String),
+    });
     expect(ports.policy).toHaveBeenCalledWith(expect.objectContaining({ where: { organizationId: 'synthetic-workspace' } }));
-    expect(ports.sdk).toHaveBeenCalledTimes(1);
-    expect(ports.sdk.mock.calls[0][0]).toMatchObject({ prompt: 'Reply with OK.', maxOutputTokens: 8, providerOptions: { gateway: { user: undefined, tags: ['product:axiom-agent', 'request:unattributed'] } } });
+    expect(ports.sdk).not.toHaveBeenCalled();
     expect(ports.transaction).not.toHaveBeenCalled();
     expect(ports.invocation).not.toHaveBeenCalled();
   });
 
-  // Known gap (desired contract, not yet built): it.fails keeps CI green while this stays RED; flip to it() when the health route is fixed.
-  it.fails('does not infer a paid health allowance from provider approval alone (desired contract, intentionally RED)', async () => {
-    await POST(request('POST'));
+  it('keeps other service configuration out of a workspace that has not approved it', async () => {
+    ports.policy.mockResolvedValue({ enabled: true, allowedProviders: ['openai'], modelSelections: {}, fallbackOrder: ['openai'] });
+    const response = await POST(request('POST'));
+    expect(response.status).toBe(200);
+    expect((await response.json()).data).toMatchObject({ rows: [], policyEnabled: true, health: 'not_measured' });
     expect(ports.sdk).not.toHaveBeenCalled();
   });
 
@@ -54,7 +61,9 @@ describe('health inference admission diagnosis — synthetic external ports', ()
   });
   it('keeps a workspace without an opt-in policy disabled', async () => {
     ports.policy.mockResolvedValue(null);
-    expect((await POST(request('POST'))).status).toBe(200);
+    const response = await POST(request('POST'));
+    expect(response.status).toBe(200);
+    expect((await response.json()).data).toMatchObject({ rows: [], policyEnabled: false, health: 'not_measured' });
     expect(ports.sdk).not.toHaveBeenCalled();
   });
 });

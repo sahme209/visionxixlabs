@@ -7,6 +7,7 @@ import {createOutlookConnectionStore,type OutlookConnectionRepo} from './outlook
 import {createOutlookProvider} from './outlookProvider';
 import {createOutlookReadinessReader} from './outlookReadiness';
 import type {ConnectedActionScope} from '@/lib/integrations/connectedActionContract';
+import type {OutlookReadTarget} from '@/lib/desktop/outlookContract';
 import type {TenantConnectionRepo} from '@/lib/integrations/tenantConnectionRepo';
 export function outlookConfigured(){return process.env.AXIOM_OUTLOOK_CONNECTIONS_ENABLED==='true'&&outlookRegistrationSchema.safeParse({authority:process.env.OUTLOOK_AUTHORITY,clientId:process.env.OUTLOOK_CLIENT_ID,redirectUri:'https://visionxixlabs.com/api/integrations/outlook/callback'}).success&&!!process.env.OUTLOOK_CLIENT_SECRET}
 /** Dedicated registration, never a Teams credential or arbitrary caller endpoint. Disabled until reviewed activation. */
@@ -20,6 +21,25 @@ export function createOutlookRuntime(assertCurrent:(scope:Readonly<ConnectedActi
   ...oauth,
   async complete(scope:ConnectedActionScope,input:{state:string;code:string},signal:AbortSignal){const result=await oauth.complete(scope,input,signal);try{await recordAudit({organizationId:id.organization(scope.organizationId),actorUserId:id.user(scope.actorUserId),actorKind:'user',action:'connector.connect',outcome:'success',entityRef:`connector:outlook:${result.connectionId}`,correlationId:id.correlation(`outlook_${Date.now().toString(36)}`),source:'live',detail:{provider:'outlook',purpose:result.purpose,validationMode:'fixed_mailbox_calendar_reads'}})}catch{throw Error('outlook_record_outcome_unknown')}return result},
   async status(scope:ConnectedActionScope,signal:AbortSignal){const connection=await store.readConnection(scope,signal);if(!connection)return{state:'not_connected' as const};if(connection.consentedByUserId!==scope.actorUserId)return{state:'owner_only' as const};if(connection.status!=='active'||connection.revokedAt)return{state:'needs_attention' as const};const binding={organizationId:scope.organizationId,connectionId:connection.id,connectionRevision:connection.revision,accountId:connection.accountId,consentedByUserId:scope.actorUserId};const credential=await store.readCredential(scope,binding,signal);return{state:credential.expiresAt<=Date.now()+30000?'reconnect_required' as const:'connected' as const,account:credential.account,binding,actionConsent:credential.purpose==='outlook_actions_v1',expiresAt:new Date(credential.expiresAt).toISOString()}},
-  async read(scope:ConnectedActionScope,range:{start:string;end:string},signal:AbortSignal){const connection=await store.readConnection(scope,signal);if(!connection)throw Error('outlook_connection_required');try{return await reader(scope,{organizationId:scope.organizationId,connectionId:connection.id,connectionRevision:connection.revision,accountId:connection.accountId,consentedByUserId:connection.consentedByUserId},range,signal)}catch(error){if(error instanceof Error&&['outlook_refresh_required','outlook_permissions_required','outlook_mailbox_unavailable'].includes(error.message)){try{await store.markNeedsAttention(scope,connection,signal)}catch{/* Preserve the original bounded read failure; never alter a newer connection. */}}throw error}},
+  async read(scope: ConnectedActionScope, range: {start: string; end: string}, signal: AbortSignal, expected?: OutlookReadTarget) {
+   const connection = await store.readConnection(scope, signal);
+   if (!connection) throw Error('outlook_connection_required');
+   if (connection.consentedByUserId !== scope.actorUserId) throw Error('outlook_mailbox_owner_required');
+   if (expected && (connection.id !== expected.connectionId || connection.revision !== expected.connectionRevision)) {
+    throw Error('outlook_connection_changed');
+   }
+   try {
+    return await reader(scope, {
+     organizationId: scope.organizationId, connectionId: connection.id,
+     connectionRevision: connection.revision, accountId: connection.accountId,
+     consentedByUserId: connection.consentedByUserId,
+    }, range, signal);
+   } catch (error) {
+    if (error instanceof Error && ['outlook_refresh_required','outlook_permissions_required','outlook_mailbox_unavailable'].includes(error.message)) {
+     try { await store.markNeedsAttention(scope, connection, signal); } catch { /* Keep the original failure and never alter a newer connection. */ }
+    }
+    throw error;
+   }
+  },
  };
 }

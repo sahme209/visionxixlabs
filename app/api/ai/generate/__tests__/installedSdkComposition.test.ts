@@ -29,7 +29,10 @@ beforeEach(() => {
   p.credits.mockResolvedValue({ kind: 'allow' });
   p.reserve.mockImplementation(async () => { p.events.push('reserve'); return { ok: true, reused: false, reservation: { id: 'synthetic-hold' } }; });
   p.claim.mockImplementation(async () => { p.events.push('claim'); return true; });
-  p.createUsage.mockImplementation(async () => { p.events.push('usage'); return { id: 'synthetic-usage', billingStatus: 'pending' }; });
+  p.createUsage.mockImplementation(async ({ data }) => {
+    p.events.push('usage');
+    return { ...data, id: 'synthetic-usage' };
+  });
   p.findUsage.mockResolvedValue(null);
   p.link.mockImplementation(async () => { p.events.push('link'); return { count: 1 }; });
   p.transaction.mockImplementation(async callback => callback({ $queryRawUnsafe: async (sql: string) => String(sql).includes('FROM "OrganizationAIProviderPolicy"') ? [await p.policy()] : [{ id: 'synthetic-hold', organizationId: scope.organizationId, status: 'dispatch_unknown', usageEventId: null }], usageEvent: { findUnique: p.findUsage, create: p.createUsage }, aIUsageReservation: { updateMany: p.link } }));

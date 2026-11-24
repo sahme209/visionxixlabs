@@ -213,10 +213,10 @@ describe("executeApprovedAction", () => {
     }));
   });
 
-  it("trigger_aws_deploy stops after policy evaluation when quota is exhausted", async () => {
-    mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted", used: 10, limit: 10 });
+  it("trigger_aws_deploy stops after policy evaluation when a deployment claim cannot be reserved", async () => {
+    mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_unavailable" });
     const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
-    expect(result).toEqual({ ok: false, error: "deployment_quota_exhausted" });
+    expect(result).toEqual({ ok: false, error: "deployment_quota_unavailable" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 });

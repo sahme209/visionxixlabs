@@ -21,3 +21,22 @@ export const parseDeploymentDto=(value:unknown):DeploymentDto=>deploymentDtoSche
 export const deploymentExecutionStateSchema=z.object({available:z.boolean(),operation:deploymentDtoSchema.nullable()}).strict();
 export type DeploymentExecutionState=z.infer<typeof deploymentExecutionStateSchema>;
 export const parseDeploymentExecutionState=(value:unknown)=>deploymentExecutionStateSchema.parse(value);
+
+const deploymentEvent = z.object({
+  type: deploymentDtoSchema.shape.state,
+  at: z.string().datetime(),
+}).strict();
+export const deploymentExecutionHistorySchema = z.object({
+  requestId: deploymentPlanSchema.shape.releaseId,
+  requestVersion: deploymentPlanSchema.shape.releaseVersion,
+  planId: deploymentPlanSchema.shape.planId,
+  planDigest: deploymentActionSchema.shape.planDigest,
+  events: z.array(deploymentEvent).max(3),
+}).strict().refine(({events}) => {
+  if (!events.length) return true;
+  if (events[0].type !== 'prepared' || events.some((event, index) => index > 0 && Date.parse(event.at) < Date.parse(events[index - 1].at))) return false;
+  if (events.length === 1) return true;
+  return events[1].type === 'cancelled' ? events.length === 2
+    : events[1].type === 'dispatching' && (events.length === 2 || ['accepted', 'unknown', 'refused'].includes(events[2].type));
+});
+export type DeploymentExecutionHistory = z.infer<typeof deploymentExecutionHistorySchema>;

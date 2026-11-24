@@ -14,6 +14,7 @@ export default function MembersDocsPage() {
   </DocSection>
   <DocSection id="invite" kicker="02" title="Invite a teammate">
    <p>Enter an email address, choose a role (Operator by default) and choose <em>Create invitation link</em>. V19 does not email the link: copy it and send it yourself. The owner role cannot be given by invitation.</p>
+   <p>Starting in the paired app? See <a href="/docs/settings#desktop-workspace-access">workspace access in desktop Settings</a> for the account and workspace checks on the browser shortcut.</p>
    <Callout variant="info" title="Links expire">Invitation links expire after 7 days. Removing a member also voids every earlier invitation for that email.</Callout>
   </DocSection>
   <DocSection id="change" kicker="03" title="Change a role or remove someone">

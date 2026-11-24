@@ -3,3 +3,4 @@ export const AXIOM_ICON_VERSION = "680c38d3c8bd";
 export const AXIOM_FAVICON_URL = "/axiom-favicon-1b77e225c532.png";
 export const AXIOM_APP_ICON_URL = "/axiom-icon-cedd8eb1034f.png";
 export const AXIOM_APPLE_ICON_URL = "/axiom-apple-icon-497d44ea000e.png";
+export const AXIOM_APP_ICON_192_URL = "/axiom-icon-192-f35926e4e785.png";

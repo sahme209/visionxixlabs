@@ -34,7 +34,7 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
         return { remainingCents: allowance.includedRemainingCents, month: now.toISOString().slice(0, 7) };
       },
       allowance: org => readFixtureEnrollment(tx, { runtimeId, accountId, organizationId: org }, true),
-      currentTime: async () => { const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now'); if (!(rows[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable"); return rows[0].now; },
+      currentTime: async () => { const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>("SELECT clock_timestamp() AT TIME ZONE 'UTC' AS now"); if (!(rows[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable"); return rows[0].now; },
       eligible: async scope => { const row = await tx.orgMembership.findUnique({ where: { userId_organizationId: { userId: scope.userId, organizationId: scope.organizationId } } }); return !!row?.acceptedAt && ["owner", "admin"].includes(row.role); },
       acceptedSeats: org => tx.orgMembership.count({ where: { organizationId: org, acceptedAt: { not: null } } }),
       intent: readIntent,
@@ -72,7 +72,7 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
         const [used, held, purchases] = await Promise.all([
           tx.usageEvent.aggregate({ where: { organizationId: org, eventKind: "ai_invocation", createdAt: { gte: start, lt: end } }, _sum: { billedCents: true } }),
           tx.aIUsageReservation.aggregate({ where: { organizationId: org, OR: [{ status: "reserved", pipelineCall: { isNot: null } }, { status: "pending_settlement" }, { status: "reserved", usageEventId: { not: null } }, { status: "reserved", usageEventId: null, expiresAt: { gt: now } }] }, _sum: { reservedCents: true } }),
-          tx.addOnPurchase.findMany({ where: { organizationId: org, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: month }, { validFor: "permanent", refundedAt: null }] } }),
+          tx.addOnPurchase.findMany({ where: { organizationId: org, status: { in: ["paid", "partially_refunded"] }, appliedAt: { not: null }, OR: [{ validFor: "current_month", periodMonth: month }, { validFor: "permanent", refundedAt: null }] } }),
         ]);
         return { usedCents: used._sum.billedCents ?? 0, heldCents: held._sum.reservedCents ?? 0, paidTopUpsCents: purchases.reduce((sum, p) => sum + Math.max(0, p.deliveredAICreditsCents - Math.max(0, p.reversedAICreditsCents)), 0) };
       },

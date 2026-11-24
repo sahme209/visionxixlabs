@@ -23,7 +23,7 @@ it.each([{canManage:false,unavailable:false},{canManage:true,unavailable:true}])
  render(createElement(Catalog,{entries,...props}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));expect(screen.queryByRole('button',{name:'Install Integration audit'})).toBeNull();
 });
 it('treats a failed response as unconfirmed rather than installed',async()=>{
- io.fetch.mockRejectedValue(Error('network'));render(createElement(Catalog,{entries,unavailable:false,canManage:true}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));fireEvent.click(screen.getByRole('button',{name:'Install skill'}));await screen.findByRole('alert');expect(screen.getByRole('alert').textContent).toContain('not confirmed');expect(screen.getByText('not installed')).toBeTruthy();
+ io.fetch.mockRejectedValue(Error('network'));render(createElement(Catalog,{entries,unavailable:false,canManage:true}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));fireEvent.click(screen.getByRole('button',{name:'Install skill'}));await screen.findByRole('alert');expect(screen.getByRole('alert').textContent).toContain('not confirmed');expect(screen.getByText('Unknown')).toBeTruthy();
 });
 it('opens complete capability details without installing and restores keyboard focus',()=>{
  render(createElement(Catalog,{entries,unavailable:false,canManage:true}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));
@@ -57,4 +57,20 @@ it('keeps focus in the catalog after successful removal and refreshed entries',a
  view.rerender(createElement(Catalog,{entries,unavailable:false,canManage:true,initialKind:'Skills'}));
  expect(screen.queryByRole('button',{name:'Remove Integration audit'})).toBeNull();
  expect(document.activeElement).toBe(screen.getByRole('textbox',{name:'Search catalog'}));
+});
+
+it('distinguishes a confirmed state conflict and moves focus to catalog refresh',async()=>{
+ io.fetch.mockResolvedValue(new Response(JSON.stringify({ok:false,error:'skill_state_changed'}),{status:409}));
+ render(createElement(Catalog,{entries,unavailable:false,canManage:true,initialKind:'Skills'}));
+ fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));
+ fireEvent.click(screen.getByRole('button',{name:'Install skill'}));
+ expect((await screen.findByRole('alert')).textContent).toContain('Skill state changed');
+ await waitFor(()=>{
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole('button',{name:'Refresh catalog'}));
+ });
+ expect(screen.getByText('Unknown')).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));
+ expect(io.fetch).toHaveBeenCalledTimes(1);
+ expect(io.refresh).not.toHaveBeenCalled();
 });

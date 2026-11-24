@@ -7,6 +7,9 @@
  */
 
 import { isMissingTable } from "./releaseListResponder";
+import {INCIDENT_STATUSES, INCIDENT_TRANSITIONS, planTransition, type IncidentStatus, type IncidentTransition} from "./deploymentIncidentLifecycle";
+export {INCIDENT_STATUSES, INCIDENT_TRANSITIONS, planTransition} from "./deploymentIncidentLifecycle";
+export type {IncidentStatus, IncidentTransition, TransitionPlan, TransitionReject} from "./deploymentIncidentLifecycle";
 
 /* ──────────────────────────────────────────────────────────────────
    Closed-unions.
@@ -14,12 +17,6 @@ import { isMissingTable } from "./releaseListResponder";
 
 export const INCIDENT_SEVERITIES = ["low", "medium", "high", "critical"] as const;
 export type IncidentSeverity = (typeof INCIDENT_SEVERITIES)[number];
-
-export const INCIDENT_STATUSES = ["open", "mitigated", "resolved", "wont_fix"] as const;
-export type IncidentStatus = (typeof INCIDENT_STATUSES)[number];
-
-export const INCIDENT_TRANSITIONS = ["mitigate", "resolve", "reopen", "wont_fix"] as const;
-export type IncidentTransition = (typeof INCIDENT_TRANSITIONS)[number];
 
 function isSeverity(s: string): s is IncidentSeverity {
   return (INCIDENT_SEVERITIES as readonly string[]).includes(s);
@@ -31,48 +28,6 @@ function isStatus(s: string): s is IncidentStatus {
 /* ──────────────────────────────────────────────────────────────────
    Pure state machine.
    ────────────────────────────────────────────────────────────── */
-
-export interface TransitionPlan {
-  ok: true;
-  next: IncidentStatus;
-  fields: Partial<{
-    mitigatedByUserId: string | null;
-    mitigatedAt: Date | null;
-    resolvedByUserId: string | null;
-    resolvedAt: Date | null;
-  }>;
-}
-
-export interface TransitionReject {
-  ok: false;
-  reason: "illegal_transition";
-  from: IncidentStatus;
-  action: IncidentTransition;
-}
-
-export function planTransition(
-  current: IncidentStatus,
-  action: IncidentTransition,
-  ctx: { actorUserId: string; now: Date },
-): TransitionPlan | TransitionReject {
-  if (action === "mitigate") {
-    if (current !== "open") return { ok: false, reason: "illegal_transition", from: current, action };
-    return { ok: true, next: "mitigated", fields: { mitigatedByUserId: ctx.actorUserId, mitigatedAt: ctx.now } };
-  }
-  if (action === "resolve") {
-    if (current !== "mitigated" && current !== "open") return { ok: false, reason: "illegal_transition", from: current, action };
-    return { ok: true, next: "resolved", fields: { resolvedByUserId: ctx.actorUserId, resolvedAt: ctx.now } };
-  }
-  if (action === "wont_fix") {
-    if (current === "resolved" || current === "wont_fix") return { ok: false, reason: "illegal_transition", from: current, action };
-    return { ok: true, next: "wont_fix", fields: { resolvedByUserId: ctx.actorUserId, resolvedAt: ctx.now } };
-  }
-  if (action === "reopen") {
-    if (current !== "mitigated") return { ok: false, reason: "illegal_transition", from: current, action };
-    return { ok: true, next: "open", fields: { mitigatedByUserId: null, mitigatedAt: null } };
-  }
-  return { ok: false, reason: "illegal_transition", from: current, action };
-}
 
 /* ──────────────────────────────────────────────────────────────────
    Repo contract.
@@ -124,9 +79,10 @@ export interface DeploymentIncidentRepo {
       };
     }): Promise<IncidentRow>;
     update(args: {
-      where: { id: string };
+      where: { id: string; organizationId: string; releaseId: string; status: string; updatedAt: Date };
       data: {
         status: IncidentStatus;
+        updatedAt: Date;
         mitigatedByUserId?: string | null;
         mitigatedAt?: Date | null;
         resolvedByUserId?: string | null;
@@ -154,6 +110,7 @@ export interface IncidentView {
   resolvedByUserId: string | null;
   resolvedAtIso: string | null;
   externalUrl: string | null;
+  revision?: string;
 }
 
 function projectRow(r: IncidentRow): IncidentView {
@@ -259,6 +216,7 @@ export interface TransitionInput {
 export type TransitionError =
   | "incident_not_found"
   | "cross_org_incident"
+  | "incident_changed"
   | "unknown_current_status"
   | "illegal_transition";
 
@@ -307,17 +265,19 @@ export async function buildIncidentTransitionResponse(
 
     const update: {
       status: IncidentStatus;
+      updatedAt: Date;
       mitigatedByUserId?: string | null;
       mitigatedAt?: Date | null;
       resolvedByUserId?: string | null;
       resolvedAt?: Date | null;
-    } = { status: plan.next };
+    } = { status: plan.next, updatedAt: new Date(Math.max(now.getTime(), existing.updatedAt.getTime() + 1)) };
     if (plan.fields.mitigatedByUserId !== undefined) update.mitigatedByUserId = plan.fields.mitigatedByUserId;
     if (plan.fields.mitigatedAt !== undefined) update.mitigatedAt = plan.fields.mitigatedAt;
     if (plan.fields.resolvedByUserId !== undefined) update.resolvedByUserId = plan.fields.resolvedByUserId;
     if (plan.fields.resolvedAt !== undefined) update.resolvedAt = plan.fields.resolvedAt;
 
-    await repo.deploymentIncident.update({ where: { id: input.incidentId }, data: update });
+    const {id, organizationId, releaseId, status, updatedAt} = existing;
+    await repo.deploymentIncident.update({where: {id, organizationId, releaseId, status, updatedAt}, data: update});
     return {
       status: 200,
       body: {
@@ -331,6 +291,9 @@ export async function buildIncidentTransitionResponse(
       },
     };
   } catch (err) {
+    if (err && typeof err === "object" && "code" in err && err.code === "P2025") {
+      return {status: 409, body: {ok: false, error: "incident_changed"}};
+    }
     if (isMissingTable(err)) {
       return {
         status: 503,
@@ -368,10 +331,12 @@ export type ListBody =
 
 export interface ListResult { status: number; body: ListBody }
 
+export type DeploymentIncidentListRepo = {deploymentIncident: Pick<DeploymentIncidentRepo["deploymentIncident"], "findMany">};
+
 export async function buildIncidentListResponse(
-  repo: DeploymentIncidentRepo,
+  repo: DeploymentIncidentListRepo,
   input: { organizationId: string; releaseId?: string; status?: string },
-  opts: { now?: Date; correlationId?: string } = {},
+  opts: {now?: Date; correlationId?: string; includeRevision?: boolean} = {},
 ): Promise<ListResult> {
   try {
     const now = opts.now ?? new Date();
@@ -386,7 +351,10 @@ export async function buildIncidentListResponse(
       orderBy: { reportedAt: "desc" },
       take: 200,
     });
-    const incidents = rows.map(projectRow);
+    const incidents = rows.map(row => ({
+      ...projectRow(row),
+      ...(opts.includeRevision && row.updatedAt instanceof Date && {revision: row.updatedAt.toISOString()}),
+    }));
     let open = 0, mitigated = 0, resolved = 0, wontFix = 0, openCritical = 0;
     for (const i of incidents) {
       if (i.status === "open") {

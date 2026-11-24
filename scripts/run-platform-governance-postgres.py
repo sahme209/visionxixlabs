@@ -3,7 +3,7 @@
 Applies only the proposed platform fixture schema to one fresh empty database. Never
 reads a DATABASE_URL, retries a test, connects over TCP or removes old fixtures.
 """
-import hashlib,json,os,signal,subprocess,tempfile
+import argparse,hashlib,json,os,signal,subprocess,tempfile
 from pathlib import Path
 from urllib.parse import quote
 REPO=Path(__file__).resolve().parents[1]
@@ -58,4 +58,6 @@ def main():
    (root/'stopped.log').write_bytes(p.stdout+p.stderr)
    if p.returncode!=3:raise RuntimeError('owned_stop_unconfirmed')
   print('Owned fixture: '+str(root))
-if __name__=='__main__':main()
+if __name__ == "__main__":
+    argparse.ArgumentParser(description=__doc__).parse_args()
+    main()

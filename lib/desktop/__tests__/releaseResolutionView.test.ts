@@ -46,7 +46,10 @@ it('separates the final Continue click from the submit control',async()=>{
  const next=()=>fireEvent.click(screen.getByRole('button',{name:'Continue'}));
  fill('Request title','Unsent transition test');fill('Window start','2030-01-01T12:00');fill('Window end','2030-01-01T13:00');next();
  for(const [label,value] of [['Applications (comma or line separated)','Audit'],['Clients (comma or line separated)','Internal'],['Deployment owner','Owner'],['Application owner','Owner'],['Escalation owner','Owner'],['Repository URLs','https://github.com/example/audit'],['Production PR URLs','https://github.com/example/audit/pull/1'],['Source branch','audit']])fill(label,value);
- next();fill('Deployment method','Unsent test');fill('Workflow name / trigger','audit.yml');next();
+ next();fill('Deployment method','Unsent test');fill('Workflow name / trigger','audit.yml');
+ next();
+ expect(screen.getByRole('alert').textContent).toBe('Complete target environment before continuing.');
+ fill('Target environment','staging');next();
  fill('Tested lower environments','Test example');fill('Exact technical production validation','Test example');fill('Expected production result','No execution');
  const continueButton=screen.getByRole('button',{name:'Continue'});
  expect(fireEvent.click(continueButton)).toBe(false);
@@ -110,7 +113,7 @@ async function openFilledIntake(mode:'create'|'revise',observeCommit?:()=>void){
  const fill=(label:string,value:string)=>fireEvent.change(screen.getByLabelText(label),{target:{value}}),next=()=>fireEvent.click(screen.getByRole('button',{name:'Continue'}));
  fill('Request title','Captured intake fixture');fill('Window start','2030-01-01T12:00');fill('Window end','2030-01-01T13:00');next();
  for(const [label,value] of [['Applications (comma or line separated)','Fixture app'],['Clients (comma or line separated)','Fixture client'],['Deployment owner','Fixture owner'],['Application owner','Fixture app owner'],['Escalation owner','Fixture escalation'],['Repository URLs','https://github.com/fixture/repository'],['Production PR URLs','https://github.com/fixture/repository/pull/1'],['Source branch','fixture-branch']])fill(label,value);
- next();fill('Deployment method','Fixture method');fill('Workflow name / trigger','fixture.yml');next();
+ next();fill('Deployment method','Fixture method');fill('Workflow name / trigger','fixture.yml');fill('Target environment','staging');next();
  fill('Tested lower environments','Fixture testing');fill('Exact technical production validation','Fixture validation only');fill('Expected production result','No real deployment');next();
  fill('Exact rollback instruction','Fixture rollback only');fill('Rollback owner','Fixture rollback owner');fill('Confirmed operational fact','Captured exact fact');fill('Source evidence identifier','fixture-evidence');fill('Confirmed by','Fixture author');
  return{view,form:screen.getByRole('button',{name:mode==='revise'?'Save revision':'Submit release request'}).closest('form')!};

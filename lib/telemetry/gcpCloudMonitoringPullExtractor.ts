@@ -26,6 +26,7 @@
 import "server-only";
 
 import { loadAppEnv } from "@/lib/config/env";
+import type { OrganizationId } from "@/lib/domain/ids";
 import {
   getGcpConfig,
   resolveGcpServiceAccountJson,
@@ -68,9 +69,12 @@ interface ServiceAccountKey {
   project_id?: string;
 }
 
-export async function extractGcpCloudMonitoringIncidents(): Promise<GcpCloudMonitoringPullExtraction> {
+export async function extractGcpCloudMonitoringIncidents(workspaceId: OrganizationId): Promise<GcpCloudMonitoringPullExtraction> {
   const start = Date.now();
   const env = loadAppEnv();
+  if (!env.telemetryPullTenantId || workspaceId !== env.telemetryPullTenantId) {
+    return blocked(start, "No pull credentials are assigned to this workspace.");
+  }
 
   if (!env.gcpInventoryExtractEnabled) {
     return blocked(start, "GCP_INVENTORY_EXTRACT_ENABLED is not set — extractor skipped.");

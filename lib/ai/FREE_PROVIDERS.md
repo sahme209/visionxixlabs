@@ -31,7 +31,7 @@ See [joined generic-route evidence](../../docs/recovery/2026-11-04/generic-ai-in
 ## Diagnostic and legacy paths
 
 - `/api/ai/status` reports configured service/provider-policy metadata; it does not prove successful inference or accepted financial controls.
-- `/api/ai/health` currently runs a model probe for an enabled workspace. It is **not** a free metadata read merely because its response says `audit_read_only`. The reproduced synthetic funding/attribution gap and [proposed non-billable replacement](../../docs/recovery/2026-11-04/health-inference-admission-diagnostic/local-diagnostics-proposal.md) remain separate; that design has not been approved or implemented.
+- `/api/ai/health` reads only approved and configured workspace routes. Its response reports live health as unmeasured. Inference still requires separate admission under the normal generation path.
 - The settings generation tester's current source does not send the required request key. Do not treat it as an accepted billing demonstration or work around server admission; a reviewed client contract repair is still needed.
 - The local legacy website assistant returns `ai.public_admission_unavailable` after its IP limit. The separately named public bot product has different owner/quota paths; it is not automatically funded by that containment.
 - Administrator/cron access, product tiers, a linked connector or job status do not issue an AI spending allowance. Growth image generation uses an image-specific SDK path and needs separate pricing/usage qualification.

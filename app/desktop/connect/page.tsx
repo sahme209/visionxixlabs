@@ -40,30 +40,28 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
       <div className="w-full max-w-lg p-2 sm:p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
         <h1 className="mt-7 text-3xl font-normal tracking-[-0.045em]">Authorize V19</h1>
-        <p className="mb-7 mt-2 text-sm leading-6 text-zinc-400">
-          Signed in as <span className="text-zinc-200">{context.email}</span>. Approve only if this is your desktop.
-        </p>
-        <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/8 bg-white/2.5 px-4 text-sm">
-          <Row label="Device" value={pairing.deviceLabel} />
-          <Row label="Platform" value={pairing.platform} />
-          <Row label="App version" value={pairing.desktopVersion ?? "Not reported"} />
-          <Row label="Request expires" value={pairing.expiresAt.toLocaleString()} />
-        </dl>
-        {!access.allowed && (
-          <div className="mb-5 rounded-xl border border-white/20 bg-white/[0.07] p-5">
-            <p className="text-sm font-semibold text-zinc-100">{access.title}</p>
-            <p className="mt-2 text-sm leading-6 text-zinc-300">{access.message}</p>
-            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-              <Link href={access.accessRequestPath} className="rounded-full bg-white px-4 py-2 text-center text-sm font-semibold text-black">
-                Request production access
-              </Link>
-              <Link href={access.pricingPath} className="rounded-full border border-white/15 px-4 py-2 text-center text-sm font-semibold text-white">
-                Review access model
-              </Link>
+        <PairDesktopClient challenge={challenge} deviceLabel={pairing.deviceLabel} accountEmail={context.email}>
+          <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/8 bg-white/2.5 px-4 text-sm">
+            <Row label="Device" value={pairing.deviceLabel} />
+            <Row label="Platform" value={pairing.platform} />
+            <Row label="App version" value={pairing.desktopVersion ?? "Not reported"} />
+            <Row label="Request expires" value={pairing.expiresAt.toLocaleString()} />
+          </dl>
+          {!access.allowed && (
+            <div className="mb-5 rounded-xl border border-white/20 bg-white/[0.07] p-5">
+              <p className="text-sm font-semibold text-zinc-100">{access.title}</p>
+              <p className="mt-2 text-sm leading-6 text-zinc-300">{access.message}</p>
+              <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                <Link href={access.accessRequestPath} className="rounded-full bg-white px-4 py-2 text-center text-sm font-semibold text-black">
+                  Request production access
+                </Link>
+                <Link href={access.pricingPath} className="rounded-full border border-white/15 px-4 py-2 text-center text-sm font-semibold text-white">
+                  Review access model
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
-        <PairDesktopClient challenge={challenge} deviceLabel={pairing.deviceLabel} />
+          )}
+        </PairDesktopClient>
       </div>
     </main>
   );

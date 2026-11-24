@@ -1,10 +1,11 @@
+import { hasAppliedCreditPayment } from "./creditPaymentEvidence";
 import { createHash } from "node:crypto";
 import type { PublicAllowanceCandidate } from "./publicSubscriptionAllowance";
 import type { PublicEnrollment } from "./publicBillingStore";
 export type PublicCreditPart = { source: "included"; bucketId: string; maxCents: number } | { source: "purchase"; purchaseId: string; maxCents: number };
 export type PublicCreditAttribution = { policy: "axiom_public_anniversary_v1"; reservationId: string; organizationId: string; enrollmentId: string; bucketId: string; windowStart: string; windowEnd: string; admittedAt: string; parts: PublicCreditPart[]; digest: string };
 export type PublicCreditHold = { codingHold?: boolean; id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: PublicCreditAttribution | null; linkedUsageId: string | null; usageOrg: string | null; usageBilledCents: number | null; usageBillingStatus: string | null };
-export type PublicCreditPurchase = { id: string; organizationId: string; status: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; validFor: string; periodMonth: string; refundedAt: Date | null; createdAt: Date };
+export type PublicCreditPurchase = { id: string; organizationId: string; status: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; validFor: string; periodMonth: string; refundedAt: Date | null; appliedAt: Date | null; createdAt: Date };
 export function canonicalPublicJson(value: unknown): string {
   const normalize = (v: unknown): unknown => Array.isArray(v) ? v.map(normalize) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).sort(([a],[b]) => a.localeCompare(b)).map(([k,x])=>[k,normalize(x)])) : v;
   return JSON.stringify(normalize(value));
@@ -63,7 +64,7 @@ export function allocatePublicCredits(enrollment: PublicEnrollment, w: PublicAll
   const eligible: Array<{purchase:PublicCreditPurchase;remaining:number}>=[];
   for(const p of purchases){
     if(p.organizationId!==enrollment.organizationId||!cents(p.deliveredAICreditsCents)||!cents(p.reversedAICreditsCents)||p.reversedAICreditsCents>p.deliveredAICreditsCents||!validDate(p.createdAt)||!['pending','paid','partially_refunded','refunded','expired','failed'].includes(p.status)||!['current_month','permanent'].includes(p.validFor))deny();
-    const applicable=['paid','partially_refunded'].includes(p.status)&&(p.validFor==='current_month'?p.periodMonth===now.toISOString().slice(0,7):p.refundedAt===null);
+    const applicable=hasAppliedCreditPayment(p)&&['paid','partially_refunded'].includes(p.status)&&(p.validFor==='current_month'?p.periodMonth===now.toISOString().slice(0,7):p.refundedAt===null);
     if(!applicable)continue;
     const net=p.deliveredAICreditsCents-p.reversedAICreditsCents,spent=used.get(`p:${p.id}`)??0,reserved=held.get(`p:${p.id}`)??0,remaining=Math.max(0,net-spent-reserved);
     addOnCents+=net;addOnRemaining+=remaining;usedCents+=spent;heldCents+=reserved;eligible.push({purchase:p,remaining});

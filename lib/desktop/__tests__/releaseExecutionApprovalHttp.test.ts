@@ -1,7 +1,8 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({auth:vi.fn(),plan:vi.fn(),release:vi.fn(),issue:vi.fn(),get:vi.fn(),revoke:vi.fn(),roles:vi.fn(),list:vi.fn()}));
+const m=vi.hoisted(()=>({auth:vi.fn(),plan:vi.fn(),release:vi.fn(),issue:vi.fn(),get:vi.fn(),history:vi.fn(),revoke:vi.fn(),roles:vi.fn(),list:vi.fn()}));
 vi.mock('@/lib/agent/workflows/releaseOperationPlanStore',()=>({listReleaseOperationPlans:m.list}));
-vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.plan},tauriDeploymentRequest:{findFirst:m.release}}}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));vi.mock('@/lib/tauri/releaseExecutionApprovalStore',()=>({createReleaseExecutionApprovalStore:(_db:unknown,deps:any)=>({issue:async(...args:any[])=>{await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:args[1].executorUserId,role:'executor'});return m.issue(...args)},get:m.get,revoke:m.revoke})}));
+vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.plan},tauriDeploymentRequest:{findFirst:m.release}}}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));vi.mock('@/lib/tauri/releaseExecutionApprovalStore',()=>({createReleaseExecutionApprovalStore:(_db:unknown,deps:any)=>({issue:async(...args:any[])=>{await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:args[1].executorUserId,role:'executor'});return m.issue(...args)},get:m.get,getHistory:m.history,revoke:m.revoke})}));
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {handleReleaseExecutionApproval} from '../releaseExecutionApprovalHttp';
 const planId='release_plan_'+'a'.repeat(64),uuid='11111111-1111-4111-8111-111111111111';const actor={id:'session',organizationId:'org',userId:'approver',credentialKind:'desktop_session',capabilities:['github:read','deploy:execute']};
 const req=(method='GET',body?:unknown)=>new NextRequest('https://app.test/api/desktop/deployments/release/operation-plans/'+planId+'/execution-approval',{method,...(body?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});
@@ -16,3 +17,38 @@ it('bounds streamed request bodies and refuses extra query identity before stora
 it('never offers approval for absent approval when the exact stored source is stale',async()=>{m.plan.mockResolvedValue({...await m.plan(),version:1,status:'completed',currentStep:'reviewed',requestedByUserId:'creator'});m.list.mockResolvedValue({plans:[{id:planId,version:1,status:'stale',requestVersion:3,planDigest:'d'.repeat(64)}]});const value=await(await handleReleaseExecutionApproval(req(),'release',planId)).json();expect(value.data.canApprove).toBe(false);expect(m.issue).not.toHaveBeenCalled()});
 
 afterEach(()=>vi.unstubAllEnvs());
+
+it('serves only the exact version with a paired read and no eligibility or mutation', async () => {
+  const saved = await m.plan();
+  const planDigest = sha256ContentHash(saved.inputJson.plan);
+  m.plan.mockResolvedValue({...saved, id: planId, workflowKind: 'release_operation_plan_v1', inputJson: {...saved.inputJson, planDigest}});
+  const data = {requestId: 'release', requestVersion: 3, planId, planDigest, events: []};
+  m.history.mockResolvedValue(data);
+  const r = await handleReleaseExecutionApproval(new NextRequest(req().url + '?historyVersion=3'), 'release', planId);
+  expect(r.status).toBe(200);
+  expect(r.headers.get('cache-control')).toBe('private, no-store');
+  expect(await r.json()).toEqual({ok: true, data});
+  expect(m.history).toHaveBeenCalledWith({organizationId: 'org', actorUserId: 'approver', sessionId: 'session'},
+    {requestId: data.requestId, requestVersion: data.requestVersion, planId, planDigest: data.planDigest, executorUserId: 'requester'});
+  expect(m.auth).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({allowApiKey: false, requiredCapability: 'github:read', recordHeartbeat: false}));
+  expect(m.list).not.toHaveBeenCalled();
+  expect(m.get).not.toHaveBeenCalled();
+  expect(m.issue).not.toHaveBeenCalled();
+  expect(m.revoke).not.toHaveBeenCalled();
+  m.plan.mockResolvedValue({...saved, id: planId, workflowKind: 'release_operation_plan_v1'});
+  expect((await handleReleaseExecutionApproval(new NextRequest(req().url + '?historyVersion=3'), 'release', planId)).status).toBe(409);
+  expect(m.history).toHaveBeenCalledTimes(1);
+});
+
+it('refuses a revised release, duplicate scope, and changed pairing', async () => {
+  const history = new NextRequest(req().url + '?historyVersion=3');
+  m.release.mockResolvedValueOnce({id:'release',organizationId:'org',version:4,requesterUserId:'requester'});
+  expect((await handleReleaseExecutionApproval(history,'release',planId)).status).toBe(409);
+  expect((await handleReleaseExecutionApproval(new NextRequest(req().url + '?historyVersion=3&historyVersion=3'),'release',planId)).status).toBe(400);
+  expect(m.history).not.toHaveBeenCalled();
+  const saved = await m.plan();
+  m.plan.mockResolvedValue({...saved, id: planId, workflowKind: 'release_operation_plan_v1',
+    inputJson: {...saved.inputJson, planDigest: sha256ContentHash(saved.inputJson.plan)}});
+  m.auth.mockResolvedValueOnce(actor).mockResolvedValue({...actor,id:'replaced-session'});
+  expect((await handleReleaseExecutionApproval(history,'release',planId)).status).toBe(401);
+});

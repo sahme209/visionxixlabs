@@ -9,11 +9,11 @@ import {consumeToken} from '@/lib/api/rateLimiter';
 import {resolveRequestDesktopSession} from './resolveRequestDesktopSession';
 import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {parseReleaseOperationPlanInput,RELEASE_OPERATION_PLAN_KIND,type ReleaseOperationPlan} from '@/lib/tauri/releaseOperationPlanContract';
-import {RELEASE_DEPLOYMENT_EXECUTION_KIND,deploymentPlanSchema,parseDeploymentExecutionState,type DeploymentScope} from '@/lib/tauri/releaseDeploymentExecutionContract';
+import {RELEASE_DEPLOYMENT_EXECUTION_KIND,deploymentPlanSchema,deploymentExecutionHistorySchema,parseDeploymentExecutionState,type DeploymentScope} from '@/lib/tauri/releaseDeploymentExecutionContract';
 import {createReleaseDeploymentExecutionStore,type ReleaseDeploymentDependencies} from '@/lib/tauri/releaseDeploymentExecutionStore';
 import {createReleaseDeploymentExecutor,type ReleaseDeploymentTransport} from '@/lib/tauri/releaseDeploymentExecutionExecutor';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {releaseOperationPlanId,type ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 export interface ReleaseDeploymentServicePorts{governance?:ReturnType<typeof createReleaseDeploymentGovernanceCoordinator>;enabled?:()=>boolean;preflight?:(plan:Readonly<import('@/lib/tauri/releaseDeploymentExecutionContract').DeploymentPlan>,signal:AbortSignal)=>Promise<void>;readPlan?:(scope:DeploymentScope,reviewedPlan:ReleaseOperationPlan,signal:AbortSignal)=>Promise<unknown>;dependencies?:ReleaseDeploymentDependencies;transport?:ReleaseDeploymentTransport}
 export type ReleaseDeploymentServiceFactory=(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:DeploymentScope)=>ReleaseDeploymentServicePorts;
 const actionSchema=z.object({action:z.enum(['prepare','execute','cancel','recover']),expectedVersion:z.number().int().min(0).max(2),clientRequestId:z.string().uuid()}).strict();
@@ -22,11 +22,17 @@ const reply=(body:unknown,status=200)=>NextResponse.json(body,{status,headers:{'
 /** No production source-policy, independent-approval or dispatch adapters are installed here. */
 export async function handleReleaseDeploymentExecution(request:NextRequest,requestId:string,planId:string,supplied:ReleaseDeploymentServicePorts|ReleaseDeploymentServiceFactory={}){try{
  if(!['GET','POST'].includes(request.method))throw new Refusal('method_not_allowed',405);
- if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.nextUrl.searchParams.size||request.url.length>2048)throw new Refusal('invalid_release_deployment',400);
+ if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.url.length>2048)throw new Refusal('invalid_release_deployment',400);
+ const params = [...request.nextUrl.searchParams.entries()];
+ const historyVersion = params[0]?.[1];
+ if (params.length && (request.method !== 'GET' || params.length !== 1 || params[0][0] !== 'historyVersion'
+   || !historyVersion || !/^[1-9][0-9]{0,9}$/.test(historyVersion) || Number(historyVersion) > 2147483647)) {
+  throw new Refusal('invalid_release_deployment', 400);
+ }
  const signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);let action:z.infer<typeof actionSchema>|undefined;
  if(request.method==='POST'){if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json'||!request.body)throw new Refusal('invalid_release_deployment',400);const bytes=await readBoundedGithubBody(new Response(request.body),signal,1024);action=actionSchema.parse(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)))}
  const manage=!!action&&action.action!=='recover';
- const principal=async()=>{signal.throwIfAborted();const p=await withGithubAbort(resolveRequestDesktopSession(request,{requiredScope:manage?'pipeline:trigger':'pipeline:read',requiredCapability:manage?'deploy:execute':'github:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'release deployment execution'}),signal);if(!p||p.credentialKind!=='desktop_session'||!p.id||!p.userId||!p.organizationId||!p.capabilities.includes('github:read')||manage&&!p.capabilities.includes('deploy:execute'))throw new Refusal('release_deployment_permission_required',403);return p};
+ const principal=async()=>{signal.throwIfAborted();const p=await withGithubAbort(resolveRequestDesktopSession(request,{requiredScope:manage?'pipeline:trigger':'pipeline:read',requiredCapability:manage?'deploy:execute':'github:read',requireWorkspaceMembership:!historyVersion,allowApiKey:false,recordHeartbeat:false,route:'release deployment execution'}),signal);if(!p||p.credentialKind!=='desktop_session'||!p.id||!p.userId||!p.organizationId||!p.capabilities.includes('github:read')||manage&&!p.capabilities.includes('deploy:execute'))throw new Refusal('release_deployment_permission_required',403);return p};
  const actor=await principal(),scope={organizationId:actor.organizationId,actorUserId:actor.userId,sessionId:actor.id};
  if(!consumeToken(`release-deployment:${scope.organizationId}:${scope.actorUserId}`,{capacity:8,tokensPerSecond:0.1}).allowed)throw new Refusal('release_deployment_rate_limited',429);
  const assertCurrent=async(_tx:unknown,s:DeploymentScope)=>{if(sha256ContentHash(s)!==sha256ContentHash(scope))throw new Refusal('release_deployment_identity_changed',403);const p=await principal();if(p.id!==scope.sessionId||p.userId!==scope.actorUserId||p.organizationId!==scope.organizationId)throw new Refusal('release_deployment_identity_changed',403)};
@@ -37,6 +43,26 @@ export async function handleReleaseDeploymentExecution(request:NextRequest,reque
  const bindingMatches=(p:ReturnType<typeof deploymentPlanSchema.parse>)=>p.organizationId===scope.organizationId&&p.releaseId===requestId&&p.releaseVersion===plan.requestVersion&&p.intakeDigest===plan.intakeDigest&&p.planId===planId&&p.repositoryFullName===plan.pullRequest.repositoryFullName&&p.connectionId===plan.connectionId&&p.connectionRevision===plan.connectionRevision;
  if(saved){const input=saved.inputJson;if(!input||typeof input!=='object'||Array.isArray(input)||!('plan'in input)||!bindingMatches(deploymentPlanSchema.parse(input.plan)))throw new Refusal('release_deployment_refresh_required',409)}
  const repo=prisma as unknown as ReleaseOperationPlanRepo,history=createReleaseDeploymentExecutionStore(repo,{assertCurrent});
+ if (historyVersion) {
+  const requestVersion = Number(historyVersion);
+  if (plan.requestVersion !== requestVersion || row.id !== planId || row.organizationId !== scope.organizationId
+   || row.workflowKind !== RELEASE_OPERATION_PLAN_KIND || planId !== releaseOperationPlanId(scope.organizationId, requestId, requestVersion, original.planDigest)) throw new Refusal('release_deployment_refresh_required', 409);
+  const matchesHistory = (p: ReturnType<typeof deploymentPlanSchema.parse>) => bindingMatches(p)
+   && p.creatorUserId === row.requestedByUserId && p.requesterUserId === original.releaseRequesterUserId
+   && p.executorUserId === original.releaseRequesterUserId;
+  const events = saved ? await withGithubAbort(history.getHistory(scope, operationId, matchesHistory), signal) : [];
+  const release = await withGithubAbort(prisma.tauriDeploymentRequest.findFirst({
+   where: {id: requestId, organizationId: scope.organizationId}, select: {id: true, organizationId: true, version: true, requesterUserId: true, intakeJson: true},
+  }), signal);
+  if (!release || release.id !== requestId || release.organizationId !== scope.organizationId || release.version !== requestVersion
+   || release.requesterUserId !== original.releaseRequesterUserId
+   || sha256ContentHash({requestVersion, intake: release.intakeJson}) !== plan.intakeDigest) {
+   throw new Refusal('release_deployment_refresh_required', 409);
+  }
+  const data = deploymentExecutionHistorySchema.parse({requestId, requestVersion, planId, planDigest: original.planDigest, events});
+  await assertCurrent(undefined, scope);
+  return reply({ok: true, data});
+ }
  let operation=saved?await withGithubAbort(history.get(scope,operationId),signal):null;
  const ports=typeof supplied==='function'?supplied(request,repo,scope):supplied;
  const dependencies=ports.dependencies;

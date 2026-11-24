@@ -10,5 +10,5 @@ test("malformed, non-fixed return and oversized source refuse",()=>{
  assert.throws(()=>extractHeadings(' '.repeat(262145)),/public source bound/);
 });
 test("all fixed public navigation records and source hashes match checked-in index",()=>{
- const actual=build(),saved=JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../lib/docs/guide-heading-index.json"),"utf8"));assert.deepEqual(actual,saved);assert.equal(actual.guides.length,23);assert.equal(new Set(actual.guides.map(x=>x.href)).size,23);for(const guide of actual.guides){assert(guide.source.startsWith('app/docs/'));assert.match(guide.sourceSha256,/^[a-f0-9]{64}$/);assert(guide.fields.length>0);}
+ const actual=build(),saved=JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../lib/docs/guide-heading-index.json"),"utf8"));assert.deepEqual(actual,saved);assert.equal(actual.guides.length,36);assert.equal(new Set(actual.guides.map(x=>x.href)).size,36);for(const guide of actual.guides){assert(guide.source.startsWith('app/docs/'));assert.match(guide.sourceSha256,/^[a-f0-9]{64}$/);assert(guide.fields.length>0);}
 });

@@ -23,6 +23,7 @@
 import "server-only";
 
 import { loadAppEnv } from "@/lib/config/env";
+import type { OrganizationId } from "@/lib/domain/ids";
 import {
   getAzureConfig,
   resolveAzureClientId,
@@ -58,9 +59,12 @@ interface AzureAlert {
   properties?: AzureAlertProperties;
 }
 
-export async function extractAzureMonitorAlerts(): Promise<AzureMonitorPullExtraction> {
+export async function extractAzureMonitorAlerts(workspaceId: OrganizationId): Promise<AzureMonitorPullExtraction> {
   const start = Date.now();
   const env = loadAppEnv();
+  if (!env.telemetryPullTenantId || workspaceId !== env.telemetryPullTenantId) {
+    return blocked(start, "No pull credentials are assigned to this workspace.");
+  }
 
   if (!env.azureInventoryExtractEnabled) {
     return blocked(start, "AZURE_INVENTORY_EXTRACT_ENABLED is not set — extractor skipped.");

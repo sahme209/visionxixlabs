@@ -3,23 +3,26 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { findAddOn } from "./addOnCatalog";
 
+type CreditPurchaseMetadata = {
+  purpose?: string;
+  addOnPurchaseId?: string;
+  organizationId?: string;
+  sku?: string;
+};
+
 type CheckoutSession = {
   id?: string;
   payment_status?: string;
   payment_intent?: string | { id?: string } | null;
   amount_total?: number | null;
   currency?: string | null;
-  metadata?: {
-    purpose?: string;
-    addOnPurchaseId?: string;
-    organizationId?: string;
-    sku?: string;
-  } | null;
+  metadata?: CreditPurchaseMetadata | null;
 };
 
 type RefundCharge = {
   payment_intent?: string | { id?: string } | null;
   amount_refunded?: number | null;
+  metadata?: CreditPurchaseMetadata | null;
   currency?: string | null;
 };
 
@@ -32,7 +35,7 @@ function paymentIntentId(value: CheckoutSession["payment_intent"]): string | nul
   return typeof value === "string" ? value : value?.id ?? null;
 }
 
-function assertCheckout(session: CheckoutSession) {
+function assertCheckoutBinding(session: CheckoutSession) {
   const metadata = session.metadata;
   const purchaseId = metadata?.addOnPurchaseId;
   const organizationId = metadata?.organizationId;
@@ -46,8 +49,6 @@ function assertCheckout(session: CheckoutSession) {
     || !addOn
     || addOn.category !== "ai_credits"
     || !session.id
-    || !intentId
-    || session.payment_status !== "paid"
     || session.currency?.toLowerCase() !== "usd"
     || session.amount_total !== addOn.priceCents
   ) {
@@ -56,8 +57,15 @@ function assertCheckout(session: CheckoutSession) {
   return { purchaseId, organizationId, addOn, intentId, sessionId: session.id };
 }
 
+function paidPurchaseStatus(refundedCents: number, priceCents: number) {
+  if (refundedCents >= priceCents) return "refunded";
+  return refundedCents > 0 ? "partially_refunded" : "paid";
+}
+
 export async function fulfillAICreditCheckout(event: CreditStripeEvent, session: CheckoutSession) {
-  const verified = assertCheckout(session);
+  const verified = assertCheckoutBinding(session);
+  if (!verified.intentId || session.payment_status !== "paid") throw new Error("ai_credit_checkout_invalid");
+  const intentId = verified.intentId;
   return prisma.$transaction(async (tx) => {
     await tx.stripeBillingEvent.create({ data: { id: event.id, type: event.type } });
     const purchase = await tx.addOnPurchase.findUnique({ where: { id: verified.purchaseId } });
@@ -68,29 +76,45 @@ export async function fulfillAICreditCheckout(event: CreditStripeEvent, session:
       || purchase.pricePaidCents !== verified.addOn.priceCents
       || purchase.deliveredAICreditsCents !== verified.addOn.deliveredAICreditsCents
       || (purchase.stripeCheckoutSessionId && purchase.stripeCheckoutSessionId !== verified.sessionId)
-      || !["pending", "paid"].includes(purchase.status)
+      || (purchase.stripePaymentIntentId && purchase.stripePaymentIntentId !== intentId)
+      || !["pending", "paid", "partially_refunded", "refunded"].includes(purchase.status)
     ) {
       throw new Error("ai_credit_purchase_mismatch");
     }
     return tx.addOnPurchase.update({
       where: { id: purchase.id },
       data: {
-        status: "paid",
+        status: paidPurchaseStatus(purchase.refundedAmountCents, purchase.pricePaidCents),
         appliedAt: purchase.appliedAt ?? new Date(),
         stripeCheckoutSessionId: verified.sessionId,
-        stripePaymentIntentId: verified.intentId,
+        stripePaymentIntentId: intentId,
       },
     });
-  });
+  }, { isolationLevel: "Serializable" });
 }
 
 export async function recordAICreditCheckoutFailure(event: CreditStripeEvent, session: CheckoutSession) {
+  const { purchaseId, organizationId, addOn, intentId, sessionId } = assertCheckoutBinding(session);
+  if (session.payment_status !== "unpaid") throw new Error("ai_credit_checkout_invalid");
   return prisma.$transaction(async (tx) => {
     await tx.stripeBillingEvent.create({ data: { id: event.id, type: event.type } });
-    if (session.metadata?.purpose !== "axiom_ai_credit_add_on" || !session.metadata.addOnPurchaseId) return null;
     return tx.addOnPurchase.updateMany({
-      where: { id: session.metadata.addOnPurchaseId, status: "pending" },
-      data: { status: event.type === "checkout.session.expired" ? "expired" : "failed" },
+      where: {
+        id: purchaseId,
+        organizationId,
+        sku: addOn.sku,
+        pricePaidCents: addOn.priceCents,
+        status: "pending",
+        appliedAt: null,
+        AND: [
+          { OR: [{ stripeCheckoutSessionId: sessionId }, { stripeCheckoutSessionId: null }] },
+          { OR: [{ stripePaymentIntentId: intentId }, { stripePaymentIntentId: null }] },
+        ],
+      },
+      data: {
+        status: event.type === "checkout.session.expired" ? "expired" : "failed",
+        stripeCheckoutSessionId: sessionId,
+      },
     });
   });
 }
@@ -103,8 +127,23 @@ export async function reverseAICreditRefund(event: CreditStripeEvent, charge: Re
   }
   return prisma.$transaction(async (tx) => {
     await tx.stripeBillingEvent.create({ data: { id: event.id, type: event.type } });
-    const purchase = await tx.addOnPurchase.findUnique({ where: { stripePaymentIntentId: intentId } });
-    if (!purchase) return null;
+    const metadata = charge.metadata;
+    const creditCharge = metadata?.purpose === "axiom_ai_credit_add_on";
+    // Stripe copies PaymentIntent metadata to the Charge. That lets a signed
+    // refund bind the original pending purchase before checkout fulfillment.
+    const purchase = creditCharge
+      ? metadata.addOnPurchaseId && await tx.addOnPurchase.findUnique({ where: { id: metadata.addOnPurchaseId } })
+      : await tx.addOnPurchase.findUnique({ where: { stripePaymentIntentId: intentId } });
+    if (creditCharge && (
+      !purchase
+      || metadata.organizationId !== purchase.organizationId
+      || metadata.sku !== purchase.sku
+      || (purchase.stripePaymentIntentId && purchase.stripePaymentIntentId !== intentId)
+      || !["pending", "paid", "partially_refunded", "refunded"].includes(purchase.status)
+    )) {
+      throw new Error("ai_credit_refund_invalid");
+    }
+    if (!purchase || !["pending", "paid", "partially_refunded", "refunded"].includes(purchase.status)) return null;
     const refundedAmountCents = Math.min(refunded!, purchase.pricePaidCents);
     const reversedAICreditsCents = Math.min(
       purchase.deliveredAICreditsCents,
@@ -123,9 +162,12 @@ export async function reverseAICreditRefund(event: CreditStripeEvent, charge: Re
       data: {
         refundedAmountCents,
         reversedAICreditsCents,
-        status: fullyRefunded ? "refunded" : "partially_refunded",
-        refundedAt: fullyRefunded ? new Date() : null,
+        stripePaymentIntentId: intentId,
+        status: purchase.status === "pending"
+          ? "pending"
+          : paidPurchaseStatus(refundedAmountCents, purchase.pricePaidCents),
+        refundedAt: fullyRefunded ? purchase.refundedAt ?? new Date() : null,
       },
     });
-  });
+  }, { isolationLevel: "Serializable" });
 }

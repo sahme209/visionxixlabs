@@ -23,3 +23,20 @@ it('does not open another workspace when paired identity verification fails',asy
 it('offers one clear recovery action when readiness is unavailable and preserves saved history',async()=>{m.list.mockResolvedValue({ok:true,data:{...data,connectionState:'unavailable',actions:[{...row,status:'unknown',attemptCount:1,canAmend:false,canCancel:false,providerWritePerformed:null}]}});mount();fireEvent.click(screen.getByText('Reload saved ServiceNow actions'));const button=await screen.findByRole('button',{name:'Review ServiceNow connection'});expect(screen.getByText('Review exact ServiceNow action')).toBeTruthy();expect(screen.queryByRole('button',{name:'Prepare ServiceNow ticket'})).toBeNull();fireEvent.click(button);await waitFor(()=>expect(m.open).toHaveBeenCalledTimes(1));expect(m.metadata).not.toHaveBeenCalled();expect(m.save).not.toHaveBeenCalled()});
 
 it('saves the exact association through the client and displays the persisted review state',async()=>{const unknown={...row,status:'unknown',attemptCount:1,canAmend:false,canCancel:false,canProposeRecovery:true,providerWritePerformed:null},recovery={status:'requested',issue:{sysId:'e'.repeat(32),number:'CHG123'},originalVersion:4,expiresAt:new Date(Date.now()+60000).toISOString(),canApprove:false,canVerify:false,canCancel:true};m.list.mockResolvedValue({ok:true,data:{...data,connectionState:'ready',actions:[unknown]}});m.recovery.mockResolvedValue({ok:true,data:{...data,connectionState:'ready',actions:[{...unknown,version:1,canProposeRecovery:false,recovery}]}});mount();fireEvent.click(screen.getByText('Reload saved ServiceNow actions'));fireEvent.change(await screen.findByLabelText('Existing ServiceNow number'),{target:{value:'CHG123'}});fireEvent.change(screen.getByLabelText('Existing ServiceNow record sys_id'),{target:{value:'e'.repeat(32)}});fireEvent.click(screen.getByRole('button',{name:'Save association for independent review'}));await screen.findByText('CHG123 · requested');expect(m.recovery).toHaveBeenCalledWith('release',row.id,expect.objectContaining({expectedVersion:row.version,issue:recovery.issue}),'propose',expect.any(AbortSignal));expect(m.save).not.toHaveBeenCalled();expect(m.mutate).not.toHaveBeenCalled()});
+
+it("ignores old lifecycle controls after the session is replaced", async () => {
+  const config = m.config;
+  mount();
+  const reload = screen.getByRole("button", {name: "Reload saved ServiceNow actions"});
+  fireEvent.click(reload);
+  const cancel = await screen.findByRole("button", {name: "Cancel unused action"});
+  try {
+    m.config = {...config};
+    fireEvent.click(reload);
+    fireEvent.click(cancel);
+    expect(m.list).toHaveBeenCalledOnce();
+    expect(m.mutate).not.toHaveBeenCalled();
+  } finally {
+    m.config = config;
+  }
+});

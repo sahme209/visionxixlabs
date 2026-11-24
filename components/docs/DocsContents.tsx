@@ -12,6 +12,7 @@ export function DocsContents() {
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const previousPath = useRef(pathname);
+  const requestedGuide = useRef<string | null>(null);
   const expanded = useRef(open);
   expanded.current = open;
 
@@ -49,7 +50,13 @@ export function DocsContents() {
     // is about to collapse, or reopen the full catalog above the next article.
     if (previousPath.current === pathname) return;
     previousPath.current = pathname;
-    restoreNarrowFocus();
+    const movedFromContents = document.activeElement === document.body || panel.current?.contains(document.activeElement);
+    if (requestedGuide.current === pathname && movedFromContents) {
+      document.getElementById("docs-article")?.focus({preventScroll: true});
+    } else {
+      restoreNarrowFocus();
+    }
+    requestedGuide.current = null;
     setOpen(false);
   }, [pathname]);
 
@@ -67,7 +74,7 @@ export function DocsContents() {
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400">Documentation</p>
           <p className="text-sm text-zinc-300">Self-serve guides for the V19 platform.</p>
         </div>
-        <DocsSidebar />
+        <DocsSidebar onNavigate={href => { if (href !== pathname) requestedGuide.current = href; }} />
       </div>
     </aside>
   );

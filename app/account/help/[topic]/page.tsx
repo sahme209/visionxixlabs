@@ -29,11 +29,15 @@ const TOPICS = {
 export const dynamic = "force-dynamic";
 
 export default async function AccountHelpTopicPage({ params }: { params: Promise<{ topic: string }> }) {
-  const context = await currentContext();
-  if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/help");
   const { topic } = await params;
+  const isKnownTopic = Object.hasOwn(TOPICS, topic);
+  const context = await currentContext();
+  if (!context.isAuthenticated || !context.email) {
+    const callbackUrl = isKnownTopic ? `/account/help/${topic}` : "/account/help";
+    redirect(`/auth/signin?${new URLSearchParams({ callbackUrl })}`);
+  }
+  if (!isKnownTopic) notFound();
   const content = TOPICS[topic as keyof typeof TOPICS];
-  if (!content) notFound();
 
   return (
     <AuthCompanionShell>

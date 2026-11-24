@@ -31,22 +31,26 @@ it('opens More deliberately, supports keyboard focus and Escape return, outside 
  fireEvent.click(trigger);route.pathname='/product';view.rerender(createElement(Navigation));expect(screen.queryByRole('group',{name:'More destinations'})).toBeNull();
 });
 it('mobile includes every conceptual destination and preserves focus trapping, close and scroll recovery',()=>{
- Object.defineProperty(window,'innerWidth',{configurable:true,value:390});document.body.style.overflow='auto';
+ Object.defineProperty(window,'innerWidth',{configurable:true,value:390});document.body.style.overflow='auto';route.pathname='/docs/troubleshooting';
  render(createElement(Navigation));fireEvent.click(screen.getByRole('button',{name:'Open navigation menu'}));
  const dialog=screen.getByRole('dialog',{name:'Site navigation'});
  for(const[label,href]of [...primary,...secondary,['Founding Supporters','/support'],['Sign in','/auth/signin'],['Download','/download']])expect(within(dialog).getByRole('link',{name:label}).getAttribute('href')).toBe(href);
  const close=within(dialog).getByRole('button',{name:'Close navigation menu'});expect(document.activeElement).toBe(close);
  const links=within(dialog).getAllByRole('link');links.at(-1)!.focus();fireEvent.keyDown(document,{key:'Tab'});expect(document.activeElement).toBe(close);
  fireEvent.keyDown(document,{key:'Tab',shiftKey:true});expect(document.activeElement).toBe(links.at(-1));
- const docs=within(dialog).getByRole('link',{name:'Docs'});docs.addEventListener('click',event=>event.preventDefault());fireEvent.click(docs);expect(screen.queryByRole('dialog')).toBeNull();expect(document.body.style.overflow).toBe('auto');
+ const docs=within(dialog).getByRole('link',{name:'Docs'});expect(docs.getAttribute('aria-current')).toBe('page');docs.addEventListener('click',event=>event.preventDefault());fireEvent.click(docs);expect(screen.queryByRole('dialog')).toBeNull();expect(document.body.style.overflow).toBe('auto');
 });
-it('footer distinguishes account support from Founding Supporters with real destinations',()=>{
+it('footer separates account support, learning and utility destinations',()=>{
  render(createElement(Footer));
- expect(screen.getByRole('link',{name:'Support (account required)'}).getAttribute('href')).toBe('/account/help');
- const supporters=screen.getAllByRole('link',{name:'Founding Supporters'});expect(supporters.length).toBeGreaterThan(0);for(const link of supporters)expect(link.getAttribute('href')).toBe('/support');
- expect(screen.getByRole('link',{name:'Docs'}).getAttribute('href')).toBe('/docs');expect(screen.queryByRole('link',{name:'Support V19'})).toBeNull();
- expect(screen.getByRole('link',{name:'Contact'}).getAttribute('href')).toBe('/contact');
- expect(screen.getByRole('link',{name:'Download'}).getAttribute('href')).toBe('/download');
+ const footerNav=within(screen.getByRole('navigation',{name:'Footer navigation'}));
+ const utilities=within(screen.getByRole('navigation',{name:'Footer utilities'}));
+ expect(footerNav.getByRole('link',{name:'Account support (sign-in required)'}).getAttribute('href')).toBe('/account/help');
+ expect(footerNav.getByRole('link',{name:'Founding Supporters'}).getAttribute('href')).toBe('/support');
+ expect(footerNav.queryByRole('link',{name:'Support V19'})).toBeNull();
+ for(const [name,href] of [['Documentation','/docs'],['Resources','/resources'],['Getting started','/docs/getting-started'],['Access and pricing','/plans'],['Desktop updates','/docs/desktop-install#updates'],['Apps & Skills guide','/docs/plugins'],['API keys','/docs/api-keys'],['MCP tools','/docs/mcp-tools'],['Troubleshooting','/docs/troubleshooting'],['Trust center','/trust'],['Contact','/contact'],['Download','/download']]){
+  expect(footerNav.getByRole('link',{name}).getAttribute('href')).toBe(href);
+ }
+ expect(utilities.getByRole('link',{name:'Service status'}).getAttribute('href')).toBe('/status');
 });
 
 it('all approved destinations resolve to existing pages and mobile outside close releases scroll lock',()=>{

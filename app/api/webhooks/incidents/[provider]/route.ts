@@ -2,9 +2,9 @@
  * POST /api/webhooks/incidents/[provider]
  *
  * Inbound incident webhook receiver. Validates an HMAC signature
- * against INCIDENT_WEBHOOK_SECRET, normalises the vendor payload
+ * for the configured workspace and provider, normalises the vendor payload
  * (PagerDuty / Opsgenie / Slack / Teams) into the canonical
- * IncidentRecord shape, and enqueues for the autonomy loop.
+ * IncidentRecord shape, and stores evidence for the receiving workspace.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -32,10 +32,11 @@ export async function POST(req: NextRequest, ctx: ProviderContext) {
       req.headers.get("x-opsgenie-signature") ??
       req.headers.get("x-slack-signature") ??
       null;
-    const result = receiveIncidentWebhook({
+    const result = await receiveIncidentWebhook({
       provider: provider as IncidentReceiverProvider,
       rawBody,
       signatureHeader,
+      tenantHeader: req.headers.get("x-axiom-tenant"),
     });
     if (!result.ok) {
       return NextResponse.json(

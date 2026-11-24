@@ -35,8 +35,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     rows = await (prisma as unknown as SkillRepo).agentSkillInstallation.findMany({ where: { organizationId: session.organizationId }, orderBy: { installedAt: "asc" } });
   } catch {
     // The curated catalog is static and safe to show even while installation
-    // storage is unavailable (for example during a migration rollout). Never
-    // fabricate installed state: every item remains explicitly not installed.
+    // storage is unavailable. Consumers use storageAvailable to distinguish
+    // unknown installation state from the legacy per-item fallback.
     storageAvailable = false;
   }
   const byId = new Map(rows.map((row) => [row.skillId, row]));

@@ -90,3 +90,41 @@ it("releases the pending password attempt after a thrown error without automatic
   await waitFor(() => expect(ports.signIn).toHaveBeenCalledTimes(2));
   expect(ports.push).not.toHaveBeenCalled();
 });
+
+it.each([
+  { label: "an absent response", response: undefined },
+  { label: "an unsuccessful response without a credential error", response: { ok: false, status: 503, error: null, url: null } },
+])("keeps sign-in on the form after $label", async ({ response }) => {
+  ports.signIn.mockResolvedValueOnce(response).mockResolvedValueOnce(accepted);
+  const form = await prepare();
+  fireEvent.submit(form);
+
+  expect((await screen.findByRole("alert")).textContent).toContain("Something went wrong");
+  expect(ports.push).not.toHaveBeenCalled();
+  expect(ports.refresh).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "Sign in" }).hasAttribute("disabled")).toBe(false);
+
+  fireEvent.submit(form);
+  await waitFor(() => expect(ports.push).toHaveBeenCalledExactlyOnceWith("/desktop/connect?challenge=synthetic"));
+  expect(ports.refresh).toHaveBeenCalledOnce();
+});
+
+it.each([
+  {field: "Email", value: "not-an-email"},
+  {field: "Password", value: ""},
+])("does not submit credentials when the expanded form has an invalid $field", async ({field, value}) => {
+  ports.signIn.mockResolvedValue(accepted);
+  const form = await prepare();
+  const input = screen.getByLabelText(field);
+  const validValue = (input as HTMLInputElement).value;
+  fireEvent.change(input, {target: {value}});
+  const reportValidity = vi.spyOn(form, "reportValidity");
+  fireEvent.submit(form);
+  expect(reportValidity).toHaveBeenCalledOnce();
+  expect(ports.signIn).not.toHaveBeenCalled();
+  expect(ports.push).not.toHaveBeenCalled();
+
+  fireEvent.change(input, {target: {value: validValue}});
+  fireEvent.submit(form);
+  await waitFor(() => expect(ports.push).toHaveBeenCalledExactlyOnceWith("/desktop/connect?challenge=synthetic"));
+});

@@ -68,8 +68,10 @@ describe("mobile website contract", () => {
   it("uses a responsive footer that keeps links readable on phones", () => {
     const footer = source("components/Footer.tsx");
 
-    expect(footer).toContain("grid gap-12 py-16 sm:grid-cols-2");
-    expect(footer).toContain("flex flex-col items-center justify-center");
-    expect(footer).toContain("Production access is service-verified");
+    expect(footer).toMatch(/aria-label="Footer navigation" className="[^"]*grid grid-cols-2[^"]*sm:grid-cols-3[^"]*lg:grid-cols-6/);
+    expect(footer).toMatch(/<div key=\{column.title\} className="min-w-0">/);
+    expect(footer).toMatch(/aria-label="Footer utilities" className="[^"]*flex-wrap[^"]*gap-x-4/);
+    expect(footer).toContain("[@media(pointer:coarse)]:min-h-11");
+    expect(footer).toMatch(/<Link href="\/status"[^>]*>Service status<\/Link>/);
   });
 });

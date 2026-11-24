@@ -128,22 +128,75 @@ mod tests {
 
 #[cfg(all(test, target_os = "macos"))]
 mod local_keychain_acceptance {
+    use keyring::Entry;
+    use std::process::Command;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    const TEST_SERVICE: &str = "com.visionxixlabs.axiom.acceptance.tests";
+    const TEST_KEY: &str = "V19_OWNED_KEYCHAIN_RESTART_KEY";
+    const TEST_PHASE: &str = "V19_OWNED_KEYCHAIN_RESTART_PHASE";
+    const SENTINEL: &str = "axiom-local-nonsecret-sentinel";
+
+    fn isolated_entry(key: &str) -> Entry {
+        crate::credential_backend::ensure_native_backend().unwrap();
+        let service = super::credential_service(TEST_SERVICE).unwrap();
+        Entry::new(service, key).unwrap()
+    }
+
     #[test]
     #[ignore = "Explicit local Mac acceptance; writes only a unique nonproduction test entry"]
-    fn private_keychain_round_trip_survives_entry_recreation() {
-        crate::credential_backend::ensure_native_backend().unwrap();
-        let service = super::credential_service("com.visionxixlabs.axiom.acceptance.tests").unwrap();
-        let key = format!("owned-roundtrip-{}-{}", std::process::id(),
-            std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos());
-        let entry = keyring::Entry::new(service, &key).unwrap();
+    fn private_keychain_round_trip_survives_process_restart() {
+        let key = format!(
+            "owned-roundtrip-{}-{}",
+            std::process::id(),
+            SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()
+        );
+        let entry = isolated_entry(&key);
         assert!(matches!(entry.get_password(), Err(keyring::Error::NoEntry)));
-        entry.set_password("axiom-local-nonsecret-sentinel").unwrap();
-        // Recreate the entry to reject an entry-local, nonpersistent mock.
-        let recreated = keyring::Entry::new(service, &key).unwrap();
-        let actual = recreated.get_password();
-        let cleanup = recreated.delete_credential();
-        assert!(cleanup.is_ok(), "Owned test credential cleanup failed");
-        assert_eq!(actual.unwrap(), "axiom-local-nonsecret-sentinel");
+        let executable = std::env::current_exe().unwrap();
+        let run = |phase: &str| {
+            Command::new(&executable)
+                .args([
+                    "--exact",
+                    "secure::local_keychain_acceptance::use_keychain_in_owned_process",
+                    "--ignored",
+                ])
+                .env(TEST_KEY, &key)
+                .env(TEST_PHASE, phase)
+                .output()
+                .is_ok_and(|result| result.status.success()
+                    && String::from_utf8_lossy(&result.stdout).contains("1 passed"))
+        };
+
+        // Wait for the writer process to exit before opening a new reader.
+        let persisted = run("write") && run("read");
+        let cleanup = entry.delete_credential();
+        assert!(
+            cleanup.is_ok() || matches!(cleanup, Err(keyring::Error::NoEntry)),
+            "Owned test credential cleanup failed"
+        );
         assert!(matches!(entry.get_password(), Err(keyring::Error::NoEntry)));
+        assert!(persisted, "Native credential did not survive process restart");
+    }
+
+    #[test]
+    #[ignore = "Use from the isolated local Mac Keychain restart acceptance test"]
+    fn use_keychain_in_owned_process() {
+        let key = std::env::var(TEST_KEY).expect("Owned test credential required");
+        let (process, nonce) = key
+            .strip_prefix("owned-roundtrip-")
+            .and_then(|suffix| suffix.split_once('-'))
+            .expect("Owned test credential required");
+        assert!(process.parse::<u32>().is_ok() && nonce.parse::<u128>().is_ok());
+        assert_ne!(process.parse::<u32>().unwrap(), std::process::id());
+        let entry = isolated_entry(&key);
+        match std::env::var(TEST_PHASE).as_deref() {
+            Ok("write") => {
+                assert!(matches!(entry.get_password(), Err(keyring::Error::NoEntry)));
+                entry.set_password(SENTINEL).unwrap();
+            }
+            Ok("read") => assert!(matches!(entry.get_password(), Ok(value) if value == SENTINEL)),
+            _ => panic!("Unknown owned Keychain test phase"),
+        }
     }
 }

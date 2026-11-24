@@ -17,7 +17,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("pricing navigation and explicit plan selection", () => {
   // Current layout: "Get started" (formerly "Pricing") lives in the desktop "More" menu; the public support page is "Founding Supporters" (mobile + footer).
-  it("labels desktop, mobile and footer links Get started on the one canonical /plans route while preserving support", () => {
+  it("routes desktop, mobile and footer plan links to the canonical plans page while preserving support", () => {
     const nav = render(createElement(Navigation));
     expect(screen.queryByRole("link", { name: "Get started" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Pricing" })).toBeNull();
@@ -31,7 +31,7 @@ describe("pricing navigation and explicit plan selection", () => {
     expect(mobile.getByRole("link", { name: "Get started" }).getAttribute("href")).toBe("/plans");
     expect(mobile.getByRole("link", { name: "Founding Supporters" }).getAttribute("href")).toBe("/support");
     nav.unmount(); render(createElement(Footer));
-    expect(screen.getByRole("link", { name: "Get started" }).getAttribute("href")).toBe("/plans");
+    expect(screen.getByRole("link", { name: "Access and pricing" }).getAttribute("href")).toBe("/plans");
     const supporters = screen.getAllByRole("link", { name: /Founding Supporters/ });
     expect(supporters.length).toBeGreaterThan(0);
     for (const link of supporters) expect(link.getAttribute("href")).toBe("/support");

@@ -77,8 +77,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: decision.code, message: decision.reason, correlationId: String(correlationId) }, { status: 403 });
   }
 
+  const claimedAt = new Date(Date.now());
+  if (auth.record.expiresAt <= claimedAt) {
+    return NextResponse.json({ error: "pairing_expired" }, { status: 410 });
+  }
   const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
-    where: { id: auth.challenge, status: "pending", sessionId: null, consumedAt: null },
+    where: {
+      id: auth.challenge,
+      deviceFingerprint: auth.record.deviceFingerprint,
+      status: "pending",
+      sessionId: null,
+      consumedAt: null,
+      expiresAt: { gt: claimedAt },
+    },
     data: {
       status: "approving",
       approvedByUserId: auth.userId,

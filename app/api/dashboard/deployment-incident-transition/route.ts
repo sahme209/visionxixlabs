@@ -8,11 +8,9 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import {
   buildIncidentTransitionResponse,
-  type DeploymentIncidentRepo,
   INCIDENT_TRANSITIONS,
   type IncidentTransition,
 } from "@/lib/releaseops/deploymentIncidentResponder";
-import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 
 export const dynamic = "force-dynamic";
 
@@ -34,25 +32,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const r = await buildIncidentTransitionResponse(
-    prisma as unknown as DeploymentIncidentRepo,
-    {
-      organizationId: ctx.organizationId,
-      actorUserId: ctx.userId,
-      incidentId,
-      action: action as IncidentTransition,
-    },
-  );
+  const { organizationId, userId } = ctx;
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const transition = await buildIncidentTransitionResponse(tx, {
+        organizationId,
+        actorUserId: userId,
+        incidentId,
+        action: action as IncidentTransition,
+      });
+      if (!transition.body.ok) return transition;
 
-  if (r.body.ok) {
-    await appendAuditEvent(prisma as unknown as AuditEventRepo, {
-      organizationId: ctx.organizationId,
-      kind: `deployment_incident.${action}`,
-      subjectKind: "release",
-      subjectId: r.body.data.id,
-      summary: `Incident ${r.body.data.previousStatus} → ${r.body.data.status}`,
-      actorUserId: ctx.userId,
+      const { id, previousStatus, status } = transition.body.data;
+      await tx.auditEvent.create({
+        data: {
+          organizationId,
+          kind: `deployment_incident.${action}`,
+          subjectKind: "release",
+          subjectId: id,
+          outcome: "ok",
+          summary: `Incident ${previousStatus} → ${status}`,
+          actorUserId: userId,
+        },
+      });
+      return transition;
     });
+    return NextResponse.json(result.body, { status: result.status });
+  } catch {
+    return NextResponse.json({ ok: false, error: "incident_transition_unavailable" }, { status: 503 });
   }
-  return NextResponse.json(r.body, { status: r.status });
 }

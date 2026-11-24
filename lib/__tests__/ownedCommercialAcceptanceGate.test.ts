@@ -10,47 +10,49 @@ function report() {
     ...Array.from({ length: 6 }, (_, i) => ({ title: `legacy real PG case ${i}`, status: "passed" })),
     ...Array.from({ length: 19 }, (_, i) => ({ title: `V2 case ${i}`, status: "passed" })),
     ...Array.from({ length: 7 }, (_, i) => ({ title: `service case ${i}`, status: "passed" })),
+    { title: "binds Gateway usage replays to the original workspace and request", status: "passed" },
+    { title: "reconciles the visible prepaid allowance through checkout, refund and usage settlement", status: "passed" },
     ...httpTitles.map(title => ({ title, status: "skipped" })),
   ];
-  return { success: true, numTotalTests: 34, numPassedTests: 32, numFailedTests: 0, numPendingTests: 2, numFailedTestSuites: 0,
+  return { success: true, numTotalTests: 36, numPassedTests: 34, numFailedTests: 0, numPendingTests: 2, numFailedTestSuites: 0,
     testResults: [{ name: "/fixture/lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts", status: "passed", assertionResults }] };
 }
 function httpReport() {
-  const value = report(); value.numPassedTests = 1; value.numPendingTests = 33;
+  const value = report(); value.numPassedTests = 1; value.numPendingTests = 35;
   value.testResults[0].assertionResults.forEach(row => { row.status = row.title === httpTitles[0] ? "passed" : "skipped"; });
   return value;
 }
 it("requires the actual isolated application HTTP journey independently of the SQL job", () => {
-  expect(checkOwnedApplicationHttpAcceptance(httpReport())).toEqual({ schemaVersion: 1, evidenceScope: "owned_application_http_synthetic_provider", applicationHttpCasesPassed: 1, sqlCasesSkipped: 32, checkoutWorkerCaseSkipped: true, hostedPaymentVerified: false, productionChanges: false });
+  expect(checkOwnedApplicationHttpAcceptance(httpReport())).toEqual({ schemaVersion: 1, evidenceScope: "owned_application_http_synthetic_provider", applicationHttpCasesPassed: 1, sqlCasesSkipped: 34, checkoutWorkerCaseSkipped: true, hostedPaymentVerified: false, productionChanges: false });
 });
 it("never substitutes SQL-only success for application HTTP success or vice versa", () => {
   expect(() => checkOwnedApplicationHttpAcceptance(report())).toThrow("owned_pg_evidence_incomplete");
   expect(() => checkOwnedCommercialAcceptance(httpReport())).toThrow("owned_pg_evidence_incomplete");
 });
-it.each([0, 33])("refuses a different sole passed case at index %s", index => {
-  const value = httpReport(); value.testResults[0].assertionResults[32].status = "skipped";
+it.each([0, 35])("refuses a different sole passed case at index %s", index => {
+  const value = httpReport(); value.testResults[0].assertionResults[34].status = "skipped";
   value.testResults[0].assertionResults[index].status = "passed";
   expect(() => checkOwnedApplicationHttpAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });
 it("accepts completed SQL cases with explicitly separate unexecuted HTTP journeys", () => {
-  expect(checkOwnedCommercialAcceptance(report())).toEqual({ schemaVersion: 1, evidenceScope: "owned_postgres_synthetic_provider", sqlCasesPassed: 32, legacyAdmissionCasesPassed: 6, allocationCasesPassed: 19, httpCasesSkipped: 2, hostedPaymentVerified: false, productionChanges: false });
+  expect(checkOwnedCommercialAcceptance(report())).toEqual({ schemaVersion: 1, evidenceScope: "owned_postgres_synthetic_provider", sqlCasesPassed: 34, legacyAdmissionCasesPassed: 6, allocationCasesPassed: 19, httpCasesSkipped: 2, hostedPaymentVerified: false, productionChanges: false });
 });
 it.each(["skipped", "pending", "failed"])("refuses a %s SQL case even if aggregate counters claim success", status => {
   const value = report(); value.testResults[0].assertionResults[0].status = status;
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });
-it("refuses a green report with missing admission or allocation coverage", () => {
-  const value = report(); value.testResults[0].assertionResults[0].title = "unrelated test";
+it.each([0, 6, 32, 33])("refuses a green report with missing required coverage at index %s", index => {
+  const value = report(); value.testResults[0].assertionResults[index].title = "unrelated test";
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });
 it("refuses a substituted skipped journey or wrong suite", () => {
-  const value = report(); value.testResults[0].assertionResults[33].title = "SQL check silently skipped";
+  const value = report(); value.testResults[0].assertionResults[35].title = "SQL check silently skipped";
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
   value.testResults[0].name = "/fixture/different.test.ts";
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });
 it("uses actual Vitest skipped-row semantics rather than aggregate pending terminology", () => {
-  const value = report(); value.testResults[0].assertionResults[33].status = "pending";
+  const value = report(); value.testResults[0].assertionResults[35].status = "pending";
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });
 it.each([null, {}, { success: false }, { ...report(), numFailedTestSuites: 1 }, { ...report(), numPassedTests: 0 }])("refuses missing or unsuccessful execution evidence %j", value => {
@@ -58,6 +60,6 @@ it.each([null, {}, { success: false }, { ...report(), numFailedTestSuites: 1 }, 
 });
 
 it("verifies the named checkout worker is skipped before attesting that fact", () => {
-  const value = httpReport(); value.testResults[0].assertionResults[33].title = "unrelated skipped case";
+  const value = httpReport(); value.testResults[0].assertionResults[35].title = "unrelated skipped case";
   expect(() => checkOwnedApplicationHttpAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });

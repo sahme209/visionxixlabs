@@ -6,7 +6,7 @@
  * unknown actions are ignored. No-op outside Tauri.
  */
 
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { listen } from "@tauri-apps/api/event";
 import type { CustomerView } from "../App";
 
@@ -45,6 +45,7 @@ export function customerViewForMenuAction(value: unknown): CustomerView | null {
 }
 
 export function useNativeMenuActions(setActiveView: (v: CustomerView) => void): void {
+  const navigate = useEffectEvent(setActiveView);
   useEffect(() => {
     if (!isTauri()) return;
     let unlisten: (() => void) | null = null;
@@ -53,9 +54,10 @@ export function useNativeMenuActions(setActiveView: (v: CustomerView) => void): 
     (async () => {
       try {
         const fn = await listen<string>("menu://action", (event) => {
+          if (cancelled) return;
           const payload = event.payload;
           const view = customerViewForMenuAction(payload);
-          if (view) setActiveView(view);
+          if (view) navigate(view);
         });
         if (cancelled) {
           fn();
@@ -71,5 +73,5 @@ export function useNativeMenuActions(setActiveView: (v: CustomerView) => void): 
       cancelled = true;
       if (unlisten) unlisten();
     };
-  }, [setActiveView]);
+  }, []);
 }

@@ -2,12 +2,12 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const mocks = vi.hoisted(() => ({ switchAccount: "1", callback: "/desktop/connect?challenge=pair_123&intent=sign_in", signIn: vi.fn(), push: vi.fn() }));
+const mocks = vi.hoisted(() => ({ switchAccount: "1", callback: "/desktop/connect?challenge=pair_123&intent=sign_in", signIn: vi.fn(), push: vi.fn(), getProviders: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push, refresh: vi.fn() }), useSearchParams: () => new URLSearchParams({ switchAccount: mocks.switchAccount, callbackUrl: mocks.callback }) }));
-vi.mock("next-auth/react", () => ({ signIn: mocks.signIn, getProviders: async () => ({ google: {}, github: {} }) }));
+vi.mock("next-auth/react", () => ({ signIn: mocks.signIn, getProviders: mocks.getProviders }));
 vi.mock("next/image", () => ({ default: "img" }));
 import SignInPage from "../AuthFormClient";
-beforeEach(() => { vi.clearAllMocks(); mocks.switchAccount = "1"; mocks.callback = "/desktop/connect?challenge=pair_123&intent=sign_in"; });
+beforeEach(() => { vi.clearAllMocks(); mocks.getProviders.mockReset().mockResolvedValue({ google: {}, github: {} }); mocks.switchAccount = "1"; mocks.callback = "/desktop/connect?challenge=pair_123&intent=sign_in"; });
 afterEach(() => cleanup());
 it("requests Google account selection only for the explicit switching flow", async () => {
   render(createElement(SignInPage));
@@ -43,4 +43,16 @@ it('retains a same-origin absolute callback returned by an OAuth error',async()=
 it.each(['https://evil.test/control','https://user:pass@localhost:3000/control','/\\evil.test/control','javascript:alert(1)'])('rejects unsafe recovery callback %s',async callback=>{
  mocks.switchAccount='0';mocks.callback=callback;render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Continue with Google'}));
  await waitFor(()=>expect(mocks.signIn).toHaveBeenCalledWith('google',{callbackUrl:'/control',redirect:true}));
+});
+
+it("keeps Google out of the form while provider discovery is pending and when Google is unavailable", async () => {
+  mocks.getProviders.mockResolvedValue({ github: {} });
+  render(createElement(SignInPage));
+
+  expect(screen.queryByRole("button", { name: "Continue with Google" })).toBeNull();
+  expect(screen.getByRole("textbox", { name: "Email" })).toBeTruthy();
+
+  expect(await screen.findByRole("button", { name: "Sign in with GitHub" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Continue with Google" })).toBeNull();
+  expect(mocks.signIn).not.toHaveBeenCalled();
 });

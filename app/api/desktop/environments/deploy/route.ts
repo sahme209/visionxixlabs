@@ -180,8 +180,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     triggeredByUserId: String(session.userId),
   });
   if (!reservation.ok) {
-    const status = reservation.error === "deployment_quota_exhausted" ? 429
-      : reservation.error === "deployment_already_in_progress" || reservation.error === "idempotency_key_conflict" ? 409 : 503;
+    const status = reservation.error === "deployment_already_in_progress" || reservation.error === "idempotency_key_conflict" ? 409 : 503;
     return NextResponse.json({ ok: false, error: reservation.error, quota: reservation }, { status });
   }
   if (reservation.reused) {

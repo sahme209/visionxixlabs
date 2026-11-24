@@ -98,6 +98,7 @@ describe("POST /api/billing/stripe-webhook", () => {
   it("fulfills a signed paid AI-credit checkout", async () => {
     const event = {
       id: "evt_credit_1",
+      livemode: false,
       type: "checkout.session.completed",
       data: { object: { id: "cs_test_1", payment_status: "paid", amount_total: 1000, currency: "usd", payment_intent: "pi_test_1", metadata: { purpose: "axiom_ai_credit_add_on", organizationId: "org-1", addOnPurchaseId: "purchase-1", sku: "ai_credits_small" } } },
     };
@@ -106,6 +107,20 @@ describe("POST /api/billing/stripe-webhook", () => {
     expect(mocks.fulfillCredit).toHaveBeenCalledWith({ id: "evt_credit_1", type: "checkout.session.completed" }, event.data.object);
     expect(mocks.reconcileSubscriptionEvent).not.toHaveBeenCalled();
   });
+
+  it.each([["StripeBillingEvent", 200], ["AddOnPurchase", 500]] as const)(
+    "distinguishes a duplicate ledger entry from a purchase binding conflict (%s)",
+    async (modelName, status) => {
+      mocks.refundCredit.mockRejectedValueOnce({code:"P2002",meta:{modelName}});
+      const { POST } = await import("../route");
+      const response = await POST(request({
+        id:"evt_refund",type:"charge.refunded",data:{object:{payment_intent:"pi_test",amount_refunded:250,currency:"usd"}},
+      }));
+      expect(response.status).toBe(status);
+      if (status === 200) expect(await response.json()).toMatchObject({replay:true});
+      else expect(await response.json()).toMatchObject({ok:false,error:{code:"billing.write_failed"}});
+    },
+  );
 
   it("routes cumulative refunds through the credit reversal ledger", async () => {
     const event = { id: "evt_refund_1", type: "charge.refunded", data: { object: { payment_intent: "pi_test_1", amount_refunded: 500, currency: "usd" } } };

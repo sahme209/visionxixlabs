@@ -174,16 +174,19 @@ export interface NotifyResultArgs {
   body: string;
 }
 
-export async function notifyResult(args: NotifyResultArgs): Promise<void> {
+export type NotificationRequestResult = "requested" | "disabled" | "denied" | "unavailable";
+
+export async function notifyResult(args: NotifyResultArgs): Promise<NotificationRequestResult> {
   const mod = await loadModule();
-  if (!mod) return;
-  if (!(await readNotificationsEnabled())) return;
+  if (!mod) return "unavailable";
+  if (!(await readNotificationsEnabled())) return "disabled";
   try {
     const granted = await mod.isPermissionGranted();
-    if (!granted) return;
+    if (!granted) return "denied";
     mod.sendNotification({ title: args.title, body: args.body });
+    return "requested";
   } catch {
-    /* best-effort */
+    return "unavailable";
   }
 }
 

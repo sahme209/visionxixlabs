@@ -38,13 +38,16 @@ function validateBundle({root,articlePath,evaluationPath,expectedVersion,custome
  }
  for(const evidence of article.verification.evidencePaths)checkedPath(root,evidence);
  for(const media of article.media)if(media.transcriptPath!==null)checkedPath(root,media.transcriptPath);
- const customerBlockers=[];
+ // This offline validator checks supplied bytes. Editorial authority and
+ // the current release catalog require the separate trusted retrieval boundary.
+ const customerBlockers=['editorial_authority_unconfirmed'];
  if(article.status!=='approved')customerBlockers.push('article_not_approved');
  if(article.classification!=='public')customerBlockers.push('article_not_public');
  if(article.media.some(media=>!media.publicReviewApproved))customerBlockers.push('media_not_public_reviewed');
  if(expectedVersion.startsWith('local-source-preview:'))customerBlockers.push('local_preview_not_shipped');
- if(customer&&customerBlockers.length)throw Error(`customer retrieval ineligible: ${customerBlockers.join(', ')}`);
- return{valid:true,articleId:article.id,revision:article.revision,productVersion:expectedVersion,sourceFiles:article.sources.length,evaluationCases:evaluation.cases.length,customerEligible:customerBlockers.length===0,customerBlockers,evaluationStatus:evaluation.status};
+ if(!['local-native','live'].includes(article.verification.kind))customerBlockers.push('native_or_live_evidence_missing');
+ if(customer)throw Error(`customer retrieval ineligible: ${customerBlockers.join(', ')}`);
+ return{valid:true,articleId:article.id,revision:article.revision,productVersion:expectedVersion,sourceFiles:article.sources.length,evaluationCases:evaluation.cases.length,customerEligible:false,customerBlockers,evaluationStatus:evaluation.status};
 }
 module.exports={validateBundle};
 if(require.main===module){

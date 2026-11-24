@@ -10,12 +10,25 @@ it('keeps workspace, resources and bottom destinations separate without losing r
  const go=vi.fn();render(createElement(Sidebar,{activeView:'agent',onNavigate:go}));
  const workspace=screen.getByRole('button',{name:'Workspace'});const resources=screen.getByRole('button',{name:'Resources'});
  const panel=(b:HTMLElement)=>document.getElementById(b.getAttribute('aria-controls')!)!;
- expect(within(panel(workspace)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Agent','V19 Bot','Releases']);
- expect(within(panel(resources)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Repositories','Batches','Apps & skills']);
+ expect(within(panel(workspace)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Deployments','Tickets','Agent','Saved Tasks']);
+ expect(within(panel(resources)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Repositories','Batches','Apps & Skills']);
  const utility=screen.getByRole('navigation',{name:'Workspace utilities'});
  expect(within(utility).getAllByRole('button').map(x=>x.textContent)).toEqual(['Documentation','Settings']);
+ fireEvent.click(screen.getByRole('button',{name:'Deployments'}));expect(go).toHaveBeenCalledWith('deployment-requests');
+ fireEvent.click(screen.getByRole('button',{name:'Tickets'}));expect(go).toHaveBeenCalledWith('tickets');
+ fireEvent.click(screen.getByRole('button',{name:'Saved Tasks'}));expect(go).toHaveBeenCalledWith('axiom-bot');
  fireEvent.click(screen.getByRole('button',{name:'Batches'}));expect(go).toHaveBeenCalledWith('airflow-automation');
- fireEvent.click(workspace);expect(screen.queryByRole('button',{name:'Agent'})).toBeNull();expect(screen.getByRole('button',{name:'Settings'})).toBeTruthy();
+ const workspacePanel=panel(workspace);
+ fireEvent.click(workspace);
+ expect(workspace.getAttribute('aria-expanded')).toBe('false');
+ expect(panel(workspace)).toBe(workspacePanel);
+ expect(workspacePanel.hidden).toBe(true);
+ expect(screen.queryByRole('button',{name:'Agent'})).toBeNull();
+ expect(screen.getByRole('button',{name:'Settings'})).toBeTruthy();
+ fireEvent.click(workspace);
+ expect(workspace.getAttribute('aria-expanded')).toBe('true');
+ expect(panel(workspace).hidden).toBe(false);
+ expect(screen.getByRole('button',{name:'Agent'})).toBeTruthy();
 });
 it('applies explicit light and dark themes without changing their saved meaning',()=>{
  const base={interface_density:'comfortable',reduce_motion:false,high_contrast:false};

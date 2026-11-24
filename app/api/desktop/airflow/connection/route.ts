@@ -25,11 +25,30 @@ const observedWhere = (row: { id: string; organizationId: string; provider: stri
 });
 
 export async function GET(request: NextRequest): Promise<Response> {
-  const session = await resolveRequestDesktopSession(request, { requiredScope: "pipeline:read", requiredCapability: "workspace:read", route: "GET /api/desktop/airflow/connection", allowApiKey: false });
-  if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
-  const connection = await prisma.tenantIntegrationConnection.findUnique({ where: { organizationId_provider: { organizationId: String(session.organizationId), provider: "airflow" } }, select: { id: true, status: true, externalAccountId: true, scopesJson: true, lastValidatedAt: true, updatedAt: true, revokedAt: true } });
-  const metadata = connection?.scopesJson as { baseUrl?: unknown; version?: unknown; dagCount?: unknown; authMode?: unknown } | null;
-  return NextResponse.json({ ok: true, data: connection ? { connectionId: connection.id, connectionUpdatedAt: connection.updatedAt.toISOString(), connected: connection.status === "active" && !connection.revokedAt, status: connection.revokedAt ? "revoked" : connection.status, baseUrl: metadata?.baseUrl ?? connection.externalAccountId, version: metadata?.version ?? null, dagCount: metadata?.dagCount ?? null, authMode: metadata?.authMode ?? null, lastValidatedAt: connection.lastValidatedAt } : { connected: false, status: "not_connected" } }, { headers: { "Cache-Control": "no-store" } });
+  const policy = { requiredScope: "pipeline:read", requiredCapability: "workspace:read", route: "GET /api/desktop/airflow/connection", allowApiKey: false, recordHeartbeat: false } as const;
+  const headers = { "Cache-Control": "private, no-store" };
+  const unauthorized = () => NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401, headers });
+  try {
+    const session = await resolveRequestDesktopSession(request, policy);
+    if (session?.credentialKind !== "desktop_session" || request.signal.aborted) return unauthorized();
+    const connection = await prisma.tenantIntegrationConnection.findUnique({
+      where: { organizationId_provider: { organizationId: String(session.organizationId), provider: "airflow" } },
+      select: { id: true, status: true, externalAccountId: true, scopesJson: true, lastValidatedAt: true, updatedAt: true, revokedAt: true },
+    });
+    const current = await resolveRequestDesktopSession(request, policy);
+    if (current?.credentialKind !== "desktop_session" || current.id !== session.id || current.organizationId !== session.organizationId
+      || current.userId !== session.userId || request.signal.aborted) return unauthorized();
+    const metadata = connection?.scopesJson as { baseUrl?: unknown; version?: unknown; dagCount?: unknown; authMode?: unknown } | null;
+    return NextResponse.json({ ok: true, data: connection ? {
+      connectionId: connection.id, connectionUpdatedAt: connection.updatedAt.toISOString(),
+      connected: connection.status === "active" && !connection.revokedAt,
+      status: connection.revokedAt ? "revoked" : connection.status,
+      baseUrl: metadata?.baseUrl ?? connection.externalAccountId, version: metadata?.version ?? null,
+      dagCount: metadata?.dagCount ?? null, authMode: metadata?.authMode ?? null, lastValidatedAt: connection.lastValidatedAt,
+    } : { connected: false, status: "not_connected" } }, { headers });
+  } catch {
+    return NextResponse.json({ ok: false, error: "airflow_connection_unavailable" }, { status: 503, headers });
+  }
 }
 
 export async function PUT(request: NextRequest): Promise<Response> {

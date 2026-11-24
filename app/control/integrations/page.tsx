@@ -1,6 +1,6 @@
 import {isCollaborationOAuthConfigured} from "@/lib/integrations/collaborationOAuthReadiness";
 import Link from "next/link";
-import { Mail, Ticket } from "lucide-react";
+import { GitBranch, Mail, Ticket } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { ProviderLogo } from "@/components/cockpit/ProviderLogo";
@@ -135,6 +135,12 @@ export default async function ControlIntegrationsPage() {
         <h2 id="source-control-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Source control</h2>
         <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           <IntegrationRow icon={ICONS.github} name="GitHub" status={githubStatus} description="Repository context, reviewed code changes, and release workflows." details={github ? `${titleCase(github.repositorySelection)} repository access · Last read-only validation: ${formatTime(github.lastSeenAt)}` : "No GitHub App installation recorded."} action={canManage ? <IntegrationConnectionAction provider="github" label="GitHub" connected={Boolean(github && github.status !== "revoked")} suspended={github?.status === "suspended"} installationRowId={github?.id} /> : undefined} />
+          {process.env.GITLAB_WORKSPACE_SETUP_ENABLED === "true" && context.sessionUserId &&
+            context.roles.some(role => role === "owner" || role === "admin") && (
+              <IntegrationRow icon={<GitBranch className="h-5 w-5" />} name="GitLab"
+                description="Read-only merge request, release and pipeline evidence for a tracked project."
+                action={<Link href="/control/integrations/gitlab" className="text-xs text-zinc-200 underline underline-offset-4">Manage GitLab</Link>} />
+            )}
         </div>
       </section>
 

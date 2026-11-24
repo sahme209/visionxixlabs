@@ -1,4 +1,5 @@
 import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
+import type { Prisma } from "@/lib/prismaClient";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { realpathSync, statSync } from 'node:fs';
@@ -42,7 +43,7 @@ import { AIProviderManager } from '@/lib/ai/AIProviderManager';
 import { boundedAIInput } from '@/lib/ai/inputByteBound';
 import { settleGatewayGenerationInTransaction } from '@/lib/billing/reconcileGatewayUsage';
 import { enrollNewPublicWorkspace } from '@/lib/billing/publicFreeEnrollment';
-import { readPublicCreditAllowance } from '@/lib/billing/publicCreditAuthority';
+import { publicDatabaseNow, readPublicCreditAllowance } from '@/lib/billing/publicCreditAuthority';
 import { fixtureAllocationDDL, enrollFixtureAllowanceV2, readFixtureEnrollment } from '@/lib/billing/newTestSubscription/fixtureAllocation';
 import { fixtureCoverageDDL } from '@/lib/billing/newTestSubscription/fixtureCoverage';
 import { newTestAllocationPricingPlan, readAllocationAllowanceV2 } from '@/lib/billing/newTestSubscription/allocationPlan';
@@ -56,6 +57,16 @@ describe.skipIf(!root)('fresh owned composed quoted admission',()=>{
   const {PrismaClient}=createRequire(import.meta.url)(client);
   f.db=createDatabaseClient('postgresql://coding_quote_fixture@localhost:55491/axiom_coding_quote_fixture?host='+encodeURIComponent(socket));
   expect(await f.db.$queryRawUnsafe("SELECT current_database() AS db,current_user AS role,current_setting('listen_addresses') AS listen,current_setting('data_directory') AS data")).toEqual([{db:'axiom_coding_quote_fixture',role:'coding_quote_fixture',listen:'',data:root+'/data'}]);
+  await f.db.$transaction(async (tx: Prisma.TransactionClient) => {
+   await tx.$executeRawUnsafe("SET LOCAL TIME ZONE 'Asia/Karachi'");
+   const [{ before }] = await tx.$queryRawUnsafe<Array<{ before: number }>>(
+    "SELECT floor(extract(epoch from clock_timestamp()) * 1000)::float8 AS before");
+   const observed = (await publicDatabaseNow(tx)).getTime();
+   const [{ after }] = await tx.$queryRawUnsafe<Array<{ after: number }>>(
+    "SELECT floor(extract(epoch from clock_timestamp()) * 1000)::float8 AS after");
+   expect(observed).toBeGreaterThanOrEqual(before);
+   expect(observed).toBeLessThanOrEqual(after);
+  });
  });
  afterAll(async()=>{await f.db?.$disconnect();vi.unstubAllGlobals();vi.unstubAllEnvs();});
  beforeEach(()=>{
@@ -119,7 +130,7 @@ describe.skipIf(!root)('fresh owned composed quoted admission',()=>{
   expect(f.requests[0].body).toMatchObject({temperature:0.2,maxOutputTokens:4096,prompt:[{role:'system',content:x.payload.system},{role:'user',content:[{type:'text',text:x.payload.prompt}]}],providerOptions:{anthropic:{thinking:{type:'disabled'}},gateway:{only:['anthropic'],user:x.scope.organizationId}}});
   expect(f.requests[0].body.prompt).toEqual([{role:'system',content:x.payload.system},{role:'user',content:[{type:'text',text:x.payload.prompt}]}]);
   expect(f.requests[0].body.providerOptions).toEqual({anthropic:{thinking:{type:'disabled'}},gateway:{only:['anthropic'],user:x.scope.organizationId,tags:['product:axiom-agent',`correlation:${x.scope.correlationId}`]}});
-  expect(f.requests[0].body.tools).toBeUndefined();expect(f.requests[0].body.toolChoice).toBeUndefined();
+  expect(f.requests[0].body.tools).toBeUndefined();expect(f.requests[0].body.toolChoice).toEqual({ type: "none" });
   expect(JSON.stringify(f.requests[0].body)).not.toContain(x.secret);
   const call=await f.db.pipelineAICallReservation.findUniqueOrThrow({where:{id:before[0].id}}),hold=await f.db.aIUsageReservation.findUniqueOrThrow({where:{id:call.workspaceReservationId}}),usage=await f.db.usageEvent.findUniqueOrThrow({where:{id:call.usageEventId}});
   expect(call).toMatchObject({status:'pending_settlement',estimatedCents:17,externalUsageId:f.generation});expect(hold).toMatchObject({status:'pending_settlement',reservedCents:17,usageEventId:usage.id});expect(usage).toMatchObject({billingStatus:'pending',externalUsageId:f.generation});

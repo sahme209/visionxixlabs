@@ -1,4 +1,7 @@
-import { useState, type ComponentType, type SVGProps } from "react";
+import { Bookmark, BookOpen, ChevronDown, GitBranch, House, Layers, LayoutGrid, MoreHorizontal, Settings, Sparkles, UserRound, Zap, Ticket } from "lucide-react";
+import { useEffect, useState, type ComponentType, type SVGProps } from "react";
+import { useDismissibleDetails } from "../lib/useDismissibleDetails";
+import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 import type { CustomerView } from "../App";
 import { CUSTOMER_NAVIGATION } from "../lib/customerNavigation";
 import { DESKTOP_VERSION } from "../lib/desktopMetadata";
@@ -17,43 +20,15 @@ interface NavGroup {
   defaultCollapsed?: boolean;
 }
 
-const icon = (children: React.ReactNode) => {
-  function SidebarIcon(props: Omit<SVGProps<SVGSVGElement>, "ref">) {
-    return (
-      <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        {children}
-      </svg>
-    );
-  }
-  return SidebarIcon;
-};
-
-const IconAgent = icon(<><path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /><circle cx="9" cy="7" r="0.5" fill="currentColor" /><circle cx="15" cy="7" r="0.5" fill="currentColor" /></>);
-const IconBot = icon(<><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-5H3V6a2 2 0 0 1 2-2z"/><path d="M8 9h8M8 13h5"/></>);
-const IconRequest = icon(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></>);
-const IconDocs = icon(<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>);
-const IconSettings = icon(<><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></>);
-const IconPlugins = icon(<><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><rect x="8" y="8" width="8" height="8" rx="2" /></>);
-const IconRepository = icon(<><circle cx="12" cy="12" r="9" /><path d="M9 18c-4 1.2-4-2-5-2.5M15 18v-3.1c0-.9.3-1.5.7-1.9 2.3-.3 4.8-1.1 4.8-5A3.9 3.9 0 0 0 19.4 5 3.7 3.7 0 0 0 19.3 2S18.4 1.7 16 3.1a10.5 10.5 0 0 0-5 0C8.6 1.7 7.7 2 7.7 2a3.7 3.7 0 0 0-.1 3A3.9 3.9 0 0 0 6.5 8c0 3.9 2.5 4.7 4.8 5 .4.4.7 1.1.7 2v3" /></>);
-const IconAirflow = icon(<><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8M18 8v8M8 18h8M9 9l6 6M15 9l-6 6"/></>);
-
-/**
- * Customer navigation follows the deployment lifecycle. Experimental cloud,
- * AGI, billing, simulation, and connector-control surfaces are deliberately
- * absent until they are part of a verified release journey. Agent is first:
- * it's the primary way to act now (plain English -> risk-checked,
- * approval-gated, auditable action) — the Release workspace remains the
- * direct/manual path alongside it, not replaced by it.
- */
 const customerIcons: Record<(typeof CUSTOMER_NAVIGATION)[number]["items"][number]["id"], ComponentType<SVGProps<SVGSVGElement>>> = {
-  agent: IconAgent, "axiom-bot": IconBot, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
-  "repository-workspace": IconRepository, "plugins-skills": IconPlugins, docs: IconDocs, settings: IconSettings,
+  agent: Sparkles, "axiom-bot": Bookmark, "deployment-requests": Layers, tickets: Ticket, "airflow-automation": LayoutGrid,
+  "repository-workspace": GitBranch, "plugins-skills": Zap, docs: BookOpen, settings: Settings,
 };
 export const CUSTOMER_NAV_GROUPS: NavGroup[] = CUSTOMER_NAVIGATION.map(group => ({
   ...group, items: group.items.map(item => ({ ...item, Icon: customerIcons[item.id] })),
 }));
 
-export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = false, compact = false }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void; onOpenWelcome?: () => void; homeVisible?: boolean; compact?: boolean }) {
+export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = false, compact = false, identity }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void; onOpenWelcome?: () => void; homeVisible?: boolean; compact?: boolean; identity?: VerifiedDesktopIdentity }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(CUSTOMER_NAV_GROUPS.map((group) => [
       group.kind,
@@ -61,54 +36,82 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
     ])),
   );
 
+  useEffect(() => {
+    const group = homeVisible ? "deployment" : CUSTOMER_NAV_GROUPS.find(item => item.items.some(entry => entry.id === activeView))?.kind;
+    if (group && group !== "utility") setOpenGroups(current => current[group] === false ? {...current, [group]: true} : current);
+  }, [activeView, homeVisible]);
+
+  const workspaceDetails = useDismissibleDetails();
+  const account = identity?.displayName?.trim() || "Current account";
+  const workspaceRole = identity?.role === "owner" ? "Workspace owner" : identity?.role === "admin" ? "Administrator" : "Account settings";
+
   return (
-    <aside className={`${compact ? "w-16 shrink-0" : "w-[200px]"} desktop-navigation flex flex-col`} data-tauri-drag-region>
-      <div className={`h-[60px] flex items-center ${compact ? "px-3" : "px-5"} `} data-tauri-drag-region>
-        <button type="button" aria-label="V19 home" title={`V19 v${DESKTOP_VERSION}`} aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400">
-          <img src={compact ? "/brand/v19-mark.svg" : "/brand/v19-wordmark.svg"} alt="V19" className={compact ? "h-7 w-7 shrink-0 object-contain" : "h-8 w-[42px] shrink-0 object-contain"} />
+    <aside className={`${compact ? "w-16 shrink-0" : "w-[212px]"} studio-rail flex flex-col border-r`} data-tauri-drag-region>
+      <div className={`studio-rail-brand h-[54px] shrink-0 flex items-center ${compact ? "px-3" : "px-[22px]"} border-b`} data-tauri-drag-region>
+        <button type="button" aria-label="V19 home" title={`V19 v${DESKTOP_VERSION}`} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400">
+          <img src="/brand/v19-mark.svg" alt="" className="h-[29px] w-8 shrink-0 object-contain" />
+          {!compact && <span className="studio-brand-name">V19</span>}
         </button>
       </div>
+      {!compact && identity && (
+        <details className="studio-rail-workspace" ref={workspaceDetails.ref} onKeyDown={workspaceDetails.onKeyDown} onBlur={workspaceDetails.onBlur}>
+          <summary aria-label="Current workspace"><Layers aria-hidden="true" size={16} /><span>Workspace</span><ChevronDown aria-hidden="true" size={13} /></summary>
+          <div className="studio-rail-workspace-context">
+            <p className="text-xs text-zinc-400">Workspace ID</p>
+            <p className="mt-1 break-all text-xs">{identity.organizationId}</p>
+            <p className="mt-3 text-xs text-zinc-400">{identity.access.allowed ? "Access verified" : "Access needs attention"}</p>
+          </div>
+        </details>
+      )}
 
-      <nav aria-label="V19 workspace" className={`flex-1 ${compact ? "px-2" : "px-3"} py-5 space-y-5 overflow-y-auto no-drag`}>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+      <nav aria-label="V19 workspace" className={`flex-1 ${compact ? "px-2" : "px-3"} studio-rail-nav no-drag`}>
         {CUSTOMER_NAV_GROUPS.filter(group => group.kind !== "utility").map((group) => {
           const isOpen = compact || openGroups[group.kind] !== false;
           const panelId = `sidebar-group-${group.kind}`;
           return (
             <div key={group.kind}>
-              {!compact && <button type="button" aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroups((current) => ({ ...current, [group.kind]: !isOpen }))} className="flex items-center justify-between gap-1.5 px-3 mb-1.5 w-full text-left group hover:text-zinc-300">
-                <span className="text-[11px] text-zinc-500 group-hover:text-zinc-300 transition-colors">{group.label}</span>
-                <span aria-hidden className={`text-[8px] text-zinc-700 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}>▼</span>
+              {!compact && <button type="button" aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroups((current) => ({ ...current, [group.kind]: !isOpen }))} className="flex items-center justify-between gap-1.5 px-3 mb-3 w-full text-left group hover:text-zinc-300">
+                <span className="studio-rail-eyebrow text-zinc-500 group-hover:text-zinc-300 transition-colors">{group.label}</span>
+                <span aria-hidden className={`text-[8px] text-zinc-500 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}>▼</span>
               </button>}
-              {isOpen && (
-                <div id={panelId} className="space-y-0.5">
-                  {group.items.map((item) => {
-                    const isActive = !homeVisible && activeView === item.id;
-                    return (
-                      <button title={item.title ?? item.label} key={item.id} type="button" aria-current={isActive ? "page" : undefined} onClick={() => onNavigate(item.id)} className={`sidebar-item w-full ${isActive ? "sidebar-item-active" : ""}`}>
-                        <item.Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
-                        <span className={compact ? "sr-only" : undefined}>{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+              <div id={panelId} hidden={!isOpen} className={isOpen ? "studio-rail-rows" : undefined}>
+                {group.kind === "deployment" && onOpenWelcome && (
+                  <button type="button" onClick={onOpenWelcome} aria-current={homeVisible ? "page" : undefined} className="sidebar-item w-full">
+                    <House aria-hidden="true" className="h-4 w-4 shrink-0" />
+                    <span className={compact ? "sr-only" : undefined}>Home</span>
+                  </button>
+                )}
+                {group.items.map((item) => {
+                  const isActive = !homeVisible && activeView === item.id;
+                  return (
+                    <button title={item.title ?? item.label} key={item.id} type="button" aria-current={isActive ? "page" : undefined} onClick={() => onNavigate(item.id)} className="sidebar-item w-full">
+                      <item.Icon aria-hidden className="h-4 w-4 shrink-0" />
+                      <span className={compact ? "sr-only" : undefined}>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
       </nav>
 
-      <nav aria-label="Workspace utilities" className={`${compact ? "px-2" : "px-3"} pb-3 space-y-0.5 no-drag`}>
+      <nav aria-label="Workspace utilities" className={`${compact ? "px-2" : "px-3"} studio-rail-utilities studio-rail-rows no-drag`}>
         {CUSTOMER_NAV_GROUPS.filter(group => group.kind === "utility").flatMap(group => group.items).map(item => (
-          <button key={item.id} title={item.title ?? item.label} type="button" aria-current={!homeVisible && activeView === item.id ? "page" : undefined} onClick={() => onNavigate(item.id)} className={`sidebar-item w-full ${!homeVisible && activeView === item.id ? "sidebar-item-active" : ""}`}>
-            <item.Icon aria-hidden className="h-[18px] w-[18px] shrink-0" /><span className={compact ? "sr-only" : undefined}>{item.label}</span>
+          <button key={item.id} title={item.title ?? item.label} type="button" aria-current={!homeVisible && activeView === item.id ? "page" : undefined} onClick={() => onNavigate(item.id)} className="sidebar-item w-full">
+            <item.Icon aria-hidden className="h-4 w-4 shrink-0" /><span className={compact ? "sr-only" : undefined}>{item.label}</span>
           </button>
         ))}
       </nav>
-      <div className={`${compact ? "px-0" : "px-3"} py-3 border-t border-white/6`}>
-        <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/2.5">
-          <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className={compact ? "sr-only" : "text-[11px] text-zinc-400"}>Workspace connected</span>
-        </div>
+      </div>
+      <div className={`${compact ? "px-0" : "px-3"} studio-rail-profile py-3 border-t border-white/6`}>
+        {identity ? (
+          <button type="button" className="studio-rail-account" aria-label="Account settings" onClick={() => onNavigate("settings")}>
+            <UserRound aria-hidden="true" size={16} />
+            {!compact && <><span><strong>{account}</strong><small>{workspaceRole}</small></span><MoreHorizontal aria-hidden="true" size={16} /></>}
+          </button>
+        ) : null}
       </div>
     </aside>
   );

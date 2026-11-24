@@ -1,3 +1,4 @@
+import type { AgentDraftRequest } from "../lib/agentDraftRequest";
 import { restartWorkflowSourceFromArgs } from "../../../lib/tauri/agentRestartWorkflowSource";
 import {githubPullRequestReviewFromArgs} from "../../../lib/tauri/agentGithubPullRequestReview";
 import {githubBranchReviewFromArgs} from "../../../lib/tauri/agentGithubBranchReview";
@@ -19,7 +20,8 @@ import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentGithubReceipts, isGithubReceiptAction } from "../components/AgentGithubReceipts";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
@@ -44,6 +46,7 @@ interface ChatTurn {
   id: string;
   role: "user" | "assistant" | "tool_result";
   content: string;
+  createdAt?: string;
   actionProposalId?: string | null;
 }
 
@@ -196,20 +199,22 @@ export type AgentLocalCodeRequest = LocalCodeSelection & { context: object; work
 export interface AgentAirflowRequest { dagId: string; runId?: string; context: object; workspace: string }
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity, active = true, compact = false, requestedSkill, requestedLocalCode, requestedAirflow, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; compact?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; requestedAirflow?: AgentAirflowRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, compact = false, deferNewConversation = false, requestedSkill, requestedLocalCode, requestedAirflow, requestedDraft, onDraftLoaded, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; compact?: boolean; deferNewConversation?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; requestedAirflow?: AgentAirflowRequest; requestedDraft?: AgentDraftRequest; onDraftLoaded?: (draft: AgentDraftRequest) => void; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} compact={compact} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} requestedAirflow={requestedAirflow} onReviewLocalEdit={onReviewLocalEdit} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} compact={compact} deferNewConversation={deferNewConversation} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} requestedAirflow={requestedAirflow} requestedDraft={requestedDraft} onDraftLoaded={onDraftLoaded} onReviewLocalEdit={onReviewLocalEdit} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} compact={compact} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} requestedAirflow={requestedAirflow} onReviewLocalEdit={onReviewLocalEdit} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} compact={compact} deferNewConversation={deferNewConversation} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} requestedAirflow={requestedAirflow} requestedDraft={requestedDraft} onDraftLoaded={onDraftLoaded} onReviewLocalEdit={onReviewLocalEdit} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity, active, compact = false, requestedSkill, requestedLocalCode, requestedAirflow, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; compact?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; requestedAirflow?: AgentAirflowRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
+function AgentChatSession({ onOpenSettings, identity, active, compact = false, deferNewConversation = false, requestedSkill, requestedLocalCode, requestedAirflow, requestedDraft, onDraftLoaded, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; compact?: boolean; deferNewConversation?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; requestedAirflow?: AgentAirflowRequest; requestedDraft?: AgentDraftRequest; onDraftLoaded?: (draft: AgentDraftRequest) => void; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
   const chatOptions=useDismissibleDetails();
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const canBootstrapConversation = useRef(!deferNewConversation);
+  canBootstrapConversation.current = !deferNewConversation;
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [renamingBusy, setRenamingBusy] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -439,7 +444,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             } else {
               setError("The most recent Agent conversation could not be reopened.");
             }
-          } else {
+          } else if (canBootstrapConversation.current) {
             const created = await desktopClient.createAgentConversation();
             if (cancelled || generation !== conversationEpoch.current || context !== desktopClient.config) return;
             if (created.ok) {
@@ -551,15 +556,30 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         || verifiedSkillEpoch.current === null || verifiedSkillEpoch.current !== skillRefreshEpoch.current) return;
       processedSkillRequest.current = requestedSkill;
       if (requestedSkill.context !== context || requestedSkill.workspace !== identity?.organizationId) {
-        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Apps & skills."); return;
+        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Apps & Skills."); return;
       }
       if (!enabledSkills.some(skill => skill.id === requestedSkill.skillId)) {
-        setError("The selected skill is not verified as enabled. Refresh Apps & skills before selecting it again."); return;
+        setError("The selected skill is not verified as enabled. Refresh Apps & Skills before selecting it again."); return;
       }
       setInput(current => selectSkillInvocation(current, requestedSkill.skillId));
     });
     return () => { cancelled = true; };
   }, [active, requestedSkill, conversationId, loadingConversation, sending, pendingProposal, decidingId, skillState, enabledSkills, identity?.organizationId]);
+
+  const ownsHomeDraft = Boolean(requestedDraft && requestedDraft.context === desktopClient.config
+    && requestedDraft.revision === desktopClient.getContextRevision()
+    && requestedDraft.identityKey === JSON.stringify(identity));
+  const homeDraftReady = active && ownsHomeDraft && Boolean(conversationId)
+    && !loadingConversation && !sending && !pendingProposal && !decidingId;
+  useEffect(() => {
+    if (!homeDraftReady || !requestedDraft || input.trim()) return;
+    if (requestedDraft.context !== desktopClient.config || requestedDraft.revision !== desktopClient.getContextRevision()) return;
+    setOperationMode("inspect");
+    setComposerMode("chat");
+    setInput(requestedDraft.text);
+    onDraftLoaded?.(requestedDraft);
+    composerRef.current?.focus();
+  }, [homeDraftReady, requestedDraft, input, onDraftLoaded]);
 
   useEffect(() => {
     if (!active || !requestedAirflow || !conversationId || loadingConversation || sending || pendingProposal || decidingId) return;
@@ -865,6 +885,8 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
 
   const followsLatest = useRef(true);
   const [newActivity, setNewActivity] = useState(false);
+  const composerHintId = useId();
+  const requestConfigurationId = useId();
   const composerRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => { followsLatest.current = true; setNewActivity(false); setRenamingBusy(false); }, [conversationId]);
   useEffect(() => {
@@ -1205,7 +1227,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {environmentSearch && !environmentsLoading && !environmentOptions.some(environment => `${environment.name} ${environment.tier}`.toLowerCase().includes(environmentSearch.trim().toLowerCase())) && <span className="mt-1 block normal-case tracking-normal">No matching environments. Your selection is retained.</span>}
           </div>
         </div>
-        <p aria-label="Selected Agent context" className="mx-auto mt-2 max-w-5xl text-[11px] text-zinc-400">Repository: {repositoryFullName || "None selected"}{manualRepository ? " (manual, catalog unverified)" : ""} · Branch: {repositoryFullName ? branch || "None selected" : "None selected"} · Environment: {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "None selected"}</p>
+        <div role="group" aria-label="Selected Agent context" className="mx-auto mt-2 max-w-5xl text-[11px] text-zinc-400">Repository: {repositoryFullName || "None selected"}{manualRepository ? " (manual, catalog unverified)" : ""} · Branch: {repositoryFullName ? branch || "None selected" : "None selected"} · Environment: {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "None selected"}</div>
         {(repositoryError || environmentError) && <button data-help-id="agent.workspace.catalog-retry" type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 disabled:opacity-50">Retry repository and environment catalogs</button>}
         {environmentId && (() => {
           const selected = environmentOptions.find((environment) => environment.id === environmentId);
@@ -1225,8 +1247,8 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <button data-help-id="agent.workspace.connection-retry" type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="text-xs text-zinc-300 underline underline-offset-4 disabled:opacity-40">Retry connections</button>
         </div>
       </section>}
-      <div className="relative min-h-0 flex-1">
-      <div ref={scrollRef} role="region" aria-label="Agent conversation messages" onScroll={event => {const pane = event.currentTarget; followsLatest.current = pane.scrollHeight - pane.scrollTop - pane.clientHeight < 96; if (followsLatest.current) setNewActivity(false);}} className="h-full overflow-y-auto px-5 py-5">
+      <div className="agent-transcript-frame relative min-h-0 flex-1">
+      <div ref={scrollRef} role="region" aria-label="Agent conversation messages" tabIndex={0} onScroll={event => {const pane = event.currentTarget; followsLatest.current = pane.scrollHeight - pane.scrollTop - pane.clientHeight < 96; if (followsLatest.current) setNewActivity(false);}} className="h-full overflow-y-auto px-5 py-5">
         <div className="max-w-3xl mx-auto space-y-5">
           {turns.length === 0 && (
             <div className="rounded-2xl border border-white/6 bg-white/2 p-6 text-center">
@@ -1234,7 +1256,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               <p className="mt-2 text-xs text-zinc-500 leading-5">
                 Start a conversation, or open an authorized local workspace from Repositories. GitHub is only needed for GitHub operations.
               </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
+              <div className="mt-5 flex flex-wrap justify-center gap-2" role="group" aria-label="Suggested Agent requests">
                 <button data-help-id="agent.workspace.suggest-review-repository" type="button" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
                 <button data-help-id="agent.workspace.suggest-deploy-readiness" type="button" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
                 <button data-help-id="agent.workspace.suggest-connections" type="button" disabled={sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
@@ -1249,7 +1271,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             </li>)}</ol>
             <p className="mt-2 text-[10px] text-zinc-500">Progress only. Changes still require a reviewed proposal and approval.</p>
           </section>}
-          {sending && <div className="rounded-xl border border-white/15 bg-white/3 px-4 py-3" aria-label="Agent response in progress">
+          {sending && <div className="rounded-xl border border-white/15 bg-white/3 px-4 py-3" role="group" aria-label="Agent response in progress">
             <div className="flex items-center justify-between gap-4"><p className="text-xs text-zinc-200" role="status">Draft · decision and usage verification pending</p><button data-help-id="agent.workspace.stop-response" type="button" onClick={() => messageAbort.current?.abort()} className="rounded-sm border border-white/15 px-2 py-1 text-xs text-zinc-300">Stop response</button></div>
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap wrap-break-word text-sm text-zinc-300">{streamingDraft}</p>}
             <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
@@ -1297,7 +1319,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       </div>
       {newActivity && <button data-help-id="agent.workspace.jump-latest" type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-axiom-surface-2 px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
       </div>
-      <div aria-label="Agent composer" className="agent-composer min-h-0 max-h-[45vh] shrink overflow-y-auto px-5 py-4">
+      <div role="group" aria-label="Agent composer" className="agent-composer min-h-0 max-h-[45vh] shrink overflow-y-auto px-5 py-4">
         <div className="max-w-3xl mx-auto">
           {needsRecovery && !sending && <div role="status" className="mb-3 rounded-lg border border-white/20 bg-white/5 p-3 text-xs text-zinc-200">
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
@@ -1326,7 +1348,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             </div></li>)}</ol>
             <p className="mt-2 text-[10px] text-zinc-400">Session-only queue. Each message retains its conversation and request configuration; service policy still authorizes every action.</p>
           </section>}
-          <p aria-label="Request configuration" className="sr-only">
+          <p id={requestConfigurationId} className="sr-only">
             {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
           </p>
           <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
@@ -1342,15 +1364,28 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               catch { setModelNotice("This model choice applies to the current session. Local preferences could not be saved."); }
             }} />
           </div>
+          {ownsHomeDraft && requestedDraft && <div className="mb-3 flex items-center justify-between gap-3 text-xs text-zinc-400" role="status">
+            <span>{input.trim() ? "The new request is ready once you finish or clear this draft." : "The new request will load when the Agent composer is ready."}</span>
+            <button data-help-id="agent.workspace.dismiss-incoming-draft" type="button" className="shrink-0 text-zinc-300 hover:text-white" onClick={() => onDraftLoaded?.(requestedDraft)}>Dismiss</button>
+          </div>}
           <div className="agent-prompt-row mb-2 flex items-end gap-3">
           <textarea data-help-id="agent.workspace.request"
             ref={composerRef}
             aria-label="Agent request"
+            aria-describedby={`${requestConfigurationId} ${composerHintId}`}
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
             value={input}
             onChange={(event) => setInput(event.target.value)}
+            onFocus={event => {
+              const field = event.currentTarget;
+              const conversation = field.closest(".studio-agent-plan-layout-selected .agent-workspace");
+              if (!conversation || getComputedStyle(conversation).overflowY !== "auto") return;
+              requestAnimationFrame(() => {
+                if (document.activeElement === field) field.scrollIntoView({block: "nearest", inline: "nearest"});
+              });
+            }}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.altKey && (!submitWithCommandEnter || event.metaKey || event.ctrlKey) && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); submitDraft(); } }}
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask, research or plan in this workspace…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Build, research or plan with your Agent…" : "Describe the operational outcome you want proposed…"}
             disabled={loadingConversation || !conversationId || Boolean(pendingProposal)}
@@ -1363,10 +1398,12 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             disabled={submissionDisabled}
             className="agent-send-button bg-zinc-100 text-sm font-semibold text-zinc-950 disabled:opacity-40"
           >
-            {sending || currentQueue.length ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message" : "Send"}
+            {sending || currentQueue.length
+              ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message"
+              : <><ArrowRight className="agent-send-icon hidden" size={16} aria-hidden="true"/><span className="agent-send-label">Send</span></>}
           </button>
           </div>
-          <p className="agent-send-hint mb-3 text-[11px] text-zinc-500">{submitWithCommandEnter ? "⌘ / Ctrl + Enter to send" : "Enter to send"} · Shift + Enter for a new line</p>
+          <p id={composerHintId} className="agent-send-hint mb-3 text-[11px] text-zinc-500">{submitWithCommandEnter ? "⌘ / Ctrl + Enter to send" : "Enter to send"} · Shift + Enter for a new line</p>
           <Disclosure className="mb-3 rounded-lg border border-white/6 px-3 py-2" buttonClassName="text-xs text-zinc-400" label={<>Agent configuration · {resolveAgentProfile(agentProfile)?.label}</>}>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
@@ -1443,9 +1480,21 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
     return <p className="text-xs text-zinc-500 italic px-1">{turn.content}</p>;
   }
   const isUser = turn.role === "user";
+  const recordedAt = turn.createdAt ? new Date(turn.createdAt) : undefined;
+  const timestamp = recordedAt && Number.isFinite(recordedAt.getTime()) ? recordedAt : undefined;
+  const fullTime = timestamp?.toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"});
+  const displayedTime = timestamp?.toDateString() === new Date().toDateString()
+    ? timestamp.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
+    : fullTime;
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={isUser ? "agent-user-message max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6" : "agent-assistant-message w-full min-w-0 text-sm leading-7 text-zinc-100"}>
+      <div role="group" aria-label={isUser ? "Your message" : "V19 response"}
+        className={isUser ? "agent-user-message max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6" : "agent-assistant-message w-full min-w-0 text-sm leading-7 text-zinc-100"}>
+        {!isUser && <div className="studio-agent-message-author">
+          <img src="/brand/v19-mark.svg" alt="" />
+          <span aria-hidden="true">V19</span>
+          {timestamp && <time dateTime={turn.createdAt} title={fullTime} aria-label={fullTime}>{displayedTime}</time>}
+        </div>}
         {isUser ? <p className="whitespace-pre-wrap wrap-break-word">{turn.content}</p> : <AgentMessageContent text={turn.content} />}
       </div>
     </div>

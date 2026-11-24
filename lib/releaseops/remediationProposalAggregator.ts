@@ -6,6 +6,7 @@
  * available runbook keys. Safe-degraded for partial migrations.
  */
 
+import {remediationReviewBinding} from "../tauri/incidentRemediationReviewContract";
 import { isMissingTable } from "./releaseListResponder";
 import type { RemediationInputs } from "./remediationProposalEngine";
 
@@ -18,6 +19,7 @@ export interface IncidentRow {
   title: string;
   summary: string | null;
   reportedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface ReleaseRow {
@@ -26,6 +28,7 @@ export interface ReleaseRow {
   applicationId: string;
   status: string;
   releaseTag: string | null;
+  commitSha?: string | null;
   actualDeployEnd: Date | null;
   targetEnvironmentId: string | null;
 }
@@ -86,7 +89,7 @@ export async function aggregateRemediationInputs(
   if (incident.organizationId !== input.organizationId) return { ok: false, error: "cross_org_incident" };
 
   const release = await repo.release.findUnique({ where: { id: incident.releaseId } });
-  if (!release) return { ok: false, error: "release_not_found" };
+  if (!release || release.id !== incident.releaseId || release.organizationId !== input.organizationId) return { ok: false, error: "release_not_found" };
 
   // Most recent triage for this incident (accepted/overridden/pending).
   const triage = await safe(() =>
@@ -129,7 +132,12 @@ export async function aggregateRemediationInputs(
     ? (triage.priority as "P0" | "P1" | "P2" | "P3")
     : "P3";
 
+  const binding = remediationReviewBinding.safeParse({
+    incidentRevision:incident.updatedAt?.toISOString(), applicationId:release.applicationId,
+    environmentId:release.targetEnvironmentId, commit:release.commitSha,
+  });
   const inputs: RemediationInputs = {
+    ...(binding.success && {reviewBinding:binding.data}),
     triage: {
       priority,
       suggestedOwnerTeam: triage.suggestedOwnerTeam,

@@ -44,8 +44,12 @@ export interface RepositoryListRepo {
   workflowRunRecord: {
     findFirst(args: {
       where: { organizationId: string; repositoryId: string };
-      orderBy: { startedAt: "desc" };
-    }): Promise<{ status: string; conclusion: string | null; workflowName: string; startedAt: Date | null } | null>;
+      orderBy: [
+        { startedAt: { sort: "desc"; nulls: "last" } },
+        { lastSyncedAt: "desc" },
+        { id: "asc" },
+      ];
+    }): Promise<{ status: string; conclusion: string | null; workflowName: string; startedAt: Date | null; commitSha?: string | null; lastSyncedAt?: Date } | null>;
   };
 }
 
@@ -69,6 +73,8 @@ export interface RepositoryListRow {
     conclusion: string | null;
     /** ISO timestamp of startedAt, null when never observed. */
     startedAtIso: string | null;
+    commitSha: string | null;
+    syncedAtIso: string | null;
   } | null;
 }
 
@@ -99,7 +105,11 @@ export async function buildRepositoryListResponse(
         repo.releaseTagRecord.count({ where: { organizationId, repositoryId: r.id } }),
         repo.workflowRunRecord.findFirst({
           where: { organizationId, repositoryId: r.id },
-          orderBy: { startedAt: "desc" },
+          orderBy: [
+            { startedAt: { sort: "desc", nulls: "last" } },
+            { lastSyncedAt: "desc" },
+            { id: "asc" },
+          ],
         }),
       ]);
       return {
@@ -118,6 +128,8 @@ export async function buildRepositoryListResponse(
               state: lastRun.status as "queued" | "in_progress" | "completed",
               conclusion: lastRun.conclusion,
               startedAtIso: lastRun.startedAt ? lastRun.startedAt.toISOString() : null,
+              commitSha: lastRun.commitSha && /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i.test(lastRun.commitSha) ? lastRun.commitSha : null,
+              syncedAtIso: lastRun.lastSyncedAt?.toISOString() ?? null,
             }
           : null,
       };

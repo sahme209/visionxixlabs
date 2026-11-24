@@ -4,9 +4,10 @@ export const CUSTOMER_NAVIGATION = [
     kind: "deployment",
     label: "Workspace",
     items: [
+      { id: "deployment-requests", label: "Deployments", title: "Plan releases and review their exact actions and evidence" },
+      { id: "tickets", label: "Tickets", title: "Review recorded deployment incidents and change tickets" },
       { id: "agent", label: "Agent", title: "Work with code, local files and research" },
-      { id: "axiom-bot", label: "V19 Bot", title: "Saved tasks, AI responses and reviewed app actions" },
-      { id: "deployment-requests", label: "Releases", title: "Plan releases and review their exact actions and evidence" },
+      { id: "axiom-bot", label: "Saved Tasks", title: "Saved tasks, AI responses and reviewed app actions" },
     ],
   },
   {
@@ -15,7 +16,7 @@ export const CUSTOMER_NAVIGATION = [
     items: [
       { id: "repository-workspace", label: "Repositories", title: "GitHub repositories" },
       { id: "airflow-automation", label: "Batches", title: "Batch automation" },
-      { id: "plugins-skills", label: "Apps & skills", title: "Connected apps and reusable skills" },
+      { id: "plugins-skills", label: "Apps & Skills", title: "Connected apps and reusable skills" },
     ],
   },
   {

@@ -1,3 +1,4 @@
+import { DESKTOP_PRODUCT_NAME } from "../lib/desktopMetadata";
 import {GovernanceWorkspacePreview} from './GovernanceWorkspacePreview';
 import {OutlookIntegrationCard} from '../components/OutlookIntegrationCard';
 import {ProviderLogo,ProviderLogoGroup,type CatalogProvider} from "../components/CatalogIcon";
@@ -22,13 +23,16 @@ import {
   ChevronRight,
   CircleUserRound,
   Code2,
+  Copy,
   CreditCard,
+  FileText,
   GitBranch,
   KeyRound,
   Link2,
   LockKeyhole,
   LogOut,
   Palette,
+  Plus,
   Server,
   Settings2,
   Search,
@@ -36,10 +40,11 @@ import {
   Trees,
 } from "lucide-react";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
+import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
 import { normalizeAiProviderStatus, toggleApprovedModel, setApprovedGatewayDefault, removeUnavailableGatewayApprovals, isModelApproved, isConcreteGatewayModelId, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
-import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
+import { markNotificationPrefDirty, notifyResult, type NotificationRequestResult } from "../lib/notifications";
 import {
   readDesktopPreferences,
   writeDesktopPreferences,
@@ -47,6 +52,7 @@ import {
 } from "../lib/preferences";
 
 const WEB_BASE = "https://visionxixlabs.com";
+const preferenceReadIssue = "Local preferences could not be loaded. Reopen Settings to try again.";
 
 /**
  * Desktop-safe integration inventory.
@@ -109,7 +115,32 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   const [governancePreview, setGovernancePreview] = useState<"records" | "limits">();
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
+  const sectionContent = useRef<HTMLDivElement>(null);
+  const sectionNav = useRef<HTMLElement>(null);
+  const sectionSearch = useRef<HTMLInputElement>(null);
+  const focusSectionOnChange = useRef(Boolean(initialSection));
+  useEffect(() => {
+    if (focusSectionOnChange.current) {
+      focusSectionOnChange.current = false;
+      if (sectionContent.current) {
+        sectionContent.current.scrollTop = 0;
+        sectionContent.current.focus();
+      }
+    }
+  }, [active]);
+
+  function openSection(section: Section) {
+    setSearch("");
+    if (section === active) {
+      sectionContent.current?.focus();
+      return;
+    }
+    focusSectionOnChange.current = true;
+    setActive(section);
+  }
+
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
+  const [preferenceReadFailed, setPreferenceReadFailed] = useState(false);
   const [saved, setSaved] = useState(false);
   const [savingPreferences, setSavingPreferences] = useState(false);
   const preferenceWriteInFlight = useRef(false);
@@ -119,11 +150,13 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   useEffect(() => { settingsMounted.current = true; return () => { settingsMounted.current = false; window.clearTimeout(savedNoticeTimer.current); }; }, []);
   const [error, setError] = useState<string | null>(null);
   const [showSignOut, setShowSignOut] = useState(false);
+  const [auditLogOpenFailed, setAuditLogOpenFailed] = useState(false);
+  useSearchShortcut(sectionSearch, !showSignOut && !governancePreview);
 
   useEffect(() => {
     let current = true;
     readDesktopPreferences().then(value => { if (current) setPrefs(value); })
-      .catch(() => { if (current) setError("Local preferences could not be loaded. Reopen Settings to try again."); });
+      .catch(() => { if (current) setPreferenceReadFailed(true); });
     return () => { current = false; };
   }, []);
 
@@ -151,6 +184,15 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
     }
   }
 
+  async function openAuditLog() {
+    setAuditLogOpenFailed(false);
+    try {
+      await open(`${WEB_BASE}/control/audit-security`);
+    } catch {
+      if (settingsMounted.current) setAuditLogOpenFailed(true);
+    }
+  }
+
   async function signOut() {
     try {
       if (onSignOut) { await onSignOut(); return; }
@@ -161,23 +203,36 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
     }
   }
 
+  const preferenceControls = {prefs, onSave: savePreferences, preferencesLocked: savingPreferences || preferenceSaveUnconfirmed};
+
   if (import.meta.env.DEV && governancePreview) return <GovernanceWorkspacePreview identity={identity} executionLimits={governancePreview === "limits"} onClose={() => setGovernancePreview(undefined)} />;
   return (
-    <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
-      <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/6 bg-axiom-surface px-3 pb-5 pt-8">
-          {onClose && <button data-help-id="settings.workspace.back-to-workspace" type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/4 hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
-          <h1 className="sr-only">Settings</h1>
+    <div className="settings-workbench studio-settings relative flex min-h-0 flex-1 flex-col bg-axiom-bg">
+      <header className="studio-settings-heading">
+        <div>
+          <h1>Settings</h1>
+          <p>Workspace identity, access, safety, and personal preferences.</p>
+        </div>
+        <button type="button" className="btn-secondary" aria-describedby="settings-audit-scope" onClick={() => void openAuditLog()}>
+          <FileText size={15} strokeWidth={1.75} aria-hidden="true" />View audit log
+        </button>
+        <span id="settings-audit-scope" className="sr-only">Opens Audit &amp; Security for the workspace selected in your browser. Access requires a workspace owner or administrator.</span>
+        {auditLogOpenFailed && <div className="studio-settings-audit-error" role="alert">The audit log could not be opened. Try again.</div>}
+      </header>
+      <div className="studio-settings-grid grid min-h-0 flex-1">
+        <nav ref={sectionNav} aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/6 bg-axiom-surface px-3 pb-5 pt-8">
+          <p className="studio-settings-nav-label">Workspace settings</p>
           <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/8 bg-white/2.5 px-2.5 py-2 text-zinc-500">
             <Search aria-hidden className="h-3.5 w-3.5 shrink-0" />
-            <input data-help-id="settings.workspace.section-search" type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-hidden placeholder:text-zinc-400" />
+            <input data-help-id="settings.workspace.section-search" ref={sectionSearch} type="search" aria-label="Search settings" aria-keyshortcuts="/" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-hidden placeholder:text-zinc-400" />
+            <kbd aria-hidden="true" className="studio-settings-search-key">/</kbd>
           </label>
           {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
           {sectionGroups.map(group => {const visible=sections.filter(section=>section.group===group&&(!search.trim()||`${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())));return visible.length>0&&<div key={group} role="group" aria-label={group} className="mb-4"><p className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{group}</p>{visible.map(({ id, label, icon: Icon }) => (
             <button data-help-id="settings.workspace.section-select"
               key={id}
               type="button"
-              onClick={() => { setActive(id); setSearch(""); }}
+              onClick={() => openSection(id)}
               aria-current={active === id ? "page" : undefined}
               className={`relative flex w-full items-center gap-3 rounded-md py-2 pl-3 pr-2 text-left text-[13px] transition-colors ${
                 active === id ? "bg-white/6 text-white" : "text-zinc-500 hover:text-zinc-300"
@@ -189,23 +244,33 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
             </button>
           ))}</div>})}
           <div className="mt-6 border-t border-white/6 pl-3 pt-5">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Signed in workspace</p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Current workspace</p>
             <p className="mt-2 truncate text-xs text-zinc-400" title={identity.organizationId}>{identity.organizationId}</p>
-            <p className="mt-1 text-[11px] text-emerald-300">Service verified</p>
+            <p className="mt-1 text-[11px] text-zinc-400">{identity.kind === "desktop_session" ? "Paired desktop session" : "Enterprise recovery credential"}</p>
           </div>
+          {onClose && <button data-help-id="settings.workspace.back-to-workspace" type="button" onClick={onClose} className="mt-3 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/4 hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
         </nav>
 
-        <div className="min-h-0 min-w-0 overflow-y-auto px-5 py-10 lg:px-10"><div className="mx-auto w-full max-w-[760px]">
+        <div ref={sectionContent} role="region" aria-label="Current settings section" tabIndex={-1} onKeyDown={event => {
+          if (event.key !== "Escape" || event.defaultPrevented || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229 ||
+            (event.target instanceof Element && event.target.closest('input, select, textarea, [contenteditable], [role="dialog"], [role="alertdialog"]'))) return;
+          const selected = sectionNav.current?.querySelector<HTMLButtonElement>('button[aria-current="page"]');
+          const target = selected ?? sectionSearch.current;
+          if (!target) return;
+          event.preventDefault();
+          target.focus();
+        }} className="min-h-0 min-w-0 overflow-y-auto studio-settings-content"><div className="w-full">
+          {preferenceReadFailed && active !== "general" && <p role="alert" className="studio-settings-preference-issue">{preferenceReadIssue}</p>}
           {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>}
           {savingPreferences && <p role="status" className="mb-5 text-xs text-zinc-400">Saving on this computer…</p>}
           {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Saved on this computer.</div>}
-          <fieldset disabled={savingPreferences || preferenceSaveUnconfirmed && ["general", "profile", "appearance", "agents"].includes(active)} className="m-0 min-w-0 border-0 p-0">
+          <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="sr-only">Settings controls</legend>
-          {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} onOpenGovernance={() => setGovernancePreview("records")} onOpenExecutionLimits={() => setGovernancePreview("limits")} />}
-          {active === "profile" && <ProfileSection identity={identity} prefs={prefs} onSave={savePreferences} onRequestSignOut={() => setShowSignOut(true)} />}
-          {active === "appearance" && <AppearanceSection prefs={prefs} onSave={savePreferences} />}
+          {active === "general" && <GeneralSection identity={identity} onOpenSection={openSection} {...preferenceControls} preferenceReadFailed={preferenceReadFailed} onOpenGovernance={() => setGovernancePreview("records")} onOpenExecutionLimits={() => setGovernancePreview("limits")} />}
+          {active === "profile" && <ProfileSection identity={identity} {...preferenceControls} onRequestSignOut={() => setShowSignOut(true)} />}
+          {active === "appearance" && <AppearanceSection {...preferenceControls} />}
           {active === "plan" && <PlanSection identity={identity} />}
-          {active === "agents" && <AgentsSection prefs={prefs} onSave={savePreferences} />}
+          {active === "agents" && <AgentsSection {...preferenceControls} />}
           {active === "models" && <ModelsSection />}
           {active === "permissions" && <PermissionsSection identity={identity} />}
             {active === "git" && <GitSection />}
@@ -221,7 +286,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" role="dialog" aria-modal="true" aria-labelledby="sign-out-title">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-axiom-surface p-5 shadow-2xl">
             <h2 id="sign-out-title" className="text-lg font-semibold">Log out?</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of V19 on this device. Externally running workflows are not canceled.</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of {DESKTOP_PRODUCT_NAME} on this device. Externally running workflows are not canceled.</p>
             <div className="mt-6 flex justify-end gap-3">
               <button data-help-id="settings.workspace.sign-out-cancel" type="button" onClick={() => setShowSignOut(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">Cancel</button>
               <button data-help-id="settings.workspace.sign-out-confirm" type="button" onClick={() => void signOut()} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-100">Log out</button>
@@ -233,7 +298,13 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   );
 }
 
-function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits }: PreferenceSectionProps & {onOpenGovernance:()=>void;onOpenExecutionLimits:()=>void}) {
+function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, preferencesLocked, onSave, onOpenGovernance, onOpenExecutionLimits }: PreferenceSectionProps & {
+  identity: VerifiedDesktopIdentity;
+  onOpenSection: (section: Section) => void;
+  preferenceReadFailed: boolean;
+  onOpenGovernance: () => void;
+  onOpenExecutionLimits: () => void;
+}) {
   const [installedVersion, setInstalledVersion] = useState<string | null>();
   const [releasePageError, setReleasePageError] = useState(false);
   const mounted = useRef(false);
@@ -257,28 +328,294 @@ function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits
     try { await open(`${WEB_BASE}/download`); }
     catch { if (mounted.current) setReleasePageError(true); }
   }
-  return <div>
-    <SectionHeading title="General" detail="Application startup, notifications, and account management." />
-    <Group label="Account">
-      <ActionRow title="V19 account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
-      <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in V19 Control." action={<WebButton href="/control/governance" label="Open governance" />} />
+  const access = useWorkspaceAccessOverview(identity);
+  const owners = access.members?.filter(member => member.role === "owner" && member.acceptedAt &&
+    Number.isFinite(Date.parse(member.acceptedAt))).map(member => member.displayName?.trim() || member.email) ?? [];
+  const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return <div className="studio-settings-general">
+    <div className="studio-settings-overview-column">
+    <h2 className="studio-settings-general-title">General</h2>
+    <dl className="studio-settings-facts">
+      <WorkspaceIdFact key={identity.organizationId} id={identity.organizationId} />
+      <div><dt>Device time zone</dt><dd>{localZone || "Unavailable"}</dd></div>
+      {identity.kind === "desktop_session" && <div className="studio-settings-owner-fact">
+        <dt>{owners.length > 1 ? "Owners" : "Owner"}</dt>
+        <dd>{access.members === undefined ? "Checking…" :
+          access.members === null ? "Unavailable" : owners.length ? owners.join(", ") : "No accepted owner recorded"}</dd>
+      </div>}
+    </dl>
+    <section className="studio-settings-overview-links" aria-label="Workspace configuration">
+      <ActionRow title="Environments" detail="Review configured deployment targets." action={<button data-help-id="settings.workspace.overview-environments" type="button" className="btn-secondary" onClick={() => onOpenSection("environments")}>Review environments</button>} />
+      <ActionRow title="Models & AI" detail="Review the workspace's model policy." action={<button data-help-id="settings.workspace.overview-models" type="button" className="btn-secondary" onClick={() => onOpenSection("models")}>Review models</button>} />
+      <ActionRow title="Security" detail="Review workspace identity settings." action={<button data-help-id="settings.workspace.overview-identity" type="button" className="btn-secondary" onClick={() => onOpenSection("identity")}>Review identity</button>} />
+    </section>
+    <section className="studio-settings-overview-links" aria-label="Account">
+      <h2>Account</h2>
+      <ActionRow title={identity.displayName?.trim() || "Account profile"} detail="Review the verified identity for this session." action={<button type="button" className="btn-secondary" onClick={() => onOpenSection("profile")}>Review profile</button>} />
+      <ActionRow title="Account settings" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button data-help-id="settings.workspace.governance-evidence-preview" type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
       {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button data-help-id="governance.execution-limits.entry" type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
-      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-400">Service verified</span>} />
-    </Group>
-    <Group label="Notifications">
-      <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button data-help-id="settings.workspace.notification-test" type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "V19", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
+      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access." action={<button type="button" className="btn-secondary" onClick={() => onOpenSection("plan")}>Review plan</button>} />
+    </section>
+    </div>
+    <div className="studio-settings-overview-column">
+    {identity.kind === "desktop_session" && <WorkspaceAccessOverview access={access} onOpenPermissions={() => onOpenSection("permissions")} />}
+    <section className="studio-settings-overview-links" aria-label="Approval policy">
+      <h2>Approval policy</h2>
+      <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in the browser." action={<WebButton href="/control/governance" label="Open governance" />} />
+    </section>
+    <section className="studio-settings-overview-links" aria-label="Notifications">
+      <h2>Notifications</h2>
+      {preferenceReadFailed && <p role="alert" className="studio-settings-preference-issue">{preferenceReadIssue}</p>}
+      <NotificationPreference prefs={prefs} onSave={onSave} preferencesLocked={preferencesLocked}/>
       <LockedRow title="Resume observation after restart" detail="Durable operation IDs are reconciled with the service after the app starts again." />
-    </Group>
-    <Group label="About this app">
+    </section>
+    <section className="studio-settings-overview-links" aria-label="About this app">
+      <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
       <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />
-    </Group>
+    </section>
     {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
+    </div>
   </div>;
 }
 
-function ProfileSection({ identity, prefs, onSave, onRequestSignOut }: PreferenceSectionProps & { identity: VerifiedDesktopIdentity; onRequestSignOut: () => void }) {
+const notificationTestStatus: Record<NotificationRequestResult, string> = {
+  requested: "Test requested. Check your system notifications.",
+  disabled: "System notifications are turned off.",
+  denied: "Allow notifications for V19 in system settings, then retry.",
+  unavailable: "Could not request a test notification on this device.",
+};
+
+function NotificationPreference({prefs, onSave, preferencesLocked}: PreferenceSectionProps) {
+  const [result, setResult] = useState<NotificationRequestResult>();
+  const [testing, setTesting] = useState(false);
+  const inFlight = useRef(false);
+  const enabled = prefs?.notifications_enabled ?? false;
+  async function testNotification() {
+    if (!enabled || preferencesLocked || inFlight.current) return;
+    inFlight.current = true;
+    setTesting(true);
+    setResult(undefined);
+    try {
+      setResult(await notifyResult({title: DESKTOP_PRODUCT_NAME, body: "V19 test notification."}));
+    } finally {
+      inFlight.current = false;
+      setTesting(false);
+    }
+  }
+  return <div className="studio-settings-notification">
+    <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention."
+      enabled={enabled} disabled={preferencesLocked || !prefs || testing}
+      onToggle={() => {
+        setResult(undefined);
+        if (prefs) void onSave({...prefs, notifications_enabled: !enabled});
+      }}
+      action={<button data-help-id="settings.workspace.notification-test" type="button"
+        className="btn-secondary" disabled={preferencesLocked || !enabled} aria-disabled={testing}
+        onClick={() => void testNotification()}>Test</button>}/>
+    {enabled && <p className="studio-settings-notification-status" role="status">
+      {testing ? "Requesting a test notification…" : result ? notificationTestStatus[result] : ""}
+    </p>}
+  </div>;
+}
+
+function WorkspaceIdFact({id}: {id: string}) {
+  const [status, setStatus] = useState<"copied" | "unavailable">();
+  const request = useRef(0);
+  useEffect(() => () => { request.current++; }, []);
+
+  async function copyWorkspaceId() {
+    const current = ++request.current;
+    setStatus(undefined);
+    try {
+      await navigator.clipboard.writeText(id);
+      if (request.current === current) setStatus("copied");
+    } catch {
+      if (request.current === current) setStatus("unavailable");
+    }
+  }
+
+  return <div>
+    <dt>Workspace ID</dt>
+    <dd className="studio-settings-workspace-id">
+      <span>{id}</span>
+      <button type="button" aria-label="Copy workspace ID" title="Copy workspace ID" onClick={() => void copyWorkspaceId()}>
+        <Copy size={13} aria-hidden="true" />
+      </button>
+      {status === "copied" && <p role="status">Workspace ID copied.</p>}
+      {status === "unavailable" && <>
+        <p role="status">Clipboard unavailable. Select the workspace ID to copy it manually.</p>
+        <input type="text" aria-label="Workspace ID for manual copy" readOnly value={id} onFocus={event => event.currentTarget.select()} />
+      </>}
+    </dd>
+  </div>;
+}
+
+type MembershipRead = { currentUserId: string; currentRole: string | null; capabilities: string[]; members: WorkspaceMember[] };
+
+function manageMembership(read: MembershipRead | null | undefined) {
+  if (!read?.capabilities?.includes("members:manage")) return undefined;
+  const self = read.members.find(member => member.userId === read.currentUserId);
+  return self?.acceptedAt && self.updatedAt ? self : undefined;
+}
+
+async function openWorkspaceMemberCockpit(organizationId: string, expectedUserId: string, owns: () => boolean) {
+  if (!owns()) return false;
+  const fresh = await desktopClient.listWorkspaceMembers();
+  if (!owns() || !fresh.ok || fresh.data.currentUserId !== expectedUserId) return false;
+  const currentMember = manageMembership(fresh.data);
+  const now = Date.now();
+  const hint = currentMember && parseBrowserNavigationIntent({
+    destination: "members", expectedUserId, organizationId, membershipAcceptedAt: currentMember.acceptedAt,
+    membershipUpdatedAt: currentMember.updatedAt, issuedAt: new Date(now).toISOString(),
+    expiresAt: new Date(now + 300_000).toISOString(),
+  }, now);
+  if (!hint || !owns()) return false;
+  // The browser rechecks authentication and the exact workspace and membership.
+  await open(`${WEB_BASE}${browserNavigationIntentPath(hint)}`);
+  return true;
+}
+
+function useWorkspaceAccessOverview(identity: VerifiedDesktopIdentity) {
+  const paired = identity.kind === "desktop_session";
+  const config = paired ? desktopClient.config : null;
+  const revision = paired ? desktopClient.getContextRevision() : null;
+  const {organizationId, userId} = identity;
+  const scope = useMemo(() => ({config, revision, organizationId, userId}), [config, revision, organizationId, userId]);
+  const activeScope = useRef<typeof scope | null>(scope);
+  activeScope.current = scope;
+  const [read, setRead] = useState<{scope: typeof scope; data: MembershipRead | null}>();
+  const [attempt, setAttempt] = useState(0);
+  const [opening, setOpening] = useState<typeof scope | null>(null);
+  const [inviteError, setInviteError] = useState<typeof scope | null>(null);
+  const inviteFlight = useRef<typeof scope | null>(null);
+  const memberReadFlight = useRef<typeof scope | null>(null);
+  const inviteStatus = useRef<HTMLParagraphElement>(null);
+  const current = paired && read?.scope === scope ? read.data : undefined;
+  const members = current === null ? null : current?.members;
+  const self = manageMembership(current);
+  useEffect(() => {
+    if (!paired) return;
+    activeScope.current = scope;
+    const ownsRead = () => activeScope.current === scope && config === desktopClient.config && revision === desktopClient.getContextRevision();
+    let current = true;
+    memberReadFlight.current = scope;
+    void desktopClient.listWorkspaceMembers().then(result => {
+      if (!current || !ownsRead()) return;
+      setRead({scope, data: result.ok && (!userId || result.data.currentUserId === userId) ? result.data : null});
+    }).catch(() => {
+      if (current && ownsRead()) setRead({scope, data: null});
+    }).finally(() => {
+      if (current && memberReadFlight.current === scope) memberReadFlight.current = null;
+    });
+    return () => {
+      current = false;
+      if (memberReadFlight.current === scope) memberReadFlight.current = null;
+      if (activeScope.current === scope) activeScope.current = null;
+    };
+  }, [scope, config, revision, userId, attempt, paired]);
+
+  useEffect(() => {
+    if (inviteError === scope && document.activeElement === document.body) inviteStatus.current?.focus();
+  }, [inviteError, scope]);
+
+  async function inviteMember() {
+    if (!self || !current || inviteFlight.current === scope) return;
+    const owns = () => activeScope.current === scope && config === desktopClient.config && revision === desktopClient.getContextRevision();
+    if (!owns()) return;
+    inviteFlight.current = scope;
+    setOpening(scope);
+    setInviteError(null);
+    function refuse() {
+      if (!owns()) return;
+      setRead({scope, data: null});
+      setInviteError(scope);
+    }
+    try {
+      if (!await openWorkspaceMemberCockpit(organizationId, current.currentUserId, owns)) refuse();
+    } catch {
+      refuse();
+    } finally {
+      if (inviteFlight.current === scope) inviteFlight.current = null;
+      if (owns()) setOpening(null);
+    }
+  }
+
+  const refreshMembers = useCallback(() => {
+    if (!paired || activeScope.current !== scope || config !== desktopClient.config ||
+      revision !== desktopClient.getContextRevision() || memberReadFlight.current === scope ||
+      inviteFlight.current === scope) return false;
+    memberReadFlight.current = scope;
+    setRead(undefined);
+    setInviteError(null);
+    setAttempt(value => value + 1);
+    return true;
+  }, [paired, scope, config, revision]);
+
+  return {members, canInvite: Boolean(self), opening: opening === scope,
+    inviteFailed: inviteError === scope, inviteStatus, inviteMember, refreshMembers};
+}
+
+function WorkspaceAccessOverview({ access, onOpenPermissions }: {
+  access: ReturnType<typeof useWorkspaceAccessOverview>;
+  onOpenPermissions: () => void;
+}) {
+  const {members, canInvite, opening, inviteFailed, inviteStatus, inviteMember, refreshMembers} = access;
+  const heading = useRef<HTMLHeadingElement>(null);
+  const inviteButton = useRef<HTMLButtonElement>(null);
+  const refreshButton = useRef<HTMLButtonElement>(null);
+  const refreshDirectory = useCallback(() => {
+    if (refreshMembers() &&
+      (document.activeElement === inviteButton.current || document.activeElement === refreshButton.current)) {
+      heading.current?.focus({preventScroll: true});
+    }
+  }, [refreshMembers]);
+  useEffect(() => {
+    window.addEventListener("focus", refreshDirectory);
+    return () => window.removeEventListener("focus", refreshDirectory);
+  }, [refreshDirectory]);
+  return <section className="studio-settings-access" aria-labelledby="settings-access-heading">
+    <div className="studio-settings-access-header">
+      <h2 ref={heading} id="settings-access-heading" tabIndex={-1}>Access &amp; roles</h2>
+      {canInvite && <button ref={inviteButton} type="button" className="btn-secondary" aria-disabled={opening} onClick={() => void inviteMember()}>
+        <Plus size={14} aria-hidden="true"/>{opening ? "Opening…" : "Invite member"}
+      </button>}
+    </div>
+    {members?.length ? <ul>
+      {members.slice(0, 3).map(member => {
+        const name = member.displayName?.trim() || member.email;
+        const initials = name.split(/\s+/).slice(0, 2).map(word => word[0]).join("").toUpperCase();
+        const role = member.role === "owner" ? "Workspace owner" : ROLE_OPTIONS.find(option => option.value === member.role)?.label;
+        const accepted = member.acceptedAt ? new Date(member.acceptedAt) : null;
+        return <li key={member.userId}>
+          <span className="studio-settings-member-avatar" aria-hidden="true">{initials}</span>
+          <span className="studio-settings-member-name">
+            <span>{name}</span>
+            {accepted && Number.isFinite(accepted.getTime()) && <small>Accepted <time dateTime={accepted.toISOString()}>{accepted.toLocaleDateString()}</time></small>}
+          </span>
+          <span className="studio-settings-member-role">{role ?? "Role unavailable"}</span>
+        </li>;
+      })}
+    </ul> : <p className="studio-settings-access-status" role="status">{
+      members === undefined ? "Loading workspace members…" :
+      members === null ? "Workspace members are unavailable." : "No workspace members were returned."
+    }</p>}
+    {inviteFailed && <p ref={inviteStatus} tabIndex={-1} role="alert" className="studio-settings-access-status">
+      The workspace invitation page could not be verified. Refresh members to try again.
+    </p>}
+    <div className="studio-settings-access-footer">
+      {members && members.length > 0 && <p className="studio-settings-member-count">
+        {members.length} accepted {members.length === 1 ? "member" : "members"}
+      </p>}
+      {members === null && <button ref={refreshButton} type="button" className="btn-secondary" onClick={refreshDirectory}>Refresh members</button>}
+      <button data-help-id="settings.workspace.overview-permissions" type="button" className="btn-secondary"
+        onClick={onOpenPermissions}>View permissions</button>
+    </div>
+  </section>;
+}
+
+function ProfileSection({ identity, prefs, onSave, preferencesLocked, onRequestSignOut }: PreferenceSectionProps & { identity: VerifiedDesktopIdentity; onRequestSignOut: () => void }) {
   const email = identity.email ?? (identity.kind === "api_key" ? "Administrator credential" : "Not available");
   const shownEmail = prefs?.hide_email && email.includes("@") ? email.replace(/^(.{2}).*(@.*)$/, "$1••••$2") : email;
   return <div>
@@ -288,7 +625,7 @@ function ProfileSection({ identity, prefs, onSave, onRequestSignOut }: Preferenc
       <InfoRow label="Email" value={shownEmail} />
       <InfoRow label="Workspace" value={identity.organizationId} mono />
       <InfoRow label="Authentication" value={identity.kind === "desktop_session" ? "Browser-authorized desktop session" : "Enterprise recovery credential"} />
-      <ToggleRow title="Hide email address" detail="Partially mask the address in this desktop interface." enabled={prefs?.hide_email ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, hide_email: !prefs.hide_email })} />
+      <ToggleRow title="Hide email address" detail="Partially mask the address in this desktop interface." enabled={prefs?.hide_email ?? false} disabled={preferencesLocked || !prefs} onToggle={() => prefs && void onSave({ ...prefs, hide_email: !prefs.hide_email })} />
     </Group>
     <div className="mt-5 flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/2 p-4">
       <div><p className="text-sm text-zinc-200">Log out on this device</p><p className="mt-1 text-xs text-zinc-500">Removes the local credential from the operating-system vault.</p></div>
@@ -297,16 +634,16 @@ function ProfileSection({ identity, prefs, onSave, onRequestSignOut }: Preferenc
   </div>;
 }
 
-function AppearanceSection({ prefs, onSave }: PreferenceSectionProps) {
+function AppearanceSection({ prefs, onSave, preferencesLocked }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="Appearance" detail="These choices are stored locally and applied immediately across the installed app." />
     <Group label="Theme">
-      <SelectRow title="Theme" detail="Choose a light or dark workspace, or follow your Mac appearance." value={prefs?.theme ?? "dark"} disabled={!prefs} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "System" }]} onChange={(value) => prefs && void onSave({ ...prefs, theme: value as DesktopPreferences["theme"] })} />
-      <SelectRow title="Interface density" detail="Compact reduces global type and control spacing." value={prefs?.interface_density ?? "comfortable"} disabled={!prefs} options={[{ value: "comfortable", label: "Comfortable" }, { value: "compact", label: "Compact" }]} onChange={(value) => prefs && void onSave({ ...prefs, interface_density: value as DesktopPreferences["interface_density"] })} />
+      <SelectRow title="Theme" detail="Choose a light or dark workspace, or follow your Mac appearance." value={prefs?.theme ?? "dark"} disabled={preferencesLocked || !prefs} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "System" }]} onChange={(value) => prefs && void onSave({ ...prefs, theme: value as DesktopPreferences["theme"] })} />
+      <SelectRow title="Interface density" detail="Compact reduces global type and control spacing." value={prefs?.interface_density ?? "comfortable"} disabled={preferencesLocked || !prefs} options={[{ value: "comfortable", label: "Comfortable" }, { value: "compact", label: "Compact" }]} onChange={(value) => prefs && void onSave({ ...prefs, interface_density: value as DesktopPreferences["interface_density"] })} />
     </Group>
     <Group label="Accessibility">
-      <ToggleRow title="Reduce motion" detail="Minimizes non-essential interface animation." enabled={prefs?.reduce_motion ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, reduce_motion: !prefs.reduce_motion })} />
-      <ToggleRow title="High contrast" detail="Increases contrast across the application surface." enabled={prefs?.high_contrast ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, high_contrast: !prefs.high_contrast })} />
+      <ToggleRow title="Reduce motion" detail="Minimizes non-essential interface animation." enabled={prefs?.reduce_motion ?? false} disabled={preferencesLocked || !prefs} onToggle={() => prefs && void onSave({ ...prefs, reduce_motion: !prefs.reduce_motion })} />
+      <ToggleRow title="High contrast" detail="Increases contrast across the application surface." enabled={prefs?.high_contrast ?? false} disabled={preferencesLocked || !prefs} onToggle={() => prefs && void onSave({ ...prefs, high_contrast: !prefs.high_contrast })} />
     </Group>
   </div>;
 }
@@ -429,12 +766,12 @@ function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:st
   );
 }
 
-function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
+function AgentsSection({ prefs, onSave, preferencesLocked }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="Agents" detail="Conversation behavior is local. Authorization and production safety remain service enforced." />
     <Group label="Conversation">
-      <ToggleRow title="Submit with ⌘ / Ctrl + Enter" detail="Use Command–Enter on Mac or Ctrl–Enter on Windows/Linux to send. Enter adds a new line; Shift–Enter always adds a new line." enabled={prefs?.submit_with_command_enter ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, submit_with_command_enter: !prefs.submit_with_command_enter })} />
-      <SelectRow title="Messages sent while an agent is working" detail="Queue waits for the current operation; Interrupt asks the agent to stop at the next safe boundary." value={prefs?.new_message_behavior ?? "queue"} disabled={!prefs} options={[{ value: "queue", label: "Queue" }, { value: "interrupt", label: "Interrupt" }]} onChange={(value) => prefs && void onSave({ ...prefs, new_message_behavior: value as DesktopPreferences["new_message_behavior"] })} />
+      <ToggleRow title="Submit with ⌘ / Ctrl + Enter" detail="Use Command–Enter on Mac or Ctrl–Enter on Windows/Linux to send. Enter adds a new line; Shift–Enter always adds a new line." enabled={prefs?.submit_with_command_enter ?? false} disabled={preferencesLocked || !prefs} onToggle={() => prefs && void onSave({ ...prefs, submit_with_command_enter: !prefs.submit_with_command_enter })} />
+      <SelectRow title="Messages sent while an agent is working" detail="Queue waits for the current operation; Interrupt asks the agent to stop at the next safe boundary." value={prefs?.new_message_behavior ?? "queue"} disabled={preferencesLocked || !prefs} options={[{ value: "queue", label: "Queue" }, { value: "interrupt", label: "Interrupt" }]} onChange={(value) => prefs && void onSave({ ...prefs, new_message_behavior: value as DesktopPreferences["new_message_behavior"] })} />
       <LockedRow title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and closure require policy checks." />
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />
     </Group>
@@ -467,13 +804,13 @@ const ROLE_SUMMARIES: Record<WorkspaceMember["role"], string> = {
 
 function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
   const context = desktopClient.config;
-  const organizationId = identity.organizationId;
-  const identityScope = JSON.stringify([organizationId, identity.kind, identity.role, identity.capabilities]);
-  const scope = useMemo(() => ({ context, organizationId }), [context, identityScope]);
+  const {organizationId, userId} = identity;
+  const revision = desktopClient.getContextRevision();
+  const identityScope = JSON.stringify([organizationId, userId, identity.kind, identity.role, identity.capabilities]);
+  const scope = useMemo(() => ({ context, organizationId, revision }), [context, identityScope, revision]);
   const activeScope = useRef<typeof scope | null>(scope);
   activeScope.current = scope;
   const [attempt, setAttempt] = useState(0);
-  type MembershipRead = { currentUserId: string; currentRole: string | null; capabilities: string[]; members: WorkspaceMember[] };
   const [read, setRead] = useState<{ scope: typeof scope; data: MembershipRead | null; error: string | null } | null>(null);
   const [saving, setSaving] = useState<{ scope: typeof scope; userId: string } | null>(null);
   const current = read?.scope === scope ? read : null;
@@ -483,7 +820,7 @@ function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity })
   const savingUserId = saving?.scope === scope ? saving.userId : null;
   const [openingBrowser, setOpeningBrowser] = useState<typeof scope | null>(null);
   const browserOpenInFlight = useRef<typeof scope | null>(null);
-  const ownMember = current?.data?.members.find(member => member.userId === current.data?.currentUserId);
+  const ownMember = manageMembership(current?.data);
   const canManage = current?.data?.capabilities.includes("members:manage") ?? false;
   const load = useCallback(() => setAttempt(value => value + 1), []);
 
@@ -491,54 +828,52 @@ function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity })
     let alive = true;
     setRead({ scope, data: null, error: null });
     void desktopClient.listWorkspaceMembers().then(result => {
-      if (!alive || activeScope.current !== scope || desktopClient.config !== context) return;
+      if (!alive || activeScope.current !== scope || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
+      if (result.ok && userId && result.data.currentUserId !== userId) {
+        setRead({ scope, data: null, error: "Workspace permissions could not be verified. Refresh to try again." });
+        return;
+      }
       setRead({ scope, data: result.ok ? result.data : null, error: result.ok ? null : result.error });
     }).catch(() => {
-      if (alive && activeScope.current === scope && desktopClient.config === context)
+      if (alive && activeScope.current === scope && desktopClient.config === context && desktopClient.getContextRevision() === revision)
         setRead({ scope, data: null, error: "Workspace permissions could not be verified. Refresh to try again." });
     });
     window.addEventListener("focus", load);
     const unsubscribe = desktopClient.subscribeContext?.(load);
     return () => { alive = false; window.removeEventListener("focus", load); unsubscribe?.(); };
-  }, [scope, context, attempt, load]);
+  }, [scope, context, revision, attempt, load, userId]);
   useEffect(() => { activeScope.current = scope; return () => { if (activeScope.current === scope) activeScope.current = null; }; }, [scope]);
 
   async function manageInCockpit() {
-    if (!canManage || !ownMember?.acceptedAt || !ownMember.updatedAt || browserOpenInFlight.current === scope || desktopClient.config !== context) return;
-    browserOpenInFlight.current = scope; setOpeningBrowser(scope);
+    if (!ownMember || !current?.data || browserOpenInFlight.current === scope) return;
+    const owns = () => activeScope.current === scope && desktopClient.config === context && desktopClient.getContextRevision() === revision;
+    if (!owns()) return;
+    browserOpenInFlight.current = scope;
+    setOpeningBrowser(scope);
+    function refuse() {
+      if (owns()) setRead({ scope, data: null, error: "Browser navigation could not be confirmed. Refresh Permissions before trying again." });
+    }
     try {
-      const fresh = await desktopClient.listWorkspaceMembers();
-      if (activeScope.current !== scope || desktopClient.config !== context) return;
-      const self = fresh.ok ? fresh.data.members.find(member => member.userId === fresh.data.currentUserId) : null;
-      const now = Date.now();
-      const hint = fresh.ok && fresh.data.currentUserId === current?.data?.currentUserId && fresh.data.capabilities.includes("members:manage") && self?.acceptedAt
-        ? parseBrowserNavigationIntent({ destination: "members", expectedUserId: fresh.data.currentUserId, organizationId,
-            membershipAcceptedAt: self.acceptedAt, membershipUpdatedAt: self.updatedAt,
-            issuedAt: new Date(now).toISOString(), expiresAt: new Date(now + 300_000).toISOString() }, now) : null;
-      if (!hint) { setRead({ scope, data: null, error: "Browser navigation could not be confirmed. Refresh Permissions before trying again." }); return; }
-      if (activeScope.current !== scope || desktopClient.config !== context) return;
-      // This opens an advisory destination only. Browser authentication and exact
-      // selected workspace/membership are independently checked on arrival.
-      await open(`${WEB_BASE}${browserNavigationIntentPath(hint)}`);
+      if (!await openWorkspaceMemberCockpit(organizationId, current.data.currentUserId, owns)) refuse();
     } catch {
-      if (activeScope.current === scope && desktopClient.config === context) setRead({ scope, data: null, error: "Browser navigation could not be confirmed. Refresh Permissions before trying again." });
+      refuse();
     } finally {
       if (browserOpenInFlight.current === scope) browserOpenInFlight.current = null;
-      if (activeScope.current === scope && desktopClient.config === context) setOpeningBrowser(null);
+      if (owns()) setOpeningBrowser(null);
     }
   }
 
   async function changeRole(userId: string, role: Exclude<WorkspaceMember["role"], "owner">) {
-    if (!canManage || savingUserId || desktopClient.config !== context) return;
+    if (!canManage || savingUserId || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
     setSaving({ scope, userId });
     try {
       const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
-      if (activeScope.current !== scope || desktopClient.config !== context) return;
+      if (activeScope.current !== scope || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
       setSaving(null);
       if (!result.ok) { setRead({ scope, data: null, error: result.error }); return; }
       load();
     } catch {
-      if (activeScope.current === scope && desktopClient.config === context) {
+      if (activeScope.current === scope && desktopClient.config === context && desktopClient.getContextRevision() === revision) {
         setSaving(null); setRead({ scope, data: null, error: "Workspace role could not be updated. Refresh before trying again." });
       }
     }
@@ -721,7 +1056,7 @@ function ModelsSection() {
         <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button data-help-id="settings.workspace.model-filter" key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
         <p className="mt-2 text-[11px] text-zinc-400">{installationMode === "offline" ? "The deployment operator manages the local server and token cap. Choose one accepted model; missing or expired verification blocks calls. No cloud fallback." : "Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model."}</p>
       </div>
-      {installationMode === "offline" && policy?.enabled && <div className="flex justify-end border-b border-white/6 px-4 py-3"><button type="button" disabled={Boolean(savingModel)} onClick={() => void saveModelPolicy({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]}, "customer_hosted:disable")} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Disable workspace AI</button></div>}
+      {installationMode === "offline" && policy?.enabled && <div className="flex justify-end border-b border-white/6 px-4 py-3"><button data-help-id="settings.workspace.model-disable-workspace-ai" type="button" disabled={Boolean(savingModel)} onClick={() => void saveModelPolicy({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]}, "customer_hosted:disable")} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Disable workspace AI</button></div>}
       {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/6 p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button data-help-id="settings.workspace.model-remove-unavailable" type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button data-help-id="settings.workspace.model-retry" type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
@@ -1900,6 +2235,8 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
       : github.status === "validation_overdue"
       ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
+      : github.status === "unavailable"
+      ? "The saved GitHub App status could not be verified. Refresh to check the workspace connection."
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
   function connectionActionOwnership() {
@@ -1956,7 +2293,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
-    if (!integrationStatus) return <button data-help-id="settings.workspace.connection-status-unavailable" type="button" disabled className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">{refreshing ? "Checking…" : "Status unavailable"}</button>;
+    if (!integrationStatus || status === "unavailable") return <button data-help-id="settings.workspace.connection-status-unavailable" type="button" disabled className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">{refreshing ? "Checking…" : "Status unavailable"}</button>;
     if (integrationStatus.configuration?.[provider] === false) return <div className="shrink-0 text-right"><button data-help-id="settings.workspace.connection-configuration-unavailable" type="button" disabled aria-label={`Connect ${provider}`} title="The service connection is not configured." className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">Connect</button><p className="mt-1 text-[10px] text-zinc-500">Service connection unavailable</p></div>;
     if(validationRecovery.split(',').includes(provider))return <div className="flex flex-wrap gap-2"><button data-help-id="settings.workspace.connection-status-reload" type="button" disabled={refreshing} className="btn-secondary" aria-label={`Reload ${provider==='teams'?'Teams':'Slack'} status`} onClick={()=>void loadCloudConnections()}>Reload status</button><WebButton href="/account/integrations" label="Review consent" /></div>;
     if (canValidate) return <button data-help-id="settings.workspace.connection-validate" type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
@@ -2011,7 +2348,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
   </div>;
 }
 
-type PreferenceSectionProps = { prefs: DesktopPreferences | null; onSave: (prefs: DesktopPreferences) => Promise<void> };
+type PreferenceSectionProps = { prefs: DesktopPreferences | null; preferencesLocked: boolean; onSave: (prefs: DesktopPreferences) => Promise<void> };
 type Option = { value: string; label: string };
 
 function SectionHeading({ title, detail }: { title: string; detail: string }) { return <div className="settings-section-heading mb-6"><h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>; }

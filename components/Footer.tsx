@@ -5,75 +5,97 @@ const columns = [
   {
     title: "Product",
     links: [
-      ["Product", "/product"],
-      ["Demo", "/demo"],
-      ["Docs", "/docs"],
-      ["Download", "/download"],
+      ["Explore V19", "/product"],
       ["Integrations", "/integrations"],
-      ["Get started", "/plans"],
-      ["Security", "/security"],
+      ["Apps & Skills guide", "/docs/plugins"],
+      ["Access and pricing", "/plans"],
+      ["Download", "/download"],
+    ],
+  },
+  {
+    title: "Learn",
+    links: [
+      ["Product demos", "/demo"],
+      ["Documentation", "/docs"],
+      ["Getting started", "/docs/getting-started"],
+      ["Resources", "/resources"],
+      ["Desktop updates", "/docs/desktop-install#updates"],
+    ],
+  },
+  {
+    title: "Developers",
+    links: [
+      ["API keys", "/docs/api-keys"],
+      ["MCP tools", "/docs/mcp-tools"],
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      ["Troubleshooting", "/docs/troubleshooting"],
+      ["Account support (sign-in required)", "/account/help"],
+      ["Contact", "/contact"],
     ],
   },
   {
     title: "Company",
-    links: [
-      ["Founding Supporters", "/support"],
-      ["Support (account required)", "/account/help"],
-      ["Contact", "/contact"],
-      ["Service status", "/status"],
-    ],
+    links: [["Founding Supporters", "/support"]],
   },
   {
-    title: "Legal",
+    title: "Trust",
     links: [
-      ["Privacy", "/privacy"],
-      ["Terms", "/terms"],
+      ["Security", "/security"],
+      ["Trust center", "/trust"],
     ],
   },
 ] as const;
 
-export function Footer({showCta=true}:{showCta?:boolean}={}) {
+const footerLink = "inline-flex min-h-11 items-center rounded-sm py-1 text-sm leading-snug text-zinc-400 hover:text-white hover:underline focus-visible:text-white sm:min-h-7 [@media(pointer:coarse)]:min-h-11";
+
+export function Footer({showCta = true}: {showCta?: boolean} = {}) {
   return (
-    <footer className="site-footer border-t border-white/[0.07] bg-[#0a0908] px-5 pb-8 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-[1200px]">
-        {showCta && <section className="flex flex-col gap-8 border-b border-white/[0.07] py-12 md:flex-row md:items-end md:justify-between lg:py-16" aria-labelledby="footer-cta-heading">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">V19</p>
-            <h2 id="footer-cta-heading" className="mt-4 max-w-3xl text-3xl font-medium leading-tight tracking-[-0.045em] text-zinc-100 sm:text-5xl">Engineering intent, under control.</h2>
+    <>
+      {showCta && (
+        <section className="mx-auto flex max-w-[1280px] flex-col gap-4 px-5 pb-10 pt-8 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10" aria-labelledby="footer-cta-heading">
+          <h2 id="footer-cta-heading" className="text-2xl font-medium tracking-tight text-zinc-100">Engineering intent, under control.</h2>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link href="/product" prefetch={false} className="inline-flex min-h-11 items-center rounded-full bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 hover:bg-white">Explore V19</Link>
+            <Link href="/support" prefetch={false} className="inline-flex min-h-11 items-center rounded-sm text-sm font-medium text-zinc-300 hover:text-white hover:underline">Founding Supporters</Link>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/product" className="rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore V19</Link>
-            <Link href="/support" className="rounded-lg border border-white/15 px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/30 hover:bg-white/5">Founding Supporters</Link>
-          </div>
-        </section>}
+        </section>
+      )}
 
-        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(3,1fr)] lg:gap-10">
-          <div>
-            <Link href="/" className="inline-flex items-center gap-2.5 text-sm font-semibold text-zinc-100">
-              <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" />
-              Vision XIX Labs
-            </Link>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-400">V19 brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">We also build iOS applications.</p>
-          </div>
+      <footer className="site-footer px-5 pb-20 pt-10 sm:px-8 sm:pt-12 lg:px-10 lg:pt-14">
+        <div className="mx-auto max-w-[1200px]">
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 items-start gap-x-6 gap-y-7 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-7">
+            {columns.map((column) => (
+              <div key={column.title} className="min-w-0">
+                <h2 className="mb-1 text-sm font-medium text-zinc-200">{column.title}</h2>
+                <ul>
+                  {column.links.map(([label, href]) => (
+                    <li key={href}><Link href={href} prefetch={false} className={footerLink}>{label}</Link></li>
+                  ))}
+                </ul>
+                {column.title === "Company" && <p className="mt-2 max-w-[19ch] text-xs leading-relaxed text-zinc-400">We also build iOS applications.</p>}
+              </div>
+            ))}
+          </nav>
 
-          {columns.map((column) => (
-            <div key={column.title}>
-              <h3 className="text-xs text-zinc-400">{column.title}</h3>
-              <ul className="mt-5 space-y-3">
-                {column.links.map(([label, href]) => (
-                  <li key={href}><Link href={href} className="text-sm text-zinc-400 transition-colors hover:text-white">{label}</Link></li>
-                ))}
-              </ul>
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-white/10 pt-4 sm:mt-10">
+            <div className="flex flex-wrap items-center gap-x-4">
+              <Link href="/" prefetch={false} aria-label="Vision XIX Labs home" className="inline-flex min-h-11 shrink-0 items-center rounded-sm">
+                <Image src="/brand/vxix-wordmark.svg" alt="" width={103} height={26} />
+              </Link>
+              <p className="text-xs text-zinc-400">Vision XIX Labs © {new Date().getFullYear()}</p>
             </div>
-          ))}
+            <nav aria-label="Footer utilities" className="flex w-full flex-wrap items-center gap-x-4 sm:w-auto sm:gap-x-6">
+              <Link href="/status" prefetch={false} className={footerLink}>Service status</Link>
+              <Link href="/privacy" prefetch={false} className={footerLink}>Privacy</Link>
+              <Link href="/terms" prefetch={false} className={footerLink}>Terms</Link>
+            </nav>
+          </div>
         </div>
-
-        <div className="flex flex-col items-center justify-center gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-400 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} Vision XIX Labs. All rights reserved.</p>
-          <p>Production access is service-verified. Demonstrations are clearly labeled.</p>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }

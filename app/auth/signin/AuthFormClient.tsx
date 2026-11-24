@@ -5,6 +5,7 @@ import { signIn, getProviders } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
 import { EyeIcon, EyeSlashIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 type SignInProvider = "google" | "github" | "cognito" | "gitlab";
@@ -25,11 +26,10 @@ function SignInForm() {
   const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/control");
   const switchingAccount = searchParams.get("switchAccount") === "1";
 
-  // Surface a clear hint when the OAuth callback errored.
-  const oauthError = searchParams.get("error");
+  const signInError = searchParams.get("error");
+  const verificationLinkInvalid = signInError === "VerificationLinkInvalid";
 
-  // Fetch the actually-registered NextAuth providers so we can disable
-  // buttons + show a real reason when env vars aren't set on the host.
+  // Offer OAuth only after the server reports the registered providers.
   useEffect(() => {
     let cancelled = false;
     getProviders().then((p) => {
@@ -49,8 +49,11 @@ function SignInForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (authInFlight.current) return;
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity();
+      return;
+    }
     if (!emailExpanded) {
-      if (!e.currentTarget.checkValidity()) { e.currentTarget.reportValidity(); return; }
       setEmailExpanded(true);
       return;
     }
@@ -65,6 +68,10 @@ function SignInForm() {
       });
       if (res?.error) {
         setError("Invalid email or password");
+        return;
+      }
+      if (!res?.ok) {
+        setError("Something went wrong");
         return;
       }
       router.push(callbackUrl);
@@ -83,7 +90,7 @@ function SignInForm() {
   const handleOAuth = async (provider: SignInProvider) => {
     if (authInFlight.current) return;
     // Hard-stop when the provider isn't actually registered on the server.
-    if (enabledProviders && !enabledProviders[provider]) {
+    if (!enabledProviders?.[provider]) {
       setError(
         `${providerLabel(provider)} sign-in is not available for this workspace yet. ` +
         "Use email sign-in or contact the V19 team for access."
@@ -125,11 +132,18 @@ function SignInForm() {
 
         {searchParams.get("verified") === "1" && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Email verification completed. Sign in to continue. This confirmation does not sign you in or approve desktop pairing.</p>}
 
-        {oauthError && <div role="alert" className="mb-6 flex items-start gap-2 rounded-lg border border-white/15 bg-white/5 p-3 text-sm leading-6 text-zinc-300">
+        {signInError && <div role="alert" className="mb-6 flex items-start gap-2 rounded-lg border border-white/15 bg-white/5 p-3 text-sm leading-6 text-zinc-300">
           <ExclamationTriangleIcon aria-hidden="true" className="mt-1 h-4 w-4 shrink-0" />
-          <p>We couldn&apos;t complete sign-in. Try again or choose another sign-in method.</p>
+          <p>{verificationLinkInvalid
+            ? "This verification link is invalid, expired, or has already been used."
+            : "We couldn't complete sign-in. Try again or choose another sign-in method."}</p>
         </div>}
-        {(enabledProviders === null || enabledProviders.google) && (
+        {verificationLinkInvalid && (
+          <div className="mb-6">
+            <VerificationRecovery callbackUrl={callbackUrl} initiallyOpen />
+          </div>
+        )}
+        {enabledProviders?.google && (
           <button
             type="button"
             onClick={() => handleOAuth("google")}
@@ -141,7 +155,7 @@ function SignInForm() {
           </button>
         )}
 
-        {(enabledProviders === null || enabledProviders.google) && <div className="my-3 flex items-center gap-2.5" aria-hidden="true"><span className="h-px flex-1 bg-white/10" /><span className="text-[10px] leading-[14px] text-zinc-500">OR</span><span className="h-px flex-1 bg-white/10" /></div>}
+        {enabledProviders?.google && <div className="my-3 flex items-center gap-2.5" aria-hidden="true"><span className="h-px flex-1 bg-white/10" /><span className="text-[10px] leading-[14px] text-zinc-500">OR</span><span className="h-px flex-1 bg-white/10" /></div>}
         <form onSubmit={handleSubmit} className="grid gap-2.5" noValidate>
           <div>
             <label htmlFor="email" className="sr-only">

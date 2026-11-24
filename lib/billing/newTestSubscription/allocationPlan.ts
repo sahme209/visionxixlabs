@@ -13,7 +13,7 @@ const guards = new WeakMap<PricingPlan, AllocationGuardV2>();
 export const newTestAllocationGuard = (plan: PricingPlan | undefined) => plan ? guards.get(plan) : undefined;
 function deny(): never { throw new Error("allowance_provenance_unavailable"); }
 export async function allocationClock(tx: Prisma.TransactionClient): Promise<Date> {
-  const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now'); const now = rows[0]?.now;
+  const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>("SELECT clock_timestamp() AT TIME ZONE 'UTC' AS now"); const now = rows[0]?.now;
   if (!(now instanceof Date) || !Number.isFinite(now.getTime())) deny(); return now;
 }
 /** Requires independently verified original identity and enrollment. No public
@@ -55,7 +55,7 @@ export async function readAllocationAllowanceV2(tx: Prisma.TransactionClient, pl
   const poolCents = result.remainingCents + result.usedCents + result.heldCents;
   return { available: true as const, baseCents: result.baseCents, addOnCents: Math.max(0, poolCents - result.baseCents), poolCents, usedCents: result.usedCents, heldCents: result.heldCents, includedRemainingCents: result.remainingCents, overagePolicy: "hard_stop" };
 }
-export function purchaseFingerprintV2(p: PurchaseV2) { return { id: p.id, organizationId: p.organizationId, status: p.status, deliveredAICreditsCents: p.deliveredAICreditsCents, reversedAICreditsCents: p.reversedAICreditsCents, validFor: p.validFor, periodMonth: p.periodMonth, refundedAt: p.refundedAt?.toISOString() ?? null }; }
+export function purchaseFingerprintV2(p: PurchaseV2) { return { id: p.id, organizationId: p.organizationId, status: p.status, deliveredAICreditsCents: p.deliveredAICreditsCents, reversedAICreditsCents: p.reversedAICreditsCents, validFor: p.validFor, periodMonth: p.periodMonth, refundedAt: p.refundedAt?.toISOString() ?? null, appliedAt: p.appliedAt?.toISOString() ?? null }; }
 /** Real AddOnPurchase UPDATE (including the existing refund writer) conflicts
  * with these locks; no refund-side enrollment-lock assumption is required. */
 export async function lockSelectedPurchasesV2(tx: Prisma.TransactionClient, selected: PurchaseV2[]): Promise<void> {
@@ -72,8 +72,8 @@ export function allocationAuthoritySQLV2(g: AllocationGuardV2, selected: Purchas
     SELECT e.org FROM "OrganizationTestAllowanceEnrollment" e JOIN "IsolatedTestRuntime" r ON r.id=e.runtime AND r.account=e.account
     WHERE e.org=$1 AND e.runtime=$2 AND e.account=$3 AND e.body->>'digest'=$4 AND e.revision=$5
     FOR UPDATE OF e), selected AS MATERIALIZED (
-    SELECT p.* FROM "AddOnPurchase" p JOIN jsonb_to_recordset($8::jsonb) AS w(id text,"organizationId" text,status text,"deliveredAICreditsCents" integer,"reversedAICreditsCents" integer,"validFor" text,"periodMonth" text,"refundedAt" text) ON p.id=w.id
-    WHERE p."organizationId"=$1 AND p."organizationId"=w."organizationId" AND p.status=w.status AND p."deliveredAICreditsCents"=w."deliveredAICreditsCents" AND p."reversedAICreditsCents"=w."reversedAICreditsCents" AND p."validFor"=w."validFor" AND p."periodMonth"=w."periodMonth" AND p."refundedAt" IS NOT DISTINCT FROM (w."refundedAt"::timestamptz AT TIME ZONE 'UTC')
+    SELECT p.* FROM "AddOnPurchase" p JOIN jsonb_to_recordset($8::jsonb) AS w(id text,"organizationId" text,status text,"deliveredAICreditsCents" integer,"reversedAICreditsCents" integer,"validFor" text,"periodMonth" text,"refundedAt" text,"appliedAt" text) ON p.id=w.id
+    WHERE p."organizationId"=$1 AND p."organizationId"=w."organizationId" AND p.status=w.status AND p."deliveredAICreditsCents"=w."deliveredAICreditsCents" AND p."reversedAICreditsCents"=w."reversedAICreditsCents" AND p."validFor"=w."validFor" AND p."periodMonth"=w."periodMonth" AND p."refundedAt" IS NOT DISTINCT FROM (w."refundedAt"::timestamptz AT TIME ZONE 'UTC') AND p."appliedAt"=(w."appliedAt"::timestamptz AT TIME ZONE 'UTC')
     ORDER BY p.id FOR UPDATE OF p), bound AS MATERIALIZED (
     SELECT p."organizationId" FROM "TenantBillingPlan" p JOIN "OrganizationTestCoverageObservation" o ON o.org=p."organizationId" WHERE p."organizationId"=$1 AND p."lastStripeEventId"=$9 AND p.status=$13 AND p."seatQuantity"=$14 AND p."currentPeriodEndsAt" AT TIME ZONE 'UTC'=$15::timestamptz AND o.revision=$10 AND o."originalDigest"=$11 AND o."evidenceDigest" IS NOT DISTINCT FROM $12::text AND o.body->>'eventToken'=$9 FOR SHARE OF p,o)
   `;

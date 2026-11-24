@@ -39,6 +39,7 @@ export default async function MonitoringWebhookPage({
   const config = await readMonitoringWebhookConfig(String(ctx.organizationId));
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://visionxixlabs.com";
   const webhookUrl = `${baseUrl.replace(/\/$/, "")}/api/webhooks/monitoring`;
+  const grafana = config?.provider === "grafana";
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
@@ -190,10 +191,11 @@ export default async function MonitoringWebhookPage({
           </p>
           <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-2 font-mono">{PROVIDER_LABEL[config.provider].sampleNote}</p>
           <pre className="text-[11px] leading-relaxed text-zinc-200 font-mono bg-black/40 p-3 rounded-sm border border-white/6 overflow-x-auto whitespace-pre">{`POST ${webhookUrl}
-${PROVIDER_LABEL[config.provider].signatureHeader}: sha256=<HMAC-SHA256 of raw body using your secret>
+${PROVIDER_LABEL[config.provider].signatureHeader}: ${grafana ? "<hex HMAC-SHA256>" : "sha256=<HMAC-SHA256 of raw body using your secret>"}${grafana ? "\nX-Grafana-Alerting-Timestamp: <Unix seconds, optional>" : ""}
 Content-Type: application/json
 
-<your alerting tool's standard webhook payload — no changes needed>
+<your alerting tool's standard webhook payload>
+${grafana ? "\nGrafana signs the body, or timestamp + \":\" + body when the timestamp header is configured.\n" : ""}
 
 200 → { ok: true, alertSlug, analysisSlug }
 401 → { error: "signature_mismatch" } — secret doesn't match

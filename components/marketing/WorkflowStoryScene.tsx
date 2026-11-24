@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { CodeBracketIcon, CommandLineIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import type { StoryScene } from "./workflowStories";
 
@@ -22,7 +21,7 @@ function Typed({ text, fraction }: { text: string; fraction: number }) {
 export function WorkflowStoryScene({ scene, context, fraction, reducedMotion, decision, onDecision, onContinue }: Props) {
   const progress = reducedMotion ? 1 : fraction;
   return <div className="relative min-h-[320px] min-w-0 sm:min-h-[340px]">
-    <motion.div key={scene} initial={false} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.2 }}>
+    <div key={scene}>
       {scene === "context" && <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs text-zinc-400"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/8 text-zinc-200">A</span> V19 <span className="ml-auto rounded-sm border border-white/10 px-2 py-1">Engineer</span></div>
         <div className={`${panel} ml-5 border-white/10 bg-white/2.5`}><p className="text-sm leading-6 text-zinc-100"><Typed text="Make the request timeout configurable. Keep the retry ceiling unchanged, then prepare a review." fraction={progress} /></p></div>
@@ -55,7 +54,7 @@ export function WorkflowStoryScene({ scene, context, fraction, reducedMotion, de
         {(scene === "receipt" ? ["A sample decision is not proof of execution", "GitHub write not performed", "AWS ECS health not observed", "Recovery evidence not verified"] : ["Configuration preview · illustrative", "Trusted customer plan producer unavailable", "Current target authority unavailable", "Terraform apply disabled"]).map((text, i) => <div key={text} className={`${panel} flex items-start gap-3`}><span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" style={{ opacity: progress >= i * 0.15 ? 1 : 0.4 }} /><span className="text-xs leading-5 text-zinc-300">{text}</span></div>)}
         <p className="text-xs leading-6 text-zinc-400">Cloud end-to-end acceptance is unverified.</p>
       </div>}
-    </motion.div>
+    </div>
 
   </div>;
 }

@@ -30,14 +30,19 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     vi.stubEnv("AXIOM_STRIPE_ACCOUNT_ID","acct_fixture");
     vi.stubEnv("AXIOM_STRIPE_MODE","test");
     const databaseModule = await import(/* @vite-ignore */ pathToFileURL(modulePath!).href);
-    db = new databaseModule.PGlite() as Pg;
+    db = new databaseModule.PGlite({
+      // V19 stores UTC instants in PostgreSQL's timestamp-without-time-zone columns.
+      // Interpret those fixture rows like the application adapter, regardless of the host time zone.
+      parsers: {1114: (timestamp: string) => new Date(timestamp.replace(" ", "T") + "Z")},
+    }) as Pg;
     await db.exec(baseline); await db.exec(sql);
   });
   afterEach(async () => { await db?.close(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
   function fixture() {
     const store = createPublicSqlStore({ $transaction: fn => db.transaction(tx => fn(adapter(tx))) });
     let calls = 0, sequence = 0;
-    const payment = publicPaymentFixture();
+    // The storage entry points use the database clock, so keep the synthetic invoice current.
+    const payment = publicPaymentFixture(new Date());
     const provider: PublicCheckoutProvider = {
       identity: () => ({ accountId: "acct_fixture", livemode: false }),
       price: async () => ({ id: "price_pro", product: { id: "prod_pro", active: true, livemode: false }, active: true, livemode: false, type: "recurring", currency: "usd", billing_scheme: "per_unit", unit_amount: 2900, recurring: { interval: "month", interval_count: 1, usage_type: "licensed" } }),
@@ -86,6 +91,15 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     const f = fixture();
     await expect(f.service.checkout({ organizationId: "org", userId: "owner" }, input)).rejects.toThrow("legacy_ai_reconciliation_required");
     expect(f.calls()).toBe(0);
+  });
+  it("does not enroll while an expired hold is still bound to a coding pipeline call", async () => {
+    await db.exec(`INSERT INTO "AIUsageReservation" (id,"organizationId","idempotencyKey","reservedCents",status,"expiresAt") VALUES ('coding-hold','org','coding-key',100,'reserved',now()-interval '1 day');
+      INSERT INTO "PipelineAICallReservation" (id,"organizationId","workspaceReservationId") VALUES ('coding-call','org','coding-hold')`);
+    const f = fixture();
+    await expect(f.service.checkout({ organizationId: "org", userId: "owner" }, input)).rejects.toThrow("legacy_ai_reconciliation_required");
+    expect(f.calls()).toBe(0);
+    expect((await db.query('SELECT status FROM "AIUsageReservation" WHERE id=$1', ['coding-hold'])).rows).toEqual([{status: "reserved"}]);
+    expect((await db.query('SELECT * FROM "PublicBillingEnrollment"')).rows).toHaveLength(0);
   });
   it("fulfills a collected subscription once and grants exactly the paid per-seat pool", async () => {
     await db.exec(`INSERT INTO "UsageEvent" (id,"organizationId","eventKind","billedCents") VALUES ('oldfree','org','ai_invocation',190)`);

@@ -122,7 +122,7 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
       },
       {
         q: "Can I review the product before paying?",
-        a: "Yes. The interactive demonstration is labeled as scripted sample data, documentation is public, and every organization gets 10 counted deployments a month at no charge.",
+        a: "Yes. The interactive demonstration is labeled as scripted sample data, documentation is public, and V19 imposes no monthly deployment cap for customer-managed runners. Your CI and cloud providers may charge separately.",
       },
       {
         q: "Which identity options are available?",

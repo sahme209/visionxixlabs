@@ -5,6 +5,12 @@ import {IntegrationCatalogLogo} from "./IntegrationCatalogLogo";
 import { CATALOG_JOBS, type CatalogOperation, type PublicCatalogEntry } from "@/lib/integrations/publicIntegrationCatalog";
 const TITLES:Record<string,string>={available:"Available",preview:"Preview","implementation review":"Implementation review",planned:"Planned","configuration required":"Configuration required"};
 const OPERATION_LABELS:Record<CatalogOperation,string>={read:"Read context",change:"Change workflows",events:"Receive events"};
+function guideLabel({href, label}: PublicCatalogEntry["availability"]) {
+ if (href === "/docs") return "Browse documentation";
+ if (label === "preview") return "Read preview scope";
+ if (label === "implementation review") return "Read implementation notes";
+ return "Read setup guide";
+}
 const FIELD="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-hidden focus-visible:ring-2 focus-visible:ring-zinc-300";
 export function IntegrationCatalogBrowser({entries}:{entries:PublicCatalogEntry[]}){
  const [search,setSearch]=useState("");const[job,setJob]=useState("all");const[state,setState]=useState("all");const[operation,setOperation]=useState("all");
@@ -25,8 +31,8 @@ export function IntegrationCatalogBrowser({entries}:{entries:PublicCatalogEntry[
     <IntegrationCatalogLogo id={e.id}/>
     <div className="integration-catalog-heading"><h3>{e.name}</h3><span>{TITLES[e.availability.label]??e.availability.label}</span></div>
     <div role="group" aria-label="Operation models" className="integration-catalog-operations"><ul>{e.operations.map(model=><li key={model}>{OPERATION_LABELS[model]}</li>)}</ul></div>
-    <details className="integration-catalog-details"><summary>Connection details</summary><p>{e.availability.detail}</p></details>
-    <div className="mt-auto pt-2">{e.availability.enabled?<Link prefetch={false} href={e.availability.href} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300">{e.availability.href==="/docs"?"Browse documentation":e.availability.label==="preview"?"Read preview scope":"Read setup guide"}<span aria-hidden="true">↗</span></Link>:<p className="py-3 text-xs text-zinc-500">No setup available yet</p>}</div>
+    <details className="integration-catalog-details"><summary aria-label={`Connection details for ${e.name}`}>Connection details</summary><p>{e.availability.detail}</p></details>
+    <div className="mt-auto pt-2">{e.availability.enabled?<Link prefetch={false} href={e.availability.href} aria-label={`${guideLabel(e.availability)} for ${e.name}`} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300">{guideLabel(e.availability)}<span aria-hidden="true">↗</span></Link>:<p className="py-3 text-xs text-zinc-400">No setup available yet</p>}</div>
    </article>)}</div>}
 
  </section>;

@@ -130,8 +130,8 @@ describe("Airflow execution claim", () => {
   it("blocks deployment before dispatch when the shared allowance is exhausted", async () => {
     automation.actionType = "deploy";
     row.decidedByUserId = "previous-approver";
-    mocks.reserve.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted" });
-    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "deployment_quota_exhausted" });
+    mocks.reserve.mockResolvedValue({ ok: false, error: "deployment_quota_unavailable" });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "deployment_quota_unavailable" });
     expect(mocks.dispatch).not.toHaveBeenCalled();
   });
 

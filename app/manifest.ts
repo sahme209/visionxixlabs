@@ -1,4 +1,5 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
+import { AXIOM_APP_ICON_192_URL, AXIOM_APP_ICON_URL, AXIOM_FAVICON_URL } from "@/lib/brandAssets";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -11,19 +12,19 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#f54e00",
     icons: [
       {
-        src: "/favicon-32x32.png",
+        src: AXIOM_FAVICON_URL,
         sizes: "32x32",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/vision-xix-logo.png",
+        src: AXIOM_APP_ICON_192_URL,
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/vision-xix-logo.png",
+        src: AXIOM_APP_ICON_URL,
         sizes: "512x512",
         type: "image/png",
         purpose: "any",

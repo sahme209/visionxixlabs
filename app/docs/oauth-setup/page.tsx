@@ -14,7 +14,7 @@ export default function OAuthSetupPage() {
       <DocHeader
         kicker="Authentication"
         title="Enable Google + GitHub sign-in"
-        summary="V19 uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically."
+        summary="V19 uses NextAuth. Google and GitHub sign-in options appear when the browser confirms that the host registered those providers."
       />
 
       <DocSection id="overview" title="Overview" kicker="Three things to configure for each provider">
@@ -24,9 +24,9 @@ export default function OAuthSetupPage() {
           <li>Set the resulting Client ID + Client Secret on your host as environment variables.</li>
         </ol>
         <Callout variant="info">
-          The sign-in page polls <span className="font-mono">/api/auth/providers</span> on load and disables the
-          button + shows a <span className="font-mono">Not set</span> badge for any provider whose env vars
-          are missing — no silent failures.
+          The sign-in page checks <span className="font-mono">/api/auth/providers</span> on load. A provider
+          appears only when that response includes it. The appearance of a sign-in option confirms
+          registration. Verify that the callback succeeds with a test account.
         </Callout>
       </DocSection>
 
@@ -55,8 +55,8 @@ NEXTAUTH_SECRET=<openssl rand -base64 32>
         <Step number={2} title="Add the authorized redirect URI">
           <p>Under <strong>Authorized redirect URIs</strong>, add:</p>
           <CodeBlock language="text">{`https://your-domain.example.com/api/auth/callback/google`}</CodeBlock>
-          <p className="text-sm text-zinc-500">
-            For local development add <code className="text-orange-300">http://localhost:3000/api/auth/callback/google</code> as well.
+          <p className="text-sm text-zinc-400">
+            For local development add <code className="wrap-anywhere text-orange-300">http://localhost:3000/api/auth/callback/google</code> as well.
           </p>
         </Step>
         <Step number={3} title="Copy the credentials">
@@ -110,27 +110,28 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
         <ol className="list-decimal list-inside space-y-1 text-zinc-300 text-sm">
           <li>Redeploy after setting the env vars (env changes don&apos;t auto-rebuild on most hosts).</li>
           <li>Open the sign-in page in an incognito window.</li>
-          <li>Both buttons should activate (no <span className="font-mono">Not set</span> badge).</li>
-          <li>Click → OAuth consent → the secure callback returns you to the installed V19 application.</li>
+          <li>Confirm the configured options appear. GitHub appears below email sign-in.</li>
+          <li>Complete the provider flow and confirm that the browser returns to V19 Control or the page that requested sign-in.</li>
+          <li>To connect the installed app, <Link href="/docs/desktop-install" className="text-orange-300 underline underline-offset-2">complete desktop pairing</Link> and approve the requested connection.</li>
         </ol>
         <Callout variant="warning">
-          If you see <code>error=Configuration</code> after the OAuth round-trip, the env var is set
-          but doesn&apos;t match what the provider was registered with. Double-check the callback URL.
+          If you see <code>error=Configuration</code> after the OAuth round-trip, check the host configuration,
+          provider credentials, and registered callback URL.
         </Callout>
       </DocSection>
 
       <DocSection id="troubleshooting" title="Troubleshooting">
         <div className="space-y-3 text-sm text-zinc-300">
           <div>
-            <p className="font-semibold text-white">Button shows <span className="font-mono">Not set</span></p>
-            <p className="text-zinc-400">Env vars not present on the host. Re-check Vercel → Settings → Environment Variables. Remember to redeploy.</p>
+            <p className="font-semibold text-white">A provider option is missing</p>
+            <p className="text-zinc-400">Check whether the host has both credentials for that provider, then verify that the provider appears in the sign-in page&apos;s provider response.</p>
           </div>
           <div>
             <p className="font-semibold text-white">Redirect URI mismatch</p>
             <p className="text-zinc-400">
               The exact callback URL registered with the provider must match the one NextAuth requests.
-              For Vercel previews, you&apos;ll either need a wildcard preview domain on Google (not supported
-              — use a single preview URL) or limit OAuth to production.
+              For a preview deployment, configure that exact callback URL with the provider or
+              restrict OAuth sign-in to your configured production origin.
             </p>
           </div>
           <div>
@@ -148,7 +149,7 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
         next={{ href: "/docs/permissions-model", label: "Permissions model" }}
       />
       <DocFeedback />
-      <p className="mt-6 text-[11px] text-zinc-600">
+      <p className="mt-6 text-[11px] text-zinc-400">
         Need help? <Link href="/contact?topic=security" className="text-orange-300 hover:text-orange-200">Open a security review request</Link>.
       </p>
     </article>

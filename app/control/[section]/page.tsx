@@ -5,7 +5,7 @@ const sections = {
   governance: ["Governance", "Roles, permissions, approval rules, repository policy, and production restrictions will move here after their real APIs pass authorization parity tests."],
   "ai-agents": ["AI & Agents", "Approved models, agent identities, autonomy, tool permissions, and organization budgets will be administered here."],
   integrations: ["Integrations", "Connection consent, scopes, validation health, and revocation will be managed here. Provider credentials remain server-side."],
-  "usage-billing": ["Usage & Billing", "Plans, seats, deployment allowances, prepaid AI credits, and transactions remain authoritative in the billing backend."],
+  "usage-billing": ["Usage & Billing", "Plans, seats, deployment activity, prepaid AI credits, and transactions remain authoritative in the billing backend."],
   "audit-security": ["Audit & Security", "Approval history, agent activity, deployment evidence, sessions, and security events will be searchable here."],
 } as const;
 

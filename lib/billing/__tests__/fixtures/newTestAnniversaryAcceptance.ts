@@ -2,6 +2,7 @@
  * installs nothing. The default suite skips all database/server work. */
 import { beforeAll, expect, it } from "vitest";
 import type { Prisma } from "@/lib/prismaClient";
+import type { CeilingV2 } from "../../newTestSubscription/allocationV2";
 import { claimNewTestBillableDispatch, settleAttributedUsageV2, type AttributedGatewayCostV2 } from "../../newTestSubscription/usageAllocationIO";
 import { reserveAllocationV2, newTestAllocationPricingPlan } from "../../newTestSubscription/allocationPlan";
 import { readFixtureEnrollment } from "../../newTestSubscription/fixtureAllocation";
@@ -21,7 +22,33 @@ export function registerAnniversaryAcceptance(harness: AnniversaryAcceptanceHarn
     ttl = { f, id: h.id, expiresAt: stored.expiresAt, admittedAt: stored.createdAt };
   }, 30000);
 
+  async function verifyAppliedTopUpReservation() {
+    const ctx = harness.context(), f = await anniversaryFixture(ctx);
+    const purchase = await f.purchase();
+    await ctx.db.addOnPurchase.update({
+      where: { id: purchase.id },
+      data: { status: "partially_refunded", refundedAmountCents: 125, reversedAICreditsCents: 125, appliedAt: null },
+    });
+    expect(await f.service.previewRemaining(f.actor)).toMatchObject({ remainingCents: 200 });
+    const rejectedKey = `unconfirmed_topup_${fixtureId()}`;
+    await expect(f.reserve(201, rejectedKey)).rejects.toThrow("ai_credit_reservation_unavailable");
+    expect(await ctx.db.aIUsageReservation.count({ where: { organizationId: f.actor.organizationId, idempotencyKey: rejectedKey } })).toBe(0);
+
+    await ctx.db.addOnPurchase.update({ where: { id: purchase.id }, data: { appliedAt: await databaseClock(ctx.db) } });
+    expect(await f.service.previewRemaining(f.actor)).toMatchObject({ remainingCents: 575 });
+    const held = await f.reserve(201);
+    expect(await f.claim(held.id)).toBe(true);
+    const [stored] = await ctx.db.$queryRawUnsafe<Array<{ body: { allocation: CeilingV2[] } }>>(
+      'SELECT body FROM "NewTestReservationAttribution" WHERE "reservationId"=$1', held.id,
+    );
+    expect(stored.body.allocation).toEqual([
+      expect.objectContaining({ source: "included", maxCents: 200 }),
+      { source: "purchase", purchaseId: purchase.id, maxCents: 1 },
+    ]);
+  }
+
   it.each(["monthly", "annual"] as const)("V2 real SQL parses read/reserve/claim with empty and purchase selections (%s)", async interval => {
+    if (interval === "monthly") await verifyAppliedTopUpReservation();
     const ctx = harness.context(), f = await anniversaryFixture(ctx, { interval });
     expect(await f.service.previewRemaining(f.actor)).toMatchObject({ remainingCents: 200 });
     const free = await f.reserve(100); expect(await f.claim(free.id)).toBe(true); await f.direct(free.id, 80);

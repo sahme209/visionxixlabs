@@ -171,10 +171,11 @@ export async function upsertPullRequestRecord(
   if (!isKnownCiStatus(input.ciStatus)) {
     throw new Error(`Unknown CI status: ${input.ciStatus}`);
   }
-  const lastSyncedAt = input.observedAt ?? new Date();
+  const {observedAt, ...record} = input;
+  const lastSyncedAt = observedAt ?? new Date();
   return repo.pullRequestRecord.upsert({
     where: { repositoryId_number: { repositoryId: input.repositoryId, number: input.number } },
-    create: { ...input, lastSyncedAt },
+    create: { ...record, lastSyncedAt },
     update: {
       title: input.title,
       state: input.state,
@@ -204,10 +205,11 @@ export async function upsertReleaseTagRecord(
   repo: GitDiscoveryRepo,
   input: UpsertReleaseTagInput,
 ): Promise<ReleaseTagRecordRow> {
-  const lastSyncedAt = input.observedAt ?? new Date();
+  const {observedAt, ...record} = input;
+  const lastSyncedAt = observedAt ?? new Date();
   return repo.releaseTagRecord.upsert({
     where: { repositoryId_tagName: { repositoryId: input.repositoryId, tagName: input.tagName } },
-    create: { ...input, lastSyncedAt },
+    create: { ...record, lastSyncedAt },
     update: {
       commitSha: input.commitSha,
       taggerUserId: input.taggerUserId,
@@ -229,10 +231,11 @@ export async function upsertWorkflowRunRecord(
   repo: GitDiscoveryRepo,
   input: UpsertWorkflowRunInput,
 ): Promise<WorkflowRunRecordRow> {
-  const lastSyncedAt = input.observedAt ?? new Date();
+  const {observedAt, ...record} = input;
+  const lastSyncedAt = observedAt ?? new Date();
   return repo.workflowRunRecord.upsert({
     where: { repositoryId_externalRunId: { repositoryId: input.repositoryId, externalRunId: input.externalRunId } },
-    create: { ...input, lastSyncedAt },
+    create: { ...record, lastSyncedAt },
     update: {
       workflowName: input.workflowName,
       status: input.status,

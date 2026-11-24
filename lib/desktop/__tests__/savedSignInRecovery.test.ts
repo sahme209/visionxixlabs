@@ -49,12 +49,17 @@ it("recovers a transient saved sign-in failure through the mounted App without w
   expect(fetchMock).toHaveBeenCalledTimes(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry saved sign-in" }));
   expect(screen.queryByText(/private transport payload/)).toBeNull();
-  await screen.findByRole("heading", {name: /Your next move.*in focus/});
-  fireEvent.click(screen.getByRole("button", {name: /Open Agent/}));
+  await screen.findByRole("heading", {name: /Good (morning|afternoon|evening)/});
+  fireEvent.click(screen.getByRole("button", {name: /Build with AI/}));
   await screen.findByText("Verified operational workspace");
   expect(desktopClient.config.sessionToken).toBe(key);
-  // Saved-candidate verification, then App re-verifies the newly active context.
-  expect(fetchMock).toHaveBeenCalledTimes(3);
+  // Studio Home can read deployment activity only after the recovered credential is re-verified.
+  expect(fetchMock.mock.calls.map(([url]) => new URL(String(url)).pathname)).toEqual([
+    "/api/desktop/access",
+    "/api/desktop/access",
+    "/api/desktop/access",
+    "/api/desktop/deployments",
+  ]);
   expect(m.write).not.toHaveBeenCalled(); expect(m.clear).not.toHaveBeenCalled();
 });
 it.each([401, 403, 200])("keeps rejected or invalid initial verification locked (HTTP %s)", async status => {

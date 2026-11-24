@@ -13,7 +13,7 @@ describe("desktop-only website boundary", () => {
   it("migrates the legacy dashboard landing into the authenticated cockpit", () => {
     expect(proxy(request("/dashboard")).headers.get("location")).toBe("https://example.test/control");
   });
-  it.each(["/dashboard/command-center", "/operator", "/operator/onboarding"])(
+  it.each(["/dashboard/command-center", "/dashboard/releases/release-1", "/operator", "/operator/onboarding"])(
     "redirects browser operations route %s to the download page",
     (path) => {
       const response = proxy(request(path));
@@ -24,6 +24,12 @@ describe("desktop-only website boundary", () => {
       );
     },
   );
+
+  it("allows the read-only release companion", () => {
+    const response = proxy(request("/control/releases/release-1"));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-middleware-request-x-axiom-cockpit-path")).toBe("/control/releases/release-1");
+  });
 
   it("allows direct browser sign-in without exposing the web workspace", () => {
     const response = proxy(request("/auth/signin"));

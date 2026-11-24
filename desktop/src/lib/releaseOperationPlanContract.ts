@@ -1,5 +1,18 @@
 import {parseReleaseOperationPlan,parseReleaseOperationPlanDto,parseReleaseOperationPlanList,type ReleaseOperationPlanDto,type ReleaseOperationPlan} from '../../../lib/tauri/releaseOperationPlanContract';
 export type {ReleaseOperationPlanDto,ReleaseOperationPlan};
+
+export const operationPlanEventLabels: Record<ReleaseOperationPlanDto["history"][number]["type"], string> = {
+  created: "Merge plan saved",
+  reviewed: "Independent plan review recorded",
+  rejected: "Merge plan rejected",
+  stale: "Merge plan marked stale",
+  cancelled: "Merge plan cancelled",
+};
+
+export function hasCompleteOperationPlanHistory(row: ReleaseOperationPlanDto): boolean {
+  return row.history.length === row.version + 1
+    && row.history.every((event, index) => event.sequence === index);
+}
 export interface OperationPlanList {enabled:boolean;canManage:boolean;plans:ReleaseOperationPlanDto[];truncated:boolean}
 export interface OperationPlanPreview {authority:'evidence_only';plan:ReleaseOperationPlan;digest:string;previewToken:string;expiresAt:string;executionAvailable:false}
 export interface OperationPlanMutation {enabled:boolean;plan:ReleaseOperationPlanDto}

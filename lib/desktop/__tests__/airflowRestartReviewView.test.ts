@@ -366,7 +366,9 @@ it("keeps incomplete or non-HTTPS connection forms from submitting credentials",
  fireEvent.change(screen.getByLabelText("Authentication"),{target:{value:"token"}});expect(connect.disabled).toBe(true);
  expect(mock.saveConnection).not.toHaveBeenCalled();
 });
-it("watches run state only after opt-in and stops polling on tab change or unmount",async()=>{
+type AirflowAutomationViewProps = NonNullable<Parameters<typeof AirflowAutomationView>[0]>;
+
+it("watches run state only after opt-in and pauses polling when hidden and stops on tab change or unmount",async()=>{
  mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
  const view=render(createElement(AirflowAutomationView));await screen.findByText("No runs returned.");
  const visibility=vi.spyOn(document,"visibilityState","get").mockReturnValue("visible");
@@ -376,9 +378,14 @@ it("watches run state only after opt-in and stops polling on tab change or unmou
   await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before);
   fireEvent.click(screen.getByRole("button",{name:"Auto-refresh runs"}));
   await act(async()=>{await vi.advanceTimersByTimeAsync(15000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
-  fireEvent.click(screen.getByRole("button",{name:"automations"}));
+  view.rerender(createElement<AirflowAutomationViewProps>(AirflowAutomationView, {active: false}));
   await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
-  view.unmount();await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
+  view.rerender(createElement<AirflowAutomationViewProps>(AirflowAutomationView, {active: true}));
+  expect(screen.getByRole("button", {name: "Auto-refresh runs"}).getAttribute("aria-pressed")).toBe("true");
+  await act(async()=>{await vi.advanceTimersByTimeAsync(15000);});expect(mock.runs).toHaveBeenCalledTimes(before+2);
+  fireEvent.click(screen.getByRole("button",{name:"automations"}));
+  await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+2);
+  view.unmount();await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+2);
   expect(mock.trigger).not.toHaveBeenCalled();expect(mock.create).not.toHaveBeenCalled();
  } finally {vi.useRealTimers();visibility.mockRestore();}
 });

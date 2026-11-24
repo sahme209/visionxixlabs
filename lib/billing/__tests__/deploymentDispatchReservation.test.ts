@@ -53,34 +53,21 @@ function repository(overrides?: { existing?: Record<string, unknown> | null; use
 }
 
 describe("deployment dispatch reservations", () => {
-  it("claims a Free-plan allowance slot inside a serializable transaction", async () => {
-    const { repo, deploymentExecution } = repository({ used: 9 });
-    const result = await reserveDeploymentDispatch(repo, input, new Date("2026-10-12T12:00:00Z"));
-    expect(result).toMatchObject({ ok: true, reused: false, planId: "free", used: 9, limit: 10 });
+  it("claims a dispatch inside a serializable transaction without reading usage totals", async () => {
+    const { repo, deploymentExecution } = repository({ used: 42 });
+    const result = await reserveDeploymentDispatch(repo, input);
+    expect(result).toMatchObject({ ok: true, reused: false, planId: "free", used: null, limit: null });
     expect(repo.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
     expect(deploymentExecution.create).toHaveBeenCalledWith({ data: expect.objectContaining({ idempotencyKey: "desktop-request-1", status: "reserved" }) });
   });
 
-  it("denies the final-plus-one request without creating a reservation", async () => {
+  it("permits a distinct dispatch without erasing an unrelated unresolved claim", async () => {
     const { repo, deploymentExecution } = repository({ used: 10 });
-    await expect(reserveDeploymentDispatch(repo, input)).resolves.toMatchObject({ ok: false, error: "deployment_quota_exhausted", used: 10, limit: 10 });
-    expect(deploymentExecution.create).not.toHaveBeenCalled();
-  });
-
-  it("does not erase an old unresolved dispatch to free quota for another request", async () => {
-    const { repo, deploymentExecution } = repository();
-    let occupiedSlots = 10;
-    // The tenth slot represents a dispatch whose provider outcome could not
-    // be persisted. Age alone cannot establish that no external effect ran.
-    deploymentExecution.deleteMany.mockImplementation(async () => {
-      occupiedSlots -= 1;
-      return { count: 1 };
-    });
-    deploymentExecution.count.mockImplementation(async () => occupiedSlots);
-    await expect(reserveDeploymentDispatch(repo, { ...input, idempotencyKey: "unrelated-request" }, new Date("2026-10-15T12:00:00Z")))
-      .resolves.toMatchObject({ ok: false, error: "deployment_quota_exhausted" });
+    await expect(reserveDeploymentDispatch(repo, { ...input, idempotencyKey: "unrelated-request" }))
+      .resolves.toMatchObject({ ok: true, reused: false, limit: null });
+    expect(deploymentExecution.count).not.toHaveBeenCalled();
     expect(deploymentExecution.deleteMany).not.toHaveBeenCalled();
-    expect(deploymentExecution.create).not.toHaveBeenCalled();
+    expect(deploymentExecution.create).toHaveBeenCalledOnce();
   });
 
   it("returns a completed idempotent operation instead of reserving or dispatching again", async () => {
@@ -92,7 +79,7 @@ describe("deployment dispatch reservations", () => {
 
   it("keeps an unresolved operation blocked for the same key even after its former expiry", async () => {
     const { repo, deploymentExecution } = repository({ existing: { ...input, id: "exec-unresolved", status: "reserved", createdAt: new Date("2026-10-01T00:00:00Z") } });
-    await expect(reserveDeploymentDispatch(repo, input, new Date("2026-10-15T12:00:00Z"))).resolves.toMatchObject({ ok: false, error: "deployment_already_in_progress" });
+    await expect(reserveDeploymentDispatch(repo, input)).resolves.toMatchObject({ ok: false, error: "deployment_already_in_progress" });
     expect(deploymentExecution.create).not.toHaveBeenCalled();
     expect(deploymentExecution.deleteMany).not.toHaveBeenCalled();
   });

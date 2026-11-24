@@ -12,6 +12,15 @@ describe("reserved namespace and atomic V2 writer boundary", () => {
     expect(await recordReservedAIUsageEventV2(forged, "h")).toMatchObject({ recorded: false, reason: "reserved_metadata" });
     expect(mocks.rate).not.toHaveBeenCalled(); expect(mocks.create).not.toHaveBeenCalled(); expect(mocks.transaction).not.toHaveBeenCalled();
   });
+  it("does not acknowledge another workspace’s Gateway receipt", async () => {
+    mocks.upsert.mockResolvedValue({
+      id: "foreign-event", organizationId: "other", provider: "vercel_gateway",
+      eventKind: "ai_invocation", externalUsageId: "gen_fixture", billingStatus: "pending",
+      triggeredBy: null, correlationId: null, aiInvocationId: null, metadata: null,
+    });
+    expect(await recordAIUsageEvent({...input, provider: "vercel_gateway", externalUsageId: "gen_fixture"}))
+      .toMatchObject({ recorded: false, usageEventId: null, reason: "persist_failed" });
+  });
   it("retains a failed transactional outcome rather than independently writing or releasing usage", async () => {
     mocks.rate.mockResolvedValue({ provider: "direct", modelId: "model", inputCentsPerMillion: 1000000, outputCentsPerMillion: 1000000, cachedReadCentsPerMillion: 0 });
     mocks.transaction.mockRejectedValue(new Error("synthetic_commit_unknown"));

@@ -20,10 +20,9 @@ export interface PublicPlan {
  * 2026-11-08): the public /plans page is "Get started" and renders
  * `AI_RATE_CARD` instead. These terms remain only because the isolated
  * new-test subscription / owned TEST checkout contracts are pinned to them.
- * `monthlyDeployments` here is a test-lane contract term; the deployment
- * quota no longer reads it (every organization gets 10, see
- * deploymentAllowance.ts). No checkout endpoint may infer activation from
- * this file.
+ * `monthlyDeployments` is a pinned test-lane contract term. Customer-managed
+ * dispatches read workspace entitlement independently of this count. No
+ * checkout endpoint may infer activation from this file.
  */
 export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
   {
@@ -38,7 +37,6 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
     aiCreditBasis: "organization",
     highlights: [
       "2 organization members",
-      "10 counted deployments each month",
       "$2 of governed AI usage each month",
       "Essential integrations and basic automation",
       "Approval gates and audit history included",
@@ -55,7 +53,6 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
     monthlyAiCreditCents: 1_000,
     aiCreditBasis: "paid_seat",
     highlights: [
-      "100 counted deployments each month",
       "$10 of governed AI usage per paid seat",
       "Advanced workflows and scheduling",
       "Higher automation allowances",
@@ -73,7 +70,6 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
     monthlyAiCreditCents: 3_000,
     aiCreditBasis: "paid_seat",
     highlights: [
-      "500 counted deployments each month",
       "$30 of governed AI usage per paid seat",
       "Advanced workspace policy and administration",
       "Save 20% with annual billing",

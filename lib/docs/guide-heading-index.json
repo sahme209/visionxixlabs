@@ -1,12 +1,12 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "02bee779033f84f521fa6ed6018e50b7e2c85b7f1ec8b35c5776413dbec869eb",
+  "navigationSha256": "76ab139625add3f38fd621ddc5c050604a59659e4b6599b14811ab2c5a4026d1",
   "guides": [
     {
       "href": "/docs",
       "source": "app/docs/page.tsx",
-      "sourceSha256": "06522bc6081ea71332dc26ce1f70492afd271c54c4a7e014b678b01c5af147bd",
+      "sourceSha256": "47973d0e706b47778a24114c33e2d5b7957d2d70d5cb32ab223115c13db06428",
       "fields": [
         "Find your next step.",
         "Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you.",
@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "c70571b79fed9fa3e37fe70a408037d2141e984978baad907dfc7b10c3f78414",
+      "sourceSha256": "ca79600b3d57bdded1db4e8da0a80efc51e9b6b11a43af04a8b3df4a6a398b36",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -27,7 +27,7 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "e0116f9c0aa5ceebc803dcb9c074ed0b40613acbcfd02474d1242604b2ed78b1",
+      "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf",
       "fields": [
         "Getting started with V19 Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
@@ -37,6 +37,7 @@
         "Step 2 — Authenticate the desktop",
         "Step 3 — Configure integrations",
         "Step 4 — Complete a deployment workflow",
+        "Example plan metadata",
         "Trust questions for first launch",
         "Next steps"
       ]
@@ -59,13 +60,17 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "9a9260ad33c9f8b8a19404d8003cfedffdd6aa3acef45f042f68026262818d74",
+      "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
         "Version and availability",
         "Choose a desktop destination",
+        "Follow a desktop workflow",
+        "Follow conditional next steps in the workflow map",
+        "Inspect a failed Airflow run in Batches release dependencies",
         "Use the website for guidance",
+        "Watch a V19 desktop recording or scripted tour",
         "Know who acts next",
         "Keep uncertain work in its original history"
       ]
@@ -117,7 +122,7 @@
     {
       "href": "/docs/approval-workflow",
       "source": "app/docs/approval-workflow/page.tsx",
-      "sourceSha256": "43d4091fc1f3bd48fbe82c72576f7aef9f1163c0b63da93bf109fd727386c659",
+      "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5",
       "fields": [
         "A write starts as a proposal.",
         "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
@@ -125,6 +130,7 @@
         "Proposal approval boundary",
         "Risk classification",
         "Approve or reject",
+        "Execution requirements and View release review in desktop Deployments",
         "Execution and recovery",
         "Audit evidence",
         "Trust questions"
@@ -175,7 +181,7 @@
     {
       "href": "/docs/releaseops/connectors",
       "source": "app/docs/releaseops/connectors/page.tsx",
-      "sourceSha256": "abe5fbdbd655b30578488b9edfd8d46f6238bbee0cb111e4ff49ff50c6e172a9",
+      "sourceSha256": "3009e5f09f12fcb0b110ca4cfb3385b8e54fe3525eb234ef0949e242e0cb79c3",
       "fields": [
         "Integration boundaries.",
         "What V19 can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
@@ -187,44 +193,49 @@
     {
       "href": "/docs/releaseops/readiness",
       "source": "app/docs/releaseops/readiness/page.tsx",
-      "sourceSha256": "8b479cf2e35c2a54a482eb96564122de9259587b494c7f9bac1c7474ff0a5288",
+      "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1",
       "fields": [
         "Deployment readiness.",
         "V19 assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
         "A score is not evidence by itself",
         "Readiness dimensions",
-        "Required signal states",
+        "Readiness check states",
         "How gates behave",
+        "What deferred validation records",
         "Trust questions"
       ]
     },
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "cc77fc4057a0ed917abba807db46102e6f40fa22a62e473f6eada5df403cafdf",
+      "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
         "Use the live release manifest",
+        "Installer availability and download pauses",
         "What the current desktop build delivers",
         "System requirements",
         "Install — macOS (Apple Silicon + Intel)",
         "Install — Windows x64",
         "Install — Linux x64",
-        "Updates and release notes",
+        "Desktop installer updates, website deployments and release notes",
         "Trust questions"
       ]
     },
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "90baaf24ff3e823a8edd0b0f82191f9d11038a301642a4dbd3a2ee46d00cdc63",
+      "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04",
       "fields": [
         "Operator integration configuration",
-        "V19 opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
+        "Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps.",
         "Two separate responsibilities",
         "Before connecting a provider",
         "GitHub App",
+        "GitLab repository connection and account sign-in",
+        "GitLab setup status and recovery",
+        "Apache Airflow",
         "Slack",
         "Microsoft tenant / Teams",
         "Linear",
@@ -267,10 +278,10 @@
     {
       "href": "/docs/oauth-setup",
       "source": "app/docs/oauth-setup/page.tsx",
-      "sourceSha256": "e09136ee445e56f8156da7027eea6cb8f3a87b7a00b661c7ebc5beb852a4d7cf",
+      "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a",
       "fields": [
         "Enable Google + GitHub sign-in",
-        "V19 uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically.",
+        "V19 uses NextAuth. Google and GitHub sign-in options appear when the browser confirms that the host registered those providers.",
         "Overview",
         "1. Base NextAuth env",
         "2. Google sign-in",
@@ -338,7 +349,7 @@
     {
       "href": "/docs/batch-providers",
       "source": "app/docs/batch-providers/page.tsx",
-      "sourceSha256": "9d248fb21a780be84f7df1ec3e5dd1c7b90d5760a01ca5f62753afa7deeec92c",
+      "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17",
       "fields": [
         "Prefect, Dagster and Argo, read-only.",
         "Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything.",
@@ -351,7 +362,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "605e6e5733b4f048d80e931c3c4be155225813b9def2e7bdf2b87e82955a5e2b",
+      "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a",
       "fields": [
         "Ask V19.",
         "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",
@@ -365,13 +376,14 @@
     {
       "href": "/docs/plugins",
       "source": "app/docs/plugins/page.tsx",
-      "sourceSha256": "1f986018cb99bb86c00aa1681d924f6b073746decc0750f13b2915077b289b6e",
+      "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0",
       "fields": [
         "Find a workflow. Add guidance deliberately.",
         "Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready.",
         "Browse the Apps and skills catalog",
         "Install, disable or remove a skill",
         "Guidance is not permission",
+        "Use AWS EC2 observation in Agent",
         "When installation state is unknown"
       ]
     },
@@ -404,7 +416,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "ead4e96a17bef821059fec5c0762050133f4b629fff6313eca5116a9a99a42be",
+      "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -448,7 +460,7 @@
     {
       "href": "/docs/settings",
       "source": "app/docs/settings/page.tsx",
-      "sourceSha256": "3d63c6c9dc55fb7a3e468ba7a6fde40c21d22947b9fec3f1918cf9889c4543dc",
+      "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa",
       "fields": [
         "Keep your profile and devices under control.",
         "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
@@ -456,7 +468,8 @@
         "Understand the Security tab",
         "Review and revoke a paired device",
         "Revocation is not a remote wipe",
-        "Desktop settings have a different scope"
+        "Desktop settings have a different scope",
+        "Find the workspace owner and members in desktop Settings"
       ]
     },
     {
@@ -477,11 +490,12 @@
     {
       "href": "/docs/audit-logs",
       "source": "app/docs/audit-logs/page.tsx",
-      "sourceSha256": "d23d4d5b765121f532b6e6c27f5cc9c4c442c090ec59a6be39e7372d4624d6b4",
+      "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb",
       "fields": [
         "Read the evidence, not just the status.",
         "A saved decision, an attempted action and an observed external result answer different questions.",
         "Version and coverage",
+        "View the audit log from desktop Settings",
         "Review the original record",
         "Separate decisions from effects",
         "Handle an uncertain result",
@@ -492,7 +506,7 @@
     {
       "href": "/docs/faq",
       "source": "app/docs/faq/page.tsx",
-      "sourceSha256": "aaf14731bedc9fc6d336f088d26ab1a35f42a6ee78b360c85ece6d1dc0acb4da",
+      "sourceSha256": "104f22032a42a5efc4cadb4dd5b4e2b01d95549960644a92dd9f5276a486cd1e",
       "fields": [
         "Frequently asked questions.",
         "The questions we see most often, grouped by topic. If something isn't answered here, the troubleshooting guide or product documentation usually has the answer.",

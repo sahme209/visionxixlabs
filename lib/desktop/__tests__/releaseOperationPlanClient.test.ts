@@ -18,3 +18,17 @@ it('client rejects invalid mutation inputs and mismatched saved release versions
 it('keeps safely projected historical plan history while rejecting future and actionable old rows',()=>{const old={...row,requestVersion:2,plan:{...plan,requestVersion:2},status:'stale',canReview:false};expect(validate({...data,plans:[old]})).toBe(true);expect(validate({...data,plans:[{...old,status:'pending_review'}]})).toBe(false);expect(validate({...data,plans:[{...old,status:'reviewed'}]})).toBe(false);expect(validate({...data,plans:[{...old,canReview:true}]})).toBe(false);expect(validate({...data,plans:[{...old,requestVersion:4,plan:{...plan,requestVersion:4}}]})).toBe(false)});
 it('accepts only exact historical cancellation results for the selected plan',async()=>{const {DesktopClient}=await import('../../../desktop/src/lib/desktopClient');const client=new DesktopClient(config);const old={...row,version:1,requestVersion:2,plan:{...plan,requestVersion:2},status:'cancelled',canReview:false,canCancel:false};wire.mockResolvedValue(reply({enabled:true,plan:old}));expect((await client.cancelReleaseOperationPlan('release',3,row.id,{expectedPlanVersion:0,clientRequestId:'12345678-1234-4234-8234-123456789012'})).ok).toBe(true);wire.mockResolvedValue(reply({enabled:true,plan:{...old,status:'reviewed'}}));expect((await client.cancelReleaseOperationPlan('release',3,row.id,{expectedPlanVersion:0,clientRequestId:'12345678-1234-4234-8234-123456789012'})).ok).toBe(false)});
 it('maps only the trusted expired-window code to its actionable recovery',async()=>{wire.mockResolvedValue(new Response(JSON.stringify({ok:false,error:'release_plan_window_expired'}),{status:409}));const result=await releaseOperationPlanRequest(context,'GET','/api/desktop/deployments/release/operation-plans/preview?expectedVersion=3&pullRequestNumber=42&method=squash',undefined,validate);expect(result).toMatchObject({ok:false,error:'Update the release window before reading a new plan.'});wire.mockResolvedValue(new Response(JSON.stringify({ok:false,error:'private database failure'}),{status:409}));expect(JSON.stringify(await releaseOperationPlanRequest(context,'GET','/api/desktop/deployments/release/operation-plans?expectedVersion=3',undefined,validate))).not.toContain('private database')});
+
+it('accepts only the exact simulation history GET and rejects foreign response binding', async () => {
+  const {DesktopClient} = await import('../../../desktop/src/lib/desktopClient');
+  const client = new DesktopClient(config);
+  const path = `/api/desktop/deployments/release/operation-plans/${row.id}/execution-approval?historyVersion=3`;
+  await releaseOperationPlanRequest(context, 'POST', path, {}, validate);
+  await releaseOperationPlanRequest(context, 'GET', path + '&workspace=other', undefined, validate);
+  expect(wire).not.toHaveBeenCalled();
+  const history = {requestId: 'release', requestVersion: 3, planId: row.id, planDigest: row.planDigest, events: []};
+  wire.mockResolvedValueOnce(reply(history)).mockResolvedValueOnce(reply({...history, planDigest: 'f'.repeat(64)}));
+  expect(await client.simulationApprovalHistory('release', 3, row.id, row.planDigest)).toEqual({ok: true, data: history});
+  expect(wire).toHaveBeenCalledWith(config.apiBase + path, expect.objectContaining({method: 'GET', credentials: 'omit'}));
+  expect((await client.simulationApprovalHistory('release', 3, row.id, row.planDigest)).ok).toBe(false);
+});

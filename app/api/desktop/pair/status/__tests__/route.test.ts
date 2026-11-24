@@ -75,7 +75,7 @@ describe("POST /api/desktop/pair/status", () => {
     expect(body.status).toBe("approved");
     expect(body.token).toMatch(/^axm\.desk\.sess-1\./);
     expect(mocks.updateManyPairing).toHaveBeenCalledWith({
-      where: { id: "challenge-1", consumedAt: null },
+      where: { id: "challenge-1", deviceFingerprint: FP, status: "approved", sessionId: "sess-1", consumedAt: null, expiresAt: { gt: expect.any(Date) } },
       data: { consumedAt: expect.any(Date), status: "consumed" },
     });
   });
@@ -94,6 +94,28 @@ describe("POST /api/desktop/pair/status", () => {
     const res = await POST(postRequest({ challenge: "challenge-1", deviceFingerprint: FP }));
     expect(res.status).toBe(410);
     expect(mocks.updateManyPairing).not.toHaveBeenCalled();
+  });
+
+  it("does not claim an approval when session lookup crosses the challenge deadline", async () => {
+    const now = Date.now();
+    const clock = vi.spyOn(Date, "now").mockReturnValue(now);
+    try {
+      mocks.findPairing.mockResolvedValue({ ...baseRecord, expiresAt: new Date(now + 1) });
+      mocks.getDesktopSession.mockImplementationOnce(async () => {
+        clock.mockReturnValue(now + 1);
+        return activeSession;
+      });
+      mocks.updateManyPairing.mockResolvedValue({ count: 1 });
+
+      const { POST } = await import("../route");
+      const res = await POST(postRequest({ challenge: "challenge-1", deviceFingerprint: FP }));
+
+      expect(res.status).toBe(410);
+      expect(await res.json()).not.toHaveProperty("token");
+      expect(mocks.updateManyPairing).not.toHaveBeenCalled();
+    } finally {
+      clock.mockRestore();
+    }
   });
 
   it("rejects replaying an already-consumed challenge", async () => {

@@ -22,7 +22,8 @@ describe("integration logos are honest", () => {
   it("the home strip never shows planned integrations and says logos are not endorsements", () => {
     render(createElement(WorksWithStrip));
     for (const i of INTEGRATION_LOGOS.filter((x) => x.status === "planned")) expect(screen.queryByText(i.name)).toBeNull();
-    expect(screen.queryByAltText("GitLab")).toBeNull();
+    expect(screen.getByAltText("GitLab").closest("li")?.getAttribute("title")).toBe("GitLab · implementation review");
+    expect(screen.getByRole("link", { name: "See each status" }).getAttribute("href")).toBe("/integrations");
     expect(screen.getByAltText("GitHub")).toBeTruthy();
     expect(screen.getByText(/do not imply endorsement/)).toBeTruthy();
     expect(screen.getByText("Works with the tools you already use")).toBeTruthy();

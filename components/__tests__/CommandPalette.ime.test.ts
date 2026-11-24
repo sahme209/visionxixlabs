@@ -44,3 +44,11 @@ it('does not expose the palette on an account route',()=>{
  state.pathname='/account/settings';render(createElement(CommandPalette));fireEvent.keyDown(window,{key:'k',ctrlKey:true,metaKey:true});
  expect(screen.queryByRole('dialog',{name:'Command palette'})).toBeNull();expect(state.push).not.toHaveBeenCalled();
 });
+
+it('routes a changelog search to the desktop updates guide',()=>{
+ const input=open();
+ fireEvent.change(input,{target:{value:'changelog'}});
+ expect(screen.getByText('Desktop updates')).toBeTruthy();
+ fireEvent.keyDown(input,{key:'Enter'});
+ expect(state.push).toHaveBeenCalledExactlyOnceWith('/docs/desktop-install#updates');
+});

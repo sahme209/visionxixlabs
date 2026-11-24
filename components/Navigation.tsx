@@ -156,6 +156,8 @@ export function Navigation() {
     requestAnimationFrame(() => menuButtonRef.current?.focus());
   };
 
+  const currentPage = (href: string) =>
+    pathname === href || pathname?.startsWith(href + "/") ? "page" : undefined;
   const closeMenu = () => { setMobileMenuOpen(false); setMoreOpen(false); };
   const skipToContent = () => {
     closeMenu();
@@ -190,13 +192,13 @@ export function Navigation() {
         >
           Skip to content
         </button>
-        <Link ref={homeLinkRef} href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="vxix home">
+        <Link ref={homeLinkRef} href="/" prefetch={false} onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="vxix home">
           <Image src="/brand/vxix-wordmark.svg" alt="vxix" width={119} height={30} className="object-contain" priority />
         </Link>
 
         <div className="hidden items-center gap-7 xl:flex">
           {primaryLinks.map((item) => (
-            <Link key={item.href} href={item.href} onClick={closeMenu} aria-current={pathname === item.href || pathname?.startsWith(item.href + "/") ? "page" : undefined} className="text-sm text-zinc-400 transition-colors hover:text-white">
+            <Link key={item.href} href={item.href} prefetch={false} onClick={closeMenu} aria-current={currentPage(item.href)} className="text-sm text-zinc-400 transition-colors hover:text-white">
               {item.label}
             </Link>
           ))}
@@ -214,15 +216,15 @@ export function Navigation() {
               }}>More <span aria-hidden="true" className="text-[10px]">⌄</span></button>
             {moreOpen && <div id="more-navigation" role="group" aria-label="More destinations"
               className="absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/9 bg-[#11120f] p-2 shadow-xl">
-              {secondaryLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu}
+              {secondaryLinks.map((item) => <Link key={item.href} href={item.href} prefetch={false} onClick={closeMenu} aria-current={currentPage(item.href)}
                 className="block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white">{item.label}</Link>)}
             </div>}
           </div>
         </div>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
-          <Link href="/download" className="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white">Download</Link>
+          <Link href="/auth/signin" prefetch={false} className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
+          <Link href="/download" prefetch={false} className="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white">Download</Link>
         </div>
 
         <button
@@ -255,18 +257,18 @@ export function Navigation() {
                 Close <XMarkIcon aria-hidden="true" className="h-5 w-5" />
               </button>
             </div>
-            <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]" aria-label="Primary links">
+            <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]" role="group" aria-label="Primary links">
               {mobileLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={closeMenu} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-white">
+                <Link key={item.href} href={item.href} prefetch={false} onClick={closeMenu} aria-current={currentPage(item.href)} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-white">
                   {item.label}
                 </Link>
               ))}
             </div>
             <div className="mt-8 border-t border-white/[0.07] pt-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Your workspace</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400">Your workspace</p>
               <div className="mt-3 grid grid-cols-2 gap-3">
-              <Link href="/auth/signin" onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in</Link>
-              <Link href="/download" onClick={closeMenu} className="rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black">Download</Link>
+              <Link href="/auth/signin" prefetch={false} onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in</Link>
+              <Link href="/download" prefetch={false} onClick={closeMenu} className="rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black">Download</Link>
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ const STATE_TEXT: Record<FlowStationState, string> = {
 };
 const STATE_CLASS: Record<FlowStationState, string> = {
   passed: "border-emerald-300/50 text-emerald-200", current: "border-white text-white", pending: "border-sky-300/40 text-sky-200",
-  blocked: "border-rose-400/60 text-rose-200", warning: "border-amber-300/60 text-amber-200", unreached: "border-zinc-700 text-zinc-500",
+  blocked: "border-rose-400/60 text-rose-200", warning: "border-amber-300/60 text-amber-200", unreached: "border-zinc-700 text-zinc-400",
 };
 const LOG_CLASS = { ok: "text-emerald-200", blocked: "text-rose-200", warning: "text-amber-200" } as const;
 
@@ -66,8 +66,8 @@ export function GovernedDeploymentModel() {
                 const state = flowStationState(scenario, i, shown);
                 return (
                   <li key={s.id} className={`rounded-xl border bg-white/2 px-4 py-3 text-sm ${STATE_CLASS[state]}`}>
-                    <span className="font-mono text-xs opacity-70">{String(i + 1).padStart(2, "0")}</span> {s.name}
-                    <span className="mt-0.5 block text-xs opacity-80">{STATE_TEXT[state]}</span>
+                    <span className="font-mono text-xs">{String(i + 1).padStart(2, "0")}</span> {s.name}
+                    <span className="mt-0.5 block text-xs">{STATE_TEXT[state]}</span>
                   </li>
                 );
               })}
@@ -83,7 +83,7 @@ export function GovernedDeploymentModel() {
                 <button key={s.id} type="button" aria-pressed={i === selected} aria-controls={`${id}-inspector`} onClick={() => choose(i)}
                   className={`flex min-h-11 min-w-0 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${i === selected ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"}`}>
                   <span aria-hidden="true" className={`h-1.5 w-1.5 shrink-0 rounded-full ${stateDot[state]}`} />
-                  <span className="min-w-0 wrap-break-word"><span className="font-mono text-zinc-500">{String(i + 1).padStart(2, "0")}</span> {s.name}</span>
+                  <span className="min-w-0 wrap-break-word"><span className="font-mono text-zinc-400">{String(i + 1).padStart(2, "0")}</span> {s.name}</span>
                   <span className="sr-only">, {STATE_TEXT[state]}</span>
                 </button>
               );
@@ -98,7 +98,7 @@ export function GovernedDeploymentModel() {
           [gauges.aiCreditState === "held" ? "AI credit held" : "AI credit settled", `$${gauges.aiCreditUsd.toFixed(2)}`],
           ["Approval", gauges.approval], ["Rollout / health", gauges.outcome]] as const).map(([k, v]) => (
           <div key={k} className="px-4 py-3">
-            <dt className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">{k}</dt>
+            <dt className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">{k}</dt>
             <dd className="mt-1 text-sm text-white">{v}</dd>
           </div>
         ))}
@@ -107,26 +107,26 @@ export function GovernedDeploymentModel() {
       <div className="mt-3 grid gap-3 lg:grid-cols-[3fr_2fr]">
         <section id={`${id}-inspector`} aria-label={station.name} className="overflow-hidden rounded-xl border border-white/8 bg-[#0a0908]">
           <div className="flex items-center justify-between gap-3 border-b border-white/6 px-5 py-3">
-            <h3 className="text-sm font-medium text-white"><span className="font-mono text-zinc-500">{String(selected + 1).padStart(2, "0")}</span> {station.name}</h3>
-            <span className="truncate font-mono text-[11px] text-zinc-500">{station.systems}</span>
+            <h3 className="text-sm font-medium text-white"><span className="font-mono text-zinc-400">{String(selected + 1).padStart(2, "0")}</span> {station.name}</h3>
+            <span className="truncate font-mono text-[11px] text-zinc-400">{station.systems}</span>
           </div>
           <div className="grid gap-5 px-5 py-4 text-sm leading-relaxed text-zinc-300 sm:grid-cols-2">
             <div>
               <p className="text-zinc-200">{station.summary}</p>
-              <h4 className="mt-4 text-[10px] uppercase tracking-[0.16em] text-zinc-500">What happens inside</h4>
+              <h4 className="mt-4 text-[10px] uppercase tracking-[0.16em] text-zinc-400">What happens inside</h4>
               <ol className="mt-2 list-decimal space-y-1 pl-5">{station.steps.map((step) => <li key={step}>{step}</li>)}</ol>
             </div>
             <div className="space-y-4">
               <div>
-                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Data in → out</h4>
+                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Data in → out</h4>
                 <p className="mt-1.5 font-mono text-xs text-sky-200/90">{station.dataIn.join(", ")} → {station.dataOut.join(", ")}</p>
               </div>
               <div>
-                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Guarantee</h4>
+                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Guarantee</h4>
                 <p className="mt-1.5">{station.guarantee}</p>
               </div>
               <div>
-                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">If it fails</h4>
+                <h4 className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">If it fails</h4>
                 <p className="mt-1.5">{station.onFailure}</p>
               </div>
             </div>
@@ -135,13 +135,15 @@ export function GovernedDeploymentModel() {
         <section aria-label="Audit stream" className="overflow-hidden rounded-xl border border-white/8 bg-[#0a0908]">
           <div className="flex items-center justify-between border-b border-white/6 px-5 py-3">
             <h3 className="text-sm font-medium text-white">Audit stream</h3>
-            <span className="font-mono text-[11px] text-zinc-500">sample · illustrative ids</span>
+            <span className="font-mono text-[11px] text-zinc-400">sample · illustrative ids</span>
           </div>
-          <ol role="log" aria-live="polite" className="space-y-1.5 px-5 py-4 font-mono text-xs">
-            {log.map((e) => (
-              <li key={`${e.at}-${e.event}`} className={LOG_CLASS[e.level]}>{e.at} {e.event} <span className="text-zinc-500">{e.detail}</span></li>
-            ))}
-          </ol>
+          <div role="log" aria-label="Sample audit entries">
+            <ol className="space-y-1.5 px-5 py-4 font-mono text-xs">
+              {log.map((entry) => (
+                <li key={`${entry.at}-${entry.event}`} className={LOG_CLASS[entry.level]}>{entry.at} {entry.event} <span className="text-zinc-400">{entry.detail}</span></li>
+              ))}
+            </ol>
+          </div>
         </section>
       </div>
     </section>

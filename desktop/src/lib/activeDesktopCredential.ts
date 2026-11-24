@@ -4,6 +4,20 @@ import { validateAuthSession, type PairedSession } from "./authSession";
 import { clearSecret, readSecret, writeSecret } from "./secureStorage";
 
 let selectionGeneration = 0;
+let vaultMutation: Promise<void> | undefined;
+
+function mutateVault(operation: () => Promise<void>): Promise<void> {
+  const pending = (vaultMutation ?? Promise.resolve()).then(operation);
+  const settled = pending.catch(() => undefined);
+  vaultMutation = settled;
+  void settled.then(() => { if (vaultMutation === settled) vaultMutation = undefined; });
+  return pending;
+}
+
+function assertSelectionCurrent(generation: number, config: typeof desktopClient.config, signal?: AbortSignal) {
+  assertDesktopNotAborted(signal);
+  if (generation !== selectionGeneration || desktopClient.config !== config) throw new DOMException("Sign-in was superseded.", "AbortError");
+}
 
 const ACTIVE_KEY = "desktop.credential.selection.v1";
 interface PairedCredential { token: string; session: PairedSession }
@@ -27,7 +41,8 @@ function parseSelection(raw: unknown): CredentialSelection {
   return value as CredentialSelection;
 }
 
-async function saveVerifiedSelection(next: { apiKey: string } | { pairedSession: PairedCredential }, signal?: AbortSignal, onCommitting?: () => void): Promise<void> {
+async function saveVerifiedSelection(next: { apiKey: string } | { pairedSession: PairedCredential }, assertCurrent: () => void, onCommitting?: () => void): Promise<void> {
+  assertCurrent();
   const raw = await readSecret<unknown>(ACTIVE_KEY);
   // A newly verified recovery can replace corrupt selection metadata. Keep any
   // valid inactive credential in a readable selection; never delete legacy keys.
@@ -40,35 +55,40 @@ async function saveVerifiedSelection(next: { apiKey: string } | { pairedSession:
     : { ...previous, ...next, active: "paired_session" };
   // One vault value commits credential + selection together. There is no
   // intermediate state with a new credential and an old preference.
-  assertDesktopNotAborted(signal);
+  assertCurrent();
   onCommitting?.();
+  assertCurrent();
   await writeSecret(ACTIVE_KEY, selection);
 }
 
 export async function verifyAndActivateApiKey(value: string, signal?: AbortSignal, onCommitting?: () => void): Promise<VerifiedDesktopIdentity> {
-  selectionGeneration++;
+  const generation = ++selectionGeneration;
+  const config = desktopClient.config;
+  const assertCurrent = () => assertSelectionCurrent(generation, config, signal);
   const candidate = value.trim();
   if (!isWellFormedApiKey(candidate)) throw new Error("API key format invalid. Expected vxlk_live_… or vxlk_test_… as shown by the admin panel.");
-  assertDesktopNotAborted(signal);
+  assertCurrent();
   const verified = await desktopClient.verifyCredentialCandidate(candidate);
-  assertDesktopNotAborted(signal);
+  assertCurrent();
   if (!verified.ok) throw new Error(verified.error);
-  await saveVerifiedSelection({ apiKey: candidate }, signal, onCommitting);
-  assertDesktopNotAborted(signal);
+  await mutateVault(() => saveVerifiedSelection({ apiKey: candidate }, assertCurrent, onCommitting));
+  assertCurrent();
   desktopClient.setSession(candidate);
   return verified.data;
 }
 
 export async function verifyAndActivatePairedSession(token: string, session: PairedSession, signal?: AbortSignal, onCommitting?: () => void): Promise<VerifiedDesktopIdentity> {
-  selectionGeneration++;
+  const generation = ++selectionGeneration;
+  const config = desktopClient.config;
+  const assertCurrent = () => assertSelectionCurrent(generation, config, signal);
   const invalid = validateAuthSession(token, session);
   if (invalid) throw new Error(invalid);
-  assertDesktopNotAborted(signal);
+  assertCurrent();
   const verified = await desktopClient.verifyCredentialCandidate(token);
-  assertDesktopNotAborted(signal);
+  assertCurrent();
   if (!verified.ok) throw new Error(`The approved desktop session could not be verified. ${verified.error}`);
-  await saveVerifiedSelection({ pairedSession: { token, session } }, signal, onCommitting);
-  assertDesktopNotAborted(signal);
+  await mutateVault(() => saveVerifiedSelection({ pairedSession: { token, session } }, assertCurrent, onCommitting));
+  assertCurrent();
   desktopClient.setSession(token);
   return verified.data;
 }
@@ -76,6 +96,7 @@ export async function verifyAndActivatePairedSession(token: string, session: Pai
 /** Load only the explicitly selected credential. App still verifies it with the
  * server before loading operational data. No fallback across workspace identities. */
 async function readSelectedDesktopCredential(): Promise<{ token?: string; selectionVersion: string }> {
+  if (vaultMutation) await vaultMutation;
   const raw = await readSecret<unknown>(ACTIVE_KEY);
   if (raw !== undefined) {
     const selection = parseSelection(raw);
@@ -118,11 +139,13 @@ export async function hydrateDesktopCredential(signal?: AbortSignal): Promise<vo
 export async function signOutDesktopCredentials(): Promise<void> {
   selectionGeneration++;
   desktopClient.setSession(undefined);
-  await writeSecret(ACTIVE_KEY, { version: 1, active: "signed_out" });
-  const cleanup = await Promise.allSettled([
-    clearSecret("desktop.api_key"), clearSecret("desktop.session.token"), clearSecret("desktop.session.meta"),
-  ]);
-  if (cleanup.some(result => result.status === "rejected")) throw new Error("Sign-out is saved, but some older saved credentials could not be removed. Retry sign-out when secure storage is available.");
+  await mutateVault(async () => {
+    await writeSecret(ACTIVE_KEY, { version: 1, active: "signed_out" });
+    const cleanup = await Promise.allSettled([
+      clearSecret("desktop.api_key"), clearSecret("desktop.session.token"), clearSecret("desktop.session.meta"),
+    ]);
+    if (cleanup.some(result => result.status === "rejected")) throw new Error("Sign-out is saved, but some older saved credentials could not be removed. Retry sign-out when secure storage is available.");
+  });
 }
 
 /** A user-triggered recovery never persists, falls back, or activates before verification. */

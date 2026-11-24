@@ -66,6 +66,7 @@ describe("applyAddOnsToEntitlements", () => {
   const purchase = (overrides: Partial<AddOnPurchaseRow>): AddOnPurchaseRow => ({
     sku: "ai_credits_small",
     status: "paid",
+    appliedAt: new Date("2026-10-01T00:00:00Z"),
     deliveredAICreditsCents: 0,
     reversedAICreditsCents: 0,
     deliveredSeats: 0,
@@ -121,6 +122,15 @@ describe("applyAddOnsToEntitlements", () => {
       }),
     ]);
     expect(r.appliedAICreditsCents).toBe(1500);
+  });
+
+  it("preserves legacy seat and connector entitlements while excluding unverified AI credits", () => {
+    const r = applyAddOnsToEntitlements(STARTER, [
+      purchase({ status: "partially_refunded", appliedAt: null, deliveredAICreditsCents: 2500 }),
+      purchase({ sku: "seat_addon", appliedAt: null, deliveredSeats: 1, validFor: "permanent" }),
+      purchase({ sku: "connector_addon", appliedAt: null, deliveredConnectors: 1, validFor: "permanent" }),
+    ]);
+    expect(r).toMatchObject({ appliedAICreditsCents: 0, appliedSeats: 1, appliedConnectors: 1 });
   });
 
   it("paid seat addon increases the cap", () => {

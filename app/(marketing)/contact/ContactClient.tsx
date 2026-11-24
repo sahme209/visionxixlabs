@@ -10,7 +10,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useCallback, useRef, useState, type FormEvent } from "react";
 import { PageHero } from "@/components/marketing/PageHero";
 
 type Topic = "product" | "download" | "security" | "support" | "press";
@@ -31,12 +31,12 @@ interface FormState {
   website: string;
 }
 
-type ContactIntent = "production-access" | "ask-axiom";
+type ContactIntent = "production-access" | "ask-axiom" | "security";
 function initialForm(intent?: ContactIntent, prefill?: string): FormState {
   return {
     name: "",
     email: "",
-    topic: "product",
+    topic: intent === "security" ? "security" : "product",
     message: intent === "production-access"
       ? "I need help with production access for our V19 workspace."
       : intent === "ask-axiom" && prefill
@@ -55,6 +55,11 @@ type SubmitState =
 export function ContactClient({ intent, prefill }: { intent?: ContactIntent; prefill?: string }) {
   const [form, setForm] = useState<FormState>(() => initialForm(intent, prefill));
   const [state, setState] = useState<SubmitState>({ kind: "idle" });
+  const submitted = useRef(false);
+  const focusReceipt = useCallback((heading: HTMLHeadingElement | null) => {
+    heading?.focus();
+  }, []);
+  const submitting = state.kind === "submitting";
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -62,10 +67,12 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submitted.current) return;
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setState({ kind: "error", message: "Name, email, and message are required." });
       return;
     }
+    submitted.current = true;
     setState({ kind: "submitting" });
     try {
       const res = await fetch("/api/contact", {
@@ -86,8 +93,8 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
         referenceId: data.referenceId,
         delivery: data.delivery === "sent" || data.delivery === "failed" ? data.delivery : "not_configured",
       });
-      setForm(initialForm(intent));
     } catch (err) {
+      submitted.current = false;
       setState({
         kind: "error",
         message: err instanceof Error ? err.message : "Send failed.",
@@ -122,7 +129,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               <p className="text-[12px] font-mono uppercase tracking-widest text-emerald-300">
                 request recorded
               </p>
-              <h2 className="mt-2 text-xl font-semibold text-white">
+              <h2 ref={focusReceipt} tabIndex={-1} className="mt-2 text-xl font-semibold text-white">
                 Your message was durably accepted.
               </h2>
               <p className="mt-2 text-[14px] text-zinc-300 leading-relaxed">
@@ -159,6 +166,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                     id="name"
                     type="text"
                     required
+                    readOnly={submitting}
                     autoComplete="name"
                     value={form.name}
                     maxLength={240}
@@ -171,6 +179,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                     id="email"
                     type="email"
                     required
+                    readOnly={submitting}
                     autoComplete="email"
                     value={form.email}
                     maxLength={240}
@@ -189,6 +198,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                     <button
                       key={t.id}
                       type="button"
+                      disabled={submitting}
                       onClick={() => update("topic", t.id)}
                       aria-pressed={form.topic === t.id}
                       className={[
@@ -202,7 +212,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 text-[12px] text-zinc-500">
+                <p className="mt-2 text-[12px] text-zinc-400">
                   {TOPICS.find((t) => t.id === form.topic)?.hint}
                 </p>
               </fieldset>
@@ -212,6 +222,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                   id="message"
                   rows={4}
                   required
+                  readOnly={submitting}
                   value={form.message}
                   maxLength={8000}
                   onChange={(e) => update("message", e.target.value)}
@@ -234,12 +245,12 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <button
                   type="submit"
-                  disabled={state.kind === "submitting"}
-                  className="public-contact-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-disabled={submitting}
+                  className="public-contact-primary aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
                 >
-                  {state.kind === "submitting" ? "Sending…" : "Send →"}
+                  {submitting ? "Sending…" : "Send →"}
                 </button>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+                <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">
                   sent through the contact endpoint
                 </span>
               </div>
@@ -293,7 +304,7 @@ function Field({
 }) {
   return (
     <label htmlFor={htmlFor} className="block">
-      <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+      <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">
         {label}
       </span>
       <div className="mt-1.5">{children}</div>

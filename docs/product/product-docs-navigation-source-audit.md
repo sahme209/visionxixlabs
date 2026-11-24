@@ -21,3 +21,7 @@ Action: scope the Getting started callout to desktop operational work while ackn
 The reviewed Product and Docs-index literal destinations have corresponding current route source files, including the dedicated execution-plans/source-modes/surfaces/audit guides. No direct missing-route defect was established in this bounded source review; file existence does not establish HTTP success, middleware/auth outcomes, useful article content or live-link acceptance. Navigation's account-required Support label is consistent with the help page's sign-in redirect and was not flagged.
 
 Actual supported-browser destination, keyboard, narrow-layout and screen-reader checks remain separate B1/B6 work; B4 editorial/version/media/customer coverage remains incomplete. No current production, account, connector or release state was queried. The two findings above are current source/caption alignment issues, not evidence of failed runtime controls.
+
+## Support section source alignment
+
+The public support corpus uses the same route list and source digests as the public guide heading index. Nested guides can supply section-level citations. Builds check that both generated files match the reviewed sources. The `ask-axiom-kb-2026-11-23.r2` snapshot includes the ReleaseOps readiness sections for signal states and deferred validation. The offline editorial drafts retain their separate eligibility controls.

@@ -3,9 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashEmailVerificationToken } from "@/lib/auth/emailVerification";
 
+function invalidVerification(request: NextRequest, message: string) {
+  const headers = { "Cache-Control": "no-store", "Referrer-Policy": "no-referrer", Vary: "Accept" };
+  const acceptsHtml = request.headers.get("accept")?.split(",").some(
+    (entry) => entry.split(";", 1)[0].trim() === "text/html",
+  );
+  if (!acceptsHtml) return new NextResponse(message, { status: 400, headers });
+
+  const destination = new URL("/auth/signin?error=VerificationLinkInvalid", request.url);
+  const callback = verificationDesktopCallback(request.nextUrl.searchParams.get("callbackUrl"));
+  if (callback) destination.searchParams.set("callbackUrl", callback);
+  return NextResponse.redirect(destination, { status: 303, headers });
+}
+
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  if (!token || token.length > 512) return new NextResponse("Invalid verification link.", { status: 400 });
+  if (!token || token.length > 512) return invalidVerification(request, "Invalid verification link.");
   const now = new Date();
   const tokenHash = hashEmailVerificationToken(token);
   try {
@@ -23,7 +36,7 @@ export async function GET(request: NextRequest) {
       await tx.user.update({ where: { id: record.userId }, data: { emailVerifiedAt: now } });
       return true;
     });
-    if (!verified) return new NextResponse("This verification link is invalid, expired, or has already been used.", { status: 400 });
+    if (!verified) return invalidVerification(request, "This verification link is invalid, expired, or has already been used.");
     const destination = new URL("/auth/signin?verified=1", request.url);
     const callback = verificationDesktopCallback(request.nextUrl.searchParams.get("callbackUrl"));
     if (callback) destination.searchParams.set("callbackUrl", callback);

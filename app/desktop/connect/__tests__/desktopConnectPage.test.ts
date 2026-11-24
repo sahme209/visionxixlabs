@@ -42,6 +42,9 @@ describe("/desktop/connect — signed-in, no-entitlement state", () => {
     const bannerIndex = page.indexOf("!access.allowed");
     const pairClientIndex = page.indexOf("<PairDesktopClient");
     expect(bannerIndex).toBeGreaterThan(-1);
-    expect(pairClientIndex).toBeGreaterThan(bannerIndex);
+    expect(pairClientIndex).toBeGreaterThan(-1);
+    expect(bannerIndex).toBeGreaterThan(pairClientIndex);
+    expect(page.indexOf("</PairDesktopClient>")).toBeGreaterThan(bannerIndex);
+    expect(page).toContain("accountEmail={context.email}");
   });
 });

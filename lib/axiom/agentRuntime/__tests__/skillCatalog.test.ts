@@ -4,10 +4,13 @@ import { AGENT_SKILL_CATALOG, installedSkillPrompt, parseSkillInvocation, resolv
 describe("workspace skill catalog", () => {
   it("references only tools from the fixed governed registry", async () => {
     const { TOOL_REGISTRY } = await import("../tools");
-    const known = new Set(TOOL_REGISTRY.map((tool) => tool.name));
+    const known = new Map(TOOL_REGISTRY.map((tool) => [tool.name, tool]));
     for (const skill of AGENT_SKILL_CATALOG) {
       expect(skill.toolNames.length).toBeGreaterThan(0);
-      for (const toolName of skill.toolNames) expect(known.has(toolName)).toBe(true);
+      for (const toolName of skill.toolNames) {
+        expect(known.has(toolName)).toBe(true);
+        if (skill.readOnlyInvocation) expect(known.get(toolName)?.riskLevel).toBe("low");
+      }
     }
   });
 

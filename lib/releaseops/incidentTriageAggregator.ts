@@ -72,7 +72,7 @@ export async function aggregateIncidentTriageInputs(
   if (incident.organizationId !== input.organizationId) return { ok: false, error: "cross_org_incident" };
 
   const release = await repo.release.findUnique({ where: { id: incident.releaseId } });
-  if (!release) return { ok: false, error: "release_not_found" };
+  if (!release || release.id !== incident.releaseId || release.organizationId !== input.organizationId) return { ok: false, error: "release_not_found" };
 
   const isProduction = release.targetEnvironmentId
     ? PROD_ENV_TIERS.has(release.targetEnvironmentId.toLowerCase())

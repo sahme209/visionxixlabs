@@ -1,4 +1,4 @@
-import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
+import { configuredPublicBillingIdentity, configuredPublicWebhookApiVersion, publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 import { publicBillingRuntime } from "@/lib/billing/publicBillingRuntime";
 import { ownedWebhookPost } from "@/lib/billing/ownedCheckoutBridge/http";
 /**
@@ -39,6 +39,8 @@ interface StripeWebhookEvent {
   id?: string;
   type?: string;
   livemode?: boolean;
+  account?: string | null;
+  api_version?: string | null;
   data?: {
     object?: {
       id?: string;
@@ -102,7 +104,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (publicBillingPolicyEnabled()) {
+  const obj = event.data?.object;
+  const creditCheckout = isAICreditCheckoutEvent(event.type, obj?.metadata?.purpose);
+  const creditRefund = event.type === "charge.refunded" && obj?.metadata?.purpose === "axiom_ai_credit_add_on";
+  const taggedCreditEvent = creditCheckout || creditRefund;
+  const usesPublicPolicy = publicBillingPolicyEnabled();
+
+  if (taggedCreditEvent) {
+    if (event.livemode !== false || !event.id || !/^evt_[A-Za-z0-9_]{1,180}$/.test(event.id) || !obj?.id) {
+      return NextResponse.json({ok:false,error:{code:"stripe.credit_event_invalid"}},{status:400});
+    }
+    if (usesPublicPolicy) {
+      try {
+        const identity = configuredPublicBillingIdentity();
+        if (identity.livemode || event.account != null && event.account !== identity.accountId ||
+            event.api_version !== configuredPublicWebhookApiVersion()) {
+          return NextResponse.json({ok:false,error:{code:"stripe.credit_event_invalid"}},{status:400});
+        }
+      } catch {
+        return NextResponse.json({ok:false,error:{code:"billing.verification_unavailable"}},{status:503});
+      }
+    }
+  } else if (usesPublicPolicy) {
     try {
       const result = await (await publicBillingRuntime()).webhook(event);
       if(result.handled) return NextResponse.json({ok:true,outcome:result.outcome},{status:200});
@@ -111,9 +134,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const obj = event.data?.object;
-
-  if (event.id && obj && isAICreditCheckoutEvent(event.type, obj.metadata?.purpose)) {
+  if (event.id && obj && creditCheckout) {
     try {
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
         await fulfillAICreditCheckout({ id: event.id, type: event.type! }, obj);
@@ -214,8 +235,7 @@ function isAICreditCheckoutEvent(type: string | undefined, purpose: string | und
 }
 
 function isReplay(error: unknown): boolean {
-  return typeof error === "object"
-    && error !== null
-    && "code" in error
-    && (error as { code?: string }).code === "P2002";
+  if (typeof error !== "object" || error === null) return false;
+  const violation = error as { code?: string; meta?: { modelName?: string } };
+  return violation.code === "P2002" && violation.meta?.modelName === "StripeBillingEvent";
 }

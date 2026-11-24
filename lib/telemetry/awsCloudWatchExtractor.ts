@@ -26,6 +26,7 @@ import {
 } from "@aws-sdk/client-cloudwatch";
 
 import { loadAppEnv } from "@/lib/config/env";
+import type { OrganizationId } from "@/lib/domain/ids";
 import { getAwsConfig } from "@/lib/cloud/aws/awsConfig";
 import { resolveAwsCredentials } from "@/lib/cloud/aws/awsCredentialResolver";
 import type { TelemetrySeverity, TelemetrySignal } from "./telemetryIngestModel";
@@ -40,9 +41,12 @@ export interface AwsCloudWatchExtraction {
   limitations: string[];
 }
 
-export async function extractAwsCloudWatchAlarms(): Promise<AwsCloudWatchExtraction> {
+export async function extractAwsCloudWatchAlarms(workspaceId: OrganizationId): Promise<AwsCloudWatchExtraction> {
   const start = Date.now();
   const env = loadAppEnv();
+  if (!env.telemetryPullTenantId || workspaceId !== env.telemetryPullTenantId) {
+    return blocked(start, "No pull credentials are assigned to this workspace.");
+  }
 
   if (!env.awsCloudWatchPullEnabled) {
     return blocked(start, "AWS_CLOUDWATCH_PULL_ENABLED is not set — extractor skipped.");

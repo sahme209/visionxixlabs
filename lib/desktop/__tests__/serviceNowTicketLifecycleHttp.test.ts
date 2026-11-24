@@ -1,8 +1,8 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({auth:vi.fn(),release:vi.fn(),action:vi.fn(),list:vi.fn(),prepare:vi.fn(),claim:vi.fn(),get:vi.fn(),sql:vi.fn(),native:vi.fn(),credential:vi.fn(),metadata:vi.fn(),connection:vi.fn(),close:vi.fn(),execute:vi.fn(),finish:vi.fn(),amend:vi.fn(),proposeRecovery:vi.fn(),approveRecovery:vi.fn(),cancelRecovery:vi.fn(),verifyRecovery:vi.fn(),fence:vi.fn()}));
+const m=vi.hoisted(()=>({auth:vi.fn(),release:vi.fn(),action:vi.fn(),list:vi.fn(),prepare:vi.fn(),claim:vi.fn(),get:vi.fn(),sql:vi.fn(),native:vi.fn(),credential:vi.fn(),metadata:vi.fn(),connection:vi.fn(),close:vi.fn(),execute:vi.fn(),finish:vi.fn(),amend:vi.fn(),proposeRecovery:vi.fn(),approveRecovery:vi.fn(),cancelRecovery:vi.fn(),verifyRecovery:vi.fn(),fence:vi.fn(),recordedChange:vi.fn()}));
 vi.mock('@/lib/db',()=>({prisma:{tenantIntegrationConnection:{findUnique:async()=>null},$transaction:async(fn:any)=>fn({$queryRaw:m.sql}),tauriDeploymentRequest:{findFirst:m.release},durableAgentWorkflow:{findFirst:m.action}}}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));
 vi.mock('@/lib/releaseops/serviceNowTicketTransport',async()=>({...await vi.importActual('@/lib/releaseops/serviceNowTicketTransport'),createServiceNowTicketTransport:()=>({execute:m.execute})}));
-vi.mock('@/lib/releaseops/serviceNowTicketLifecycleStore',async()=>({...await vi.importActual('@/lib/releaseops/serviceNowTicketLifecycleStore'),createServiceNowTicketLifecycleStore:(_r:unknown,deps:any)=>({proposeRecovery:m.proposeRecovery,approveRecovery:m.approveRecovery,cancelRecovery:m.cancelRecovery,verifyRecovery:m.verifyRecovery,list:m.list,get:m.get,claim:m.claim,finish:m.finish,amend:m.amend,beforeDispatch:vi.fn(),prepare:async(scope:any,input:any)=>{await deps.assertCurrent({$queryRaw:m.sql},{scope,actorUserId:scope.actorUserId,role:'prepare'});await deps.readCurrentAction({$queryRaw:m.sql},scope,input.candidate);return m.prepare(scope,input)}})}));
+vi.mock('@/lib/releaseops/serviceNowTicketLifecycleStore',async()=>({...await vi.importActual('@/lib/releaseops/serviceNowTicketLifecycleStore'),createServiceNowTicketLifecycleStore:(_r:unknown,deps:any)=>({proposeRecovery:m.proposeRecovery,approveRecovery:m.approveRecovery,cancelRecovery:m.cancelRecovery,verifyRecovery:m.verifyRecovery,list:m.list,readRecordedChange:m.recordedChange,get:m.get,claim:m.claim,finish:m.finish,amend:m.amend,beforeDispatch:vi.fn(),prepare:async(scope:any,input:any)=>{await deps.assertCurrent({$queryRaw:m.sql},{scope,actorUserId:scope.actorUserId,role:'prepare'});await deps.readCurrentAction({$queryRaw:m.sql},scope,input.candidate);return m.prepare(scope,input)}})}));
 vi.mock('@/lib/governance/intelligence/uncoveredExecution',()=>({assertNoUncoveredGovernanceExecution:m.fence}));
 import {createServiceNowTicketLifecycleHttp,handleServiceNowTicketLifecycle} from '../serviceNowTicketLifecycleHttp';import {serviceNowProcessChoiceId,buildServiceNowPublishCandidate} from '../serviceNowTicketLifecyclePreparation';
 const actor={id:'session',organizationId:'org',userId:'requester',credentialKind:'desktop_session',role:'admin',capabilities:['workspace:read','deploy:execute','connections:manage']},release={id:'release',organizationId:'org',requesterUserId:'requester',version:2,status:'draft',intakeJson:{kind:'resolution_draft'}};
@@ -41,3 +41,24 @@ it('returns committed recovery cancellation without consulting an expired connec
 it('keeps saved history readable when connection readiness is unavailable',async()=>{m.list.mockResolvedValue({actions:[{id,status:'unknown'}],truncated:false});m.connection.mockRejectedValue(Error('expired token'));const response=await handler(req(),'release');expect(response.status).toBe(200);expect(await response.json()).toMatchObject({data:{connectionState:'unavailable',actions:[{id,status:'unknown'}]}})});
 
 it('refuses a ServiceNow provider attempt before claim when Governance coverage is unavailable',async()=>{vi.stubEnv('AXIOM_SERVICENOW_TICKET_WRITES_ENABLED','true');const candidate=buildServiceNowPublishCandidate(release,connection,metadata(),serviceNowProcessChoiceId(process),{shortDescription:'Demo'});m.action.mockResolvedValue({inputJson:{candidate,transportMode:'provider'}});m.get.mockResolvedValue({version:1});m.fence.mockRejectedValue(Error('governance_execution_coverage_unavailable'));expect((await handler(req('POST',{expectedVersion:1,clientRequestId:uuid}),'release',id,'dispatch')).status).toBe(409);expect(m.claim).not.toHaveBeenCalled();expect(m.execute).not.toHaveBeenCalled()});
+
+it('reads only the confirmed change projection for the current exact release', async () => {
+  m.recordedChange.mockResolvedValue('CHG0030001');
+  const request = new NextRequest(req().url+'?recordedReleaseVersion=2');
+  const result = await handler(request,'release');
+  expect(result.status).toBe(200);
+  expect(await result.json()).toEqual({ok:true,data:{releaseId:'release',releaseVersion:2,number:'CHG0030001'}});
+  expect(m.recordedChange).toHaveBeenCalledWith({organizationId:'org',actorUserId:'requester',sessionId:'session'},'release',2,expect.stringMatching(/^[a-f0-9]{64}$/));
+  expect(m.connection).not.toHaveBeenCalled();
+  expect(m.credential).not.toHaveBeenCalled();
+  expect(m.claim).not.toHaveBeenCalled();
+  expect(m.execute).not.toHaveBeenCalled();
+  expect(m.auth).toHaveBeenCalledWith(request,expect.objectContaining({requiredCapability:'workspace:read',requireWorkspaceMembership:false,recordHeartbeat:false,allowApiKey:false}));
+  m.release.mockResolvedValueOnce(release).mockResolvedValueOnce({...release,version:3});
+  expect((await handler(request,'release')).status).toBe(409);
+});
+
+it.each(['?recordedReleaseVersion=1', '?recordedReleaseVersion=2&recordedReleaseVersion=2', '?recordedReleaseVersion=2147483648'])('refuses invalid or stale change reads %s', async query => {
+  expect((await handler(new NextRequest(req().url+query),'release')).ok).toBe(false);
+  expect(m.recordedChange).not.toHaveBeenCalled();
+});

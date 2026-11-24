@@ -44,6 +44,8 @@ export interface NormalizedAlert {
   /** Original raw payload, so the operator can drill into the
    *  source when our parsing misses a field. */
   rawPayloadSummary: string;
+  /** Signed provider lifecycle times. Null means an ordered provider omitted required evidence. */
+  sourceOrder?: {startedAt: string; resolvedAt: string | null} | null;
 }
 
 const DEFAULT: NormalizedAlert = {
@@ -131,13 +133,27 @@ function parseDatadog(payload: Record<string, unknown>): NormalizedAlert {
   };
 }
 
+function parseSourceTimestamp(value: unknown): string | null {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return null;
+  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
+  if (year < 1970 || month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) return null;
+  if (value.slice(11, 13) === "24") return null;
+  const time = Date.parse(value);
+  if (!Number.isFinite(time)) return null;
+  const timestamp = new Date(time).toISOString();
+  return timestamp.length === 24 ? timestamp : null;
+}
+
 function parsePrometheus(payload: Record<string, unknown>): NormalizedAlert {
   // Prometheus AlertManager sends { alerts: [{ labels, annotations,
   // status, startsAt, endsAt }] }. We summarize the first alert
   // and add the count in description.
   const alerts = Array.isArray(payload.alerts) ? (payload.alerts as unknown[]) : [];
-  if (alerts.length === 0) return parseGeneric(payload);
-  const first = alerts[0] as Record<string, unknown>;
+  const firstAlert = alerts[0];
+  if (!firstAlert || typeof firstAlert !== "object" || Array.isArray(firstAlert)) {
+    return {...parseGeneric(payload), sourceOrder: null};
+  }
+  const first = firstAlert as Record<string, unknown>;
   const labels = (first.labels && typeof first.labels === "object" ? first.labels : {}) as Record<string, unknown>;
   const annotations = (first.annotations && typeof first.annotations === "object" ? first.annotations : {}) as Record<string, unknown>;
   const title = s(annotations.summary ?? annotations.title ?? labels.alertname) || "(prometheus alert)";
@@ -153,9 +169,16 @@ function parsePrometheus(payload: Record<string, unknown>): NormalizedAlert {
   for (const [k, v] of Object.entries(labels)) {
     if (typeof v === "string" && tags.length < 20) tags.push(`${k}=${v}`);
   }
+  const fingerprint = typeof first.fingerprint === "string" && /^[0-9a-f]{16}$/i.test(first.fingerprint)
+    ? first.fingerprint.toLowerCase() : null;
+  const startedAt = parseSourceTimestamp(first.startsAt);
+  const resolvedAt = state === "resolved" ? parseSourceTimestamp(first.endsAt) : null;
+  const sourceOrder = fingerprint && startedAt && (state === "firing" || (resolvedAt && resolvedAt >= startedAt))
+    ? {startedAt, resolvedAt} : null;
   return {
     ...DEFAULT,
-    alertId: s(labels.alertname) ? `${s(labels.alertname)}_${Date.now().toString(36)}` : `pa_${Date.now().toString(36)}`,
+    alertId: sourceOrder ? `fingerprint_${fingerprint}` : s(labels.alertname) || "alertmanager",
+    sourceOrder,
     title,
     description,
     severity,

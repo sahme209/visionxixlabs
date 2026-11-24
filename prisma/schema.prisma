@@ -4416,9 +4416,35 @@ model DeploymentIncident {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  assignment      DeploymentIncidentAssignment?
+
   @@index([organizationId, status])
   @@index([organizationId, releaseId])
   @@index([organizationId, severity])
+}
+
+/// Current owner, independently versioned from incident status and evidence.
+model DeploymentIncidentAssignment {
+  incidentId      String   @id
+  organizationId  String
+  ownerUserId     String?
+  updatedAt       DateTime @updatedAt
+
+  incident DeploymentIncident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+}
+
+/// Append-only operator updates bound to the incident's recorded release.
+model DeploymentIncidentUpdate {
+  id              String   @id
+  organizationId  String
+  incidentId      String
+  releaseId       String
+  authorUserId    String
+  body            String
+  evidenceJson    Json?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, incidentId, releaseId, createdAt, id], map: "DeploymentIncidentUpdate_scope_read_idx")
 }
 
 /// Phase 500 — Release notes draft.
@@ -5460,4 +5486,20 @@ model PendingGoogleIdentityLink {
   expiresAt DateTime
   consumedAt DateTime?
   @@index([expiresAt])
+}
+
+/// Redacted, normalized evidence from standalone inbound telemetry and incident
+/// webhooks. Source authentication lives at the receiver boundary.
+model InboundObservation {
+  id             String   @id @default(cuid())
+  organizationId String
+  lane           String
+  provider       String
+  deliveryDigest String
+  ordinal        Int
+  evidence       Json
+  receivedAt     DateTime @default(now())
+
+  @@unique([organizationId, lane, provider, deliveryDigest, ordinal], map: "InboundObservation_delivery_item_key")
+  @@index([organizationId, lane, receivedAt, id], map: "InboundObservation_workspace_read_idx")
 }

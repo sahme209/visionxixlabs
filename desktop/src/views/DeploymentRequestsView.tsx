@@ -1,9 +1,19 @@
+import {changeDraftSourceSchema} from "../../../lib/tauri/ticketDirectoryContract";
+import { z } from "zod";
+import { open } from "@tauri-apps/plugin-shell";
+import { Check as CheckIcon, LockKeyhole, Plus, ShieldCheck } from "lucide-react";
+import type { DeploymentRequestSummary } from "../../../lib/tauri/deploymentRequestSummary";
+import type { SavedReleaseLink } from "./WelcomeView";
 import {FocusedReleaseWorkspace} from "../components/FocusedReleaseWorkspace";
 import {CustomerJourneyPanel} from '../../../components/shared/CustomerJourneyPanel';
 import {releaseJourney} from '../../../lib/customerJourney/journey';
 import { intakeDateInputValue as dateInputValue } from "../lib/intakeDateInput";
 import {ReleaseTicketWorkspace} from '../components/ReleaseTicketWorkspace';
+import { SelectedReleaseOperationEvidence, recordedWorkflowOutcomes, type RecordedWorkflowEvidence, type RecordedWorkflowRun, type RecordedProviderDecision, type RecordedDeploymentEvent } from "../components/SelectedReleaseOperationEvidence";
+import {deploymentExecutionEventLabels} from "../components/ReleaseDeploymentExecution";
+import { ReleaseActivityTimeline } from "../components/ReleaseActivityTimeline";
 import { ReleaseMergeReview } from "../components/ReleaseMergeReview";
+import { RecordedReleaseWindow } from "../components/RecordedReleaseWindow";
 import { ReleaseBatchMonitor } from "../components/ReleaseBatchMonitor";
 import { ReleaseBatchReadiness } from "../components/ReleaseBatchReadiness";
 import { ResolutionDraftForm } from "../components/ResolutionDraftForm";
@@ -14,43 +24,9 @@ import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs
 import { matchingWorkflowObservation, restoredWorkflowRef, singleGithubRepository, workflowFilePath, type WorkflowSourceObservation } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
-
-interface RequestSummary {
-  id: string;
-  title: string;
-  status: string;
-  version: number;
-  correlationId: string;
-  submittedAt: string | null;
-  closedAt: string | null;
-  updatedAt: string;
-  releaseContext: {
-    window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
-    scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
-    approval: { prStatus: string; noPrRequired: boolean };
-    readiness: {
-      developmentReady: boolean;
-      productionReady: boolean;
-      validationStepCount: number;
-      deferredValidation: boolean;
-      approvalDecision: "ready_for_human_approval" | "needs_attention";
-      blockers: string[];
-    };
-    recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
-    observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
-    batches?: { selectedRunCount: number };
-  };
-  latestPlaybook: {
-    id: string;
-    version: number;
-    status: string;
-    contentHash: string;
-    createdAt: string;
-  } | null;
-}
 
 interface GeneratedPlaybook {
   id: string;
@@ -94,24 +70,25 @@ interface OperationLedgerEntry {
   externallyReferenced: boolean;
 }
 
-interface GitHubReleaseEvidence {
-  mode: "read_only_evidence";
-  repositories: Array<{
-    repository: string;
-    state: "observed" | "unavailable";
-    branchProtection: "protected" | "not_protected" | "unavailable";
-    repositoryEnabled: boolean | null;
-    latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
-  }>;
-  pullRequests: Array<{
-    repository: string;
-    number: number;
-    state: "observed" | "unavailable";
-    pullRequestState: "open" | "closed" | "merged" | "draft" | "unknown";
-    targetBranchMatches: boolean | null;
-    checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
-  }>;
-}
+const evidenceRunState = z.enum(["passed", "failed", "in_progress", "not_reported", "unavailable"]);
+const gitHubReleaseEvidenceSchema = z.object({
+  mode: z.literal("read_only_evidence"),
+  requestId: z.string(),
+  requestVersion: z.number().int().positive(),
+  repositories: z.array(z.object({
+    repository: z.string(),
+    state: z.enum(["observed", "unavailable"]),
+    branchProtection: z.enum(["protected", "not_protected", "unavailable"]),
+    latestWorkflow: evidenceRunState,
+  })),
+  pullRequests: z.array(z.object({
+    repository: z.string(),
+    number: z.number().int().positive(),
+    pullRequestState: z.enum(["open", "closed", "merged", "draft", "unknown"]),
+    checks: evidenceRunState,
+  })),
+});
+type GitHubReleaseEvidence = z.output<typeof gitHubReleaseEvidenceSchema>;
 
 const initialDraft = {
   title: "",
@@ -137,8 +114,8 @@ const initialDraft = {
   targetBranch: "main",
   deploymentMethod: "",
   workflowName: "",
-  targetEnvironment: "Production",
-  workflowInputs: "{\n  \"environment\": \"Production\"\n}",
+  targetEnvironment: "",
+  workflowInputs: "{}",
   lowerEnvironments: "",
   developmentReady: false,
   productionReady: false,
@@ -200,7 +177,7 @@ function draftFromIntake(intake: Record<string, unknown>): IntakeDraft {
     changeType: stringsValue(intake.changeTypes)[0] || initialDraft.changeType,
     applications: stringsValue(intake.applications).join("\n"), clients: stringsValue(intake.clients).join("\n"), deploymentContact: textValue(intake.deploymentContact), applicationContact: textValue(intake.applicationContact), escalationContact: textValue(intake.escalationContact),
     repositoryUrls: stringsValue(intake.repositoryUrls).join("\n"), productionPrUrls: stringsValue(intake.productionPrUrls).join("\n"), noPrRequired: intake.noPrRequired === true, prApprovalStatus: textValue(intake.prApprovalStatus) || initialDraft.prApprovalStatus, sourceBranch: textValue(intake.sourceBranch), targetBranch: textValue(intake.targetBranch) || initialDraft.targetBranch,
-    deploymentMethod: textValue(intake.deploymentMethod), workflowName: textValue(intake.workflowName), targetEnvironment: textValue(intake.targetEnvironment) || initialDraft.targetEnvironment, workflowInputs: JSON.stringify(objectValue(intake.workflowInputs), null, 2),
+    deploymentMethod: textValue(intake.deploymentMethod), workflowName: textValue(intake.workflowName), targetEnvironment: textValue(intake.targetEnvironment), workflowInputs: JSON.stringify(objectValue(intake.workflowInputs), null, 2),
     manualInstruction: textValue(manual.instruction), manualOwner: textValue(manual.owner), manualValidationInstruction: textValue(manual.validationInstruction),
     lowerEnvironments: stringsValue(intake.lowerEnvironmentTested).join("\n"), developmentReady: intake.developmentReady === true, productionReady: intake.productionReady === true, validationInstruction: textValue(technical.instruction), validationOwner: textValue(technical.owner) || initialDraft.validationOwner, functionalValidationRequired: validation.length > 1, functionalValidationInstruction: textValue(functional.instruction), functionalValidationOwner: textValue(functional.owner) || initialDraft.functionalValidationOwner, expectedProductionResult: textValue(intake.expectedProductionResult),
     rollbackAvailability: textValue(intake.rollbackAvailability) || initialDraft.rollbackAvailability, rollbackInstruction: textValue(rollback.instruction), rollbackOwner: textValue(rollback.owner), backupRequired: intake.backupRequired === true, backupEvidenceIds: stringsValue(intake.backupEvidenceIds).join("\n"), changeCreationMethod: textValue(intake.changeCreationMethod) || initialDraft.changeCreationMethod,
@@ -255,11 +232,28 @@ function friendlyLoadError(code: string): string {
   return KNOWN_LOAD_ERRORS[code] ?? "Something went wrong loading your requests. Please try again.";
 }
 
-export function DeploymentRequestsView() {
-  const [requests, setRequests] = useState<RequestSummary[]>([]);
+export function DeploymentRequestsView({ active = true, onIntakeOpenChange, savedRelease, savedReleaseSection, resumeIntake, onReviewAgentPlans, onRecoverSavedRelease, activityWorkspace, onInspectReleaseBatches }: {
+  active?: boolean;
+  onIntakeOpenChange?: (open: boolean) => void;
+  savedRelease?: SavedReleaseLink;
+  savedReleaseSection?: "evidence" | "review";
+  onRecoverSavedRelease?: {label: string; run: () => void; returnWhenAvailable?: boolean};
+  resumeIntake?: boolean;
+  onReviewAgentPlans?: (release: SavedReleaseLink) => void;
+  activityWorkspace?: string;
+  onInspectReleaseBatches?: (release: SavedReleaseLink) => void;
+}) {
+  const [requests, setRequests] = useState<DeploymentRequestSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
+  const [resolvedEntry, setResolvedEntry] = useState<{link: SavedReleaseLink; preserveDirectoryContext: boolean}>();
+  const [exactLookupFailed, setExactLookupFailed] = useState(false);
+  const savedReleaseRef = useRef(savedRelease);
+  savedReleaseRef.current = savedRelease;
+  const loadGeneration = useRef(0);
+  const unavailableEntry = useRef<HTMLDivElement>(null);
+  const focusWhenRefreshStarted = useRef<Element | null>(null);
   const [showForm, setShowFormState] = useState(false);
   const intakeFormOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() });
   function setShowForm(next: boolean | ((current: boolean) => boolean)) {
@@ -268,6 +262,15 @@ export function DeploymentRequestsView() {
   }
   const [showResolutionDraft, setShowResolutionDraft] = useState(false);
   const [resolutionDraftStarted, setResolutionDraftStarted] = useState(false);
+  const intakeOpener = useRef<HTMLButtonElement | null>(null);
+  const newRelease = useRef<HTMLButtonElement>(null);
+  const intakeRegion = useRef<HTMLDivElement>(null);
+  const ticketRegion = useRef<HTMLDivElement>(null);
+  const intakeWasVisible = useRef(false);
+  useLayoutEffect(() => {
+    onIntakeOpenChange?.(showForm || resolutionDraftStarted);
+    return () => onIntakeOpenChange?.(false);
+  }, [onIntakeOpenChange, showForm, resolutionDraftStarted]);
   const draftContext = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
   const draftConfig = useSyncExternalStore(desktopClient.subscribeContext, () => desktopClient.config, () => desktopClient.config);
   const draftIdentity = useRef({ config: draftConfig, context: draftContext, key: 0 });
@@ -278,6 +281,9 @@ export function DeploymentRequestsView() {
     setShowResolutionDraft(false); setResolutionDraftStarted(false);
     setShowForm(false); setRevision(undefined); invalidateRevisionRead();
   }, [draftContext, draftConfig]);
+  useEffect(() => {
+    if (resumeIntake && resolutionDraftStarted) setShowResolutionDraft(true);
+  }, [resumeIntake, resolutionDraftStarted]);
   const intakeEpoch = useRef(0);
   const mounted = useRef(false);
   const viewOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() }).current;
@@ -285,8 +291,22 @@ export function DeploymentRequestsView() {
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; intakeEpoch.current++; }; }, []);
   function invalidateRevisionRead() { intakeEpoch.current++; setLoadingRevisionId(undefined); }
   const [revision, setRevision] = useState<RevisionSeed>();
+  useLayoutEffect(() => {
+    const region = showForm ? intakeRegion.current : showResolutionDraft ? ticketRegion.current : null;
+    if (region) {
+      intakeWasVisible.current = true;
+      region.querySelector<HTMLElement>("[data-release-intake-focus]")?.focus();
+    } else if (intakeWasVisible.current) {
+      intakeWasVisible.current = false;
+      const opener = intakeOpener.current;
+      const fallback = newRelease.current;
+      opener?.focus();
+      if (!opener || document.activeElement !== opener) fallback?.focus();
+      intakeOpener.current = null;
+    }
+  }, [showForm, showResolutionDraft, revision?.id]);
   const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
-  const [closingRequestId, setClosingRequestId] = useState<string>();
+  const [closingRequest, setClosingRequest] = useState<SavedReleaseLink>();
   const [closureEvidenceId, setClosureEvidenceId] = useState("");
   const [closureSummary, setClosureSummary] = useState("");
   const [closingBusy, setClosingBusy] = useState(false);
@@ -304,6 +324,10 @@ export function DeploymentRequestsView() {
   const [collectingGitHubEvidenceId, setCollectingGitHubEvidenceId] = useState<string>();
   const [githubEvidence, setGitHubEvidence] = useState<Record<string, GitHubReleaseEvidence>>({});
   const [githubEvidenceErrors, setGitHubEvidenceErrors] = useState<Record<string, string>>({});
+  const [workflowEvidence, setWorkflowEvidence] = useState<Record<string, RecordedWorkflowEvidence | undefined>>({});
+  const [providerDecisions, setProviderDecisions] = useState<Record<string, RecordedProviderDecision | undefined>>({});
+  const [deploymentEvents, setDeploymentEvents] = useState<Record<string, RecordedDeploymentEvent | undefined>>({});
+  const [recordedChanges, setRecordedChanges] = useState<Record<string, string | undefined>>({});
   const [executions, setExecutions] = useState<DeploymentExecution[]>([]);
   const [terraformRequestId, setTerraformRequestId] = useState<string>();
 
@@ -314,35 +338,72 @@ export function DeploymentRequestsView() {
     if (result.ok) setExecutions(result.data.executions);
   }, [ownsView]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (refreshExecutions = true) => {
     if (!ownsView()) return;
+    const generation = ++loadGeneration.current;
+    const link = savedReleaseRef.current;
+    const ownsLoad = () => generation === loadGeneration.current && savedReleaseRef.current === link && ownsView();
     setLoading(true);
-    setLoadError(undefined);
-    const result = await desktopClient.deploymentRequests();
-    if (!ownsView()) return;
-    if (result.ok) {
-      setRequests(result.data);
-      setLastSuccessfulLoadAt(new Date());
-    } else setLoadError(result.error);
-    setLoading(false);
-    void loadExecutions();
+    setWorkflowEvidence({});
+    setRecordedChanges({});
+    setProviderDecisions({});
+    setDeploymentEvents({});
+    setGitHubEvidence({});
+    setGitHubEvidenceErrors({});
+    try {
+      const result = await desktopClient.deploymentRequests(true);
+      if (!ownsLoad()) return;
+      if (result.ok) {
+        let rows = result.data;
+        let lookupFailed = false;
+        if (link && !rows.some(row => row.id === link.id)) {
+          const saved = await desktopClient.savedDeploymentRequest(link, true).catch(() => null);
+          if (!ownsLoad()) return;
+          lookupFailed = !saved?.ok;
+          if (saved?.ok && saved.data?.id === link.id && saved.data.version === link.version) rows = [...rows, saved.data];
+        }
+        setExactLookupFailed(lookupFailed);
+        setRequests(rows);
+        setLastSuccessfulLoadAt(new Date());
+        setLoadError(undefined);
+      } else {
+        setLoadError(result.error);
+      }
+    } catch {
+      if (ownsLoad()) setLoadError("network_error");
+    } finally {
+      if (ownsLoad()) {
+        const focusAtStart = focusWhenRefreshStarted.current;
+        const focused = document.activeElement;
+        setResolvedEntry(link ? {
+          link,
+          preserveDirectoryContext: focusAtStart !== null && focused !== focusAtStart && focused !== document.body,
+        } : undefined);
+        setLoading(false);
+        if (refreshExecutions) void loadExecutions();
+      }
+    }
   }, [loadExecutions, ownsView]);
 
   useEffect(() => {
-    if (!ownsView()) return;
-    let cancelled = false;
-    desktopClient.deploymentRequests().then((result) => {
-      if (cancelled || !ownsView()) return;
-      if (result.ok) {
-        setRequests(result.data);
-        setLastSuccessfulLoadAt(new Date());
-      } else setLoadError(result.error);
-      setLoading(false);
-    });
-    return () => { cancelled = true; };
-  }, [ownsView]);
-
+    focusWhenRefreshStarted.current = null;
+    void load(false);
+  }, [load, savedRelease]);
   useEffect(() => { void loadExecutions(); }, [loadExecutions]);
+
+  const entryResolved = savedRelease !== undefined && resolvedEntry?.link === savedRelease;
+  const preserveDirectoryContext = entryResolved && resolvedEntry.preserveDirectoryContext;
+  const exactMatches = savedRelease ? requests.filter(request => request.id === savedRelease.id) : [];
+  const exactAvailable = entryResolved && !loadError && exactMatches.length === 1 && exactMatches[0].version === savedRelease?.version;
+  const exactUnavailable = entryResolved && !exactAvailable;
+  useLayoutEffect(() => {
+    if (!active || !exactUnavailable) return;
+    const focusAtStart = focusWhenRefreshStarted.current;
+    const focused = document.activeElement;
+    if (!focusAtStart || focused === focusAtStart || focused === document.body) {
+      unavailableEntry.current?.focus();
+    }
+  }, [active, exactUnavailable, savedRelease]);
 
   const activeExecutionKey = executions
     .filter((execution) => execution.status !== "completed" && execution.status !== "tracking_unavailable")
@@ -409,7 +470,7 @@ export function DeploymentRequestsView() {
     setGeneratedPlaybooks((current) => ({ ...current, [requestId]: result.data }));
   }
 
-  async function startRevision(requestId: string) {
+  async function startRevision(requestId: string, opener: HTMLButtonElement) {
     if (!ownsView()) return;
     const epoch = ++intakeEpoch.current, config = desktopClient.config, context = desktopClient.getContextRevision();
     const owns = () => mounted.current && epoch === intakeEpoch.current && config === desktopClient.config && context === desktopClient.getContextRevision();
@@ -419,6 +480,7 @@ export function DeploymentRequestsView() {
       if (!owns()) return;
       if (!result.ok) { setLoadError(`Could not load the request for revision: ${result.error}`); return; }
       setShowResolutionDraft(false);
+      intakeOpener.current = opener;
       setRevision(result.data);
       setShowForm(true);
     } catch { if (owns()) setLoadError("The request could not be loaded. Your current intake has been retained."); }
@@ -446,6 +508,11 @@ export function DeploymentRequestsView() {
   async function loadOperations(requestId: string) {
     if (!ownsView()) return;
     setLoadingOperationsId(requestId);
+    setOperationLedger(current => {
+      const next = {...current};
+      delete next[requestId];
+      return next;
+    });
     setOperationErrors((current) => {
       const next = { ...current };
       delete next[requestId];
@@ -461,29 +528,40 @@ export function DeploymentRequestsView() {
     setOperationLedger((current) => ({ ...current, [requestId]: result.data }));
   }
 
-  async function collectGitHubEvidence(requestId: string) {
-    if (!ownsView()) return;
-    setCollectingGitHubEvidenceId(requestId);
-    setGitHubEvidenceErrors((current) => {
+  async function collectGitHubEvidence(request: DeploymentRequestSummary) {
+    if (!ownsView() || loading || loadError || collectingGitHubEvidenceId) return;
+    const generation = loadGeneration.current;
+    const key = JSON.stringify([request.id, request.version]);
+    setCollectingGitHubEvidenceId(key);
+    setGitHubEvidence((current) => {
       const next = { ...current };
-      delete next[requestId];
+      delete next[key];
       return next;
     });
-    const result = await desktopClient.collectGitHubReleaseEvidence(requestId);
+    setGitHubEvidenceErrors((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    const result = await desktopClient.collectGitHubReleaseEvidence(request.id, request.version)
+      .catch(() => ({ok: false, error: "network_error"} as const));
     if (!ownsView()) return;
     setCollectingGitHubEvidenceId(undefined);
-    if (!result.ok) {
-      const message = result.error === "github_read_validation_required"
-        ? "GitHub validation is older than 24 hours. Open Settings and run the harmless read-only validation before collecting release evidence."
-        : result.error;
-      setGitHubEvidenceErrors((current) => ({ ...current, [requestId]: message }));
+    if (generation !== loadGeneration.current) return;
+    const parsed = result.ok ? gitHubReleaseEvidenceSchema.safeParse(result.data) : undefined;
+    if (!parsed?.success || parsed.data.requestId !== request.id || parsed.data.requestVersion !== request.version) {
+      const message = !result.ok && result.error === "github_read_validation_required"
+        ? "GitHub validation is older than 24 hours. Open Settings and run the read-only validation before collecting release evidence."
+        : "GitHub evidence could not be verified for this release version. Refresh the release before trying again.";
+      setGitHubEvidenceErrors((current) => ({ ...current, [key]: message }));
       return;
     }
-    setGitHubEvidence((current) => ({ ...current, [requestId]: result.data }));
+    setGitHubEvidence((current) => ({ ...current, [key]: parsed.data }));
   }
 
-  async function closeRequest(request: RequestSummary) {
-    if (!ownsView()) return;
+  async function closeRequest(request: DeploymentRequestSummary) {
+    if (!ownsView() || loading || loadError || closingBusy
+      || closingRequest?.id !== request.id || closingRequest.version !== request.version) return;
     setClosingBusy(true);
     setClosureError(undefined);
     const result = await desktopClient.closeDeploymentRequest(
@@ -498,36 +576,63 @@ export function DeploymentRequestsView() {
       setClosureError(result.error);
       return;
     }
-    setClosingRequestId(undefined);
+    setClosingRequest(undefined);
     setClosureEvidenceId("");
     setClosureSummary("");
     void load();
   }
 
+  const directoryFreshness = lastSuccessfulLoadAt && (
+    <p role="status" className="release-directory-freshness">
+      {loading ? "Refreshing releases…" : `Service last responded ${lastSuccessfulLoadAt.toLocaleString()}.`}
+      {!loading && exactUnavailable && <span className="sr-only"> The saved release version could not be verified.</span>}
+    </p>
+  );
+
   return (
-    <ViewShell wide>
-      <div className="desktop-view-heading release-workspace-heading flex flex-wrap items-start justify-between gap-4">
+    <ViewShell wide className="studio-deployments">
+      <div className="release-workspace-heading flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Releases</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Deployments</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Prepare the scope. Review the actions. Follow the verified outcome.
+            Plan, approve, release, and verify changes.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button data-help-id="releases.workspace.refresh" type="button" onClick={() => void load()} className="btn-secondary">
+          {exactAvailable && !loading && !showForm && !showResolutionDraft && onRecoverSavedRelease?.returnWhenAvailable && <button type="button" className="btn-secondary"
+            onClick={onRecoverSavedRelease.run}>{onRecoverSavedRelease.label}</button>}
+          <button data-help-id="releases.workspace.refresh" type="button" onClick={() => {
+            focusWhenRefreshStarted.current = document.activeElement;
+            void load();
+          }} className="btn-secondary">
             Refresh
           </button>
-          <button data-help-id="releases.workspace.ticket-draft-toggle" type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
-          <button data-help-id="releases.workspace.intake-toggle" type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
+          <button data-help-id="releases.workspace.ticket-draft-toggle" type="button" onClick={event => { if (!showResolutionDraft) intakeOpener.current = event.currentTarget; invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
+          <button data-help-id="releases.workspace.intake-toggle" type="button" ref={newRelease} onClick={event => { if (!showForm) intakeOpener.current = event.currentTarget; invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
+            {!showForm && <Plus size={15} aria-hidden="true" />}
             {showForm ? "Cancel intake" : "New release"}
           </button>
         </div>
       </div>
 
-      {resolutionDraftStarted && <div hidden={!showResolutionDraft}><ResolutionDraftForm key={draftIdentity.current.key} active={showResolutionDraft} onBack={() => setShowResolutionDraft(false)} onSaved={() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); void load(); }} /></div>}
+      {!loading && !loadError && !showForm && !showResolutionDraft && <LoadedReleaseSummary requests={requests} />}
+
+      {resumeIntake && <p role="status" className="glass-card p-3 text-sm text-zinc-300">Your release intake is still in progress. Finish or leave it before opening another saved release.</p>}
+      {savedRelease && !entryResolved && <StateCard>Checking the saved release version…</StateCard>}
+      {exactUnavailable && <div ref={unavailableEntry} tabIndex={-1} role="region" aria-label="Saved release unavailable">
+        <StateCard>
+          <p>The saved release version could not be verified. {loadError
+            ? "The directory could not be refreshed. Try again or return to the previous view."
+            : exactLookupFailed
+              ? "Refresh to retry this version, or choose a current release."
+              : "Choose a current release explicitly to continue."}</p>
+          {!showForm && !showResolutionDraft && onRecoverSavedRelease && <button data-help-id="releases.workspace.saved-release-recovery" type="button" className="btn-secondary mt-3" onClick={onRecoverSavedRelease.run}>{onRecoverSavedRelease.label}</button>}
+        </StateCard>
+      </div>}
+      {resolutionDraftStarted && <div ref={ticketRegion} hidden={!showResolutionDraft}><ResolutionDraftForm key={draftIdentity.current.key} active={showResolutionDraft} onBack={() => setShowResolutionDraft(false)} onSaved={() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); void load(); }} /></div>}
 
       {showForm && intakeFormOwner.current.config === draftConfig && intakeFormOwner.current.revision === draftContext && (
-        <DeploymentIntakeForm
+        <div ref={intakeRegion}><DeploymentIntakeForm
           key={`${draftIdentity.current.key}:${revision?.id ?? "new"}`}
           revision={revision}
           onCreated={() => {
@@ -535,7 +640,7 @@ export function DeploymentRequestsView() {
             setRevision(undefined);
             void load();
           }}
-        />
+        /></div>
       )}
 
       {executions.length > 0 && (
@@ -574,11 +679,7 @@ export function DeploymentRequestsView() {
         </section>
       )}
 
-      {lastSuccessfulLoadAt && (
-        <p role="status" className="text-[11px] text-zinc-500">
-          Service last responded {lastSuccessfulLoadAt.toLocaleString()}.
-        </p>
-      )}
+      {requests.length === 0 && directoryFreshness}
       {loading && requests.length === 0 && <StateCard>Loading current workspace requests…</StateCard>}
       {!loading && loadError && (
         <StateCard tone="error">
@@ -587,40 +688,92 @@ export function DeploymentRequestsView() {
             : friendlyLoadError(loadError)}
         </StateCard>
       )}
-      {!loading && !loadError && requests.length === 0 && (
+      {!loading && !loadError && !exactLookupFailed && requests.length === 0 && (
         <StateCard>
           No deployment requests exist in this workspace. Start a request to capture scope,
           authority, production trigger, validation, evidence, and rollback requirements.
         </StateCard>
       )}
       {requests.length > 0 && (
-        <FocusedReleaseWorkspace key={draftIdentity.current.key} items={requests.map(request=>({
-          id:request.id,title:request.title,status:request.status,
-          nextStep:releaseJourney({status:request.status,...request.releaseContext.approval,...request.releaseContext.readiness,rollbackAvailability:request.releaseContext.recovery.rollbackAvailability,stale:!!loadError}).next.title,
-          attention:!!loadError||request.releaseContext.readiness.blockers.length>0||!!historyErrors[request.id]||!!operationErrors[request.id]||!!githubEvidenceErrors[request.id]||!!generationErrors[request.id],
-          busy:[loadingRevisionId,loadingHistoryId,loadingOperationsId,collectingGitHubEvidenceId,generatingRequestId,loadingPlaybookId].includes(request.id)||(closingBusy&&closingRequestId===request.id),
-        }))}>{item=>{const request=requests.find(request=>request.id===item.id)!;return (
+        <FocusedReleaseWorkspace key={draftIdentity.current.key}
+          directoryContext={directoryFreshness}
+          searchShortcutActive={active && !showForm && !showResolutionDraft}
+          requestedRelease={savedRelease}
+          renderSelectedActivity={ownsView() && !loading && !loadError ? item => {
+            const request = requests.find(row => row.id === item.id && row.version === item.version);
+            if (!request) return null;
+            const evidenceKey = JSON.stringify([request.id, request.version]);
+            return <>
+              <SelectedReleaseLifecycle request={request} workflow={workflowEvidence[evidenceKey]} deploymentEvent={deploymentEvents[evidenceKey]} providerDecision={providerDecisions[evidenceKey]}
+                onReviewPlans={onReviewAgentPlans && request.version > 0
+                ? () => { if (ownsView()) onReviewAgentPlans({id: request.id, version: request.version}); }
+                : undefined} />
+              {activityWorkspace && <ReleaseActivityTimeline key={JSON.stringify([activityWorkspace, request.id, request.version])}
+                workspaceId={activityWorkspace} requestId={request.id} version={request.version} />}
+            </>;
+          } : undefined}
+          requestedReleaseAvailable={exactAvailable}
+          focusRequestedRow={!savedReleaseSection}
+          preserveDirectoryContext={preserveDirectoryContext}
+          items={requests.map(request=>({
+          id:request.id,title:request.title,status:request.status,version:request.version,
+          environment:request.releaseContext.scope.targetEnvironment,updatedAt:request.updatedAt,
+          prReview: ownsView() && !loading && !loadError ? recordedPrReview(request.releaseContext.approval) : undefined,
+          requesterName: ownsView() && !loading && !loadError ? request.requesterName : undefined,
+          nextStep:releaseJourney({status:request.status,...request.releaseContext.approval,...request.releaseContext.readiness,rollbackAvailability:request.releaseContext.recovery.rollbackAvailability,stale:loading||!!loadError}).next.title,
+          attention:!!loadError||request.releaseContext.readiness.blockers.length>0||!!historyErrors[request.id]||!!operationErrors[request.id]||!!githubEvidenceErrors[JSON.stringify([request.id, request.version])]||!!generationErrors[request.id],
+          busy:[loadingRevisionId,loadingHistoryId,loadingOperationsId,generatingRequestId,loadingPlaybookId].includes(request.id)||collectingGitHubEvidenceId===JSON.stringify([request.id,request.version])||(closingBusy&&closingRequest?.id===request.id),
+        }))}>{(item, closeButton) => {
+          const request=requests.find(request=>request.id===item.id)!;
+          const evidenceKey = JSON.stringify([request.id, request.version]);
+          const recordedRun = ownsView() && !loading && !loadError ? workflowEvidence[evidenceKey]?.run : undefined;
+          const targetedSection = active && !loading && ownsView() && exactAvailable &&
+            request.id === savedRelease?.id && request.version === savedRelease.version ? savedReleaseSection : undefined;
+          const canOpenReleaseReview = request.status === "submitted" && !request.releaseContext.approval.noPrRequired;
+          const reviewUnavailable = !ownsView() || loading || Boolean(loadError);
+          const closureVersionChanged = closingRequest?.id === request.id && closingRequest.version !== request.version;
+          return (
             <div key={request.id} className="release-request-card glass-card p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-base font-semibold tracking-tight text-white truncate">{request.title}</p>
-                  <p className="mt-1 text-xs text-zinc-500">Version {request.version} · Updated {new Date(request.updatedAt).toLocaleString()}</p>
-                  <details className="mt-2 text-[11px] text-zinc-500">
+              <div className="studio-release-inspector-toolbar">
+                {closeButton}
+                <header className="studio-release-detail-header">
+                  <details className="text-[11px] text-zinc-400">
                     <summary data-help-id="releases.workspace.request-identifiers" className="cursor-pointer hover:text-zinc-300">Request identifiers</summary>
                     <p className="mt-2 break-all font-mono">Request {request.id}</p>
                     <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
+                    <p className="mt-1">Updated <time dateTime={request.updatedAt}>{new Date(request.updatedAt).toLocaleString()}</time></p>
                   </details>
-                </div>
-                <span className="shrink-0 text-[11px] font-medium capitalize px-2.5 py-1 rounded-md border border-white/10 bg-white/4 text-zinc-300">
-                  {request.status.replaceAll("_", " ")}
-                </span>
+                  <h3 className="release-focus-detail-title">{request.title}</h3>
+                  <div className="studio-release-detail-metadata">
+                    <span className="studio-release-detail-version">Version {request.version}</span>
+                    <span className="capitalize">{request.status.replaceAll("_", " ")}</span>
+                  </div>
+                </header>
+                <ReleaseDetailNavigation key={evidenceKey} entry={targetedSection && !preserveDirectoryContext ? savedRelease : undefined} section={targetedSection} />
+                {canOpenReleaseReview && (
+                  <div className="studio-release-review-action">
+                    <button type="button" disabled={reviewUnavailable} className="btn-primary studio-release-approval-link"
+                      onClick={event => {
+                        if (ownsView() && active && !loading && !loadError) focusReleaseDetail(event.currentTarget, "review");
+                      }}>
+                      <ShieldCheck size={15} aria-hidden="true" />View release review
+                    </button>
+                  </div>
+                )}
               </div>
-              <ReleaseContext request={request} stale={!!loadError} />
+              <div className="studio-release-detail-body">
+              <div data-release-detail="overview" role="region" aria-label="Release overview" tabIndex={-1}>
+                <ReleaseContext request={request} stale={!ownsView() || loading || !!loadError}
+                  workflow={ownsView() && !loading && !loadError ? workflowEvidence[evidenceKey] : undefined}
+                  recordedChange={ownsView() && !loading && !loadError ? recordedChanges[evidenceKey] : undefined}
+                  providerDecision={ownsView() && !loading && !loadError ? providerDecisions[evidenceKey] : undefined}
+                  deploymentEvent={ownsView() && !loading && !loadError ? deploymentEvents[evidenceKey] : undefined} />
+              </div>
               <div className="release-action-toolbar flex flex-wrap items-end justify-between gap-3 mt-4">
-                <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>
+                {request.status !== "submitted" && <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>}
                 <div className="flex flex-wrap gap-2">
                   {request.status === "draft" ? <>
-                    <button data-help-id="releases.workspace.complete-details" type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
+                    <button data-help-id="releases.workspace.complete-details" type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={event => void startRevision(request.id, event.currentTarget)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
                     <button data-help-id="releases.workspace.draft-history" type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
                   </> : <>
 
@@ -642,7 +795,7 @@ export function DeploymentRequestsView() {
                     type="button"
                     className="btn-secondary disabled:opacity-50"
                     disabled={request.status === "closed" || loadingRevisionId === request.id}
-                    onClick={() => void startRevision(request.id)}
+                    onClick={event => void startRevision(request.id, event.currentTarget)}
                   >
                     {loadingRevisionId === request.id ? "Opening…" : "Revise"}
                   </button>
@@ -662,35 +815,70 @@ export function DeploymentRequestsView() {
                   >
                     {loadingOperationsId === request.id ? "Loading controls…" : "Review execution controls"}
                   </button>
-                  <button data-help-id="releases.workspace.github-evidence"
-                    type="button"
-                    className="btn-secondary disabled:opacity-50"
-                    disabled={collectingGitHubEvidenceId === request.id}
-                    onClick={() => void collectGitHubEvidence(request.id)}
-                  >
-                    {collectingGitHubEvidenceId === request.id ? "Reading GitHub…" : "Collect GitHub evidence"}
-                  </button>
-                  </>}
+                </>}
                 </div>
               </div>
               {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : null}
               {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
-              {githubEvidenceErrors[request.id] && (
-                <p role="alert" className="mt-3 text-xs text-rose-300">
-                  GitHub evidence could not be collected: {githubEvidenceErrors[request.id]}
-                </p>
-              )}
-              {githubEvidence[request.id] && (
-                <GitHubEvidenceCard evidence={githubEvidence[request.id]} />
-              )}
+              <section className="studio-release-evidence" data-release-detail="evidence" aria-label="Release evidence" tabIndex={-1}>
+                <h3>Evidence</h3>
+                {request.status !== "draft" && <button data-help-id="releases.workspace.github-evidence"
+                  type="button" className="btn-secondary" disabled={!!collectingGitHubEvidenceId || loading || !!loadError}
+                  onClick={() => void collectGitHubEvidence(request)}>
+                  {collectingGitHubEvidenceId === evidenceKey ? "Reading GitHub…" : "Collect GitHub evidence"}
+                </button>}
+                {githubEvidenceErrors[evidenceKey] && <p role="alert">{githubEvidenceErrors[evidenceKey]}</p>}
+                {!loadError && githubEvidence[evidenceKey] && <GitHubEvidenceCard evidence={githubEvidence[evidenceKey]} />}
+                {!loading && !loadError && activityWorkspace && request.releaseContext.scope.changeNotApplicable !== true &&
+                  <RecordedChangeRead key={evidenceKey} requestId={request.id} version={request.version} onChangeNumber={number => {
+                    if(ownsView())setRecordedChanges(current => ({...current,[evidenceKey]:number}));
+                  }} />}
+                {!loading && !loadError && activityWorkspace && <SelectedReleaseOperationEvidence
+                  key={JSON.stringify([activityWorkspace, request.id, request.version])}
+                  requestId={request.id} version={request.version} workspaceId={activityWorkspace}
+                  onProviderDecision={decision => {
+                    if (ownsView()) setProviderDecisions(current => ({...current, [evidenceKey]: decision}));
+                  }}
+                  onDeploymentEvent={event => {
+                    if (ownsView()) setDeploymentEvents(current => ({...current, [evidenceKey]: event}));
+                  }}
+                  onWorkflowEvidence={evidence => {
+                    if (ownsView()) setWorkflowEvidence(current => ({...current, [evidenceKey]: evidence}));
+                  }}/>}
+              </section>
+              <section className="studio-release-evidence" data-release-detail="logs" aria-label="Release logs" tabIndex={-1}>
+                <h3>Logs</h3>
+                {recordedRun && (
+                  <RecordedWorkflowLogsLink run={recordedRun} className="btn-secondary"/>
+                )}
+                <p>Live logs and application health are unavailable for this request.</p>
+              </section>
               <ReleaseTicketWorkspace requestId={request.id} version={request.version} releaseStatus={request.status}/>
-              {request.status === "submitted" && !request.releaseContext.approval.noPrRequired && <ReleaseMergeReview requestId={request.id} version={request.version} />}
-              {request.status === "submitted" && (request.releaseContext.batches?.selectedRunCount ?? 0) > 0 && <><ReleaseBatchReadiness requestId={request.id} version={request.version} count={request.releaseContext.batches!.selectedRunCount} /><ReleaseBatchMonitor requestId={request.id} version={request.version} /></>}
+              {targetedSection === "review" && !canOpenReleaseReview &&
+                <p data-release-detail="review" tabIndex={-1} role="status" className="mt-3 text-xs text-zinc-400">
+                  Merge review is unavailable for this release version.
+                </p>}
+              {canOpenReleaseReview && <>
+                <div hidden={reviewUnavailable} inert={reviewUnavailable}>
+                  <ReleaseMergeReview key={evidenceKey} requestId={request.id} version={request.version} />
+                </div>
+                {reviewUnavailable && <p role="status" className="mt-3 text-xs text-zinc-400">
+                  {loading ? "Checking the release version before merge review…" : "Refresh releases to verify this version before merge review."}
+                </p>}
+              </>}
+              {!loading && !loadError && request.status === "submitted" && (request.releaseContext.batches?.selectedRunCount ?? 0) > 0 && <>
+                <ReleaseBatchReadiness requestId={request.id} version={request.version} count={request.releaseContext.batches!.selectedRunCount} />
+                <ReleaseBatchMonitor requestId={request.id} version={request.version} />
+                {onInspectReleaseBatches && active && !showForm && !showResolutionDraft &&
+                  <button type="button" className="btn-secondary mt-3" onClick={() => {
+                    if (ownsView()) onInspectReleaseBatches({id: request.id, version: request.version});
+                  }}>Inspect release dependencies</button>}
+              </>}
               {request.status === "draft" ? null : request.status === "closed" ? (
                 <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
                   Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
                 </div>
-              ) : closingRequestId === request.id ? (
+              ) : closingRequest?.id === request.id ? (
                 <div className="mt-3 rounded-lg border border-white/20 bg-white/5 p-3">
                   <p className="text-xs font-medium text-zinc-100">Record external outcome</p>
                   <p className="mt-1 text-xs leading-5 text-zinc-500">Attach the external validation or change reference. This closes only the V19 record; it cannot deploy, merge, or approve anything.</p>
@@ -698,14 +886,17 @@ export function DeploymentRequestsView() {
                     <input data-help-id="releases.workspace.closure-reference" value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
                     <input data-help-id="releases.workspace.closure-summary" value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
                   </div>
-                  {closureError && <p role="alert" className="mt-2 text-xs text-rose-300">Closure was not recorded: {closureError}</p>}
+                  {closureVersionChanged && <p role="status" className="mt-2 text-xs text-zinc-300">
+                    This draft is for version {closingRequest.version}. Cancel and reopen to record an outcome for version {request.version}.
+                  </p>}
+                  {!closureVersionChanged && closureError && <p role="alert" className="mt-2 text-xs text-rose-300">Closure was not recorded: {closureError}</p>}
                   <div className="mt-3 flex justify-end gap-2">
-                    <button data-help-id="releases.workspace.closure-cancel" type="button" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
-                    <button data-help-id="releases.workspace.closure-record" type="button" disabled={closingBusy} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
+                    <button data-help-id="releases.workspace.closure-cancel" type="button" disabled={closingBusy} onClick={() => { setClosingRequest(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
+                    <button data-help-id="releases.workspace.closure-record" type="button" disabled={closingBusy || loading || !!loadError || closureVersionChanged} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
                   </div>
                 </div>
               ) : (
-                <button data-help-id="releases.workspace.closure-open" type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
+                <button data-help-id="releases.workspace.closure-open" type="button" disabled={closingBusy} onClick={() => { setClosingRequest({id: request.id, version: request.version}); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
                   Record external outcome and close request →
                 </button>
               )}
@@ -735,14 +926,14 @@ export function DeploymentRequestsView() {
               )}
               {operationErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">
-                  Execution-control history could not be loaded: {operationErrors[request.id]}
+                  Request-wide operation history could not be loaded.
                 </p>
               )}
               {operationLedger[request.id] && (
                 <div className="mt-3 rounded-lg border border-white/15 bg-white/5 px-3 py-2">
-                  <p className="text-xs font-medium text-zinc-100">Execution controls</p>
+                  <p className="text-xs font-medium text-zinc-100">Request-wide operation history</p>
                   <p className="mt-1 text-xs leading-5 text-zinc-500">
-                    Read-only durable operation status. This workspace cannot create, retry, approve, or dispatch an operation from this view.
+                    Read-only durable operation status across request versions.
                   </p>
                   {operationLedger[request.id].length === 0 ? (
                     <p className="mt-3 text-[11px] text-zinc-400">No consequential operation has been recorded for this request.</p>
@@ -765,8 +956,8 @@ export function DeploymentRequestsView() {
                 </div>
               )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
-                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-white/15 bg-white/5" : "border-white/15 bg-white/5"}`}>
-                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-zinc-100" : "text-zinc-100"}`}>
+                <div className="mt-3 rounded-lg border border-white/15 bg-white/5 px-3 py-2">
+                  <p className="text-xs text-zinc-100">
                     {request.latestPlaybook.status === "superseded"
                       ? `Previous playbook v${request.latestPlaybook.version} was superseded by a request revision.`
                       : `Latest persisted playbook: v${request.latestPlaybook.version} · ${request.latestPlaybook.status.replaceAll("_", " ")}`}
@@ -827,6 +1018,7 @@ export function DeploymentRequestsView() {
                   </p>
                 </div>
               )}
+              </div>
             </div>
           );}}
         </FocusedReleaseWorkspace>
@@ -835,78 +1027,292 @@ export function DeploymentRequestsView() {
   );
 }
 
-function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boolean }) {
+function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}) {
+  const metrics = [
+    {label: "Loaded requests", count: requests.length},
+    {label: "Drafts", count: requests.filter(request => request.status === "draft").length},
+    {label: "Submitted", count: requests.filter(request => request.status === "submitted").length},
+    {label: "Closed", count: requests.filter(request => request.status === "closed").length},
+  ];
+  return <dl aria-label="Loaded release request summary" className="studio-release-summary">
+    {metrics.map(({label, count}) => <div key={label}>
+      <dt>{label}</dt>
+      <dd>{count.toLocaleString()}</dd>
+    </div>)}
+  </dl>;
+}
+
+function SelectedReleaseLifecycle({request, workflow, deploymentEvent, providerDecision, onReviewPlans}: {
+  request: DeploymentRequestSummary;
+  workflow?: RecordedWorkflowEvidence;
+  deploymentEvent?: RecordedDeploymentEvent;
+  providerDecision?: RecordedProviderDecision;
+  onReviewPlans?: () => void;
+}) {
+  const {readiness, observation} = request.releaseContext;
+  const count = readiness.validationStepCount;
+  const planSubmitted = request.status === "submitted" || (request.status === "closed" && Boolean(request.submittedAt));
+  const readyForReview = request.status === "submitted"
+    && readiness.approvalDecision === "ready_for_human_approval"
+    && !providerDecision && !deploymentEvent && !workflow;
+  const stages = [
+    {label: "Plan", recorded: planSubmitted, detail: request.status === "draft" ? "Draft request"
+      : request.status === "submitted" ? "Request submitted" : request.status === "closed" ? "Request closed" : "Request details available"},
+    {label: "Validate", detail: count > 0 ? `${count} planned validation step${count === 1 ? "" : "s"}` : "No steps recorded",
+      evidence: readiness.deferredValidation ? "Deferral recorded" : undefined},
+    {label: "Approve", readyForReview, detail: providerDecision
+      ? `${savedMergeDecisionLabels[providerDecision.type]} · PR #${providerDecision.pullRequest}`
+      : readiness.approvalDecision === "ready_for_human_approval" ? "Ready for review" : "Readiness needs attention"},
+    {label: "Deploy", detail: deploymentEvent ? deploymentExecutionEventLabels[deploymentEvent.type]
+      : request.status === "draft" ? "Draft request" : "See execution controls",
+      evidence: workflow && `Workflow run · ${recordedWorkflowStatus(workflow)}`},
+    {label: "Verify", detail: "Verification unavailable",
+      evidence: observation.recordedMonitoringPlan ? "Monitoring plan recorded" : undefined},
+  ];
+
+  return <section aria-label="Selected release lifecycle" className="studio-release-lifecycle">
+    <header>
+      <h3>Selected release lifecycle</h3>
+      {onReviewPlans && <button data-help-id="releases.workspace.review-agent-plans" type="button" className="btn-secondary" onClick={onReviewPlans}>Review saved plans in Agent</button>}
+    </header>
+    <ol>
+      {stages.map(({label, detail, evidence, recorded, readyForReview}, index) => <li key={label}>
+        <span aria-hidden="true" className="studio-release-stage-number" data-recorded={recorded || undefined}
+          data-review-ready={readyForReview || undefined}>
+          {recorded ? <CheckIcon size={12} /> : index + 1}
+        </span>
+        <strong>{label}</strong>
+        <small>{detail}</small>
+        {evidence && <small>{evidence}</small>}
+      </li>)}
+    </ol>
+  </section>;
+}
+
+function RecordedChangeRead({requestId,version,onChangeNumber}:{requestId:string;version:number;onChangeNumber:(number:string|undefined)=>void}) {
+  const [status,setStatus]=useState<"idle"|"reading"|"recorded"|"unavailable">("idle");
+  const flight=useRef<AbortController|null>(null);
+  useEffect(()=>()=>flight.current?.abort(),[]);
+  async function read(){
+    if(flight.current)return;
+    const controller=new AbortController();
+    const owner=desktopClient.config;
+    const revision=desktopClient.getContextRevision();
+    flight.current=controller;
+    setStatus("reading");
+    onChangeNumber(undefined);
+    try{
+      const response=await desktopClient.recordedServiceNowChange(requestId,version,controller.signal);
+      if(controller.signal.aborted||desktopClient.config!==owner||desktopClient.getContextRevision()!==revision)return;
+      const number=response.ok?response.data.number:undefined;
+      if(number)onChangeNumber(number);
+      setStatus(number?"recorded":"unavailable");
+    }catch{
+      if(!controller.signal.aborted&&desktopClient.config===owner&&desktopClient.getContextRevision()===revision)setStatus("unavailable");
+    }finally{flight.current=null;}
+  }
+  return <div className="mt-2 space-y-1">
+    <button data-help-id="releases.workspace.read-recorded-change" type="button" className="btn-secondary" disabled={status==="reading"} onClick={()=>void read()}>
+      {status==="reading"?"Reading recorded change…":"Read recorded ServiceNow change"}
+    </button>
+    {status==="recorded"&&<p role="status">Recorded ServiceNow change shown in Overview.</p>}
+    {status==="unavailable"&&<p role="status">A published ServiceNow change could not be verified for this release version.</p>}
+  </div>;
+}
+
+const savedMergeDecisionLabels = { approved: "Merge approval recorded", revoked: "Merge approval revoked", consumed: "Merge approval used" } as const;
+
+function recordedWorkflowStatus(workflow: RecordedWorkflowEvidence) {
+  return workflow.state === "success" ? "Success recorded" : `Recorded as ${recordedWorkflowOutcomes[workflow.state]}`;
+}
+
+function RecordedWorkflowLogsLink({run, className}: {run: RecordedWorkflowRun; className: string}) {
+  const repository = run.repository.split("/").map(encodeURIComponent).join("/");
+  return <ExternalLink href={`https://github.com/${repository}/actions/runs/${run.id}/attempts/${run.attempt}`} className={className}>
+    View GitHub logs for attempt {run.attempt}
+  </ExternalLink>;
+}
+
+function recordedPrReview({ prStatus, noPrRequired }: DeploymentRequestSummary["releaseContext"]["approval"]) {
+  if (noPrRequired || prStatus === "not_applicable") return "PR not required";
+  if (prStatus === "approved") return "Approved (recorded)";
+  if (prStatus === "pending") return "Pending";
+  return "Unavailable";
+}
+
+const governanceUrl = "https://visionxixlabs.com/control/governance";
+
+function OpenGovernance() {
+  const [openFailed, setOpenFailed] = useState(false);
+
+  async function openInBrowser() {
+    setOpenFailed(false);
+    try {
+      await open(governanceUrl);
+    } catch {
+      setOpenFailed(true);
+    }
+  }
+
+  return <>
+    <button type="button" className="mt-2 underline" onClick={() => void openInBrowser()}>
+      Open Agent Approval Center in browser
+    </button>
+    {openFailed && <p className="mt-2" role="alert">
+      Could not open the browser. Try again or open {governanceUrl}.
+    </p>}
+  </>;
+}
+
+function ReleaseContext({ request, stale, workflow, recordedChange, providerDecision, deploymentEvent }: {
+  request: DeploymentRequestSummary;
+  stale: boolean;
+  workflow?: RecordedWorkflowEvidence;
+  recordedChange?: string;
+  providerDecision?: RecordedProviderDecision;
+  deploymentEvent?: RecordedDeploymentEvent;
+}) {
   const context = request.releaseContext;
-  const readiness = context.readiness.approvalDecision === "ready_for_human_approval";
-  const approval = context.approval.noPrRequired
-    ? "PR not required"
-    : context.approval.prStatus.replaceAll("_", " ");
+  const workflowCommit = workflow?.state === "success" ? workflow.commit : undefined;
+  const workflowStatus = workflow ? recordedWorkflowStatus(workflow) : "Unavailable";
+  const prerequisitesMet = context.readiness.approvalDecision === "ready_for_human_approval";
+  const approval = recordedPrReview(context.approval);
   const rollback = context.recovery.rollbackAvailability.replaceAll("_", " ");
+  const validationCount = context.readiness.validationStepCount;
+  const plannedValidation = validationCount > 0
+    ? `${validationCount} step${validationCount === 1 ? "" : "s"}`
+    : "No steps recorded";
 
   return (
-    <div className="mt-3" aria-label="Release context">
+    <div className="mt-3" role="group" aria-label="Release context">
+      <section aria-label="Recorded release summary">
+        <dl className="studio-release-recorded-facts studio-release-overview-facts">
+          <div><dt>Target</dt><dd>{stale ? "Unavailable" : context.scope.targetEnvironment ?? "Unavailable"}</dd></div>
+          <div><dt>Repository</dt><dd>{!stale && Array.isArray(context.scope.githubRepositories) && context.scope.githubRepositories.length > 0
+            ? <ul>{context.scope.githubRepositories.map(repository => <li key={repository}>{repository}</li>)}</ul>
+            : "Unavailable"}</dd></div>
+          <div><dt>Commit</dt><dd>{workflowCommit
+            ? <code title={`Verified workflow commit ${workflowCommit}`} aria-label={`Verified workflow commit ${workflowCommit}`}>{workflowCommit.slice(0, 7)}</code>
+            : "Unavailable"}</dd></div>
+          <div><dt>Change</dt><dd>{recordedChange ?? (!stale && context.scope.changeNotApplicable === true ? "Not applicable" : "Unavailable")}</dd></div>
+          <div><dt>Requested by</dt><dd>{stale ? "Unavailable" : request.requesterName ?? "Unavailable"}</dd></div>
+        </dl>
+        <section aria-label="Recorded approvals" className="studio-release-overview-section studio-release-approvals">
+          <h4>Recorded approvals</h4>
+          <dl className="studio-release-recorded-facts studio-release-overview-facts">
+            <div><dt>Recorded PR state</dt><dd>{stale ? "Unavailable" : approval}</dd></div>
+            <div><dt>Approval prerequisites</dt><dd>{stale ? "Unavailable" : prerequisitesMet ? "Ready for human review" : "Needs attention"}</dd></div>
+            <div><dt>Saved merge approval</dt><dd>{stale || !providerDecision ? "Unavailable" : <>
+              <span>{savedMergeDecisionLabels[providerDecision.type]} · PR #{providerDecision.pullRequest}</span>
+              <time className="studio-release-approval-time" dateTime={providerDecision.at}>{new Date(providerDecision.at).toLocaleString()}</time>
+            </>}</dd></div>
+          </dl>
+          {!stale && prerequisitesMet && <p className="studio-release-approval-note operational-note text-zinc-400">Human approval is still required.</p>}
+          {!stale && !prerequisitesMet && context.readiness.blockers.length > 0 && (
+            <details key={request.version} className="studio-release-approval-note text-xs text-zinc-400">
+              <summary data-help-id="releases.workspace.approval-blockers" className="cursor-pointer">Review recorded blockers ({context.readiness.blockers.length})</summary>
+              <ul className="operational-note mt-2 list-disc space-y-1 ps-4">
+                {context.readiness.blockers.map((blocker, index) => <li key={index}>{blocker}</li>)}
+              </ul>
+            </details>
+          )}
+        </section>
+        <section aria-label="Recorded readiness" className="studio-release-overview-section">
+          <h4>Readiness</h4>
+          <dl className="studio-release-recorded-facts studio-release-overview-facts">
+            <div><dt>Workflow run</dt><dd>
+              {stale ? "Unavailable" : workflowStatus}
+              {!stale && workflow?.run && <RecordedWorkflowLogsLink run={workflow.run} className="mt-1 block underline underline-offset-2"/>}
+            </dd></div>
+            {!stale && deploymentEvent && <div><dt>Recorded deployment execution</dt><dd>
+              <span>{deploymentExecutionEventLabels[deploymentEvent.type]} · PR #{deploymentEvent.pullRequest}</span>
+              <time className="studio-release-approval-time" dateTime={deploymentEvent.at}>{new Date(deploymentEvent.at).toLocaleString()}</time>
+            </dd></div>}
+            <div><dt>Development readiness</dt><dd>{stale ? "Unavailable" : context.readiness.developmentReady ? "Recorded" : "Not recorded"}</dd></div>
+            <div><dt>Production readiness</dt><dd>{stale ? "Unavailable" : context.readiness.productionReady ? "Recorded" : "Not recorded"}</dd></div>
+            <div><dt>Planned validation</dt><dd>{stale ? "Unavailable" : <>{plannedValidation}{context.readiness.deferredValidation ? " · deferred" : ""}</>}</dd></div>
+            <div><dt>Rollback availability</dt><dd>{stale ? "Unavailable" : rollback}</dd></div>
+            {!stale && context.recovery.backupRequired && <div><dt>Recovery backup</dt><dd>Required by saved intake</dd></div>}
+            <div><dt>Monitoring plan</dt><dd>{!stale && context.observation.recordedMonitoringPlan ? "Recorded" : "Unavailable"}</dd></div>
+          </dl>
+        </section>
+      </section>
+      {request.status === "submitted" && (
+        <div className="studio-release-execution-requirements">
+          <h4><LockKeyhole size={14} aria-hidden="true" />Execution requirements</h4>
+          <p>Exact approvals and verified evidence are required before execution.</p>
+        </div>
+      )}
       <CustomerJourneyPanel label="Release next step" journey={releaseJourney({status:request.status,approvalDecision:context.readiness.approvalDecision,blockers:context.readiness.blockers,prStatus:context.approval.prStatus,noPrRequired:context.approval.noPrRequired,rollbackAvailability:context.recovery.rollbackAvailability,stale})}/>
-      <details className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400"><summary data-help-id="releases.workspace.recorded-details" className="cursor-pointer py-1">Recorded release details</summary>
-      <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-white/20 bg-white/5"}`}>
-        <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
-          {readiness ? "Ready for human approval" : "Not ready for human approval"}
+      <details className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400">
+        <summary data-help-id="releases.workspace.recorded-details" className="cursor-pointer py-1">Recorded release details</summary>
+        <dl className="studio-release-recorded-facts">
+          <div><dt>Recorded window</dt><dd>{stale ? "Unavailable" : <RecordedReleaseWindow window={context.window} />}</dd></div>
+          <div><dt>Scope</dt><dd>{stale ? "Unavailable" : <>{context.scope.applicationCount} app{context.scope.applicationCount === 1 ? "" : "s"} · {context.scope.repositoryCount} repo{context.scope.repositoryCount === 1 ? "" : "s"}</>}</dd></div>
+          <div><dt>Evidence references</dt><dd>{stale ? "Unavailable" : context.recovery.evidenceCount}</dd></div>
+          <div><dt>Backup evidence</dt><dd>{stale ? "Unavailable" : context.recovery.backupRequired ? "Required" : "Not required"}</dd></div>
+          <div><dt>Post-release observation</dt><dd>Not connected</dd></div>
+        </dl>
+        <p className="mt-2 rounded-lg border border-white/5 bg-white/1.5 px-3 py-2 text-[10px] leading-4 text-zinc-500">
+          Release decisions require exact review and current authority. This overview records evidence, and production health is unavailable.
         </p>
-        <p className="operational-note mt-0.5 text-zinc-500">
-          {readiness
-            ? "Required recorded signals are present. Approval is still required; nothing can deploy from this view."
-            : `${context.readiness.blockers.length} recorded item${context.readiness.blockers.length === 1 ? "" : "s"} needs attention before approval.`}
-        </p>
-        {!readiness && (
-          <ul className="operational-note mt-2 space-y-1 text-zinc-100/80">
-            {context.readiness.blockers.map((blocker) => <li key={blocker}>• {blocker}</li>)}
-          </ul>
-        )}
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
-      <ContextSignal
-        label="Scope"
-        value={`${context.scope.applicationCount} app${context.scope.applicationCount === 1 ? "" : "s"} · ${context.scope.repositoryCount} repo${context.scope.repositoryCount === 1 ? "" : "s"}`}
-        detail={context.scope.targetEnvironment ?? "Environment not recorded"}
-      />
-      <ContextSignal
-        label="Readiness"
-        value={readiness ? "Ready signals recorded" : "Signals need review"}
-        detail={`${context.readiness.validationStepCount} validation step${context.readiness.validationStepCount === 1 ? "" : "s"}${context.readiness.deferredValidation ? " · deferred" : ""}`}
-        tone={readiness ? "good" : "attention"}
-      />
-      <ContextSignal
-        label="Approval"
-        value={approval}
-        detail={`${context.recovery.evidenceCount} evidence reference${context.recovery.evidenceCount === 1 ? "" : "s"}`}
-        tone={context.approval.prStatus === "approved" || context.approval.noPrRequired ? "good" : "attention"}
-      />
-      <ContextSignal
-        label="Recovery"
-        value={`Rollback ${rollback}`}
-        detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
-        tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
-      />
-      <ContextSignal
-        label="Post-release observation"
-        value="Not connected"
-        detail={context.observation.recordedMonitoringPlan ? "Follow-up monitoring plan recorded" : "No verified observability signal"}
-        tone="attention"
-      />
-      </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/1.5 px-3 py-2">
-        <p className="text-[10px] leading-4 text-zinc-500">
-          Human decisions stay in the authenticated browser Approval Center. This record cannot approve or dispatch a deployment, and it does not claim production health until observability is verified.
-        </p>
-        <ExternalLink
-          href="https://visionxixlabs.com/dashboard/approvals"
-          className="shrink-0 text-[11px] font-medium text-zinc-300 transition hover:text-white"
-        >
-          Open Approval Center →
-        </ExternalLink>
-      </div>
+        <OpenGovernance />
       </details>
     </div>
   );
+}
+
+const releaseDetailSections = [
+  { id: "overview", title: "Overview" },
+  { id: "evidence", title: "Evidence" },
+  { id: "logs", title: "Logs" },
+] as const;
+
+type ReleaseDetailSection = (typeof releaseDetailSections)[number]["id"];
+
+function focusReleaseDetail(origin: HTMLElement | null, id: ReleaseDetailSection | "review") {
+  const card = origin?.closest(".release-request-card");
+  const region = card?.querySelector<HTMLElement>(`[data-release-detail="${id}"]`);
+  if (!region || region.closest("[hidden]")) return false;
+  region.focus({preventScroll: true});
+  const body = region.closest<HTMLElement>(".studio-release-detail-body");
+  // On wide layouts the inspector body scrolls independently of the directory.
+  if (body && body.clientHeight > 0 && getComputedStyle(body).overflowY === "auto") {
+    body.scrollTop += region.getBoundingClientRect().top - body.getBoundingClientRect().top - body.clientTop;
+    return true;
+  }
+
+  const toolbar = card?.querySelector<HTMLElement>(".studio-release-inspector-toolbar");
+  const page = toolbar?.closest<HTMLElement>(".studio-deployments");
+  if (toolbar && page && getComputedStyle(toolbar).position === "sticky") {
+    const panelTop = page.getBoundingClientRect().top + page.clientTop + toolbar.offsetHeight;
+    page.scrollTop += region.getBoundingClientRect().top - panelTop;
+  } else {
+    region.scrollIntoView?.({block: "nearest"});
+  }
+  return true;
+}
+
+function ReleaseDetailNavigation({entry, section}: {entry?: SavedReleaseLink; section?: "evidence" | "review"}) {
+  const [current, setCurrent] = useState<ReleaseDetailSection>("overview");
+  const navigation = useRef<HTMLElement>(null);
+  const handledEntry = useRef<SavedReleaseLink | undefined>(undefined);
+  function openSection(id: ReleaseDetailSection) {
+    if (focusReleaseDetail(navigation.current, id)) setCurrent(id);
+  }
+  useEffect(() => {
+    if (!entry || !section || handledEntry.current === entry) return;
+    if (!focusReleaseDetail(navigation.current, section)) return;
+    handledEntry.current = entry;
+    if (section === "evidence") setCurrent(section);
+  }, [entry, section]);
+  return <nav ref={navigation} className="studio-release-drawer-nav" aria-label="Release detail sections">
+    {releaseDetailSections.map(({id, title}) => <button data-help-id="releases.workspace.detail-navigation" key={id} type="button"
+      aria-current={current === id ? "location" : undefined}
+      onClick={() => openSection(id)}>
+      {title}
+    </button>)}
+  </nav>;
 }
 
 function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
@@ -937,26 +1343,6 @@ function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
   );
 }
 
-function ContextSignal({ label, value, detail, tone = "neutral" }: {
-  label: string;
-  value: string;
-  detail: string;
-  tone?: "neutral" | "good" | "attention";
-}) {
-  const color = tone === "good"
-    ? "border-emerald-500/20 bg-emerald-500/5"
-    : tone === "attention"
-    ? "border-white/20 bg-white/5"
-    : "border-white/5 bg-white/2";
-  return (
-    <div className={`rounded-lg border px-3 py-2 ${color}`}>
-      <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>
-      <p className="mt-1 text-xs font-medium text-zinc-200">{value}</p>
-      <p className="mt-0.5 text-[10px] text-zinc-500">{detail}</p>
-    </div>
-  );
-}
-
 function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; revision?: RevisionSeed }) {
   const [draft, setDraft] = useState(() => revision ? draftFromIntake(revision.intake) : initialDraft);
   const [workflowRef, setWorkflowRef] = useState(() => restoredWorkflowRef(revision?.intake.workflowSource, singleGithubRepository(draft.repositoryUrls), workflowFilePath(draft.workflowName)));
@@ -967,6 +1353,13 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
     ? matchingWorkflowObservation(sourceObservation.value, singleGithubRepository(draft.repositoryUrls), effectiveWorkflowRef, workflowFilePath(draft.workflowName)) : undefined;
   const recordWorkflowSource = useCallback((value: WorkflowSourceObservation) => setSourceObservation({ value, config: desktopClient.config, revision: contextRevision }), [contextRevision]);
   const [step, setStep] = useState(0);
+  const stepHeading = useRef<HTMLParagraphElement>(null);
+  const previousStep = useRef(step);
+  useLayoutEffect(() => {
+    if (previousStep.current === step) return;
+    previousStep.current = step;
+    stepHeading.current?.focus();
+  }, [step]);
   const [submitting, setSubmitting] = useState(false);
   const submissionFlight = useRef(false), intakeMounted = useRef(true);
   const intakeOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() }).current;
@@ -1139,16 +1532,18 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
     }
   }
 
+  const parsedSource = changeDraftSourceSchema.safeParse(revision?.intake.sourceTicket);
+  const source = parsedSource.success ? parsedSource.data : undefined;
   return (
     <form onSubmit={(event) => void submit(event)} aria-busy={submitting} className="glass-card p-5 space-y-5">
       {submitting && <p role="status" className="text-sm text-zinc-300">Saving release details. Editing is paused. Leaving does not cancel this save; check saved requests before starting another.</p>}
       <fieldset disabled={submitting} aria-label="Release intake fields" className="min-w-0 space-y-5 border-0 p-0">
-      {revision?.intake.kind === "resolution_draft" && <aside className="rounded-lg border border-white/10 p-3 text-xs text-zinc-300"><p className="font-semibold">Original ticket request</p><p className="mt-1 whitespace-pre-wrap">{textValue(revision.intake.requestDetails)}</p>{textValue(revision.intake.ticketUrl) && <p className="mt-1 break-all">{textValue(revision.intake.ticketUrl)}</p>}<p className="mt-2 text-zinc-500">The original draft remains in the immutable record. Complete every required release control before submission.</p></aside>}
+      {revision?.intake.kind === "resolution_draft" && <aside className="rounded-lg border border-white/10 p-3 text-xs text-zinc-300"><p className="font-semibold">Original ticket request</p>{source && <p className="mt-1">{source.provider === "jira" ? "Jira" : "ServiceNow"} · {source.reference}</p>}<p className="mt-1 whitespace-pre-wrap">{textValue(revision.intake.requestDetails)}</p>{textValue(revision.intake.ticketUrl) && <p className="mt-1 break-all">{textValue(revision.intake.ticketUrl)}</p>}<p className="mt-2 text-zinc-500">The original draft remains in the immutable record. Complete every required release control before submission.</p></aside>}
       <div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-white">{completingResolutionDraft ? "Complete release details for submission" : revision ? `Revise release request · v${revision.version} → v${revision.version + 1}` : "New release request"}</p>
-            <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
+            <h2 data-release-intake-focus tabIndex={-1} className="text-sm font-semibold text-white">{completingResolutionDraft ? "Complete release details for submission" : revision ? `Revise release request · v${revision.version} → v${revision.version + 1}` : "New release request"}</h2>
+            <p ref={stepHeading} tabIndex={-1} className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Complete each step before submitting</span>
         </div>

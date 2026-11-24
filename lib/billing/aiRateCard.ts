@@ -54,8 +54,6 @@ export const AI_RATE_CARD = {
   creditsExpire: false,
   /** Unused prepaid balance is refundable on request within this many days of purchase. */
   refundWindowDays: 30,
-  /** Counted deployments every organization gets each calendar month (UTC). */
-  freeMonthlyDeployments: 10,
   /** Enterprise evaluation shape (no public seat price). */
   enterpriseEvaluation: { minDays: 30, maxDays: 60, aiCreditGrant: "capped, agreed per evaluation" },
   byok: "available in enterprise evaluations",

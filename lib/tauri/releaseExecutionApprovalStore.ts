@@ -4,7 +4,7 @@ import {sha256ContentHash} from './contentHash';
 import {buildReleaseMergePlan} from './releaseMergePlan';
 import {parseReleaseOperationPlanInput} from './releaseOperationPlanContract';
 import {RELEASE_EXECUTION_APPROVAL_KIND} from './releaseExecutionApprovalKind';
-import {parseReleaseExecutionApprovalDto} from './releaseExecutionApprovalContract';
+import {parseReleaseExecutionApprovalDto, simulationApprovalHistorySchema} from './releaseExecutionApprovalContract';
 import {releaseOperationPlanId,type ReleaseOperationPlanRepo,type ReleaseOperationPlanTransaction,type ReleaseOperationPlanRow} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import type {MergeExecutionScope,ExecutableMergeApproval} from './releaseMergeExecutionStore';
 const identity=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x1f\x7f]/.test(v));
@@ -34,9 +34,56 @@ export function createReleaseExecutionApprovalStore(repo:ReleaseOperationPlanRep
  async function event(tx:ReleaseOperationPlanTransaction,row:ReleaseOperationPlanRow,actor:string){await tx.durableAgentWorkflowEvent.create({data:{workflowRunId:row.id,organizationId:row.organizationId,sequence:row.version,eventType:'release_execution_approval.'+row.currentStep,actorKind:'user',actorId:actor,detailJson:{simulationOnly:true},occurredAt:now()}})}
  function dto(row:ReleaseOperationPlanRow,actor:string,live=true){const {binding:b,p,state}=unpack(row,row.organizationId);return parseReleaseExecutionApprovalDto({id:row.id,version:row.version,planId:b.planId,planVersion:1,planDigest:p.planDigest,status:state.status==='approved'&&!live?'stale':state.status,executorUserId:b.executorUserId,createdAt:b.createdAt,expiresAt:b.expiresAt,canRevoke:state.status==='approved'&&actor===b.approverUserId,simulationOnly:true,providerExecutionAvailable:false})}
  async function change(tx:ReleaseOperationPlanTransaction,row:ReleaseOperationPlanRow,state:z.infer<typeof stateSchema>,actor:string){const result=await tx.durableAgentWorkflow.updateMany({where:{id:row.id,organizationId:row.organizationId,workflowKind:RELEASE_EXECUTION_APPROVAL_KIND,version:0,status:'paused_for_input',currentStep:'approved',attemptCount:0,maxAttempts:1,inputJson:{equals:row.inputJson},leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null},data:{version:{increment:1},status:state.status==='revoked'?'cancelled':'completed',currentStep:state.status,stateJson:state,updatedAt:now(),...(state.status==='revoked'?{cancelRequestedAt:now(),cancelledAt:now()}:{completedAt:now()})}});if(result.count!==1)refuse();const next={...row,version:1,status:state.status==='revoked'?'cancelled':'completed',currentStep:state.status,stateJson:state,updatedAt:now()};await event(tx,next,actor);return next}
+ async function readStored(tx: ReleaseOperationPlanTransaction, scope: MergeExecutionScope, input: {planId: string; executorUserId: string}) {
+  await authority(tx, scope, scope.actorUserId, 'reader');
+  const id = releaseExecutionApprovalId(scope.organizationId, input.planId, input.executorUserId);
+  const row = await tx.durableAgentWorkflow.findFirst({where: {id, organizationId: scope.organizationId, workflowKind: RELEASE_EXECUTION_APPROVAL_KIND}});
+  if (!row) return null;
+  const {binding, p} = unpack(row, scope.organizationId);
+  const events = await history(tx, row);
+  let live = true;
+  try { await current(tx, scope, binding); }
+  catch (error) {
+    if (!(error instanceof ApprovalSourceChanged)) throw error;
+    await actorAuthority(tx, scope, binding);
+    live = false;
+  }
+  return {row, p, live, events};
+ }
  return{
  async issue(rawScope:MergeExecutionScope,input:{planId:string;expectedPlanVersion:1;executorUserId:string;clientRequestId:string}){const scope=scopeSchema.parse(rawScope);identity.parse(input.executorUserId);z.string().uuid().parse(input.clientRequestId);if(input.expectedPlanVersion!==1)refuse();return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'approver');const loaded=await plan(tx,scope,input.planId);if([loaded.row.requestedByUserId,loaded.p.releaseRequesterUserId,input.executorUserId].includes(scope.actorUserId))refuse();const id=releaseExecutionApprovalId(scope.organizationId,input.planId,input.executorUserId),existing=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:RELEASE_EXECUTION_APPROVAL_KIND}});if(existing){const b=unpack(existing,scope.organizationId).binding;if(b.approverUserId!==scope.actorUserId||b.clientRequestId!==input.clientRequestId)refuse();await current(tx,scope,b);await history(tx,existing);return dto(existing,scope.actorUserId)}const at=now();const binding=bindingSchema.parse({format:1,planId:input.planId,planVersion:1,planInput:loaded.p,creatorUserId:loaded.row.requestedByUserId,requesterUserId:loaded.p.releaseRequesterUserId,executorUserId:input.executorUserId,approverUserId:scope.actorUserId,clientRequestId:input.clientRequestId,createdAt:at.toISOString(),expiresAt:loaded.p.deadlineAt});await current(tx,scope,binding);const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:scope.organizationId,workflowKind:RELEASE_EXECUTION_APPROVAL_KIND,objective:'Independent exact execution approval; simulation transport only',status:'paused_for_input',autonomyLevel:'observe',currentStep:'approved',inputJson:binding,stateJson:{status:'approved'},requestedByUserId:scope.actorUserId,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,nextAttemptAt:null,createdAt:at,updatedAt:at}});await event(tx,row,scope.actorUserId);await current(tx,scope,binding);return dto(row,scope.actorUserId)})},
- async get(rawScope:MergeExecutionScope,input:{planId:string;executorUserId:string}){const scope=scopeSchema.parse(rawScope);return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'reader');const id=releaseExecutionApprovalId(scope.organizationId,input.planId,input.executorUserId),row=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:RELEASE_EXECUTION_APPROVAL_KIND}});if(!row)return null;const {binding}=unpack(row,scope.organizationId);await history(tx,row);let live=true;try{await current(tx,scope,binding)}catch(error){if(!(error instanceof ApprovalSourceChanged))throw error;await actorAuthority(tx,scope,binding);live=false}return dto(row,scope.actorUserId,live)})},
+ async get(rawScope: MergeExecutionScope, input: {planId: string; executorUserId: string}) {
+  const scope = scopeSchema.parse(rawScope);
+  return repo.$transaction(async tx => {
+    const saved = await readStored(tx, scope, input);
+    return saved ? dto(saved.row, scope.actorUserId, saved.live) : null;
+  });
+ },
+ async getHistory(rawScope: MergeExecutionScope, input: {
+  requestId: string; requestVersion: number; planId: string; planDigest: string; executorUserId: string;
+ }) {
+  const scope = scopeSchema.parse(rawScope);
+  const {requestId, requestVersion, planId, planDigest, executorUserId} = input;
+  if (planId !== releaseOperationPlanId(scope.organizationId, requestId, requestVersion, planDigest)) refuse();
+  return repo.$transaction(async tx => {
+    const saved = await readStored(tx, scope, input);
+    if (saved && (saved.p.plan.requestId !== requestId || saved.p.plan.requestVersion !== requestVersion || saved.p.planDigest !== planDigest
+      || saved.events.some((event, index) => event.actorKind !== 'user'
+        || (event.detailJson as {simulationOnly?: unknown} | null)?.simulationOnly !== true
+        || event.occurredAt.getTime() < (index === 0 ? saved.row.createdAt : saved.events[index - 1].occurredAt).getTime()))) refuse();
+    const releases = await tx.$queryRaw<Array<{id: string; organizationId: string; requesterUserId: string; version: number}>>`
+      SELECT "id", "organizationId", "requesterUserId", "version" FROM "TauriDeploymentRequest"
+      WHERE "id" = ${requestId} AND "organizationId" = ${scope.organizationId} FOR SHARE`;
+    const release = releases[0];
+    if (releases.length !== 1 || release.id !== requestId || release.organizationId !== scope.organizationId
+      || release.requesterUserId !== executorUserId || release.version !== requestVersion) refuse();
+    await authority(tx, scope, scope.actorUserId, 'reader');
+    return simulationApprovalHistorySchema.parse({
+      requestId, requestVersion, planId, planDigest,
+      events: saved?.events.map(event => ({type: event.eventType.slice('release_execution_approval.'.length), at: event.occurredAt.toISOString()})) ?? [],
+    });
+  });
+ },
  async revoke(rawScope:MergeExecutionScope,input:{id:string;expectedVersion:number;clientRequestId:string}){const scope=scopeSchema.parse(rawScope);z.string().uuid().parse(input.clientRequestId);return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'approver');const row=await load(tx,scope,input.id),{binding,state}=unpack(row,scope.organizationId);if(binding.approverUserId!==scope.actorUserId)refuse();await memberships(tx,scope,[scope.actorUserId]);if(state.status==='revoked'&&state.clientRequestId===input.clientRequestId&&state.expectedVersion===input.expectedVersion)return dto(row,scope.actorUserId,false);if(state.status!=='approved'||input.expectedVersion!==0)refuse();const next=await change(tx,row,{status:'revoked',clientRequestId:input.clientRequestId,expectedVersion:0},scope.actorUserId);await authority(tx,scope,scope.actorUserId,'approver');return dto(next,scope.actorUserId,false)})},
  async readExecutableApproval(tx:ReleaseOperationPlanTransaction,rawScope:MergeExecutionScope,planId:string,operationId?:string):Promise<ExecutableMergeApproval>{const scope=scopeSchema.parse(rawScope),row=await load(tx,scope,releaseExecutionApprovalId(scope.organizationId,planId,scope.actorUserId)),{binding:b,p,state}=unpack(row,scope.organizationId);if(state.status==='revoked'||state.status==='consumed'&&(!operationId||state.executionId!==operationId||operationId!==executionId(scope.organizationId,planId)))refuse();await current(tx,scope,b);return{kind:'verified_release_merge_execution_approval_v1',id:row.id,organizationId:scope.organizationId,planId,planDigest:p.planDigest,executorUserId:b.executorUserId,approverUserId:b.approverUserId,expiresAt:b.expiresAt}},
  async consumeExecutableApproval(tx:ReleaseOperationPlanTransaction,rawScope:MergeExecutionScope,approvalId:string,operationId:string){const scope=scopeSchema.parse(rawScope),row=await load(tx,scope,approvalId),{binding:b,p,state}=unpack(row,scope.organizationId);if(b.executorUserId!==scope.actorUserId||operationId!==executionId(scope.organizationId,b.planId))refuse();await current(tx,scope,b);const operations=await tx.$queryRaw<ReleaseOperationPlanRow[]>`SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${operationId} AND "organizationId"=${scope.organizationId} AND "workflowKind"=${'release_merge_execution_v1'} FOR SHARE`;const operation=operations[0];if(operations.length!==1||operation.id!==operationId||operation.organizationId!==scope.organizationId||operation.workflowKind!=='release_merge_execution_v1'||operation.requestedByUserId!==scope.actorUserId||operation.maxAttempts!==1||operation.approvalProposalId)refuse();const input=operation.inputJson as Record<string,unknown>;if(!input||sha256ContentHash(input.scope)!==sha256ContentHash(scope)||input.planId!==b.planId||!input.approval||typeof input.approval!=='object'||!('id'in input.approval)||input.approval.id!==approvalId)refuse();if(state.status==='approved'&&(operation.currentStep!=='prepared'||operation.attemptCount!==0||operation.version!==0||operation.status!=='paused_for_input'))refuse();await clock(tx,b.expiresAt,p.plan.window.startUtc);if(state.status==='consumed'){if(state.executionId!==operationId)refuse();return}if(state.status!=='approved')refuse();await change(tx,row,{status:'consumed',executionId:operationId},scope.actorUserId);await current(tx,scope,b);await clock(tx,b.expiresAt,p.plan.window.startUtc)}

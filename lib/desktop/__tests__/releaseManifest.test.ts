@@ -26,6 +26,8 @@ describe("desktop release manifest", () => {
         asset("V19-0.1.23-1.x86_64.rpm"),
         asset("V19_0.1.23_amd64.deb"),
         asset("V19_0.1.23_x64-setup.exe"),
+        asset("V19_0.1.23_aarch64.app.tar.gz"),
+        asset("V19_0.1.23_x64.app.tar.gz"),
         ...Object.values(names).flatMap(name => [asset(name), asset(`${name}.asc`)]),
       ],
     };
@@ -48,6 +50,27 @@ describe("desktop release manifest", () => {
     expect(hint).toContain("Make the downloaded AppImage executable");
     expect(hint).not.toContain("Axiom");
     expect(hint).not.toContain("*");
+  });
+
+  it("leaves macOS installers unavailable when the release has updater archives only", async () => {
+    const release = {
+      tag_name: "desktop-v0.1.24",
+      published_at: "2026-11-17T12:00:00Z",
+      draft: false,
+      prerelease: false,
+      assets: [
+        asset("V19_0.1.24_aarch64.app.tar.gz"),
+        asset("V19_0.1.24_x64.app.tar.gz"),
+      ],
+    };
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify([release])));
+
+    const { getDesktopReleaseManifest } = await import("../releaseManifest");
+    const manifest = await getDesktopReleaseManifest();
+
+    expect(manifest.assets["macos-arm"]).toBeNull();
+    expect(manifest.assets["macos-intel"]).toBeNull();
+    expect(manifest.hasAnyAsset).toBe(false);
   });
 
   it("prefers the most broadly installable asset and never infers signing from prose", async () => {

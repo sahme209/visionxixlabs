@@ -100,6 +100,33 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     expect(success?.correlationId).toBeTruthy();
   });
 
+  it("does not claim or create a session after policy evaluation crosses expiration", async () => {
+    const now = Date.now();
+    const clock = vi.spyOn(Date, "now").mockReturnValue(now);
+    try {
+      mocks.findPairing.mockResolvedValue({ ...pendingRecord, expiresAt: new Date(now + 1) });
+      mocks.evaluatePairingPolicy.mockImplementationOnce(async () => {
+        clock.mockReturnValue(now + 1);
+        return { allowed: true };
+      });
+      mocks.updateManyPairing.mockResolvedValue({ count: 1 });
+      mocks.createDesktopSession.mockResolvedValue({ id: "sess-1" });
+
+      const { POST } = await import("../route");
+      const res = await POST(new NextRequest("https://visionxixlabs.com/api/desktop/pair/approve", {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ challenge: pendingRecord.id }),
+      }));
+
+      if (!res) throw new Error("Pairing approval did not return a response");
+      expect(res.status).toBe(410);
+      expect(await res.json()).toEqual({ error: "pairing_expired" });
+      expect(mocks.updateManyPairing).not.toHaveBeenCalled();
+      expect(mocks.createDesktopSession).not.toHaveBeenCalled();
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
   it("records a blocked audit with a safe reason code when policy denies pairing", async () => {
     mocks.evaluatePairingPolicy.mockResolvedValue({
       allowed: false,

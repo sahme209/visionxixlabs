@@ -10,7 +10,7 @@ import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
-import { readIncidentQueue } from "./incidentWebhookReceiver";
+import {readInboundObservations} from "@/lib/observations/inboundObservationStore";
 import { extractPagerDutyOpenIncidents } from "./pagerDutyPullExtractor";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
@@ -36,7 +36,7 @@ export async function buildIncidentResponse(input: BuildIncidentsInput): Promise
   let pdLive: Awaited<ReturnType<typeof extractPagerDutyOpenIncidents>> | null = null;
   if (env.pagerDutyPullEnabled) {
     try {
-      pdLive = await extractPagerDutyOpenIncidents();
+      pdLive = await extractPagerDutyOpenIncidents(input.tenantId);
     } catch {
       pdLive = null;
     }
@@ -53,10 +53,10 @@ export async function buildIncidentResponse(input: BuildIncidentsInput): Promise
   ];
 
   // ---------------------------------------------------------------------------
-  // Drain the inbound webhook queue into per-provider postures.
+  // Read only this workspace’s inbound incidents.
   // ---------------------------------------------------------------------------
-  const inbound = readIncidentQueue();
-  for (const r of inbound) {
+  const inbound = await readInboundObservations(String(input.tenantId), "incident");
+  for (const r of inbound.observations) {
     const target = providers.find((p) => p.provider === r.provider);
     if (target) {
       target.openIncidents.push(r);
@@ -110,7 +110,8 @@ export async function buildIncidentResponse(input: BuildIncidentsInput): Promise
     overallSourceMode: liveCount > 0 ? (liveCount === providers.length ? "live" : "partial_live") : "preview",
     safetyContract: "incident_response_read_only",
     limitations: [
-      "Incident connectors are typed and ready. Inbound webhook + API client wires per provider in follow-up phases.",
+      ...(!inbound.available ? ["Inbound webhook evidence is unavailable."] : []),
+      "Inbound evidence is limited to the most recent 500 observations for this workspace. Provider delivery and source configuration determine coverage.",
       "When live, every IncidentRecord is translated into a Risk Queue entry + Notification + (if approval needed) Approval Packet — autonomy loop drives the routing.",
     ],
     safeNextAction: { label: "Open Risk Queue", href: "/dashboard/risks" },

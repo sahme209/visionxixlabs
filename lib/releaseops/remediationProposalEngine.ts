@@ -58,6 +58,8 @@ export interface RemediationInputs {
     minutesSinceDeploy: number;
     isProduction: boolean;
   };
+  /** Server-supplied identity of the observed incident and release used for review. */
+  reviewBinding?: import("../tauri/incidentRemediationReviewContract").IncidentRemediationBinding;
   /** Optional list of feature flags shipped with this release. */
   releaseFeatureFlags: string[];
   /** Capacity signal — true if observed load suggests saturation. */

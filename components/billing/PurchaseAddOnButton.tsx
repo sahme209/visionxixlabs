@@ -8,7 +8,7 @@
  * uncertain outcomes never silently create a new purchase.
  */
 
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BoltIcon, ArrowPathIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
@@ -21,16 +21,20 @@ interface Props {
 type State =
   | { kind: "idle" }
   | { kind: "initiating" }
-  | { kind: "error"; message: string; finalized?: boolean };
+  | { kind: "error"; message: string; finalized?: boolean; purchaseId?: string };
 
-export function PurchaseAddOnButton({ sku, organizationId, label = "Buy" }: Props) {
+export function PurchaseAddOnButton(props: Props) {
+  return <ScopedPurchaseButton key={JSON.stringify([props.organizationId, props.sku])} {...props} />;
+}
+
+function ScopedPurchaseButton({ sku, organizationId, label = "Buy" }: Props) {
   const router = useRouter();
-  const scope = `${organizationId}:${sku}`;
-  const latestScope = useRef(scope);
-  latestScope.current = scope;
-  const [storedState, setStoredState] = useState<{ scope: string; value: State }>({ scope, value: { kind: "idle" } });
-  const state: State = storedState.scope === scope ? storedState.value : { kind: "idle" };
-  function setState(value: State) { setStoredState({ scope, value }); }
+  const active = useRef(false);
+  const [state, setState] = useState<State>({ kind: "idle" });
+  useLayoutEffect(() => {
+    active.current = true;
+    return () => { active.current = false; };
+  }, []);
 
   async function buy() {
     if (state.kind === "initiating") return;
@@ -50,11 +54,11 @@ export function PurchaseAddOnButton({ sku, organizationId, label = "Buy" }: Prop
         credentials: "include",
         body: JSON.stringify({ sku, organizationId }),
       });
-      const json = await res.json() as { ok?: boolean; url?: string; error?: string; message?: string; purchaseStatus?: string };
-      if (latestScope.current !== scope) return;
+      const json = await res.json() as { ok?: boolean; url?: string; error?: string; message?: string; purchaseStatus?: string; purchaseId?: string };
+      if (!active.current) return;
       if (!res.ok || !json.ok || !json.url) {
         const finalized = json.error === "purchase_already_finalized" && ["paid", "failed", "expired", "refunded", "partially_refunded"].includes(json.purchaseStatus ?? "");
-        setState({ kind: "error", finalized, message: finalized
+        setState({ kind: "error", finalized, purchaseId: json.purchaseId, message: finalized
           ? "This purchase is already finalized. You can explicitly start a separate purchase."
           : json.error === "checkout_reconciliation_required"
             ? "This purchase needs reconciliation. Contact support before starting another purchase."
@@ -63,7 +67,7 @@ export function PurchaseAddOnButton({ sku, organizationId, label = "Buy" }: Prop
       }
       router.push(json.url);
     } catch {
-      if (latestScope.current !== scope) return;
+      if (!active.current) return;
       setState({ kind: "error", message: "Checkout could not be confirmed. Keep this purchase reference and contact support before starting another purchase." });
     }
   }
@@ -101,6 +105,7 @@ export function PurchaseAddOnButton({ sku, organizationId, label = "Buy" }: Prop
         <span role="alert" className="text-[10.5px] text-rose-300 inline-flex items-center gap-1">
           <ExclamationTriangleIcon className="h-3 w-3" />
           {state.message}
+          {state.purchaseId && <span className="break-all">Purchase reference {state.purchaseId}</span>}
         </span>
       )}
     </div>

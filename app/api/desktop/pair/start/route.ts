@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
+import { canonicalAuthOrigin } from "@/lib/auth/canonicalAuthOrigin";
 import { asRecord, optionalString, requireString } from "@/lib/security/validation";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const origin = canonicalAuthOrigin(process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://visionxixlabs.com");
+  if (!origin) return NextResponse.json({ error: "The pairing service is temporarily unavailable." }, { status: 503 });
+
   const challenge = `pair_${randomBytes(32).toString("base64url")}`;
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
   try {
@@ -39,7 +43,7 @@ export async function POST(request: NextRequest) {
       data: { id: challenge, deviceFingerprint, deviceLabel, platform, desktopVersion, expiresAt },
     });
 
-    const verificationUrl = new URL("/desktop/connect", request.nextUrl.origin);
+    const verificationUrl = new URL("/desktop/connect", origin);
     verificationUrl.searchParams.set("challenge", challenge);
     verificationUrl.searchParams.set("intent", intent);
     return NextResponse.json({

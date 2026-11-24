@@ -1,3 +1,4 @@
+import {exactApprovalHistorySchema} from './releaseExecutionApprovalContract';
 import {GovernanceBaselineStale} from '@/lib/governance/intelligence/errors';
 import 'server-only';
 import {z} from 'zod';
@@ -36,9 +37,53 @@ export function createReleaseProviderMergeApprovalStore(repo:ReleaseOperationPla
  function dto(row:ReleaseOperationPlanRow,actor:string,live=true){const {binding:b,p,state}=unpack(row,row.organizationId);return parseReleaseProviderMergeApprovalDto({id:row.id,version:row.version,planId:b.planId,planVersion:1,planDigest:p.planDigest,status:state.status==='approved'&&!live?'stale':state.status,executorUserId:b.executorUserId,createdAt:b.createdAt,expiresAt:b.expiresAt,canRevoke:state.status==='approved'&&actor===b.approverUserId,mode:'provider',sourcePolicy:b.sourcePolicy,...(b.governanceBaselineDigest?{governanceBaselineDigest:b.governanceBaselineDigest}:{})})}
  async function change(tx:ReleaseOperationPlanTransaction,row:ReleaseOperationPlanRow,state:z.infer<typeof stateSchema>,actor:string){const result=await tx.durableAgentWorkflow.updateMany({where:{id:row.id,organizationId:row.organizationId,workflowKind:RELEASE_PROVIDER_MERGE_APPROVAL_KIND,version:0,status:'paused_for_input',currentStep:'approved',attemptCount:0,maxAttempts:1,inputJson:{equals:row.inputJson},leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null},data:{version:{increment:1},status:state.status==='revoked'?'cancelled':'completed',currentStep:state.status,stateJson:state,updatedAt:now(),...(state.status==='revoked'?{cancelRequestedAt:now(),cancelledAt:now()}:{completedAt:now()})}});if(result.count!==1)refuse();const next={...row,version:1,status:state.status==='revoked'?'cancelled':'completed',currentStep:state.status,stateJson:state,updatedAt:now()};await event(tx,next,actor);return next}
  async function readProviderApproval(tx:ReleaseOperationPlanTransaction,rawScope:ProviderMergeScope,planId:string,operationId?:string):Promise<ProviderMergeApproval>{const scope=scopeSchema.parse(rawScope),row=await load(tx,scope,releaseProviderMergeApprovalId(scope.organizationId,planId,scope.actorUserId)),{binding:b,p,state}=unpack(row,scope.organizationId);if(state.status==='revoked'||state.status==='consumed'&&(!operationId||state.executionId!==operationId||operationId!==executionId(scope.organizationId,planId)))refuse();await current(tx,scope,b);return{kind:'verified_release_provider_merge_approval_v1',id:row.id,organizationId:scope.organizationId,planId,planDigest:p.planDigest,executorUserId:b.executorUserId,approverUserId:b.approverUserId,expiresAt:b.expiresAt,sourcePolicy:b.sourcePolicy,...(b.governanceBaselineDigest?{governanceBaselineDigest:b.governanceBaselineDigest}:{})}}
+ async function readStored(tx:ReleaseOperationPlanTransaction,scope:ProviderMergeScope,input:{planId:string;executorUserId:string},verifyLive:boolean){
+  await authority(tx,scope,scope.actorUserId,'reader');
+  const id=releaseProviderMergeApprovalId(scope.organizationId,input.planId,input.executorUserId);
+  const row=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:RELEASE_PROVIDER_MERGE_APPROVAL_KIND}});
+  if(!row)return null;
+  const {binding,p}=unpack(row,scope.organizationId);
+  const events=await history(tx,row);
+  if(!verifyLive){await actorAuthority(tx,scope,binding);return {row,p,events,live:false}}
+  let live=true;
+  try{await current(tx,scope,binding)}
+  catch(error){if(!(error instanceof ApprovalSourceChanged)&&!(error instanceof GovernanceBaselineStale))throw error;await actorAuthority(tx,scope,binding);live=false}
+  return {row,p,events,live};
+ }
  return{
  async issue(rawScope:ProviderMergeScope,input:{planId:string;expectedPlanVersion:1;sourcePolicy:'expected_head_observed_base';executorUserId:string;clientRequestId:string;governanceBaselineDigest?:string}){const scope=scopeSchema.parse(rawScope);identity.parse(input.executorUserId);if(input.governanceBaselineDigest!==undefined)z.string().regex(/^[a-f0-9]{64}$/).parse(input.governanceBaselineDigest);z.string().uuid().parse(input.clientRequestId);if(input.expectedPlanVersion!==1||input.sourcePolicy!=='expected_head_observed_base')refuse();return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'approver');const loaded=await plan(tx,scope,input.planId);if([loaded.row.requestedByUserId,loaded.p.releaseRequesterUserId,input.executorUserId].includes(scope.actorUserId))refuse();const id=releaseProviderMergeApprovalId(scope.organizationId,input.planId,input.executorUserId),existing=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:RELEASE_PROVIDER_MERGE_APPROVAL_KIND}});if(existing){const b=unpack(existing,scope.organizationId).binding;if(b.governanceBaselineDigest!==input.governanceBaselineDigest||b.approverUserId!==scope.actorUserId||b.clientRequestId!==input.clientRequestId||b.approverSessionId!==scope.sessionId)refuse();await current(tx,scope,b);await history(tx,existing);return dto(existing,scope.actorUserId)}const at=now();const binding=bindingSchema.parse({format:1,mode:'provider',...(input.governanceBaselineDigest?{governanceBaselineDigest:input.governanceBaselineDigest}:{}),sourcePolicy:input.sourcePolicy,approverSessionId:scope.sessionId,planId:input.planId,planVersion:1,planInput:loaded.p,creatorUserId:loaded.row.requestedByUserId,requesterUserId:loaded.p.releaseRequesterUserId,executorUserId:input.executorUserId,approverUserId:scope.actorUserId,clientRequestId:input.clientRequestId,createdAt:at.toISOString(),expiresAt:loaded.p.deadlineAt});await current(tx,scope,binding);const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:scope.organizationId,workflowKind:RELEASE_PROVIDER_MERGE_APPROVAL_KIND,objective:'Independent provider-purpose exact merge approval',status:'paused_for_input',autonomyLevel:'observe',currentStep:'approved',inputJson:binding,stateJson:{status:'approved'},requestedByUserId:scope.actorUserId,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,nextAttemptAt:null,createdAt:at,updatedAt:at}});await event(tx,row,scope.actorUserId);await current(tx,scope,binding);return dto(row,scope.actorUserId)})},
- async get(rawScope:ProviderMergeScope,input:{planId:string;executorUserId:string}){const scope=scopeSchema.parse(rawScope);return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'reader');const id=releaseProviderMergeApprovalId(scope.organizationId,input.planId,input.executorUserId),row=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:RELEASE_PROVIDER_MERGE_APPROVAL_KIND}});if(!row)return null;const {binding}=unpack(row,scope.organizationId);await history(tx,row);let live=true;try{await current(tx,scope,binding)}catch(error){if(!(error instanceof ApprovalSourceChanged)&&!(error instanceof GovernanceBaselineStale))throw error;await actorAuthority(tx,scope,binding);live=false}return dto(row,scope.actorUserId,live)})},
+ async get(rawScope:ProviderMergeScope,input:{planId:string;executorUserId:string}){
+  const scope=scopeSchema.parse(rawScope);
+  return repo.$transaction(async tx=>{
+   const saved=await readStored(tx,scope,input,true);
+   return saved?dto(saved.row,scope.actorUserId,saved.live):null;
+  });
+ },
+ async getHistory(rawScope:ProviderMergeScope,input:{requestId:string;requestVersion:number;planId:string;planDigest:string;executorUserId:string;intakeDigest:string}){
+  const scope=scopeSchema.parse(rawScope);
+  const {requestId,requestVersion,planId,planDigest,executorUserId,intakeDigest}=input;
+  if(planId!==releaseOperationPlanId(scope.organizationId,requestId,requestVersion,planDigest))refuse();
+  return repo.$transaction(async tx=>{
+   const saved=await readStored(tx,scope,input,false);
+   if(saved&&(saved.p.plan.requestId!==requestId||saved.p.plan.requestVersion!==requestVersion||saved.p.planDigest!==planDigest
+    ||saved.events.some((event,index)=>event.actorKind!=='user'
+      ||(event.detailJson as {mode?:unknown;sourcePolicy?:unknown}|null)?.mode!=='provider'
+      ||(event.detailJson as {sourcePolicy?:unknown}).sourcePolicy!=='expected_head_observed_base'
+      ||event.occurredAt<(index?saved.events[index-1].occurredAt:saved.row.createdAt))
+    ||saved.events[saved.events.length-1].occurredAt<saved.row.updatedAt))refuse();
+   const releases=await tx.$queryRaw<Array<{id:string;organizationId:string;version:number;requesterUserId:string;intakeJson:unknown}>>`
+     SELECT "id","organizationId","version","requesterUserId","intakeJson" FROM "TauriDeploymentRequest"
+     WHERE "id"=${requestId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
+   const release=releases[0];
+   if(releases.length!==1||release.id!==requestId||release.organizationId!==scope.organizationId
+    ||release.version!==requestVersion||release.requesterUserId!==executorUserId
+    ||sha256ContentHash({requestVersion,intake:release.intakeJson})!==intakeDigest
+    ||saved&&saved.p.plan.intakeDigest!==intakeDigest)refuse();
+   await authority(tx,scope,scope.actorUserId,'reader');
+   return exactApprovalHistorySchema.parse({requestId,requestVersion,planId,planDigest,
+    events:saved?.events.map(event=>({type:event.eventType.slice('release_provider_merge_approval.'.length),at:event.occurredAt.toISOString()}))??[]});
+  });
+ },
  async revoke(rawScope:ProviderMergeScope,input:{id:string;expectedVersion:number;clientRequestId:string}){const scope=scopeSchema.parse(rawScope);z.string().uuid().parse(input.clientRequestId);z.number().int().min(0).max(2147483647).parse(input.expectedVersion);return repo.$transaction(async tx=>{await authority(tx,scope,scope.actorUserId,'approver');const row=await load(tx,scope,input.id),{binding,state}=unpack(row,scope.organizationId);if(binding.approverUserId!==scope.actorUserId)refuse();await memberships(tx,scope,[scope.actorUserId]);if(state.status==='revoked'&&state.clientRequestId===input.clientRequestId&&state.expectedVersion===input.expectedVersion)return dto(row,scope.actorUserId,false);if(state.status!=='approved'||input.expectedVersion!==0)refuse();const next=await change(tx,row,{status:'revoked',clientRequestId:input.clientRequestId,expectedVersion:0},scope.actorUserId);await authority(tx,scope,scope.actorUserId,'approver');return dto(next,scope.actorUserId,false)})},
  readProviderApproval,
  async readGovernanceProviderApproval(tx:ReleaseOperationPlanTransaction,rawScope:ProviderMergeScope,planId:string,baselineDigest:string,operationId?:string){const scope=scopeSchema.parse(rawScope);z.string().regex(/^[a-f0-9]{64}$/).parse(baselineDigest);const approval=await readProviderApproval(tx,scope,planId,operationId);if(approval.governanceBaselineDigest!==baselineDigest)refuse();return{organizationId:scope.organizationId,baselineDigest,planDigest:approval.planDigest,requesterUserId:scope.actorUserId,approverUserId:approval.approverUserId,currentAuthorityVerified:true as const,expiresAt:approval.expiresAt}},

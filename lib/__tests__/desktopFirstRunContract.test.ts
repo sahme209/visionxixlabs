@@ -215,16 +215,18 @@ describe("desktop first-run contract", () => {
     expect(app).toContain('useState<CustomerView>("agent")');
     expect(sidebar).toContain('import type { CustomerView } from "../App"');
     expect(app).toContain("<AgentChatView ");
-    expect(app).toContain("<DeploymentRequestsView />");
+    expect(app).toContain("<DeploymentRequestsView ");
     expect(app).not.toContain('from "./lib/mockData"');
     expect(existsSync(join(root, "desktop/src/lib/mockData.ts"))).toBe(false);
     expect(app).not.toContain("<GitHubAppView");
     expect(app).not.toContain("<AgiCockpitView");
     expect(app).not.toContain("<BillingView");
-    expect(sidebar).toContain("Agent");
-    expect(sidebar).toContain("Release workspace");
+    const navigation = readFileSync(join(root, "desktop/src/lib/customerNavigation.ts"), "utf8");
+    expect(sidebar).toContain("CUSTOMER_NAVIGATION.map");
+    expect(navigation).toContain('id: "agent", label: "Agent"');
+    expect(navigation).toContain('id: "deployment-requests", label: "Deployments"');
     for (const hiddenLabel of ["AGI cockpit", "GitHub App", "Billing & usage", "Simulations", "Connector health"]) {
-      expect(sidebar).not.toContain(hiddenLabel);
+      expect(navigation).not.toContain(hiddenLabel);
     }
   });
 

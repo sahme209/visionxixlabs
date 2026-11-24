@@ -24,7 +24,7 @@ export function AxiomPublicHero() {
           <div ref={preview} className="public-home-workspace" data-preview-active={motion.active} data-preview-progress={motion.fraction}>
             <div className="public-home-editor">
               <div className="public-home-file">release.ts <span>Sample proposal</span></div>
-              <pre aria-label="Illustrative release request"><code style={{display:"block",clipPath:motion.fraction<1?`inset(0 0 ${(1-motion.fraction)*100}% 0)`:undefined}}>{`// A small change. A clear review.
+              <pre tabIndex={0} role="group" aria-label="Illustrative release request" className="focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-300"><code style={{display:"block",clipPath:motion.fraction<1?`inset(0 0 ${(1-motion.fraction)*100}% 0)`:undefined}}>{`// A small change. A clear review.
 const request = {
   repository: "acme/customer-web",
   branch: "feature/timeout",

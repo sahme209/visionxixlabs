@@ -82,3 +82,15 @@ it('does not replay the same issue nonce against a changed baseline',async()=>{c
 it.each(['remove','change','retrofit'])('refuses %s of the recorded baseline binding against immutable approval history',async mode=>{if(mode==='retrofit'){const f=approvals();await f.issue();f.rows[0].inputJson.governanceBaselineDigest='d'.repeat(64);await expect(f.repo.$transaction((tx:any)=>f.approvalStore.readGovernanceProviderApproval(tx,f.scope,f.planId,'d'.repeat(64)))).rejects.toThrow();return}const f=governedApproval();await f.store.issue(f.approver,f.input);if(mode==='remove')delete f.rows[0].inputJson.governanceBaselineDigest;else f.rows[0].inputJson.governanceBaselineDigest='e'.repeat(64);await expect(f.repo.$transaction((tx:any)=>f.store.readProviderApproval(tx,f.scope,f.planId))).rejects.toThrow()});
 
 it('shows saved policy-invalidated approval as stale but never hides current authorization failures',async()=>{const f=governedApproval();await f.store.issue(f.approver,f.input);f.assertGovernanceBaseline.mockRejectedValue(new GovernanceBaselineStale('baseline_changed'));expect(await f.store.get(f.scope,{planId:f.planId,executorUserId:'executor'})).toMatchObject({status:'stale',governanceBaselineDigest:f.governanceBaselineDigest});await expect(f.repo.$transaction((tx:any)=>f.store.readProviderApproval(tx,f.scope,f.planId))).rejects.toThrow();f.assertGovernanceBaseline.mockRejectedValue(Error('caller revoked'));await expect(f.store.get(f.scope,{planId:f.planId,executorUserId:'executor'})).rejects.toThrow('caller revoked')});
+
+it('projects provider approval history with current role checks and without returning actor identity',async()=>{
+ const f=approvals();
+ const approval=await f.approvalStore.issue(f.approver,{planId:f.planId,expectedPlanVersion:1,sourcePolicy:'expected_head_observed_base',
+  executorUserId:f.release.requesterUserId,clientRequestId:'11111111-1111-4111-8111-111111111111'});
+ const input={requestId:f.release.id,requestVersion:3,planId:f.planId,planDigest:approval.planDigest,intakeDigest:f.plan.inputJson.plan.intakeDigest,executorUserId:f.release.requesterUserId};
+ expect((await f.approvalStore.getHistory(f.approver,input)).events).toEqual([{type:'approved',at:approval.createdAt}]);
+ f.assertCurrent.mockRejectedValueOnce(new Error('session revoked'));
+ await expect(f.approvalStore.getHistory(f.approver,input)).rejects.toThrow('session revoked');
+ f.events[0].detailJson={simulationOnly:true};
+ await expect(f.approvalStore.getHistory(f.approver,input)).rejects.toThrow();
+});

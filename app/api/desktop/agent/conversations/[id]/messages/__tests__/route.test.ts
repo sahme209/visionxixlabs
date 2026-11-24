@@ -334,10 +334,10 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
   });
 
-  it("rejects a disabled slash skill before calling an AI provider", async () => {
-    mocks.findManySkills.mockResolvedValue([{ skillId: "release-readiness", status: "disabled" }]);
+  it.each(["release-readiness", "airflow-diagnostics", "batch-diagnostics", "repository-code-review", "debugging-investigation", "terraform-review"])("rejects disabled %s before calling an AI provider", async skillId => {
+    mocks.findManySkills.mockResolvedValue([{ skillId, status: "disabled" }]);
     const { POST } = await import("../route");
-    const res = await POST(request({ message: "/release-readiness check this release" }), params);
+    const res = await POST(request({ message: `/${skillId} inspect recorded evidence` }), params);
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.reply).toMatch(/not enabled/i);
@@ -353,6 +353,118 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
       skillContext: expect.stringContaining("Explicitly invoked skill: Release readiness check"),
     }));
+  });
+
+  it("applies the enabled history skill ceiling even when deep operations were requested", async () => {
+    mocks.findManySkills.mockResolvedValue([{ skillId: "deployment-history-review", status: "enabled" }]);
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Recent recordings reviewed." });
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      message: "/deployment-history-review review staging",
+      workspaceContext: { operationMode: "deepops" },
+    }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      operationMode: "inspect",
+      initialToolCall: expect.objectContaining({toolName: "list_environments", args: {}}),
+      inspectionToolNames: ["list_environments", "list_deployment_executions"],
+      skillContext: expect.stringContaining("Explicitly invoked skill: Deployment history review"),
+    }));
+  });
+
+  it.each([
+    {skillId: "airflow-diagnostics", tools: ["list_airflow_dags", "read_airflow_runs", "read_airflow_tasks"]},
+    {skillId: "batch-diagnostics", tools: ["list_prefect_flows", "read_prefect_flow_runs", "read_prefect_task_runs", "list_dagster_jobs", "read_dagster_runs", "list_argo_templates", "list_argo_workflows"]},
+    {skillId: "repository-code-review", tools: ["list_integrations", "list_github_files", "inspect_github_repository", "search_github_code", "read_github_file"]},
+    {skillId: "debugging-investigation", tools: ["list_integrations", "list_github_files", "inspect_github_repository", "search_github_code", "read_github_file"]},
+    {skillId: "terraform-review", tools: ["list_integrations", "list_github_files", "search_github_code", "read_github_file"]},
+  ])("keeps the $skillId invocation within its observation tools", async ({skillId, tools}) => {
+    mocks.findManySkills.mockResolvedValue([{skillId, status: "enabled"}]);
+    mocks.runDecisionLoop.mockResolvedValue({kind: "final", message: "Read the recorded run state."});
+    const {POST} = await import("../route");
+    const res = await POST(request({
+      message: `/${skillId} inspect the current evidence`,
+      workspaceContext: {operationMode: "deepops"},
+    }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      operationMode: "inspect",
+      inspectionToolNames: tools,
+    }));
+  });
+
+  it("requires the history read to use an observed environment before querying executions", async () => {
+    mocks.findManySkills.mockResolvedValue([{skillId: "deployment-history-review", status: "enabled"}]);
+    mocks.executeReadOnlyTool
+      .mockResolvedValueOnce({ok: true, result: [{id: "env_staging", name: "Staging"}]})
+      .mockResolvedValueOnce({ok: true, result: []});
+    mocks.runDecisionLoop.mockImplementation(async ({executeReadOnlyTool}) => {
+      const required = {ok: false, error: "observed_environment_required"};
+      expect(await executeReadOnlyTool("list_deployment_executions", {})).toEqual(required);
+      await executeReadOnlyTool("list_environments", {});
+      expect(await executeReadOnlyTool("list_deployment_executions", {environmentId: "unobserved"})).toEqual(required);
+      expect(await executeReadOnlyTool("list_deployment_executions", {environmentId: "env_staging"})).toEqual({ok: true, result: []});
+      return {kind: "final", message: "No recorded staging executions."};
+    });
+    const { POST } = await import("../route");
+    const result = await POST(request({message: "/deployment-history-review staging"}), params);
+    expect(result.status).toBe(200);
+    expect(mocks.executeReadOnlyTool.mock.calls.map(call => call.slice(2, 4))).toEqual([
+      ["list_environments", {}], ["list_deployment_executions", {environmentId: "env_staging"}],
+    ]);
+  });
+
+  it("binds the AWS observation skill to the exact requested and currently observed connection", async () => {
+    mocks.findManySkills.mockResolvedValue([{skillId: "aws-ec2-observation", status: "enabled"}]);
+    mocks.executeReadOnlyTool
+      .mockResolvedValueOnce({ok: true, result: {kind: "aws_connection_catalog", accounts: [
+        {id: "selected-connection", accountId: "123456789012", connected: true, revokedAt: null},
+        {id: "other-connection", accountId: "987654321098", connected: true, revokedAt: null},
+      ]}})
+      .mockResolvedValueOnce({ok: false, error: "cloud_observation_unavailable"})
+      .mockResolvedValueOnce({ok: false, error: "cloud_observation_unavailable"});
+    mocks.runDecisionLoop.mockImplementation(async ({executeReadOnlyTool}) => {
+      const required = {ok: false, error: "observed_aws_account_required"};
+      expect(await executeReadOnlyTool("read_aws_inventory", {accountId: "selected-connection"})).toEqual(required);
+      await executeReadOnlyTool("list_cloud_accounts", {});
+      expect(await executeReadOnlyTool("read_aws_inventory", {accountId: "other-connection"})).toEqual(required);
+      expect(await executeReadOnlyTool("read_aws_inventory", {accountId: "selected-connection"}))
+        .toEqual({ok: false, error: "cloud_observation_unavailable"});
+      await executeReadOnlyTool("list_cloud_accounts", {});
+      expect(await executeReadOnlyTool("read_aws_inventory", {accountId: "selected-connection"})).toEqual(required);
+      return {kind: "final", message: "Inventory was unavailable."};
+    });
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      message: "/aws-ec2-observation for AWS account 123456789012",
+      workspaceContext: {operationMode: "deepops"},
+    }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      operationMode: "inspect",
+      inspectionToolNames: ["list_cloud_accounts", "read_aws_inventory"],
+      initialToolCall: expect.objectContaining({toolName: "list_cloud_accounts"}),
+    }));
+    expect(mocks.executeReadOnlyTool.mock.calls.map(call => call.slice(2, 4))).toEqual([
+      ["list_cloud_accounts", {}], ["read_aws_inventory", {accountId: "selected-connection"}], ["list_cloud_accounts", {}],
+    ]);
+  });
+
+  it.each(["", "123456789012 or 987654321098"])("does not observe inventory without one current AWS account (%s)", async (requested) => {
+    mocks.findManySkills.mockResolvedValue([{skillId: "aws-ec2-observation", status: "enabled"}]);
+    mocks.executeReadOnlyTool.mockResolvedValueOnce({ok: true, result: {kind: "aws_connection_catalog", accounts: [
+      {id: "selected-connection", accountId: "123456789012", connected: true, revokedAt: null},
+    ]}});
+    mocks.runDecisionLoop.mockImplementation(async ({executeReadOnlyTool}) => {
+      await executeReadOnlyTool("list_cloud_accounts", {});
+      expect(await executeReadOnlyTool("read_aws_inventory", {accountId: "selected-connection"}))
+        .toEqual({ok: false, error: "observed_aws_account_required"});
+      return {kind: "final", message: "Choose one AWS account."};
+    });
+    const { POST } = await import("../route");
+    const res = await POST(request({message: `/aws-ec2-observation ${requested}`}), params);
+    expect(res.status).toBe(200);
+    expect(mocks.executeReadOnlyTool).toHaveBeenCalledTimes(1);
   });
 
   it("never auto-executes — a proposal outcome always comes back pending, never pre-approved", async () => {

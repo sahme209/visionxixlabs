@@ -18,3 +18,12 @@ it("refuses a valid detail for a different requested task",async()=>{wire.mockRe
 it("cancels a late response body after context invalidation",async()=>{let resolve!:(value:Response)=>void;wire.mockReturnValue(new Promise<Response>(r=>{resolve=r}));const pending=client.listSavedBotTasks();client.setSession("axm.desk.other");await pending;const cancel=vi.fn();resolve(new Response(new ReadableStream({cancel})));await vi.waitFor(()=>expect(cancel).toHaveBeenCalled())});
 
 it("binds history to the requested task identifier",async()=>{wire.mockResolvedValue(response({taskId:"bot_"+"b".repeat(64),events:[],nextBeforeVersion:null}));expect((await client.savedBotTaskHistory(id)).ok).toBe(false)});
+
+it("accepts only versions strictly older than the requested history cursor",async()=>{
+  const event={version:1,eventType:"draft.updated",content:{title:task.title,instruction:task.instruction,context:task.context},occurredAt:task.updatedAt};
+  wire.mockResolvedValueOnce(response({taskId:id,events:[event],nextBeforeVersion:null}));
+  expect((await client.savedBotTaskHistory(id,1)).ok).toBe(false);
+  const older={...event,version:0,eventType:"draft.created"};
+  wire.mockResolvedValueOnce(response({taskId:id,events:[older],nextBeforeVersion:null}));
+  expect(await client.savedBotTaskHistory(id,1)).toMatchObject({ok:true,data:{events:[older]}});
+});

@@ -22,3 +22,11 @@ it('offers public guidance and correctly labels authenticated help',()=>{
  for(const [name,href] of [['Download the desktop app','/download'],['Illustrative demo','/demo'],['Review and execution guidance','/docs/approval-workflow'],['Account help (sign-in required)','/account/help']])
   expect(screen.getByRole('link',{name}).getAttribute('href')).toBe(href);
 });
+it('documents the available desktop map controls and points readers back to the original record', () => {
+ const {container} = render(createElement(SurfacesPage));
+ const guide = container.querySelector('#workflow-map');
+ expect(guide?.textContent).toContain('In desktop versions that include it');
+ for (const label of ['Workflow map', 'Fit overview', 'Read the guide', 'Step list', 'Close details', 'Back to guides'])
+  expect(guide?.textContent).toContain(label);
+ expect(guide?.textContent).toContain('Use the original workspace record');
+});

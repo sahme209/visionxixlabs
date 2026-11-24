@@ -204,16 +204,16 @@ describe("POST /api/desktop/environments/deploy", () => {
     expect(mocks.releaseDeploymentDispatch).not.toHaveBeenCalled();
   });
 
-  it("blocks before workflow dispatch when the deployment allowance is exhausted", async () => {
+  it("blocks before workflow dispatch when a deployment claim cannot be reserved", async () => {
     mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
     mocks.findTarget.mockResolvedValue(target);
     mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
-    mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted", used: 10, limit: 10 });
+    mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_unavailable" });
 
     const { POST } = await import("../route");
     const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
-    expect(res.status).toBe(429);
-    await expect(res.json()).resolves.toMatchObject({ error: "deployment_quota_exhausted" });
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toMatchObject({ error: "deployment_quota_unavailable" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 

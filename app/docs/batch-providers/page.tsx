@@ -15,7 +15,7 @@ export default function BatchProvidersDocsPage() {
    <p>V19 validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.</p>
   </DocSection>
   <DocSection id="urls" kicker="02" title="Accepted addresses">
-   <dl className="space-y-4">
+   <dl className="space-y-4 wrap-anywhere">
     <div><dt className="font-semibold text-white">Prefect</dt><dd>Prefect Cloud <code>https://api.prefect.cloud/api/accounts/…/workspaces/…</code>, or a self-hosted <code>https://…/api</code>.</dd></div>
     <div><dt className="font-semibold text-white">Dagster</dt><dd>Dagster+ <code>https://your-org.dagster.cloud/deployment</code>, or a self-hosted root.</dd></div>
     <div><dt className="font-semibold text-white">Argo Workflows</dt><dd>The Argo Server address (HTTPS) and one namespace. In-cluster and private addresses are refused.</dd></div>

@@ -96,3 +96,13 @@ it('does not advertise secondary providers when the server registers none',async
  expect(screen.getByLabelText('Email')).toBeTruthy();
  expect(ports.signIn).not.toHaveBeenCalled();
 });
+
+it("offers verification recovery only for an invalid verification return", async () => {
+ ports.error='VerificationLinkInvalid';render(createElement(SignInPage));
+ expect((await screen.findByRole('alert')).textContent).toContain("invalid, expired, or has already been used");
+ const recovery=screen.getByRole('region',{name:'Email verification recovery'});
+ expect(recovery.contains(screen.getByRole('button',{name:'Request verification link'}))).toBe(true);
+ expect(screen.getByLabelText('Verification email address')).toBeTruthy();
+ expect(screen.getByLabelText('Email')).toBeTruthy();
+ expect(ports.signIn).not.toHaveBeenCalled();
+});

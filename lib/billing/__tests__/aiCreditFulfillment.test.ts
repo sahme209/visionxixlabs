@@ -16,7 +16,7 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-import { fulfillAICreditCheckout, reverseAICreditRefund } from "../aiCreditFulfillment";
+import { fulfillAICreditCheckout, recordAICreditCheckoutFailure, reverseAICreditRefund } from "../aiCreditFulfillment";
 
 const purchase = {
   id: "purchase-1",
@@ -27,6 +27,8 @@ const purchase = {
   stripeCheckoutSessionId: "cs_test_1",
   status: "pending",
   appliedAt: null,
+  refundedAmountCents: 0,
+  reversedAICreditsCents: 0,
 };
 
 describe("AI credit Stripe fulfillment", () => {
@@ -52,6 +54,39 @@ describe("AI credit Stripe fulfillment", () => {
       { id: "cs_test_1", payment_status: "paid", payment_intent: "pi_test_1", amount_total: 1, currency: "usd", metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: "purchase-1", organizationId: "org-1", sku: "ai_credits_small" } },
     )).rejects.toThrow("ai_credit_checkout_invalid");
     expect(mocks.eventCreate).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["checkout.session.expired", "expired", null],
+    ["checkout.session.async_payment_failed", "failed", "pi_test_1"],
+  ])("binds %s to the exact pending purchase and session", async (type, status, intentId) => {
+    await recordAICreditCheckoutFailure(
+      { id: "evt_failure", type },
+      {
+        id: "cs_test_1", payment_status: "unpaid", payment_intent: intentId,
+        amount_total: 1000, currency: "usd",
+        metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: "purchase-1", organizationId: "org-1", sku: "ai_credits_small" },
+      },
+    );
+    expect(mocks.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: "purchase-1", organizationId: "org-1", sku: "ai_credits_small",
+        pricePaidCents: 1000, status: "pending", appliedAt: null,
+        AND: [
+          { OR: [{ stripeCheckoutSessionId: "cs_test_1" }, { stripeCheckoutSessionId: null }] },
+          { OR: [{ stripePaymentIntentId: intentId }, { stripePaymentIntentId: null }] },
+        ],
+      },
+      data: { status, stripeCheckoutSessionId: "cs_test_1" },
+    });
+  });
+
+  it("refuses a failure event without the signed checkout binding", async () => {
+    await expect(recordAICreditCheckoutFailure(
+      { id: "evt_failure", type: "checkout.session.expired" },
+      { metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: "purchase-1" } },
+    )).rejects.toThrow("ai_credit_checkout_invalid");
+    expect(mocks.updateMany).not.toHaveBeenCalled();
   });
 
   it("reverses credits proportionally from Stripe's cumulative refund amount", async () => {
@@ -110,6 +145,17 @@ describe("AI credit Stripe fulfillment", () => {
     expect(mocks.updatePurchase).not.toHaveBeenCalled();
   });
 
+  it("keeps a pending purchase pending when a refund is matched by payment intent alone", async () => {
+    mocks.findPurchase.mockResolvedValue({ ...purchase, stripePaymentIntentId: "pi_test_1" });
+    await reverseAICreditRefund(
+      { id: "evt_legacy_retry", type: "charge.refunded" },
+      { payment_intent: "pi_test_1", amount_refunded: 250, currency: "usd" },
+    );
+    expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ status: "pending", refundedAmountCents: 250, reversedAICreditsCents: 250 }),
+    }));
+  });
+
   it("fully revokes credits on a full refund", async () => {
     mocks.findPurchase.mockResolvedValue({ ...purchase, status: "paid", stripePaymentIntentId: "pi_test_1" });
     await reverseAICreditRefund(
@@ -121,3 +167,24 @@ describe("AI credit Stripe fulfillment", () => {
     }));
   });
 });
+
+it.each([[250, "partially_refunded"], [1000, "refunded"]])(
+  "deducts an early %i cent refund before making any checkout credits spendable",
+  async (amount, expectedStatus) => {
+    const stored = {...purchase, stripePaymentIntentId: null as string | null};
+    const metadata = {purpose: "axiom_ai_credit_add_on", addOnPurchaseId: stored.id, organizationId: stored.organizationId, sku: stored.sku};
+    mocks.findPurchase.mockImplementation(async () => ({...stored}));
+    mocks.updateMany.mockImplementation(async ({data}) => {Object.assign(stored, data); return {count:1};});
+    mocks.updatePurchase.mockImplementation(async ({data}) => Object.assign(stored, data));
+
+    await reverseAICreditRefund({id:"evt_early", type:"charge.refunded"}, {payment_intent:"pi_original",currency:"usd",amount_refunded:amount,metadata});
+    expect(stored).toMatchObject({status:"pending", stripePaymentIntentId:"pi_original", reversedAICreditsCents:amount});
+    expect(mocks.findPurchase).toHaveBeenCalledWith({where:{id:stored.id}});
+    const session = {id:"cs_test_1",payment_status:"paid",payment_intent:"pi_original",amount_total:1000,currency:"usd",metadata};
+    await expect(fulfillAICreditCheckout({id:"evt_wrong",type:"checkout.session.completed"}, {...session,payment_intent:"pi_other"})).rejects.toThrow("ai_credit_purchase_mismatch");
+    for (const id of ["evt_paid", "evt_paid_again"]) {
+      await fulfillAICreditCheckout({id,type:"checkout.session.completed"},session);
+    }
+    expect(stored).toMatchObject({status:expectedStatus, reversedAICreditsCents:amount});
+  },
+);

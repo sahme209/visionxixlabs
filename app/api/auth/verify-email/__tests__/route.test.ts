@@ -52,11 +52,11 @@ vi.mock("@/lib/db", () => {
 
 import { hashEmailVerificationToken } from "@/lib/auth/emailVerification";
 import { GET } from "../route";
-const request = (token = "private-proof-token", callbackUrl?: string) => {
+const request = (token = "private-proof-token", callbackUrl?: string, accept?: string) => {
   const url = new URL("https://example.test/api/auth/verify-email");
   url.searchParams.set("token", token);
   if (callbackUrl) url.searchParams.set("callbackUrl", callbackUrl);
-  return new NextRequest(url);
+  return new NextRequest(url, accept ? { headers: { accept } } : undefined);
 };
 beforeEach(() => {
   model.token = { tokenHash: hashEmailVerificationToken("private-proof-token"), userId: "user-1", usedAt: null, expiresAt: new Date(Date.now() + 60_000) };
@@ -114,4 +114,28 @@ it.each(["https://evil.test", "//evil.test", "/desktop/connect?challenge=a&chall
   const response = await GET(request("private-proof-token", callback));
   expect(response.status).toBe(307);
   expect(new URL(response.headers.get("location")!).searchParams.has("callbackUrl")).toBe(false);
+});
+
+it("gives browser visitors a recovery form without carrying the proof or granting a session", async () => {
+  const callback = "/desktop/connect?challenge=pair_123&intent=sign_up";
+  const response = await GET(request("expired-private-proof", callback, "text/html,application/xhtml+xml"));
+  expect(response.status).toBe(303);
+  const href = response.headers.get("location")!;
+  const destination = new URL(href);
+  expect(destination.pathname).toBe("/auth/signin");
+  expect(Object.fromEntries(destination.searchParams)).toEqual({ error: "VerificationLinkInvalid", callbackUrl: callback });
+  expect(href).not.toContain("expired-private-proof");
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(response.headers.get("set-cookie")).toBeNull();
+  expect(model.userUpdates).toBe(0);
+});
+
+it("drops unsafe browser context and keeps a transient verification failure retryable on its original URL", async () => {
+  const malformed = await GET(request("", "https://example.invalid", "text/html"));
+  expect(malformed.headers.get("location")).toBe("https://example.test/auth/signin?error=VerificationLinkInvalid");
+  model.failUserUpdate = true;
+  const failure = await GET(request("private-proof-token", undefined, "text/html"));
+  expect(failure.status).toBe(503);
+  expect(failure.headers.get("location")).toBeNull();
+  expect(model.token?.usedAt).toBeNull();
 });

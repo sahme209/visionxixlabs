@@ -82,11 +82,11 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
             true,
             Some("CmdOrCtrl+1"),
         )?)
-        .item(&MenuItem::with_id(app, "menu_view_bot", "V19 Bot", true, Some("CmdOrCtrl+5"))?)
+        .item(&MenuItem::with_id(app, "menu_view_bot", "Saved Tasks", true, Some("CmdOrCtrl+5"))?)
         .item(&MenuItem::with_id(
             app,
             "menu_view_deployment_requests",
-            "Releases",
+            "Deployments",
             true,
             Some("CmdOrCtrl+2"),
         )?)
@@ -98,7 +98,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
             Some("CmdOrCtrl+3"),
         )?)
         .item(&MenuItem::with_id(app, "menu_view_batches", "Batches", true, Some("CmdOrCtrl+6"))?)
-        .item(&MenuItem::with_id(app, "menu_view_plugins", "Apps & skills", true, Some("CmdOrCtrl+7"))?)
+        .item(&MenuItem::with_id(app, "menu_view_plugins", "Apps & Skills", true, Some("CmdOrCtrl+7"))?)
         .item(&MenuItem::with_id(app, "menu_view_docs", "Documentation", true, Some("CmdOrCtrl+4"))?)
         .separator()
         .item(&PredefinedMenuItem::fullscreen(app, None)?)

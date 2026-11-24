@@ -7,22 +7,29 @@
  * no cross-workspace read. Unknown questions return null and fall back to the
  * public docs answer.
  */
+import { isPrivateAuditEvidenceQuestion, isPrivateBatchEvidenceQuestion } from "./answerKernel";
+
 export const ACCOUNT_INTENTS = ["diagnostic", "access_request", "pending_approvals", "agent_requests", "connections", "audit_integrity", "recent_activity"] as const;
 export type AccountIntent = (typeof ACCOUNT_INTENTS)[number];
+
+const AUDIT_INTEGRITY = /\b(?:seal(?:ed|ing|s)?|tamper\w*|integrity)\b|\baudit\s+(?:log\s+)?(?:is\s+)?intact\b/i;
 
 const RULES: ReadonlyArray<{ intent: AccountIntent; test: RegExp }> = [
   { intent: "diagnostic", test: /\b(diagnos\w*|health ?check|run a check|check (my|our) (workspace|setup)|what'?s wrong|is (anything|something) (wrong|broken)|not working|broken)\b/i },
   { intent: "access_request", test: /\b(need|want|request|get|give me|grant|upgrade)\b.*\b(access|permission|permissions|role|admin|operator)\b|\bwhy can'?t i\b|\bnot allowed\b|\bpermission denied\b/i },
   { intent: "agent_requests", test: /\b(agent|cursor|claude|codex|copilot|mcp|gateway)\b.*\b(request|waiting|pending|approv)|\b(request|waiting|pending)\b.*\bagents?\b/i },
   { intent: "pending_approvals", test: /\b(pending|waiting|need|needs|awaiting|open)\b.*\b(approv|review|decision)|\bapprovals?\b.*\b(pending|waiting|open|queue)\b|what('s| is)? waiting for me/i },
-  { intent: "audit_integrity", test: /\b(audit|seal|tamper|integrity)\b/i },
+  { intent: "audit_integrity", test: AUDIT_INTEGRITY },
   { intent: "connections", test: /\b(connection|connections|connected|integration|integrations|connector|connectors)\b/i },
   { intent: "recent_activity", test: /\b(recent|latest|last|today|happened|activity|what changed)\b/i },
 ];
 
 export function classifyAccountIntent(question: string): AccountIntent | null {
   const q = question.slice(0, 500);
-  return RULES.find((r) => r.test.test(q))?.intent ?? null;
+  const intent = RULES.find((r) => r.test.test(q))?.intent ?? null;
+  if (intent !== "access_request" && isPrivateBatchEvidenceQuestion(question)) return null;
+  if (intent === "recent_activity" && isPrivateAuditEvidenceQuestion(question)) return null;
+  return intent;
 }
 
 export interface DiagnosticFacts {

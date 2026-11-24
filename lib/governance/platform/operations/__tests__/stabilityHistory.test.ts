@@ -15,3 +15,12 @@ function fixture(){
 }
 it('projects only the immutable original stability proof without claiming current health or execution',()=>{const f=fixture();expect(readOperationalStabilityHistory(id,f.parent,f.result,f.event,f.native)).toMatchObject({receiptId:f.native.receiptId,deploymentId:'ecs-svc/2',observerUserId:'observer',observedAt:new Date(50).toISOString(),authority:'historical_stability_only',currentHealthChecked:false,executionAuthorized:false});expect(f.result.stable).toBe(false)});
 it('rejects altered event, original command, receipt lineage and impossible observation times',()=>{const f=fixture();for(const event of [{...f.event,operationalCommandReceiptDigest:d},{...f.event,stateDigest:d},{...f.event,operationalStabilityReceiptId:'platform_evidence_33333333-3333-4333-8333-333333333333'}])expect(()=>readOperationalStabilityHistory(id,f.parent,f.result,event,f.native)).toThrow();for(const detail of [{...f.native.detail,generation:2},{...f.native.detail,deploymentId:'ecs-svc/3'},{...f.native.detail,observedAt:new Date(5).toISOString()},{...f.native.detail,observedAt:new Date(101).toISOString()}]){const {receiptDigest:ignored,...fields}=f.native,changed={...fields,detail};expect(()=>readOperationalStabilityHistory(id,f.parent,f.result,f.event,{...changed,receiptDigest:sha256ContentHash(changed)})).toThrow()}});
+
+it("accepts recorded time assurance without projecting it as live authority", () => {
+ const f = fixture();
+ const timeAssurance = {format:1, assurance:'physical-utc-interval-v1', earliest:50, latest:51, window:{expiresAt:1000}};
+ const project = (event: unknown) => readOperationalStabilityHistory(id, f.parent, f.result, event, f.native);
+ expect(project({...f.event, timeAssurance})).toEqual(project(f.event));
+ expect(() => project({...f.event, timeAssurance:{...timeAssurance, latest:49}})).toThrow();
+ expect(() => project({...f.event, timeAssurance, stateDigest:d})).toThrow();
+});

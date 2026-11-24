@@ -11,6 +11,10 @@ export default function AuditLogsPage() {
   <DocHeader kicker="Workflow reference · Evidence" title="Read the evidence, not just the status."
    summary="A saved decision, an attempted action and an observed external result answer different questions." />
   <Callout title="Version and coverage">Coverage and available controls vary by installed version and supported workflow. This guide does not establish complete audit coverage, Governance activation or a certification. Some linked workflows describe local previews.</Callout>
+  <DocSection id="desktop-settings" kicker="Desktop" title="View the audit log from desktop Settings">
+   <p>In desktop versions with this shortcut, open <strong>Settings → View audit log</strong>. V19 opens the website’s Audit &amp; Security page for the workspace selected in the browser. A current workspace owner or administrator can review organization audit evidence. Check the browser workspace before reviewing records. Desktop and browser sign-in are separate.</p>
+   <p>If the shortcut is unavailable in your installed version, sign in to the website and open the <Link href="/control/audit-security">Audit &amp; Security</Link> directly. If the browser fails to open from Settings, retry from the same button or use the website.</p>
+  </DocSection>
   <DocSection id="record" kicker="01" title="Review the original record">
    <p>Open the saved request or task using the history and details controls available in that workflow. Keep its original identifier and version. Compare the displayed source, target, proposed change, actor, review decision and timestamps where those fields are available.</p>
    <p>Saved metadata is bounded product evidence, not complete provider history. A familiar target name, screenshot or status label alone cannot establish which exact change occurred. <Link href="/docs/execution-plans">Understand execution plans</Link> before interpreting their records.</p>

@@ -15,8 +15,10 @@ writeFileSync(new URL('../desktop/src-tauri/icons/icon.png',import.meta.url),awa
 // New filenames, rather than only query strings, give browsers fresh icon identities.
 const version=createHash('sha256').update(png).digest('hex').slice(0,12);
 const iconUrls=[];
-for(const [sourcePath,kind] of [['public/favicon-32x32.png','favicon'],['app/icon.png','icon'],['public/apple-icon.png','apple-icon']]){
- const bytes=readFileSync(new URL('../'+sourcePath,import.meta.url));
+for(const [sourcePath,kind] of [['public/favicon-32x32.png','favicon'],['app/icon.png','icon'],['public/apple-icon.png','apple-icon'],[null,'icon-192']]){
+ const bytes=sourcePath
+  ? readFileSync(new URL('../'+sourcePath,import.meta.url))
+  : await sharp(png).resize(192,192,{fit:'contain'}).png().toBuffer();
  const name=`axiom-${kind}-${createHash('sha256').update(bytes).digest('hex').slice(0,12)}.png`;
  writeFileSync(new URL('../public/'+name,import.meta.url),bytes);iconUrls.push('/'+name);
 }
@@ -25,4 +27,5 @@ export const AXIOM_ICON_VERSION = ${JSON.stringify(version)};
 export const AXIOM_FAVICON_URL = ${JSON.stringify(iconUrls[0])};
 export const AXIOM_APP_ICON_URL = ${JSON.stringify(iconUrls[1])};
 export const AXIOM_APPLE_ICON_URL = ${JSON.stringify(iconUrls[2])};
+export const AXIOM_APP_ICON_192_URL = ${JSON.stringify(iconUrls[3])};
 `);

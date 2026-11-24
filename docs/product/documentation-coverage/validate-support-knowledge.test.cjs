@@ -37,3 +37,18 @@ test('customer mode rejects an otherwise valid internal draft',t=>{assert.throws
 test('withdrawn and superseded records remain ineligible without deleting history',t=>{for(const status of ['withdrawn','superseded']){const input=fixture(t,a=>{a.status=status;});const bytes=fs.readFileSync(path.join(input.root,input.articlePath));assert.equal(validateBundle(input).customerEligible,false);assert.deepEqual(fs.readFileSync(path.join(input.root,input.articlePath)),bytes);}});
 test('symlink cannot make an out-of-root source readable',t=>{const outside=fs.mkdtempSync(path.join(os.tmpdir(),'axiom-outside-'));t.after(()=>fs.rmSync(outside,{recursive:true,force:true}));fs.writeFileSync(path.join(outside,'secret'),'outside');const input=fixture(t,(a,_e,r)=>{fs.symlinkSync(path.join(outside,'secret'),path.join(r,'link'));a.sources=[{path:'link',sha256:hash('outside')}];});assert.throws(()=>validateBundle(input),/outside root/);});
 test('unreviewed public media cannot be customer eligible',t=>{const input=fixture(t,a=>{a.status='approved';a.classification='public';a.review={reviewer:'synthetic-test-reviewer',reviewedAt:'2026-11-02T12:00:00Z'};a.verification.verifiedAt='2026-11-02T12:00:00Z';a.media=[{kind:'screenshot',path:'source.txt',sha256:hash('source evidence'),description:'Synthetic test fixture',transcriptPath:null,publicReviewApproved:false}];});assert.equal(validateBundle(input).customerEligible,false);assert.throws(()=>validateBundle({...input,customer:true}),/customer/);});
+
+test('a schema-valid public native review fixture still requires independently verified editorial authority',t=>{
+ const input=fixture(t,article=>{
+  article.status='approved';
+  article.classification='public';
+  article.verification.kind='local-native';
+  article.verification.verifiedAt='2026-11-02T12:00:00Z';
+  article.review={reviewer:'synthetic-editorial-fixture',reviewedAt:'2026-11-02T12:00:00Z'};
+ });
+ const result=validateBundle(input);
+ assert.equal(result.valid,true);
+ assert.equal(result.customerEligible,false);
+ assert.deepEqual(result.customerBlockers,['editorial_authority_unconfirmed']);
+ assert.throws(()=>validateBundle({...input,customer:true}),/editorial_authority_unconfirmed/);
+});

@@ -7,7 +7,8 @@ const mocks = vi.hoisted(() => ({ usage: vi.fn(), portal: vi.fn(), preferences: 
 vi.mock("@tauri-apps/plugin-shell", () => ({ open: mocks.open }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: mocks.preferences, writeDesktopPreferences: vi.fn() }));
-vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config(){return mocks.context;},usageSummary: mocks.usage, desktopBillingPortal: mocks.portal } }));
+vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config(){return mocks.context;},getContextRevision: () => 0, listWorkspaceMembers: async () => ({ok: false, error: "Synthetic member inventory unavailable"}),
+  usageSummary: mocks.usage, desktopBillingPortal: mocks.portal } }));
 import { SettingsView } from "../../../desktop/src/views/SettingsView";
 function identity(planTier: string, billingStatus: string, allowed = true): VerifiedDesktopIdentity {
   return { kind: "desktop_session", organizationId: "synthetic-workspace", role: "owner", capabilities: [], access: { allowed, code: "active", title: "Access active", message: "This workspace has access.", planTier, billingStatus, pricingPath: "/plans", accessRequestPath: "/contact" } };

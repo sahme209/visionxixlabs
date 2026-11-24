@@ -197,6 +197,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     streaming?.abortSignal.throwIfAborted();
     const invokedSkillId = parseSkillInvocation(message);
     let skillContext: string;
+    let inspectionToolNames: readonly string[] | undefined;
     try {
       const resolvedSkills = await resolveInstalledSkillContext(prisma as unknown as AgentSkillRepo, organizationId, invokedSkillId);
       streaming?.abortSignal.throwIfAborted();
@@ -208,6 +209,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return NextResponse.json({ ok: true, data: { reply, proposal: null } });
       }
       skillContext = resolvedSkills.prompt;
+      if (resolvedSkills.invokedSkill?.readOnlyInvocation) inspectionToolNames = resolvedSkills.invokedSkill.toolNames;
     } catch {
       streaming?.abortSignal.throwIfAborted();
       if (invokedSkillId) {
@@ -234,17 +236,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .slice(-(CONVERSATION_PROMPT_LIMITS.historyTurns - 1))
       .map(turn => ({ role: turn.role as ConversationTurnInput["role"], content: turn.content }));
     transcript.push({ role: "user", content: message });
+    const effectiveMode = inspectionToolNames ? "inspect" : operationMode;
     const selectedContext = [
       repositoryFullName ? `Repository: ${repositoryFullName}` : null,
       branch ? `Branch: ${branch}` : null,
       selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
       filePath ? `File: ${filePath}` : null,
-      `Operation mode: ${operationMode}`,
+      `Operation mode: ${effectiveMode}`,
       `Agent profile: ${profile.label}`,
     ].filter((value): value is string => Boolean(value));
     let currentRequestContext: string | undefined;
     if (selectedContext.length > 0 && transcript.length > 0) {
-      const instruction = mode === "code"
+      const instruction = !inspectionToolNames && mode === "code"
         ? "The user selected Edit repository file mode. Read the selected file first. Read every affected existing file before proposing changes. If a change is needed, use commit_github_file for one file or commit_github_files for one coherent multi-file change, with complete updated contents and a clear commit message. Preserve the selected repository and branch. Proposals still require trustworthy review snapshots and separate approval; never claim a write completed before approval. The current operation mode and Agent profile remain permission ceilings."
         : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
       currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
@@ -256,8 +259,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
     const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
-    const repositoryGrounding = initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
-    const initialToolCall = repositoryGrounding && (profile.allowedTools === null || profile.allowedTools.includes(repositoryGrounding.toolName)) ? repositoryGrounding : undefined;
+    const reviewDeploymentHistory = invokedSkillId === "deployment-history-review";
+    const observedEnvironmentIds = new Set<string>();
+    const observeAwsEc2 = invokedSkillId === "aws-ec2-observation";
+    const requestedAwsAccounts = observeAwsEc2 ? [...new Set(message.match(/\b[0-9]{12}\b/g) ?? [])] : [];
+    const selectedAwsAccount = requestedAwsAccounts.length === 1 ? requestedAwsAccounts[0] : undefined;
+    let observedAwsConnectionId: string | undefined;
+    const grounding = reviewDeploymentHistory
+      ? {toolName: "list_environments", args: {}, message: "Resolve the selected workspace environment."}
+      : observeAwsEc2
+        ? {toolName: "list_cloud_accounts", args: {}, message: "Resolve current workspace AWS connections."}
+        : initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
+    const initialToolCall = grounding && (profile.allowedTools === null || profile.allowedTools.includes(grounding.toolName)) ? grounding : undefined;
     const outcome = await runDecisionLoop({
       organizationId,
       streaming,
@@ -269,17 +282,43 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       currentRequestContext,
       executionHistoryContext: executionContext,
       skillContext,
+      inspectionToolNames,
       preferredProvider,
       preferredModel: selectedModel,
-      operationMode,
+      operationMode: effectiveMode,
       maxDecisionSteps: typeof maxDecisionSteps === "number" ? maxDecisionSteps : undefined,
       agentProfile: profile.id,
       initialToolCall,
       executeReadOnlyTool: async (toolName, args) => {
-        const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
-          principal: { organizationId, userId: String(actor.userId), sessionId: actor.id },
-          repo: prisma as unknown as EnrollmentRepo,
-        });
+        const historyEnvironmentId = typeof args.environmentId === "string" ? args.environmentId : "";
+        const historyScopeMismatch = reviewDeploymentHistory && toolName === "list_deployment_executions" &&
+          (!observedEnvironmentIds.has(historyEnvironmentId) || (selectedEnvironment && selectedEnvironment.id !== historyEnvironmentId));
+        const awsScopeMismatch = observeAwsEc2 && toolName === "read_aws_inventory"
+          && (!observedAwsConnectionId || args.accountId !== observedAwsConnectionId);
+        const scopeError = historyScopeMismatch ? "observed_environment_required"
+          : awsScopeMismatch ? "observed_aws_account_required" : undefined;
+        const result = scopeError
+          ? {ok: false as const, error: scopeError}
+          : await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
+            principal: { organizationId, userId: String(actor.userId), sessionId: actor.id },
+            repo: prisma as unknown as EnrollmentRepo,
+          });
+        if (observeAwsEc2 && toolName === "list_cloud_accounts") {
+          const catalogue = result.ok ? result.result as {kind?: unknown; accounts?: unknown} | null : null;
+          const matches = selectedAwsAccount && catalogue?.kind === "aws_connection_catalog" && Array.isArray(catalogue.accounts)
+            ? catalogue.accounts.filter(row => row?.accountId === selectedAwsAccount) : [];
+          const connection = matches.length === 1 ? matches[0] : null;
+          observedAwsConnectionId = connection?.connected === true && connection.revokedAt === null
+            && typeof connection.id === "string" && connection.id ? connection.id : undefined;
+        }
+        if (reviewDeploymentHistory && toolName === "list_environments") {
+          observedEnvironmentIds.clear();
+          if (result.ok && Array.isArray(result.result)) {
+            for (const row of result.result) {
+              if (row && typeof row.id === "string") observedEnvironmentIds.add(row.id);
+            }
+          }
+        }
         if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
         // Every tool call — including read-only ones — gets its own audit
         // row, immediately marked executed, so "what did the agent look

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { GOVERNED_JOURNEY, GOVERNED_JOURNEY_AVAILABILITY } from "@/lib/desktop/governedJourney";
+import { releaseIntakeExample } from "@/lib/docs/releaseIntakeExample";
+import { GOVERNED_JOURNEY, GOVERNED_JOURNEY_AVAILABILITY, governedJourneyStageAnchor } from "@/lib/desktop/governedJourney";
 import {
     Callout,
     DocFeedback,
@@ -41,7 +42,7 @@ export default function GettingStartedPage() {
             <DocSection id="install" title="Step 1 — Download and install" kicker="01">
                 <Step number={1} title="Choose a manifest-backed installer">
                     <p>
-                        Open <Link href="/download">Download V19</Link>. An operating-system button is enabled only when the current public release contains a matching installer. Select the architecture that matches your device.
+                        Open <Link href="/download">Download V19</Link>. Choose the architecture that matches your device. When a verified installer is available, its download link opens the matching file. A check availability link asks the service to look up the current release for that platform.
                     </p>
                 </Step>
                 <Step number={2} title="Check release and signing information">
@@ -90,7 +91,7 @@ export default function GettingStartedPage() {
             <DocSection id="workflow" title="Step 4 — Complete a deployment workflow" kicker="04">
                 <p>{GOVERNED_JOURNEY_AVAILABILITY}</p>
                 {GOVERNED_JOURNEY.map((stage, index) => (
-                    <Step key={stage.id} number={index + 1} title={stage.title}>
+                    <Step key={stage.id} id={governedJourneyStageAnchor(stage)} number={index + 1} title={stage.title}>
                         <p>{stage.detail}</p>
                     </Step>
                 ))}
@@ -107,6 +108,16 @@ export default function GettingStartedPage() {
                 <p>
                     For the released AWS ECS path, approval dispatches the tenant-owned GitHub Actions workflow. Treat any unavailable adapter as a blocker rather than a synthetic success.
                 </p>
+            </DocSection>
+
+            <DocSection id="example-plan-metadata" title="Example plan metadata">
+                <p>
+                    This illustrative release intake excerpt records an application, environment, source branch, pending pull request approval, and rollback availability.
+                    A complete release request also needs its scoped inputs and evidence. Review all required approvals before execution.
+                </p>
+                <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-sm leading-relaxed">
+                    <code>{releaseIntakeExample}</code>
+                </pre>
             </DocSection>
 
             <DocSection id="trust" title="Trust questions for first launch" kicker="05 · Verify before use">

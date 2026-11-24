@@ -57,6 +57,11 @@ const platformLabel: Record<PlatformId, string> = {
   linux: "Linux",
 };
 
+function installerActionLabel(platform: PlatformId, available: boolean) {
+  const name = platformLabel[platform];
+  return available ? `Download for ${name}` : `Check ${name} availability`;
+}
+
 const resolverHref: Record<PlatformId, string> = {
   "mac-arm": "/api/desktop/download?platform=mac-arm",
   "mac-intel": "/api/desktop/download?platform=mac-intel",
@@ -79,6 +84,17 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
   const detectedPlatform = useSyncExternalStore<PlatformDetection>(subscribe, detectPlatform, () => "choose");
   const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
   const [manifestError, setManifestError] = useState(false);
+  const [releaseCheck, setReleaseCheck] = useState(0);
+  const checkingRelease = !manifest && !manifestError;
+  const showReleaseRetry = manifestError || releaseCheck > 0 ||
+    Boolean(manifest && (manifest.runtimeReady !== true || manifest.hasAnyAsset === false));
+
+  function recheckRelease() {
+    if (checkingRelease) return;
+    setManifest(null);
+    setManifestError(false);
+    setReleaseCheck(current => current + 1);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -98,7 +114,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         if (!cancelled) setManifestError(true);
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [releaseCheck]);
 
   const detectedAsset = detectedPlatform === "choose" ? null : manifest?.assets[platformKey[detectedPlatform]] ?? null;
   const downloadReady = Boolean(manifest?.runtimeReady === true && detectedAsset);
@@ -110,6 +126,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
     if (manifestError) return "Release status unavailable";
     if (!manifest) return "Checking the latest release…";
     if (manifest.runtimeReady !== true) return manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable.";
+    if (manifest.hasAnyAsset === false) return "No verified desktop installer is currently available.";
     return manifest.tag ? `Latest desktop installer · ${manifest.tag.replace("desktop-v", "v")}` : "Latest desktop installer";
   }, [manifest, manifestError]);
 
@@ -137,13 +154,25 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
                 className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"}
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                {detectedPlatform === "choose" ? "Choose your installer" : `Download for ${platformLabel[detectedPlatform]}`}
+                {detectedPlatform === "choose" ? "Choose your installer" : installerActionLabel(detectedPlatform, downloadReady)}
               </a>
               <Link href={cockpit ? "/control/integrations" : "/demo"} className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/4"}>
                 {cockpit ? "Back to integrations" : "Explore the web demo"} <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-            <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${(formatDesktopInstallerSize(detectedAsset.sizeBytes)??"Size unavailable")}` : ""}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400">
+              <p role="status">{releaseStatus}{detectedAsset ? ` · ${(formatDesktopInstallerSize(detectedAsset.sizeBytes)??"Size unavailable")}` : ""}</p>
+              {showReleaseRetry && (
+                <button
+                  type="button"
+                  onClick={recheckRelease}
+                  aria-disabled={checkingRelease}
+                  className="min-h-11 rounded-sm text-zinc-200 underline underline-offset-4 hover:text-white aria-disabled:text-zinc-400"
+                >
+                  Recheck release status
+                </button>
+              )}
+            </div>
             </div>
           </div>
         </section>
@@ -204,7 +233,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
               <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4 hover:text-white">Approval workflow</Link>
             </div>
             <p className="mt-5 text-sm leading-6 text-zinc-400">Need more help? <Link href="/account/help" className="text-zinc-200 underline underline-offset-4 hover:text-white">Account help (account required)</Link> provides an account-context support entry. You can also <Link href="/contact" className="text-zinc-200 underline underline-offset-4 hover:text-white">Contact us</Link> through the public contact page.</p>
-            <p className="mt-3 text-xs leading-5 text-zinc-500"><Link href="/support" className="text-zinc-300 underline underline-offset-4 hover:text-white">Founding Supporters</Link> is a separate way to support V19’s development.</p>
+            <p className="mt-3 text-xs leading-5 text-zinc-400"><Link href="/support" className="text-zinc-300 underline underline-offset-4 hover:text-white">Founding Supporters</Link> is a separate way to support V19’s development.</p>
           </div>
         </section>}
 
@@ -288,7 +317,7 @@ function DownloadCard({
                 className={compact ? "inline-flex h-8 w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-2 text-xs font-medium text-zinc-900 hover:bg-white" : "inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-lg bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"}
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                Download for {platformLabel[id]}
+                {installerActionLabel(id, available)}
               </a>
               {asset&&<p className="mt-2 break-all text-[11px] leading-5 text-zinc-400" title={Number.isSafeInteger(asset.sizeBytes)&&asset.sizeBytes>0?`${asset.sizeBytes.toLocaleString('en-US')} bytes`:undefined}>{formatDesktopInstallerSize(asset.sizeBytes)??'Size unavailable'} download · {asset.fileName}</p>}
               {asset ? <p className="mt-2 text-[11px] leading-5 text-zinc-400">{platformLabel[id]} · {asset.signed === true

@@ -63,8 +63,9 @@ function makeRepo(): Stub {
         return row;
       },
       async update({ where, data }) {
-        const idx = stub._incidents.findIndex((i) => i.id === where.id);
-        if (idx < 0) throw new Error("not found");
+        const idx = stub._incidents.findIndex(i => i.id === where.id && i.organizationId === where.organizationId &&
+          i.releaseId === where.releaseId && i.status === where.status && i.updatedAt.getTime() === where.updatedAt.getTime());
+        if (idx < 0) throw Object.assign(new Error("not found"), {code:"P2025"});
         const existing = stub._incidents[idx];
         stub._incidents[idx] = {
           ...existing,
@@ -73,7 +74,7 @@ function makeRepo(): Stub {
           mitigatedAt: data.mitigatedAt !== undefined ? data.mitigatedAt : existing.mitigatedAt,
           resolvedByUserId: data.resolvedByUserId !== undefined ? data.resolvedByUserId : existing.resolvedByUserId,
           resolvedAt: data.resolvedAt !== undefined ? data.resolvedAt : existing.resolvedAt,
-          updatedAt: new Date(),
+          updatedAt: data.updatedAt,
         };
         return stub._incidents[idx];
       },

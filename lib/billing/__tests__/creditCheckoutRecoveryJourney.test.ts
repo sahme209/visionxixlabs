@@ -8,18 +8,18 @@ import { createHmac } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-const io = vi.hoisted(() => ({ create: vi.fn(), find: vi.fn(), update: vi.fn(), updateMany: vi.fn(), transaction: vi.fn(), stripeCreate: vi.fn(), push: vi.fn() }));
+const io = vi.hoisted(() => ({ create: vi.fn(), find: vi.fn(), update: vi.fn(), updateMany: vi.fn(), transaction: vi.fn(), stripeCreate: vi.fn(), stripeRetrieve: vi.fn(), push: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: io.push }) }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_1", userId: "owner_1", email: "owner@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => true }));
-vi.mock("@/lib/db", () => ({ prisma: { addOnPurchase: { create: io.create, findUnique: io.find, update: io.update, updateMany: io.updateMany }, $transaction: io.transaction } }));
-vi.mock("stripe", () => ({ default: class { checkout = { sessions: { create: io.stripeCreate } }; } }));
+vi.mock("@/lib/db", () => ({ prisma: { addOnPurchase: { create: io.create, findUnique: io.find, findFirst: io.find, update: io.update, updateMany: io.updateMany }, $transaction: io.transaction } }));
+vi.mock("stripe", () => ({ default: class { checkout = { sessions: { create: io.stripeCreate, retrieve: io.stripeRetrieve } }; } }));
 import { PurchaseAddOnButton } from "@/components/billing/PurchaseAddOnButton";
 import { POST as purchase } from "@/app/api/billing/add-ons/purchase/route";
 import { POST as webhook } from "@/app/api/billing/stripe-webhook/route";
 
-const initial = () => ({ id: "purchase_1", organizationId: "org_1", sku: "ai_credits_small", pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", status: "pending", stripeCheckoutSessionId: null as string | null, appliedAt: null as Date | null, createdAt: new Date() });
+const initial = () => ({ id: "purchase_1", organizationId: "org_1", sku: "ai_credits_small", pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", status: "pending", purchasedBy: "owner_1", stripePaymentIntentId: null as string | null, refundedAmountCents: 0, stripeCheckoutSessionId: null as string | null, appliedAt: null as Date | null, createdAt: new Date() });
 let row = initial();
 let events = new Set<string>();
 
@@ -27,7 +27,7 @@ function request() {
   return new NextRequest("https://example.test/api/billing/add-ons/purchase", { method: "POST", headers: { origin: "https://example.test", "content-type": "application/json", "idempotency-key": "checkout_intent_key_1" }, body: JSON.stringify({ sku: "ai_credits_small" }) });
 }
 function paidEvent(id = "evt_paid") {
-  const body = JSON.stringify({ id, type: "checkout.session.completed", data: { object: { id: "cs_test_lost", payment_status: "paid", payment_intent: "pi_test_paid", amount_total: 1000, currency: "usd", metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: row.id, organizationId: row.organizationId, sku: row.sku } } } });
+  const body = JSON.stringify({ id, type: "checkout.session.completed", livemode: false, data: { object: { id: "cs_test_lost", payment_status: "paid", payment_intent: "pi_test_paid", amount_total: 1000, currency: "usd", metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: row.id, organizationId: row.organizationId, sku: row.sku } } } });
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = createHmac("sha256", "whsec_simulated_fixture").update(`${timestamp}.${body}`).digest("hex");
   return new NextRequest("https://example.test/api/billing/stripe-webhook", { method: "POST", headers: { "stripe-signature": `t=${timestamp},v1=${signature}` }, body });
@@ -43,7 +43,11 @@ beforeEach(() => {
   row = initial();
   events = new Set();
   io.create.mockResolvedValue(row);
-  io.find.mockImplementation(async () => ({ ...row }));
+  io.find.mockImplementation(async ({where}) => {
+    if (where.status && (where.status !== row.status || where.stripePaymentIntentId !== row.stripePaymentIntentId
+      || where.purchasedBy !== row.purchasedBy || where.stripeCheckoutSessionId !== row.stripeCheckoutSessionId)) return null;
+    return {...row};
+  });
   io.update.mockImplementation(async ({ data }) => Object.assign(row, data));
   io.updateMany.mockImplementation(async ({ data }) => { Object.assign(row, data); return { count: 1 }; });
   // Simulated atomic event ledger + purchase write, not real SQL evidence.
@@ -52,7 +56,7 @@ beforeEach(() => {
     const stagedEvents = new Set(events);
     try {
       const result = await operation({ stripeBillingEvent: { create: async ({ data }: { data: { id: string } }) => {
-        if (stagedEvents.has(data.id)) throw Object.assign(new Error("replay"), { code: "P2002" });
+        if (stagedEvents.has(data.id)) throw Object.assign(new Error("replay"), { code: "P2002", meta: {modelName:"StripeBillingEvent"} });
         stagedEvents.add(data.id);
       } }, addOnPurchase: { findUnique: io.find, update: io.update, updateMany: io.updateMany } });
       events = stagedEvents;
@@ -65,7 +69,7 @@ afterEach(() => { cleanup(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
 describe("uncertain credit Checkout → late signed fulfillment", () => {
   it("composes the actual customer button, route, helper and provider response through redirect", async () => {
-    io.stripeCreate.mockResolvedValue({ id: "cs_test_confirmed", url: "https://checkout.stripe.test/confirmed" });
+    io.stripeCreate.mockResolvedValue({ id: "cs_test_confirmed", url: "https://checkout.stripe.com/c/pay/cs_test_confirmed" });
     const requests: RequestInit[] = [];
     vi.stubGlobal("fetch", async (_url: string, options: RequestInit) => {
       requests.push(options);
@@ -77,7 +81,7 @@ describe("uncertain credit Checkout → late signed fulfillment", () => {
     });
     render(createElement(PurchaseAddOnButton, { sku: "ai_credits_small", organizationId: "org_1" }));
     fireEvent.click(screen.getByRole("button", { name: "Buy" }));
-    await waitFor(() => expect(io.push).toHaveBeenCalledWith("https://checkout.stripe.test/confirmed"));
+    await waitFor(() => expect(io.push).toHaveBeenCalledWith("https://checkout.stripe.com/c/pay/cs_test_confirmed"));
     const key = (requests[0].headers as Record<string, string>)["Idempotency-Key"];
     expect(key).toMatch(/^[A-Za-z0-9_-]{16,100}$/);
     expect(io.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ idempotencyKey: key, pricePaidCents: 1000 }) }));
@@ -103,6 +107,61 @@ describe("uncertain credit Checkout → late signed fulfillment", () => {
     expect(await (await webhook(paidEvent())).json()).toMatchObject({ replay: true });
     expect(io.update).toHaveBeenCalledTimes(1);
     expect(events.size).toBe(1);
+  });
+
+  it("resumes the saved open Stripe session without issuing a create or marking credits paid",async()=>{
+    row.stripeCheckoutSessionId="cs_test_saved";
+    io.create.mockRejectedValue({code:"P2002"});
+    io.stripeRetrieve.mockResolvedValue({
+      id:"cs_test_saved",mode:"payment",livemode:false,status:"open",payment_status:"unpaid",currency:"usd",
+      expires_at:Math.floor(Date.now()/1000)+600,amount_total:1000,client_reference_id:row.organizationId,
+      metadata:{purpose:"axiom_ai_credit_add_on",organizationId:row.organizationId,addOnPurchaseId:row.id,sku:row.sku},
+      url:"https://checkout.stripe.com/c/pay/cs_test_saved#session",
+    });
+    const recovered=await purchase(request());
+    expect(recovered.status).toBe(200);
+    expect(await recovered.json()).toMatchObject({url:"https://checkout.stripe.com/c/pay/cs_test_saved#session"});
+    expect(io.stripeRetrieve).toHaveBeenCalledExactlyOnceWith("cs_test_saved");
+    expect(row.status).toBe("pending");
+    expect(io.stripeCreate).not.toHaveBeenCalled();
+
+    io.stripeRetrieve.mockImplementation(async()=>{
+      row.status="paid";
+      return {id:"cs_test_saved",mode:"payment",livemode:false,status:"open",payment_status:"unpaid",
+        currency:"usd",expires_at:Math.floor(Date.now()/1000)+600,amount_total:1000,client_reference_id:row.organizationId,
+        metadata:{purpose:"axiom_ai_credit_add_on",organizationId:row.organizationId,addOnPurchaseId:row.id,sku:row.sku},
+        url:"https://checkout.stripe.com/c/pay/cs_test_saved"};
+    });
+    const concurrent=await purchase(request());
+    expect(concurrent.status).toBe(409);
+    expect(await concurrent.json()).toMatchObject({error:"checkout_reconciliation_required",purchaseId:row.id});
+  });
+
+  it.each([{purchasedBy:"another_admin"},{stripePaymentIntentId:"pi_already_bound"}])(
+    "holds a retry without reading Stripe when the original unpaid buyer binding is unavailable %#",
+    async change=>{
+      Object.assign(row,change,{stripeCheckoutSessionId:"cs_test_saved"});
+      io.create.mockRejectedValue({code:"P2002"});
+      expect((await purchase(request())).status).toBe(409);
+      expect(io.stripeRetrieve).not.toHaveBeenCalled();
+      expect(io.stripeCreate).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([{status:"expired"},{amount_total:2000},{url:"https://checkout.stripe.com.example.test/"},
+    {livemode:true},{metadata:{organizationId:"other"}}])("withholds a mismatched saved session %#",async(change)=>{
+    row.stripeCheckoutSessionId="cs_test_saved";
+    io.create.mockRejectedValue({code:"P2002"});
+    io.stripeRetrieve.mockResolvedValue({
+      id:"cs_test_saved",mode:"payment",livemode:false,status:"open",payment_status:"unpaid",currency:"usd",
+      expires_at:Math.floor(Date.now()/1000)+600,amount_total:1000,client_reference_id:row.organizationId,
+      metadata:{purpose:"axiom_ai_credit_add_on",organizationId:row.organizationId,addOnPurchaseId:row.id,sku:row.sku},
+      url:"https://checkout.stripe.com/c/pay/cs_test_saved",...change,
+    });
+    const response=await purchase(request());
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({purchaseId:row.id});
+    expect(io.stripeCreate).not.toHaveBeenCalled();
   });
 
   it.each([23 * 60 * 60 * 1000, 24 * 60 * 60 * 1000, -1000, NaN])("blocks provider dispatch for unsafe intent age %s", async (age) => {

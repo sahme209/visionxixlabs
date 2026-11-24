@@ -14,6 +14,7 @@ import { PUBLIC_PLAN_CATALOG, isSelfServiceBillingEnabled } from "@/lib/billing/
 import { describeStripeStatus } from "@/lib/billing/stripeHelper";
 import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
 import { prisma } from "@/lib/db";
+import { hasAppliedCreditPayment } from "@/lib/billing/creditPaymentEvidence";
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,35 @@ function currentPeriod(now = new Date()) {
 
 function money(cents: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+}
+
+type CreditTransaction = {
+  id: string;
+  sku: string;
+  pricePaidCents: number;
+  refundedAmountCents: number;
+  deliveredAICreditsCents: number;
+  reversedAICreditsCents: number;
+  status: string;
+  appliedAt: Date | null;
+  createdAt: Date;
+};
+
+function creditTransactionSummary(transaction: CreditTransaction) {
+  const checkout = `Checkout amount ${money(transaction.pricePaidCents)}`;
+  if (transaction.status === "pending") return `${checkout} · Payment confirmation pending`;
+  if (transaction.status === "failed" || transaction.status === "expired") return `${checkout} · No credits applied`;
+  if (!hasAppliedCreditPayment(transaction) || !["paid", "partially_refunded", "refunded"].includes(transaction.status)) {
+    return "Payment confirmation unavailable";
+  }
+
+  const details = [`Paid ${money(transaction.pricePaidCents)}`];
+  if (transaction.refundedAmountCents > 0) details.push(`Refunded ${money(transaction.refundedAmountCents)}`);
+  const netCredits = transaction.status === "refunded"
+    ? 0
+    : Math.max(0, transaction.deliveredAICreditsCents - transaction.reversedAICreditsCents);
+  details.push(`Credits ${money(netCredits)}`);
+  return details.join(" · ");
 }
 
 function planIdFor(tier: string, status: string) {
@@ -55,7 +85,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
   let unavailable = false;
   let members = 0;
   let usage = { calls: 0, inputTokens: 0, outputTokens: 0, billedCents: 0, pendingCalls: 0 };
-  let transactions: Array<{ id: string; sku: string; pricePaidCents: number; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; createdAt: Date }> = [];
+  let transactions: CreditTransaction[] = [];
   const isolated = isolatedRuntimeRequested();
   const deployment = isolated ? { allowed: false, reason: "deployment_quota_unavailable", planId: null, used: null, limit: null, remaining: 0 } as const : await checkDeploymentQuota(prisma, organizationId);
   const allowance = await withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId, now));
@@ -65,7 +95,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
       prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: period.start } }, _count: { _all: true }, _sum: { inputTokens: true, outputTokens: true } }),
       prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "settled", createdAt: { gte: period.start } }, _sum: { billedCents: true } }),
       prisma.usageEvent.count({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "pending", createdAt: { gte: period.start } } }),
-      prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, deliveredAICreditsCents: true, reversedAICreditsCents: true, status: true, createdAt: true } }),
+      prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, refundedAmountCents: true, deliveredAICreditsCents: true, reversedAICreditsCents: true, status: true, appliedAt: true, createdAt: true } }),
     ]);
     members = memberCount;
     usage = { calls: usageAggregate._count._all, inputTokens: usageAggregate._sum.inputTokens ?? 0, outputTokens: usageAggregate._sum.outputTokens ?? 0, billedCents: settledAggregate._sum.billedCents ?? 0, pendingCalls };
@@ -86,14 +116,11 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
         </dl>
       </section>);
   const transactionSection = (<> <section className="mt-6" aria-labelledby="transactions-heading">
-        <div className="flex items-end justify-between gap-3"><div><h2 id="transactions-heading" className="text-lg font-medium">Credit transactions</h2><p className="mt-1 text-xs text-zinc-500">Only Stripe-verified paid records increase available credits.</p></div>{canManage && <Link href="/control/plans" className="text-xs text-[#ff783d] hover:text-[#ff9a6d]">Review plans →</Link>}</div>
+        <div className="flex items-end justify-between gap-3"><div><h2 id="transactions-heading" className="text-lg font-medium">Credit transactions</h2><p className="mt-1 text-xs text-zinc-500">Checkout amounts and confirmed payments are shown separately.</p></div>{canManage && <Link href="/control/plans" className="text-xs text-[#ff783d] hover:text-[#ff9a6d]">Review plans →</Link>}</div>
         <div className="mt-3 overflow-hidden rounded-xl border border-white/8 bg-[#171717]">
-          {unavailable ? <p className="px-5 py-6 text-sm text-zinc-500">Credit transactions are unavailable.</p> : transactions.length === 0 ? <p className="px-5 py-6 text-sm text-zinc-500">No credit transactions recorded.</p> : transactions.map((transaction) => {
-            const creditsSettled = transaction.status === "paid" || transaction.status === "partially_refunded";
-            const netCredits = creditsSettled ? Math.max(0, transaction.deliveredAICreditsCents - transaction.reversedAICreditsCents) : 0;
-            const creditLabel = transaction.status === "pending" ? "Awaiting payment" : creditsSettled ? `Credits ${money(netCredits)}${transaction.reversedAICreditsCents > 0 ? " after refund" : ""}` : "No credits applied";
-            return <div key={transaction.id} className="flex flex-col justify-between gap-2 border-b border-white/6 px-5 py-4 last:border-b-0 sm:flex-row sm:items-center"><div><p className="text-sm text-zinc-200">{transaction.sku.replaceAll("_", " ")}</p><p className="mt-1 text-[11px] text-zinc-600">{transaction.createdAt.toLocaleString()} · {transaction.status}</p></div><p className="text-xs text-zinc-400">Paid {money(transaction.pricePaidCents)} · {creditLabel}</p></div>;
-          })}
+          {unavailable ? <p className="px-5 py-6 text-sm text-zinc-500">Credit transactions are unavailable.</p> : transactions.length === 0 ? <p className="px-5 py-6 text-sm text-zinc-500">No credit transactions recorded.</p> : transactions.map((transaction) => (
+            <div key={transaction.id} className="flex flex-col justify-between gap-2 border-b border-white/6 px-5 py-4 last:border-b-0 sm:flex-row sm:items-center"><div><p className="text-sm text-zinc-200">{transaction.sku.replaceAll("_", " ")}</p><p className="mt-1 text-[11px] text-zinc-600">{transaction.createdAt.toLocaleString()} · {transaction.status.replaceAll("_", " ")}</p></div><p className="text-xs text-zinc-400">{creditTransactionSummary(transaction)}</p></div>
+          ))}
         </div>
       </section> </>);
 
@@ -127,7 +154,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
       </div>
 
 <dl className="mt-5 grid gap-3 rounded-xl border border-white/8 bg-[#171717] p-5 sm:grid-cols-3">            <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {planAvailable ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
-            <div><dt className="text-xs text-zinc-500">Counted deployments</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : <>{deployment.used} <span className="text-sm text-zinc-600">/ {deployment.limit ?? "unlimited"}</span></>}</dd>{isolated && <p className="mt-1 text-[11px] text-zinc-600">Deployment allowance is unsupported in this isolated TEST lane.</p>}</div>
+            <div><dt className="text-xs text-zinc-500">Deployment records this month</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : deployment.used}</dd>{isolated && <p className="mt-1 text-[11px] text-zinc-600">Deployment activity is unavailable in this isolated test environment.</p>}</div>
             <div><dt className="text-xs text-zinc-500">Gateway calls</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : usage.calls}</dd>{!unavailable && <p className="mt-1 text-[11px] text-zinc-600">{usage.pendingCalls} awaiting cost settlement</p>}</div></dl>
 {usageSection}{transactionSection}</> },
         { id:"usage", label:"Usage", content:<>{usageSection}<UsageRecords/>{transactionSection}</> },

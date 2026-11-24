@@ -17,8 +17,14 @@ export default function DesktopInstallPage() {
       />
 
       <Callout variant="info" title="Use the live release manifest">
-        The <Link href="/download">download page</Link> reads the public GitHub release manifest and enables only platforms with an installer asset. It shows the current release tag and the signing or notarization state supported by machine-readable release attestations. If an asset or attestation is absent, the page says so.
+        The <Link href="/download">download page</Link> shows direct links for verified installers from the public GitHub release manifest. When a download has not been confirmed, the platform link checks availability with the service. It shows the current release tag and the signing or notarization state supported by machine-readable release attestations. If an asset or attestation is absent, the page says so.
       </Callout>
+
+      <DocSection id="installer-availability" title="Installer availability and download pauses">
+        <p><strong>Check Windows availability</strong> and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file.</p>
+        <p><strong>Desktop downloads are temporarily paused</strong> means the required service storage checks are unavailable. <strong>Release status unavailable</strong> means the current installer status could not be verified.</p>
+        <p>To recheck installer availability, choose <strong>Recheck release status</strong> on the <Link href="/download">download page</Link>. From the installer availability screen, choose <strong>Return to downloads</strong>. Check the release and platform details before installing.</p>
+      </DocSection>
 
       <DocSection id="current-state" title="What the current desktop build delivers" kicker="01">
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
@@ -44,7 +50,7 @@ export default function DesktopInstallPage() {
 
       <DocSection id="install-macos" title="Install — macOS (Apple Silicon + Intel)" kicker="03">
         <Step number={1} title="Download the matching DMG">
-          <p>Visit <Link href="/download">/download</Link>. Choose Apple Silicon or Intel. The enabled button points directly to the matching asset from the current <code>desktop-v*</code> release.</p>
+          <p>Visit <Link href="/download">/download</Link>. Choose Apple Silicon or Intel. A verified download link points directly to the matching asset from the current <code>desktop-v*</code> release.</p>
         </Step>
         <Step number={2} title="Verify the release if required">
           <p>Check the download page for the selected installer&apos;s verification details. If a matching detached <code>.asc</code> signature and a release public key are published, download both and run <code>gpg --verify installer.dmg.asc installer.dmg</code> using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it.</p>
@@ -83,22 +89,23 @@ export default function DesktopInstallPage() {
           <p>When a matching detached <code>.asc</code> signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release.</p>
         </Step>
         <Step number={3} title="Install or run">
-          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`chmod +x ./Axiom.Agent_*_amd64.AppImage
-./Axiom.Agent_*_amd64.AppImage
+          <p>Run the commands for the package you verified. These examples use v0.1.24. Substitute the exact filename for the version you downloaded.</p>
+          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`chmod +x ./V19_0.1.24_amd64.AppImage
+./V19_0.1.24_amd64.AppImage
 
-sudo dpkg -i Axiom.Agent_*_amd64.deb
-sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
+sudo dpkg -i ./V19_0.1.24_amd64.deb
+sudo rpm -i ./V19-0.1.24-1.x86_64.rpm`}</pre>
         </Step>
         <Step number={4} title="Sign in">
           <p>Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.</p>
         </Step>
       </DocSection>
 
-      <DocSection id="updates" title="Updates and release notes" kicker="06">
+      <DocSection id="updates" title="Desktop installer updates, website deployments and release notes" kicker="06">
         <p>A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer.</p>
         <p>In releases that include <strong>About this app</strong>, open <strong>Settings → General</strong> and check <strong>Installed version</strong>. This value comes from the installed app. <strong>Unavailable</strong> means it could not be read, not that a newer version is installed. Older releases may not have this section.</p>
         <p><strong>Review releases</strong> opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer&apos;s verification details.</p>
-        <p>Automatic update delivery is not configured in the current Tauri bundle. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">V19 release notes</a> before upgrading.</p>
+        <p>The current desktop installer does not update automatically. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">V19 release notes</a> before upgrading.</p>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">

@@ -21,3 +21,20 @@ it('distinguishes a failed read from an uncertain provider mutation',async()=>{m
 
 it('opens exact workspace-bound ticket access without passing credentials to the browser',async()=>{mount();fireEvent.click(screen.getByRole('button',{name:'Reload saved ticket actions'}));fireEvent.click(await screen.findByRole('button',{name:'Review Jira ticket access'}));await waitFor(()=>expect(m.open).toHaveBeenCalledWith('https://visionxixlabs.com/account/integrations/jira/ticket-access?expectedOrganizationId=org&expectedUserId=owner'));expect(m.verify).toHaveBeenCalledTimes(1)});
 it('refuses ticket access handoff without current administrator capability',async()=>{m.verify.mockResolvedValue({ok:true,data:{kind:'desktop_session',organizationId:'org',userId:'other',role:'security_reviewer',capabilities:['agent:approve']}});mount();fireEvent.click(screen.getByRole('button',{name:'Reload saved ticket actions'}));fireEvent.click(await screen.findByRole('button',{name:'Review Jira ticket access'}));await screen.findByRole('alert');expect(m.open).not.toHaveBeenCalled()});
+
+it("ignores old lifecycle controls after the session is replaced", async () => {
+  const config = m.config;
+  mount();
+  const reload = screen.getByRole("button", {name: "Reload saved ticket actions"});
+  fireEvent.click(reload);
+  const cancel = await screen.findByRole("button", {name: "Cancel unused ticket action"});
+  try {
+    m.config = {...config};
+    fireEvent.click(reload);
+    fireEvent.click(cancel);
+    expect(m.list).toHaveBeenCalledOnce();
+    expect(m.mutate).not.toHaveBeenCalled();
+  } finally {
+    m.config = config;
+  }
+});

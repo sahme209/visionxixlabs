@@ -14,6 +14,23 @@ function show(canManage = true) {return render(createElement(PluginsSkillsView, 
 function changeContext() {m.client.config = {}; m.revision++; for (const fn of m.listeners) fn();}
 beforeEach(() => {vi.resetAllMocks(); m.client.config = {}; m.revision++; m.client.listAgentSkills.mockResolvedValue(ok({skills: [skill], storageAvailable: true})); m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected", repositorySelection: "selected"}, cloud: [], collaboration: []})); m.client.airflowConnection.mockResolvedValue(ok({status: "not_connected"}));});
 afterEach(cleanup);
+it("summarizes recorded connectivity and distinguishes unavailable counts from zero", async () => {
+  m.client.integrationStatus.mockResolvedValue(ok({
+    github: {status: "active", repositorySelection: "selected"},
+    cloud: [{provider: "azure", status: "read_only_connected"}],
+    collaboration: [{provider: "slack", status: "validation_overdue"}],
+  }));
+  m.client.airflowConnection.mockRejectedValueOnce(new Error("unavailable"));
+  show();
+  const value = (label: string) => screen.getByText(label).nextElementSibling;
+  await waitFor(() => expect(value("Read-only cloud connections")?.textContent).toBe("1"));
+  expect(value("Overdue validations")?.textContent).toBe("1");
+  expect(value("Enabled skills")?.textContent).toBe("0");
+  expect(value("Connected catalogue apps")?.textContent).toContain("Unavailable");
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
+  await waitFor(() => expect(value("Connected catalogue apps")?.textContent).toBe("2"));
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
 it("distinguishes pending skill results without changing search focus or Apps view", async () => {
   const pending=deferred(); m.client.listAgentSkills.mockReturnValueOnce(pending.promise);
   show(false);
@@ -166,18 +183,39 @@ it("publishes Airflow readiness while the independent integration inventory is p
   const inventory = deferred(); m.client.integrationStatus.mockReturnValueOnce(inventory.promise);
   m.client.airflowConnection.mockResolvedValue(ok({status: "connected"}));
   show();
-  await waitFor(() => expect(within(screen.getByText("Apache Airflow").parentElement!).getByText("connected")).toBeTruthy());
+  await waitFor(() => expect(within(screen.getByText("Apache Airflow").closest("tr")!).getByText("connected")).toBeTruthy());
   await act(async () => {inventory.resolve(ok({configuration: {}, github: {status: "not_connected"}, cloud: [], collaboration: []}));});
 });
+it("shows Airflow's recorded validation alongside the row and clears it when access is revoked", async () => {
+  const validated = "2026-11-22T09:00:00.000Z";
+  m.client.airflowConnection.mockResolvedValueOnce(ok({connected:true, status:"active",lastValidatedAt:validated}))
+    .mockResolvedValueOnce(ok({connected:false,status:"revoked",lastValidatedAt:validated}));
+  show(false);
+  const row=(await screen.findByText("Apache Airflow")).closest("tr")!;
+  await waitFor(()=>expect(row.querySelector("time")?.dateTime).toBe(validated));
+  const inspect=within(row).getByRole("button",{name:"Inspect Apache Airflow"});
+  fireEvent.click(inspect);
+  const detail=screen.getByRole("dialog");
+  expect(within(detail).getByText("Recorded validation").nextElementSibling?.querySelector("time")?.dateTime).toBe(validated);
+  fireEvent.click(within(detail).getByRole("button",{name:"Close details"}));
+  expect(document.activeElement).toBe(inspect);
+  fireEvent.click(screen.getByRole("button",{name:"Refresh capabilities"}));
+  await within(row).findByText("revoked");
+  expect(row.querySelector("time")).toBeNull();
+  fireEvent.click(inspect);
+  expect(screen.getByRole("dialog").querySelector("time")).toBeNull();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+
 it("shows existing Azure and GCP inventory and opens settings without starting provider consent", async () => {
   const onOpenSettings = vi.fn();
   m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected"}, cloud: [{provider: "azure", status: "connected", lastTransitionAt: null}, {provider: "gcp", status: "not_connected", lastTransitionAt: null}], collaboration: []}));
   render(createElement(PluginsSkillsView, {onOpenSettings, onOpenAirflow() {}, canManage: false}));
   const azure = await screen.findByText("Microsoft Azure");
   const gcp = screen.getByText("Google Cloud");
-  await waitFor(() => expect(within(azure.parentElement!).getByText("connected")).toBeTruthy());
-  expect(within(gcp.parentElement!).getByText("not connected")).toBeTruthy();
-  const card = azure.parentElement!.parentElement!.parentElement!;
+  await waitFor(() => expect(within(azure.closest("tr")!).getByText("connected")).toBeTruthy());
+  expect(within(gcp.closest("tr")!).getByText("not connected")).toBeTruthy();
+  const card = azure.closest("tr")!;
   fireEvent.click(within(card).getByRole("button", {name: "Manage"}));
   expect(onOpenSettings).toHaveBeenCalledTimes(1);
   expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
@@ -244,13 +282,13 @@ it('active Slack Manage opens the shared workspace manager rather than generic s
 it('labels canonical Azure access read-only and manages it without enabling execution', async()=>{
  m.client.integrationStatus.mockResolvedValue(ok({github:{status:'not_connected'},cloud:[{provider:'azure',status:'read_only_connected',lastTransitionAt:null}],collaboration:[]}));
  const settings=vi.fn();render(createElement(PluginsSkillsView,{onOpenSettings:settings,onOpenAirflow(){},canManage:true}));
- const azure=await screen.findByText('Microsoft Azure');const row=azure.closest('.min-h-\\[78px\\]') ?? azure.parentElement!.parentElement!.parentElement!;
+ const azure=await screen.findByText('Microsoft Azure');const row=azure.closest('.min-h-\\[78px\\]') ?? azure.closest("tr")!;
  expect(within(row as HTMLElement).getByText('Read-only connected')).toBeTruthy();
  expect(within(row as HTMLElement).getByText(/Agent scans and deployments remain unavailable/)).toBeTruthy();
  fireEvent.click(within(row as HTMLElement).getByRole('button',{name:'Manage'}));expect(settings).toHaveBeenCalledOnce();expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
 });
 it.each([['read_only_connected','Manage'],['not_connected','Connect']])('keeps AWS %s access and ECS deployment setup distinct',async(status,label)=>{
- m.client.integrationStatus.mockResolvedValue(ok({github:{status:'not_connected'},cloud:[{provider:'aws',status,lastTransitionAt:null}],collaboration:[]}));const settings=vi.fn();render(createElement(PluginsSkillsView,{onOpenSettings:settings,onOpenAirflow(){},canManage:true}));const title=await screen.findByText('AWS ECS');const row=title.parentElement!.parentElement!.parentElement!;
+ m.client.integrationStatus.mockResolvedValue(ok({github:{status:'not_connected'},cloud:[{provider:'aws',status,lastTransitionAt:null}],collaboration:[]}));const settings=vi.fn();render(createElement(PluginsSkillsView,{onOpenSettings:settings,onOpenAirflow(){},canManage:true}));const title=await screen.findByText('AWS ECS');const row=title.closest("tr")!;
  expect(within(row).getByText(/Read-only AWS account access and EC2 metadata/)).toBeTruthy();expect(within(row).getByText(/ECS deployment requires a separately configured workflow/)).toBeTruthy();expect(within(row).queryByText(/OIDC-backed ECS deployments/)).toBeNull();if(status==='read_only_connected')expect(within(row).getByText('Read-only connected')).toBeTruthy();fireEvent.click(within(row).getByRole('button',{name:label==='Connect'?'Connect AWS':label}));expect(settings).toHaveBeenCalledOnce();expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
 });
 
@@ -261,9 +299,302 @@ it('groups exclusive catalogue views and app connections without granting access
  expect(screen.getByRole('group',{name:'Browse capabilities'})).toBeTruthy();
  expect(screen.getByRole('group',{name:'Saved catalogue views'})).toBeTruthy();
  expect(screen.getByRole('heading',{name:'App connections'})).toBeTruthy();
- for(const name of ['Source control','Collaboration','Work management','Cloud delivery','Batch automation'])expect(screen.getByRole('heading',{name})).toBeTruthy();
+ for (const [app, category] of [['GitHub','Source control'],['Slack','Collaboration'],['Linear','Work management'],['AWS ECS','Cloud delivery'],['Apache Airflow','Batch automation']]) {
+  expect(within(within(screen.getByRole('region',{name:'App connections'})).getByText(app).closest('th')!).getByText(category)).toBeTruthy();
+ }
  const search=screen.getByRole('searchbox',{name:'Search apps and skills'});
  fireEvent.change(search,{target:{value:'aws'}});
- expect(screen.getByText('AWS ECS')).toBeTruthy();expect(screen.queryByRole('heading',{name:'Collaboration'})).toBeNull();
+ expect(screen.getByText('AWS ECS')).toBeTruthy();expect(screen.queryByRole('rowheader',{name:/Collaboration/})).toBeNull();
  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();expect(m.client.updateAgentSkill).not.toHaveBeenCalled();expect(m.open).not.toHaveBeenCalled();
+});
+
+
+it("opens a read-only detail drawer and restores focus without starting consent or changing skills", async () => {
+  show();
+  const inspect = await screen.findByRole("button", {name: "Inspect Safe change"});
+  fireEvent.click(inspect);
+  const details = screen.getByRole("dialog", {name: "Details for Safe change"});
+  expect(within(details).getByText("commit_github_file")).toBeTruthy();
+  const close = within(details).getByRole("button", {name: "Close details"});
+  expect(document.activeElement).toBe(close);
+  expect(inspect.closest("[inert]")).toBeTruthy();
+  expect(fireEvent.keyDown(close, {key: "Tab", shiftKey: true})).toBe(false);
+  const panel = within(details).getByRole("tabpanel", {name: "Overview"});
+  expect(document.activeElement).toBe(panel);
+  expect(fireEvent.keyDown(panel, {key: "Tab"})).toBe(false);
+  expect(document.activeElement).toBe(close);
+  fireEvent.keyDown(details, {key: "Escape"});
+  expect(document.activeElement).toBe(inspect);
+  expect(screen.queryByRole("dialog", {name: "Details for Safe change"})).toBeNull();
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+
+it("shows only a reported GitHub selection and keeps inspection read-only", async () => {
+  const recordedCheck = "2026-11-20T10:00:00.000Z";
+  m.client.integrationStatus.mockResolvedValue(ok({
+    github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: recordedCheck}, cloud: [], collaboration: [],
+  }));
+  show(false);
+  await screen.findByText("Safe change");
+  const inspect = screen.getByRole("button", {name: "Inspect GitHub"});
+  expect(inspect.closest("tr")?.querySelector("time")?.dateTime).toBe(recordedCheck);
+  expect(within(inspect.closest("tr")!).getByText("Selected repositories")).toBeTruthy();
+  inspect.focus();
+  const search = screen.getByRole("searchbox", {name: "Search apps and skills"});
+  expect(fireEvent.keyDown(inspect, {key: "/"})).toBe(false);
+  expect(document.activeElement).toBe(search);
+  expect(fireEvent.keyDown(search, {key: "/"})).toBe(true);
+  inspect.focus();
+  fireEvent.click(inspect);
+  const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
+  expect(details.getByText("Selected repositories")).toBeTruthy();
+  expect(within(inspect.closest("tr")!).getByText("Read access verified").hasAttribute("data-read-verified")).toBe(true);
+  expect(details.getByText("Read access verified").hasAttribute("data-read-verified")).toBe(true);
+  expect(details.getByText("Authentication").nextElementSibling?.textContent).toBe("GitHub App");
+  expect(details.queryByRole("button", {name: "Verify read access"})).toBeNull();
+  expect(details.getByText("Recorded installation check").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
+  expect(document.activeElement).toBe(details.getByRole("button", {name: "Close details"}));
+  expect(fireEvent.keyDown(details.getByRole("button", {name: "Close details"}), {key: "/"})).toBe(true);
+  expect(document.activeElement).toBe(details.getByRole("button", {name: "Close details"}));
+  expect(inspect.closest("tr")?.dataset.inspected).toBe("true");
+
+  m.client.integrationStatus.mockResolvedValueOnce(ok({
+    github: {status: "revoked", repositorySelection: "selected", lastSeenAt: recordedCheck}, cloud: [], collaboration: [],
+  }));
+  fireEvent(window, new Event("focus"));
+  await waitFor(() => expect(details.queryByText("Reported repository access")).toBeNull());
+  expect(details.queryByText("Recorded installation check")).toBeNull();
+  expect(details.queryByText("Read access verified")).toBeNull();
+  expect(details.queryByText("GitHub App")).toBeNull();
+  expect(inspect.closest("tr")?.querySelector("time")).toBeNull();
+  fireEvent.click(details.getByRole("button", {name: "Close details"}));
+  expect(document.activeElement).toBe(inspect);
+  expect(inspect.closest("tr")?.dataset.inspected).toBe("false");
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+
+it("requires a recorded GitHub check time for the verified cue", async () => {
+  m.client.integrationStatus.mockResolvedValue(ok({
+    github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: null},
+    cloud: [], collaboration: [],
+  }));
+  show(false);
+  await screen.findByText("Read check unconfirmed");
+  const inspect = screen.getByRole("button", {name: "Inspect GitHub"});
+  expect(within(inspect.closest("tr")!).getByText("Read check unconfirmed").getAttribute("data-connected")).toBe("false");
+  fireEvent.click(inspect);
+  const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
+  expect(details.getByText("Read check unconfirmed").hasAttribute("data-read-verified")).toBe(false);
+  expect(details.getByText("Selected repositories")).toBeTruthy();
+});
+
+it("keeps catalogue and inspector status consistent and exposes only recorded timestamps", async () => {
+  const validated = "2026-11-20T10:00:00.000Z";
+  const installed = "2026-11-19T10:00:00.000Z";
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true, slack: true, teams: false, linear: false},
+    github: {status: "active", repositorySelection: "selected"},
+    cloud: [
+      {provider: "aws", status: "read_only_connected", lastTransitionAt: validated},
+      {provider: "gcp", status: "read_only_connected", lastTransitionAt: "2026-02-30T10:00:00Z"},
+    ],
+    collaboration: [{provider: "slack", status: "active", lastValidatedAt: validated}],
+  }));
+  m.client.listAgentSkills.mockResolvedValue(ok({
+    skills: [{...skill, status: "enabled", installedAt: installed, updatedAt: "2026-02-30T10:00:00Z"}],
+    storageAvailable: true,
+  }));
+  show(false);
+  await screen.findByText("Safe change");
+  fireEvent.click(screen.getByRole("button", {name: "Inspect Slack"}));
+  const connector = screen.getByRole("dialog");
+  expect(within(connector).getByText("Reported status").nextElementSibling?.textContent).toBe("active");
+  expect(connector.querySelector("time")?.dateTime).toBe(validated);
+  fireEvent.click(within(connector).getByRole("button", {name: "Close details"}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect AWS ECS"}));
+  const aws = screen.getByRole("dialog");
+  expect(within(aws).getByText("Reported status").nextElementSibling?.textContent).toBe("Read-only connected");
+  expect(within(aws).getByText("Recorded validation").nextElementSibling?.querySelector("time")?.dateTime).toBe(validated);
+  fireEvent.click(within(aws).getByRole("button", {name: "Close details"}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect Google Cloud"}));
+  const gcp = screen.getByRole("dialog");
+  expect(within(gcp).getByText("Recorded validation").nextElementSibling?.textContent).toBe("Unavailable");
+  expect(gcp.querySelector("time")).toBeNull();
+  fireEvent.click(within(gcp).getByRole("button", {name: "Close details"}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect Microsoft Teams"}));
+  const teams = screen.getByRole("dialog");
+  expect(within(teams).getByText("admin setup required")).toBeTruthy();
+  expect(teams.querySelector("time")).toBeNull();
+  fireEvent.click(within(teams).getByRole("button", {name: "Close details"}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect Safe change"}));
+  const installedSkill = screen.getByRole("dialog");
+  expect(installedSkill.querySelector("time")?.dateTime).toBe(installed);
+  expect(within(installedSkill).getByText("Recorded update").nextElementSibling?.textContent).toBe("Unavailable");
+  expect(within(installedSkill).getByRole("region", {name: "Execution boundary"})).toBeTruthy();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+});
+
+it("withholds consent and incomplete totals when connector records cannot be verified", async () => {
+  const configuration = {github: true, slack: true, teams: true, linear: false};
+  const unavailable = {status:"unavailable", lastValidatedAt:null};
+  m.client.integrationStatus.mockResolvedValueOnce(ok({
+    configuration, github: {status:"unavailable", repositorySelection:"unknown"},
+    cloud: [{provider:"aws",status:"unavailable"}],
+    collaboration: ["slack","teams","linear"].map(provider => ({provider,...unavailable})),
+  })).mockResolvedValueOnce(ok({
+    configuration, github: {status:"not_connected", repositorySelection:"unknown"},
+    cloud: [{provider:"aws",status:"not_connected"}], collaboration: [],
+  }));
+  show();
+  const git = (await screen.findByText("GitHub")).closest("tr")!;
+  await within(git).findByText("Status unavailable");
+  expect(within(git).queryByRole("button",{name:"Connect ↗"})).toBeNull();
+  const linear = screen.getByText("Linear").closest("tr")!;
+  expect(within(linear).getByText("Status unavailable")).toBeTruthy();
+  for (const label of ["Connected catalogue apps","Read-only cloud connections","Overdue validations"]) {
+    expect(screen.getByText(label).nextElementSibling?.textContent).toContain("Unavailable");
+  }
+  fireEvent.click(within(git).getByRole("button",{name:"Inspect GitHub"}));
+  const details=screen.getByRole("dialog");
+  expect(within(details).getByText("Status unavailable")).toBeTruthy();
+  fireEvent.click(within(details).getByRole("button",{name:"Close details"}));
+  const refresh=screen.getByRole("button",{name:"Refresh capabilities"});
+  refresh.focus();
+  fireEvent.click(refresh);
+  expect(await within(git).findByRole("button",{name:"Connect ↗"})).toBeTruthy();
+  expect(document.activeElement).toBe(refresh);
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+
+it("shows an unknown installation in the row and inspector until storage is verified", async () => {
+  m.client.listAgentSkills.mockResolvedValueOnce(ok({skills: [skill], storageAvailable: false}));
+  show();
+  const row = (await screen.findByText("Safe change")).closest("tr")!;
+  expect(within(row).getByText("Unknown")).toBeTruthy();
+  expect(within(row).queryByRole("button", {name: "Add"})).toBeNull();
+  fireEvent.click(within(row).getByRole("button", {name: "Inspect Safe change"}));
+  expect(within(screen.getByRole("dialog")).getByText("Unknown")).toBeTruthy();
+  fireEvent.keyDown(screen.getByRole("dialog"), {key: "Escape"});
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
+  await screen.findByRole("button", {name: "Add"});
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+});
+
+it("refreshes a conflict without replaying the stale action", async () => {
+  m.client.updateAgentSkill.mockResolvedValueOnce({ok: false, error: "skill_state_changed"});
+  show();
+  fireEvent.click(await screen.findByRole("button", {name: "Add"}));
+  await screen.findByText(/Skill state changed/);
+  const refresh = screen.getByRole("button", {name: "Refresh capabilities"});
+  expect(document.activeElement).toBe(refresh);
+  expect(screen.queryByRole("button", {name: "Add"})).toBeNull();
+  m.client.listAgentSkills.mockResolvedValueOnce(ok({skills: [{...skill, status: "enabled"}], storageAvailable: true}));
+  fireEvent.click(refresh);
+  await screen.findByRole("button", {name: "Disable"});
+  expect(screen.queryByText(/Skill state changed/)).toBeNull();
+  expect(m.client.updateAgentSkill).toHaveBeenCalledTimes(1);
+});
+
+it.each([true, false])("opens connection settings from GitHub inspection only for managers (%s)", async canManage => {
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true}, github: {status: "installation_recorded", repositorySelection: "selected"},
+    cloud: [], collaboration: [],
+  }));
+  const openSettings = vi.fn();
+  render(createElement(PluginsSkillsView, {onOpenSettings: openSettings, onOpenAirflow() {}, canManage}));
+  await screen.findByText("Selected repositories");
+  const inspect = screen.getByRole("button", {name: "Inspect GitHub"});
+  fireEvent.click(inspect);
+  const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
+  const configure = details.queryByRole("button", {name: "Configure GitHub connection"});
+  if (canManage) {
+    expect(configure).not.toBeNull();
+    fireEvent.click(configure!);
+  } else {
+    expect(configure).toBeNull();
+  }
+  expect(openSettings).toHaveBeenCalledTimes(canManage ? 1 : 0);
+  expect(m.client.validateGitHubReadOnly).not.toHaveBeenCalled();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  fireEvent.click(details.getByRole("button", {name: "Close details"}));
+  expect(document.activeElement).toBe(inspect);
+});
+
+it("checks GitHub from the inspector once, keeps focus and announces the result", async () => {
+  const recordedCheck = "2026-11-20T10:01:00.000Z";
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true}, github: {status: "installation_recorded", repositorySelection: "selected"},
+    cloud: [], collaboration: [],
+  }));
+  const pending = deferred();
+  m.client.validateGitHubReadOnly.mockReturnValueOnce(pending.promise);
+  show();
+  await screen.findByText("Selected repositories");
+  const inspect = screen.getByRole("button", {name: "Inspect GitHub"});
+  fireEvent.click(inspect);
+  const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
+  const verify = details.getByRole("button", {name: "Verify read access"});
+  expect(m.client.validateGitHubReadOnly).not.toHaveBeenCalled();
+  verify.focus();
+  fireEvent.click(verify);
+  fireEvent.click(verify);
+  expect(m.client.validateGitHubReadOnly).toHaveBeenCalledTimes(1);
+  expect(verify.getAttribute("aria-disabled")).toBe("true");
+  expect(details.getByRole("button", {name: "Configure GitHub connection"}).getAttribute("aria-disabled")).toBe("true");
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true}, github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: recordedCheck},
+    cloud: [], collaboration: [],
+  }));
+  await act(async () => pending.resolve(ok({status: "validated_read_only"})));
+  expect(details.getByRole("status").textContent).toBe("GitHub read access is verified for this workspace.");
+  expect(details.getByText("Recorded installation check").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
+  expect(document.activeElement).toBe(verify);
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true}, github: {status: "revoked", repositorySelection: "selected"},
+    cloud: [], collaboration: [],
+  }));
+  fireEvent(window, new Event("focus"));
+  await waitFor(() => expect(verify.getAttribute("aria-disabled")).toBe("true"));
+  expect(details.queryByText("GitHub App")).toBeNull();
+  expect(details.getByRole("status").textContent).toBe("GitHub access is revoked.");
+  m.client.integrationStatus.mockResolvedValueOnce({ok: false, error: "unavailable"});
+  fireEvent(window, new Event("focus"));
+  await waitFor(() => expect(details.getByRole("status").textContent).toBe("Current GitHub read access is unconfirmed."));
+  expect(document.activeElement).toBe(verify);
+  fireEvent.click(verify);
+  expect(m.client.validateGitHubReadOnly).toHaveBeenCalledTimes(1);
+  fireEvent.click(details.getByRole("button", {name: "Close details"}));
+  expect(document.activeElement).toBe(inspect);
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+
+it("navigates reported scope and recorded activity without starting a provider action", async () => {
+  const at = "2026-11-20T10:00:00.000Z";
+  m.client.integrationStatus.mockResolvedValue(ok({
+    github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: at}, cloud: [], collaboration: [],
+  }));
+  show();
+  await screen.findByText("Selected repositories");
+  const inspect = screen.getByRole("button", {name: "Inspect GitHub"});
+  fireEvent.click(inspect);
+  const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
+  const overview = details.getByRole("tab", {name: "Overview"});
+  overview.focus();
+  fireEvent.keyDown(overview, {key: "ArrowRight"});
+  const permissions = details.getByRole("tab", {name: "Permissions"});
+  expect(document.activeElement).toBe(permissions);
+  expect(within(details.getByRole("tabpanel", {name: "Permissions"})).getByText("Selected repositories")).toBeTruthy();
+  expect(details.getByRole("region", {name: "Execution boundary"})).toBeTruthy();
+
+  fireEvent.keyDown(permissions, {key: "End"});
+  const activity = details.getByRole("tab", {name: "Activity"});
+  expect(document.activeElement).toBe(activity);
+  expect(details.getByRole("tabpanel", {name: "Activity"}).querySelector("time")?.dateTime).toBe(at);
+  expect(m.client.validateGitHubReadOnly).not.toHaveBeenCalled();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  fireEvent.keyDown(activity, {key: "Escape"});
+  expect(document.activeElement).toBe(inspect);
 });

@@ -15,6 +15,7 @@
 import "server-only";
 
 import { loadAppEnv } from "@/lib/config/env";
+import type { OrganizationId } from "@/lib/domain/ids";
 import type { TelemetrySeverity, TelemetrySignal } from "./telemetryIngestModel";
 
 const DEFAULT_TIMEOUT_MS = 8_000;
@@ -40,9 +41,12 @@ interface SentryIssue {
   project?: { slug?: string; name?: string };
 }
 
-export async function extractSentryUnresolvedIssues(): Promise<SentryPullExtraction> {
+export async function extractSentryUnresolvedIssues(workspaceId: OrganizationId): Promise<SentryPullExtraction> {
   const start = Date.now();
   const env = loadAppEnv();
+  if (!env.telemetryPullTenantId || workspaceId !== env.telemetryPullTenantId) {
+    return blocked(start, "No pull credentials are assigned to this workspace.");
+  }
 
   if (!env.sentryPullEnabled) {
     return blocked(start, "SENTRY_PULL_ENABLED is not set — extractor skipped.");

@@ -5,10 +5,14 @@ import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api/correlation";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { parseDeploymentIntake } from "@/lib/tauri/deploymentIntakeSchema";
+import { savedReleaseLocatorSchema, type ReleaseContextSummary } from "@/lib/tauri/deploymentRequestSummary";
+import { uniqueGithubRepositories } from "@/lib/connectors/github/releaseEvidence";
 import {
     createDeploymentRequest,
+    getDeploymentRequest,
     listDeploymentRequests,
     type DeploymentRequestRepo,
+    type DeploymentRequestRow,
 } from "@/lib/tauri/deploymentRequestRepo";
 
 export const dynamic = "force-dynamic";
@@ -43,41 +47,6 @@ interface PlaybookSummaryRepo {
     };
 }
 
-interface ReleaseContextSummary {
-    batches: { selectedRunCount: number };
-    window: {
-        startUtc: string;
-        endUtc: string;
-        displayTimeZone: string;
-    } | null;
-    scope: {
-        applicationCount: number;
-        repositoryCount: number;
-        targetEnvironment: string | null;
-    };
-    approval: {
-        prStatus: string;
-        noPrRequired: boolean;
-    };
-    readiness: {
-        developmentReady: boolean;
-        productionReady: boolean;
-        validationStepCount: number;
-        deferredValidation: boolean;
-        approvalDecision: "ready_for_human_approval" | "needs_attention";
-        blockers: string[];
-    };
-    recovery: {
-        rollbackAvailability: string;
-        backupRequired: boolean;
-        evidenceCount: number;
-    };
-    observation: {
-        status: "not_connected";
-        recordedMonitoringPlan: boolean;
-    };
-}
-
 function record(value: unknown): Record<string, unknown> {
     return value && typeof value === "object" && !Array.isArray(value)
         ? value as Record<string, unknown>
@@ -97,7 +66,7 @@ function count(value: unknown): number {
  * desktop needs to orient a release. Raw URLs, contacts, workflow inputs,
  * and evidence identifiers remain inside the governed request record.
  */
-function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
+function summarizeReleaseContext(intakeJson: unknown, canReadGithub: boolean): ReleaseContextSummary {
     const intake = record(intakeJson);
     const batches = releaseAirflowDependencySchema.safeParse(intake.airflowDependency);
     const noPrRequired = intake.noPrRequired === true;
@@ -126,6 +95,12 @@ function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
             applicationCount: count(intake.applications),
             repositoryCount: count(intake.repositoryUrls),
             targetEnvironment: text(intake.targetEnvironment),
+            ...(intake.changeCreationMethod === "not_applicable" && { changeNotApplicable: true as const }),
+            ...(canReadGithub && Array.isArray(intake.repositoryUrls) && {
+                githubRepositories: uniqueGithubRepositories(intake.repositoryUrls.filter(
+                    (value): value is string => typeof value === "string",
+                )).map(({ owner, repository }) => `${owner}/${repository}`),
+            }),
         },
         approval: {
             prStatus: text(intake.prApprovalStatus) ?? "unknown",
@@ -164,6 +139,22 @@ function isUniqueConflict(cause: unknown): boolean {
     );
 }
 
+async function readRequesterNames(organizationId: string, rows: DeploymentRequestRow[]) {
+    const requesterIds = [...new Set(rows.filter(row => row.organizationId === organizationId).map(row => row.requesterUserId))];
+    if (requesterIds.length === 0) return new Map<string, string | null>();
+
+    const members = await prisma.orgMembership.findMany({
+        where: { organizationId, userId: { in: requesterIds }, acceptedAt: { not: null } },
+        select: { userId: true },
+    });
+    if (members.length === 0) return new Map<string, string | null>();
+    const users = await prisma.user.findMany({
+        where: { id: { in: members.map(member => member.userId) }, name: { not: null } },
+        select: { id: true, name: true },
+    });
+    return new Map(users.map(user => [user.id, user.name?.trim().slice(0, 160) || null]));
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
         const session = await resolveRequestDesktopSession(request, {
@@ -177,10 +168,34 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             );
         }
 
-        const rows = await listDeploymentRequests(
-            prisma as unknown as DeploymentRequestRepo,
-            String(session.organizationId),
-        );
+        const canReadGithub = session.credentialKind === "desktop_session" && session.capabilities.includes("github:read");
+        const query = request.nextUrl.searchParams;
+        const ids = query.getAll("savedReleaseId");
+        const versions = query.getAll("savedReleaseVersion");
+        const organizationId = String(session.organizationId);
+        const repository = prisma as unknown as DeploymentRequestRepo;
+        const linkedIds = query.getAll("linkedReleaseId");
+        if (linkedIds.length) {
+            const linked = savedReleaseLocatorSchema.shape.id.safeParse(linkedIds[0]);
+            if (linkedIds.length !== 1 || ids.length || versions.length || !linked.success) {
+                return NextResponse.json({ ok: false, error: "invalid_linked_release" }, { status: 400 });
+            }
+            const row = await getDeploymentRequest(repository, organizationId, linked.data);
+            const locator = savedReleaseLocatorSchema.safeParse(row && { id: row.id, version: row.version });
+            const data = row?.organizationId === organizationId && locator.success && locator.data.id === linked.data ? locator.data : null;
+            return NextResponse.json({ ok: true, data }, { headers: { "Cache-Control": "private, no-store" } });
+        }
+        let rows: DeploymentRequestRow[];
+        if (ids.length || versions.length) {
+            const exact = savedReleaseLocatorSchema.safeParse({ id: ids[0], version: Number(versions[0]) });
+            if (ids.length !== 1 || versions.length !== 1 || !/^[1-9][0-9]*$/.test(versions[0]) || !exact.success) {
+                return NextResponse.json({ ok: false, error: "invalid_saved_release" }, { status: 400 });
+            }
+            const row = await getDeploymentRequest(repository, organizationId, exact.data.id);
+            rows = row?.id === exact.data.id && row.organizationId === organizationId && row.version === exact.data.version ? [row] : [];
+        } else {
+            rows = await listDeploymentRequests(repository, organizationId);
+        }
         const playbooks = rows.length > 0
             ? await (prisma as unknown as PlaybookSummaryRepo).tauriPlaybook.findMany({
                 where: {
@@ -199,6 +214,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 },
             })
             : [];
+        // Legacy desktop clients validate exact summaries with a strict schema.
+        const requesterNames = query.get("includeRequester") === "1" &&
+            session.credentialKind === "desktop_session" && session.capabilities.includes("workspace:read")
+            ? await readRequesterNames(organizationId, rows).catch(() => undefined)
+            : undefined;
         const latestByRequest = new Map<string, PlaybookSummaryRow>();
         for (const playbook of playbooks) {
             if (!latestByRequest.has(playbook.deploymentRequestId)) {
@@ -210,6 +230,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             ok: true,
             data: rows.map((row) => {
                 const latest = latestByRequest.get(row.id);
+                const requesterName = row.organizationId === organizationId ? requesterNames?.get(row.requesterUserId) : undefined;
                 return {
                     id: row.id,
                     title: row.title,
@@ -219,7 +240,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     submittedAt: row.submittedAt?.toISOString() ?? null,
                     closedAt: row.closedAt?.toISOString() ?? null,
                     updatedAt: row.updatedAt.toISOString(),
-                    releaseContext: summarizeReleaseContext(row.intakeJson),
+                    ...(requesterName ? { requesterName } : {}),
+                    releaseContext: summarizeReleaseContext(row.intakeJson, canReadGithub),
                     latestPlaybook: latest ? {
                         id: latest.id,
                         version: latest.version,
@@ -229,7 +251,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     } : null,
                 };
             }),
-        });
+        }, { headers: { "Cache-Control": "private, no-store" } });
     } catch {
         return NextResponse.json(
             { ok: false, error: "deployment_request_list_failed" },

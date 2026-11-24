@@ -17,7 +17,7 @@ const scope={repositoryId:'team/repo',resourceId:'github:repository:team/repo',e
 const baseline={id:baselineId,version:1,status:'approved',baseline:{organizationId:'org',digest,scopes:[scope],rules:[]},executionAuthorized:false};
 const identity={kind:'desktop_session',organizationId:'org',userId:'reviewer',role:'security_reviewer',capabilities:['workspace:read','agent:approve'],access:{allowed:true}} as any;
 const policy={id:policyId,version:0,status:'proposed',policy:{scope,organizationId:'org',digest,parentDigest:null,autonomyLevel:4,actions:['repository.merge'],executorUserIds:['executor'],expiresAt:'2030-01-01T00:00:00Z'},requesterUserId:'owner',approval:null,executionAuthorized:false};
-beforeEach(()=>{vi.clearAllMocks();m.config={apiBase:'https://fixture.invalid'};m.revision=0;m.listeners.clear();m.baseline.mockResolvedValue({ok:true,data:baseline});m.policy.mockResolvedValue({ok:true,data:policy});m.mutate.mockResolvedValue({ok:true,data:{...policy,status:'approved',version:1}})});
+beforeEach(()=>{vi.clearAllMocks();m.config={apiBase:'https://fixture.invalid'};m.revision=0;m.listeners.clear();m.baseline.mockResolvedValue({ok:true,data:baseline});m.policy.mockResolvedValue({ok:true,data:policy});m.mutate.mockResolvedValue({ok:true,data:{...policy,status:'approved',version:1}});m.members.mockResolvedValue({ok:true,data:{currentUserId:identity.userId,members:[]}})});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.unstubAllEnvs()});
 function openLimits(){fireEvent.click(screen.getByRole('button',{name:'Review execution limits preview'}))}
 async function loadBaseline(){fireEvent.change(screen.getByLabelText('Saved baseline revision ID'),{target:{value:baselineId}});fireEvent.click(screen.getByRole('button',{name:'Load baseline review'}));await screen.findByRole('button',{name:'Load saved limit policies'})}
@@ -55,8 +55,13 @@ it('manager prepares an exact-baseline-scoped proposal through actual mounted au
  m.members.mockResolvedValue({ok:true,data:{currentUserId:'owner',members:[{userId:'executor',role:'operator',displayName:'Fixture executor',email:'executor@fixture.test',acceptedAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'}]}});
  m.active.mockResolvedValue({ok:true,data:{found:false,scope,executionAuthorized:false}});
  m.mutate.mockResolvedValue({ok:true,data:{...policy,requesterUserId:'owner'}});
- render(createElement(SettingsView,{identity:manager}));openLimits();await loadBaseline();expect(m.members).not.toHaveBeenCalled();expect(m.active).not.toHaveBeenCalled();
+ render(createElement(SettingsView,{identity:manager}));
+ // The read-only Settings overview uses the same endpoint. Entering the
+ // authoring preview and loading the baseline must not read members again.
+ await screen.findByText('Fixture executor');expect(m.members).toHaveBeenCalledOnce();
+ openLimits();await loadBaseline();expect(m.members).toHaveBeenCalledOnce();expect(m.active).not.toHaveBeenCalled();
  fireEvent.click(screen.getByRole('button',{name:'Load current workspace members'}));await screen.findByLabelText('Fixture executor · operator');fireEvent.click(screen.getByLabelText('Fixture executor · operator'));
+ expect(m.members).toHaveBeenCalledTimes(2);
  fireEvent.change(screen.getByLabelText('Limit expiry'),{target:{value:'2030-01-01T12:00'}});fireEvent.click(screen.getByRole('button',{name:'Read exact current limit parent'}));await screen.findByText(/No current limit pointer/);
  fireEvent.click(screen.getByLabelText('I reviewed this exact proposal and its named executors.'));fireEvent.click(screen.getByRole('button',{name:'Save limits for independent review'}));await screen.findByText(/Proposal saved for a separate independent reviewer/);
  expect(m.mutate).toHaveBeenCalledOnce();expect(m.mutate.mock.calls[0][0]).toMatchObject({operation:'propose',policy:{scope,executorUserIds:['executor'],parentDigest:null}});expect(m.sources).not.toHaveBeenCalled();expect(m.drift).not.toHaveBeenCalled();

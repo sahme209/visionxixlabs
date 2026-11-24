@@ -21,7 +21,7 @@ export default function TermsOfServicePage() {
             <p className="text-lg text-zinc-400 mb-2">
               Last Updated: November 9, 2026
             </p>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               For enterprise clients, these Terms are supplemented by executed consulting agreements and Statements of Work (SOWs).
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function TermsOfServicePage() {
               These additional terms apply when you use V19 (the desktop app), the V19 web workspace, the V19 API, the agent governance gateway or the Ask V19 support chat.
             </p>
             <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
-              <li><strong>Free to explore.</strong> V19 can be used without charge within published limits (for example, a number of counted deployments per organization each month). Limits may change with notice.</li>
+              <li><strong>Free to explore.</strong> V19 does not charge per deployment through your own runner. Your CI and cloud providers may bill you separately. Workspace permissions, approvals, and provider limits apply.</li>
               <li><strong>Prepaid AI credits.</strong> AI usage is the only paid part and is prepaid. The estimated cost is shown before an AI action, a hold is placed, and you are charged only the final price, never more than your prepaid balance. Unused credit is refundable on request within 30 days of purchase. Credit purchases may not yet be available.</li>
               <li><strong>Founding Supporter purchases</strong> are voluntary one-time purchases that support development. They are not tax-deductible charitable gifts and do not change product billing, AI credits or controls.</li>
               <li><strong>Your responsibility for actions.</strong> V19 proposes, records and gates actions, but you and your workspace remain responsible for the changes you approve and run in your own repositories and cloud accounts. Review proposals before approving them.</li>
@@ -158,7 +158,7 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-300 leading-relaxed mt-3">
               Confidential Information does not include information that: (a) is publicly available or becomes publicly available through no breach of these Terms, (b) was rightfully known by the receiving party before disclosure, (c) is independently developed without use of Confidential Information, or (d) is rightfully received from a third party without breach of confidentiality.
             </p>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+            <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>Formal NDAs:</strong> For enterprise engagements, formal Non-Disclosure Agreements (NDAs) may be executed separately and will supplement these Terms.
             </p>
           </section>
@@ -209,7 +209,7 @@ export default function TermsOfServicePage() {
               <li>WE ARE NOT RESPONSIBLE FOR ISSUES ARISING FROM CHANGES MADE OUTSIDE OUR SCOPE OR AFTER HANDOVER, YOUR FAILURE TO FOLLOW OUR RECOMMENDATIONS, THIRD-PARTY SYSTEMS OR SERVICES, OR FORCE MAJEURE EVENTS</li>
               <li>THESE LIMITATIONS APPLY REGARDLESS OF THE THEORY OF LIABILITY (CONTRACT, TORT, NEGLIGENCE, STRICT LIABILITY, OR OTHERWISE) AND EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES</li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3">
+            <p className="text-zinc-400 text-sm mt-3">
               Some jurisdictions do not allow the exclusion or limitation of certain damages, so some of the above limitations may not apply to you. In such cases, our liability is limited to the maximum extent permitted by law.
             </p>
           </section>
@@ -348,7 +348,7 @@ export default function TermsOfServicePage() {
                   support@visionxixlabs.com
                 </a>
               </p>
-              <p className="text-zinc-500 text-sm mt-2">
+              <p className="text-zinc-400 text-sm mt-2">
                 For legal or contract inquiries, please include &ldquo;Terms of Service&rdquo; in the subject line.
               </p>
             </div>
@@ -356,7 +356,7 @@ export default function TermsOfServicePage() {
 
           {/* Footer Note */}
           <div className="border-t border-white/6 pt-6 mt-8">
-            <p className="text-sm text-zinc-500 text-center">
+            <p className="text-sm text-zinc-400 text-center">
               These Terms apply to all Services provided by Vision XIX Labs LLC, including consulting services, website access, and mobile applications. For enterprise clients, executed consulting agreements and SOWs take precedence.
             </p>
           </div>

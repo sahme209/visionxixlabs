@@ -56,7 +56,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
       if (!cents(effective.includedAICreditsCents) || !cents(effective.appliedAICreditsCents) || !cents(usedCents + heldCents)) return { available: false };
       return { available: true, baseCents: plan.entitlements.includedAICreditsCents, addOnCents: effective.appliedAICreditsCents,
         poolCents: effective.includedAICreditsCents, usedCents, heldCents,
-        includedRemainingCents: Math.max(0, effective.includedAICreditsCents - usedCents - heldCents), overagePolicy: plan.entitlements.overagePolicy };
+        includedRemainingCents: Math.max(0, effective.includedAICreditsCents - usedCents - heldCents), overagePolicy: "hard_stop" };
     }, { isolationLevel: "RepeatableRead" });
   } catch { return { available: false }; }
 }

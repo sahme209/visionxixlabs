@@ -70,7 +70,7 @@ const PRACTICES: readonly Practice[] = [
     num: "06",
     title: "Quiet roster. Loud product.",
     icon: EyeSlashIcon,
-    body: "We don't list headshots. We don't have a press kit. The work speaks. If you're hiring us, the manifesto, the docs, and the changelog tell you who we are — better than a photo grid would.",
+    body: "We don't list headshots. We don't have a press kit. The work speaks. If you're hiring us, the manifesto, the docs, and the desktop release notes tell you who we are — better than a photo grid would.",
   },
 ];
 
@@ -97,7 +97,7 @@ export default function TeamPage() {
           {PRACTICES.map((p) => {
             const Icon = p.icon;
             return (
-              <article key={p.num} id={`team-${p.num}`} className="rounded-xl border border-white/[0.08] bg-[#171615] p-7 sm:p-9 scroll-mt-24">
+              <article key={p.num} id={`team-${p.num}`} tabIndex={-1} className="rounded-xl border border-white/[0.08] bg-[#171615] p-7 sm:p-9 scroll-mt-6">
                 <header className="flex items-center gap-4 mb-5">
                   <div className="shrink-0 w-10 h-10 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center">
                     <Icon className="h-4.5 w-4.5 text-zinc-300" style={{ height: "1.125rem", width: "1.125rem" }} />

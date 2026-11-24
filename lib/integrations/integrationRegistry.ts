@@ -110,13 +110,13 @@ export const INTEGRATIONS: ReadonlyArray<Integration> = [
   {
     id: "gitlab",
     name: "GitLab",
-    blurb: "OAuth app · same surface as GitHub.",
+    blurb: "Planned read-only repository and CI evidence.",
     category: "vcs",
     activation: "oauth",
-    status: "beta",
-    cta: "Connect with GitLab (OAuth)",
-    permissionsSummary: "read_api · read_repository · read_user",
-    writeAccess: "approval_gated",
+    status: "planned",
+    cta: "Setup planned",
+    permissionsSummary: "Workspace consent and read scope pending",
+    writeAccess: "none",
   },
   // ─── Monitoring ─────────────────────────────────────────────────────
   {

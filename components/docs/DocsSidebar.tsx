@@ -113,7 +113,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
 ];
 
-export function DocsSidebar() {
+export function DocsSidebar({ onNavigate }: { onNavigate?: (href: string) => void } = {}) {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const field = useRef<HTMLInputElement>(null);
@@ -169,7 +169,8 @@ export function DocsSidebar() {
                     </span>
                   ) : (
                     <Link
-                      href={item.href}
+                      href={item.href} prefetch={false}
+                      onNavigate={() => onNavigate?.(item.href)}
                       aria-current={isActive ? "page" : undefined}
                       className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                         isActive

@@ -18,6 +18,12 @@ A customer installation needs one understandable answer to “which deployment o
 
 The [source sidecar](deployment-origin-authority-contract.sources.json) binds finite inspected files/ranges. This is not a complete egress, security, proxy or transport inventory. No native, browser, Keychain, server or provider behavior was exercised for this design.
 
+### Current transport review, 24 November 2026
+
+A source comparison against `ee831a91` verified the historical sidecar and found changes in eight of its 19 distinct files. The buffered API, streaming implementation and webview bridge still use the fixed vendor origin. The native owner-proof reader also still uses the vendor origin. The current pairing and selected-credential recovery paths still require explicit verification. Server-side canonical browser origin checks and current desktop session authority remain separate from installation trust.
+
+The registered native cloud connector and scan commands are another transport path. They select their destination independently of the buffered and streaming bridge. Before customer deployment, D2 must inventory those commands alongside the main transport and record each as bound to the reviewed deployment and credential audience, or unavailable in customer mode. D3 must check credential selection and restoration for each retained path. The current review does not establish a shared origin or credential contract across those paths.
+
 ## Recommended trust direction
 
 Use an **administrator-provisioned, versioned deployment descriptor** for a future enterprise lane. Verify its provenance against an independently enrolled installation trust root before using it to select an origin. A descriptor returned by the same untrusted URL it names cannot establish its own trust. Ordinary webview input, environment variables, redirect responses, workspace metadata and copied bearer tokens must not enroll a deployment.
@@ -109,5 +115,7 @@ The UI should always show a concise deployment name/origin, current workspace, v
 ### Required acceptance matrix
 
 Before customer support or activation: exercise the same approved operation through buffered transport, stream, browser pairing, credential restoration and native proof against an owned customer deployment. Include wrong host/deployment, redirect, private-network boundary, missing/malformed/expired descriptor, signer/revision rollback, IDN/port ambiguity, stale callbacks, account/deployment switch, token/proof replay, failed storage, interrupted rotation, HA/restore continuity and unavailable revocation evidence. Real native/server/browser identities and supported platforms must be exercised; mocks alone do not qualify them.
+
+For each retained native cloud command, verify the approved destination and credential audience and record the traffic disposition under a denied-egress customer profile. For commands unavailable in that mode, verify refusal before outbound traffic. Keep the actual customer installation, supported network profile and acceptance evidence tied to the same deployment identity.
 
 Finally complete a real governed deployment, audit readback and recovery with public internet disabled. Verify no vendor auth/licensing/AI/telemetry/update/help dependency is silently required and no engine can bypass Governance or genuine independent approval. Airflow/Temporal/custom adapter and A2 executing-issuer coverage remain separate acceptance requirements. Source maps, a compiled app, a local web preview or this contract do not satisfy that matrix.

@@ -1,6 +1,6 @@
 [package]
 name = "axiom-desktop"
-version = "0.1.24"
+version = "0.1.25"
 description = "V19 — Local AI Cloud Operations Command Center"
 authors = ["Vision XIX Labs"]
 edition = "2021"
@@ -12,6 +12,8 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-shell = "2"
+tauri-plugin-dialog = "=2.8.4"
+tempfile = "=3.27.0"
 tauri-plugin-notification = "2"
 tauri-plugin-store = "2"
 tauri-plugin-deep-link = "2"

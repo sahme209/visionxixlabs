@@ -1,11 +1,12 @@
 import {z} from 'zod';
 import {digest,platformPrincipalSchema} from '../contracts';
+import {executionTimeEvidenceSchema} from '../executionTimeEvidence';
 import {readPlatformAction} from '../kernel';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {readOperationalEcsResult} from './ecsExecution';
 import {readOperationalTargetReceipt} from './reservationContract';
 import {operationalEvidenceId} from './contracts';
-const eventSchema=z.object({operationalObserverUserId:platformPrincipalSchema.shape.userId,operationalStabilityReceiptId:operationalEvidenceId,operationalCommandReceiptDigest:digest,planDigest:digest,stateDigest:digest,status:z.literal('confirmed'),attemptCount:z.literal(1)}).strict();
+const eventSchema=z.object({timeAssurance:executionTimeEvidenceSchema.optional(),operationalObserverUserId:platformPrincipalSchema.shape.userId,operationalStabilityReceiptId:operationalEvidenceId,operationalCommandReceiptDigest:digest,planDigest:digest,stateDigest:digest,status:z.literal('confirmed'),attemptCount:z.literal(1)}).strict();
 /** Historical lineage, not fresh native qualification, health or permission. */
 export function readOperationalStabilityHistory(actionId:string,rawParent:unknown,rawResult:unknown,rawEvent:unknown,rawNative:unknown){
  const parent=readPlatformAction(rawParent),result=readOperationalEcsResult(rawResult),event=eventSchema.parse(rawEvent),native=readOperationalTargetReceipt(rawNative);

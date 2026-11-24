@@ -34,7 +34,7 @@ export function BotAiDataFlow() {
         {STAGES.map((stage, index) => (
           <li key={stage.title} className={`min-w-0 rounded-xl border p-4 ${index === 2 ? 'border-orange-300/20 bg-orange-300/2.5' : 'border-white/8 bg-black/10'}`}>
             <div className="flex items-start justify-between gap-3">
-              <span aria-hidden="true" className="font-mono text-[11px] tabular-nums text-zinc-500">{String(index + 1).padStart(2, '0')}</span>
+              <span aria-hidden="true" className="font-mono text-[11px] tabular-nums text-zinc-400">{String(index + 1).padStart(2, '0')}</span>
               <p className="max-w-[180px] text-right text-[10px] leading-4 text-zinc-400">{stage.boundary}</p>
             </div>
             <h4 className="mt-5 text-sm font-medium text-zinc-100">{stage.title}</h4>

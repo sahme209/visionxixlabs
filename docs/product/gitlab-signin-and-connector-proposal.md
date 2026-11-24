@@ -27,10 +27,64 @@ safe account-linking rule. Linking to an existing Axiom account requires proof
 of that existing account; matching email alone is not permission to link.
 
 `lib/releaseops/gitlabFetcher.ts` and pure GitLab projectors already exist.
-The raw fetcher permits process-wide token/base-URL fallbacks and unbounded JSON
-reads; customer connection work must verify/use a tenant-scoped, bounded adapter,
-not expose those defaults. Pure payload projection can be reused. The connector
-catalog currently labels GitLab planned; this is not live acceptance.
+The unpublished scoped reader takes a context-encrypted project token and
+rechecks current consent before and after the bounded GitLab.com read. Reads
+target the numeric GitLab project ID recorded in both the credential and the
+workspace grant. The owner and repository names still have to match the workspace
+repository binding. Pure payload projection can be reused. The public connector
+catalog labels GitLab planned. The staged database adapter reads accepted
+membership, provider scope, the workspace repository and consent in a short
+consistent snapshot before and after transport. It requires the authenticated
+caller to supply a canonical user ID and the reviewed repository-read decision.
+Route adoption, durable validation and separate live qualification remain open.
+
+## Evidence persistence
+
+The staged sync collects one bounded slice before opening a write transaction.
+The transaction locks the exact workspace membership, repository and consent,
+rechecks their binding, and saves the complete slice or rolls it back. It
+reports uncertain commits separately. The gated dashboard sync requires a
+same-origin request, canonical session identity and current connection-manager
+access. It uses the exact active workspace registration and records the existing
+repository audit event after a confirmed sync. Customer-facing setup and live
+qualification remain open.
+
+## Provider validation evidence
+
+The staged scope check uses GitLab's authenticated
+[self-information endpoint](https://docs.gitlab.com/api/personal_access_tokens/#self-inform).
+It requires an active, unrevoked token with exactly `read_api`, an unexpired
+provider expiry (midnight UTC), and unambiguous token and user IDs. It makes no database
+transition. GitLab stores project and group tokens as personal access token
+records, so self-information alone cannot prove the selected project owns the
+token. A successful project GET is also insufficient because public projects
+can answer anonymously, and GitLab documents access to Internal projects for
+some project tokens. The staged project check compares token ID, bot user ID,
+scope and expiry with the [exact project's token record](https://docs.gitlab.com/api/project_access_tokens/#retrieve-details-on-a-project-access-token).
+It reads the numeric project's metadata and requires the canonical
+`path_with_namespace` to match the workspace repository. The separate verifier
+credential is used only for the project-token lookup.
+
+For an existing pending registration, the staged activation transaction locks
+and rechecks the exact workspace membership, repository and consent revision.
+Only the consenting connection manager can finish activation. The stored
+project credential's expiry never extends beyond the pending or provider expiry.
+The authenticated dashboard setup endpoint is disabled by default. Its
+same-origin POST accepts an exact pending registration or a validation request.
+The credential envelope binds the workspace, connection and repository. The
+verifier is request-scoped and is not persisted. Its scoped GET returns only
+status, connection ID, revision and validation time so an authorized manager
+can reload after an unconfirmed reply. A consenting manager can revalidate an
+unexpired active credential against fresh project and token evidence. A current
+workspace manager can revoke an exact registration revision in V19, which
+removes the stored usable credential without sending a GitLab mutation.
+Reconnect requires an explicit new credential and the revoked revision.
+In a workspace where setup is enabled, open the tracked GitLab repository in
+V19 Control → Integrations → Manage GitLab. Register the scoped project token, then supply the
+separate verifier to validate it. Sync controls appear after recorded read
+validation. Refresh status to recover an uncertain result. Revocation requires
+confirmation and affects the V19 connection. Live credential custody and hosted
+qualification remain open.
 
 ## Required reviewed behavior
 

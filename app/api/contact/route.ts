@@ -104,35 +104,39 @@ export async function POST(request: NextRequest) {
       aiUsageStatus: escapeHtml(normalized(aiUsageStatus) || "Not specified"),
     };
 
-    const lead = await prisma.lead.create({
-      data: {
-        email: safe.email,
-        name: safe.name,
-        source: "contact",
-        status: "created",
-        fullPayload: {
-          name: safe.name,
+    const lead = await prisma.$transaction(async (transaction) => {
+      const lead = await transaction.lead.create({
+        data: {
           email: safe.email,
-          company: safe.company,
-          topic: safe.topic,
-          companySize: safe.companySize,
-          cloudProvider: safe.cloudProvider,
-          mainConcern: safe.mainConcern,
-          setupMaturity: safe.setupMaturity,
-          message: safe.message,
-          source: safe.source,
-          aiUsageStatus: safe.aiUsageStatus,
-        } as object,
-      },
-    });
+          name: safe.name,
+          source: "contact",
+          status: "created",
+          fullPayload: {
+            name: safe.name,
+            email: safe.email,
+            company: safe.company,
+            topic: safe.topic,
+            companySize: safe.companySize,
+            cloudProvider: safe.cloudProvider,
+            mainConcern: safe.mainConcern,
+            setupMaturity: safe.setupMaturity,
+            message: safe.message,
+            source: safe.source,
+            aiUsageStatus: safe.aiUsageStatus,
+          } as object,
+        },
+      });
 
-    await prisma.agentJob.create({
-      data: {
-        leadId: lead.id,
-        type: "CONTACT_RESOLUTION",
-        status: "pending",
-        runAt: new Date(),
-      },
+      await transaction.agentJob.create({
+        data: {
+          leadId: lead.id,
+          type: "CONTACT_RESOLUTION",
+          status: "pending",
+          runAt: new Date(),
+        },
+      });
+
+      return lead;
     });
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;

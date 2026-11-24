@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-lg text-zinc-400 mb-2">
               Last Updated: November 9, 2026
             </p>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               For enterprise clients, a Data Processing Agreement (DPA) may be executed separately.
             </p>
           </div>
@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
                   <li><strong>Notification Preferences:</strong> Your notification settings and preferences for reminders</li>
                   <li><strong>Usage Data:</strong> App features accessed, reminder interactions, error logs (for app improvement)</li>
                 </ul>
-                <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+                <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
                   <strong>Important:</strong> All health and medication data you enter in RecallEase is stored locally on your device. We do not have access to your personal health information unless you explicitly choose to sync it to a cloud service (such as iCloud, if enabled).
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Project Data:</strong> Requirements, specifications, deliverables, documentation created during engagements</li>
                 <li><strong>Communication Data:</strong> Emails, meeting notes, support tickets, and other communications related to engagements</li>
               </ul>
-              <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+              <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
                 <strong>Enterprise Data Handling:</strong> We process your data only as necessary to provide consulting services. We do not access your production data unless explicitly required and authorized. All work is performed using role-based access in your cloud accounts. We do not store copies of your production data outside your cloud environment unless explicitly agreed in writing.
               </p>
             </div>
@@ -144,8 +144,8 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Scan Results:</strong> We store aggregate data only — instance counts, bucket counts, region lists, and generated insights. No raw AWS API responses or resource-level details are persisted.</li>
                 <li><strong>Scan History:</strong> Up to 5 previous scan snapshots are retained for trend comparison. Older snapshots are automatically dropped.</li>
               </ul>
-              <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
-                <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-orange-400 hover:text-orange-300">Security page</a>.
+              <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+                <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-orange-400 underline underline-offset-2 hover:text-orange-300">Security page</a>.
               </p>
             </div>
 
@@ -180,7 +180,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>Consent:</strong> Where you have provided explicit consent (e.g., marketing communications, optional features)</li>
               <li><strong>Legal Obligations:</strong> To comply with applicable laws, regulations, and legal processes</li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3">
+            <p className="text-zinc-400 text-sm mt-3">
               For enterprise clients, data processing is governed by the applicable consulting agreement and any executed Data Processing Agreement (DPA).
             </p>
           </section>
@@ -203,7 +203,7 @@ export default function PrivacyPolicyPage() {
               <li>Comply with legal obligations and respond to legal requests</li>
               <li>Communicate with you about Services, updates, and relevant information (with opt-out options)</li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+            <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>AI Model Training:</strong> We do not use your data (including enterprise client data, USCIS case information, or health data) to train AI models unless explicitly agreed in writing. We use third-party AI services (e.g., OpenAI, Azure OpenAI) only with appropriate data processing agreements and &ldquo;no training&rdquo; terms where available.
             </p>
           </section>
@@ -311,7 +311,7 @@ export default function PrivacyPolicyPage() {
                 <strong>With Your Consent:</strong> We may share information with your explicit consent or as directed by you
               </li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
+            <p className="text-zinc-400 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>Enterprise Clients:</strong> A list of subprocessors used in consulting engagements is available upon request. We will notify you of material changes to subprocessors and provide an opportunity to object where contractually required.
             </p>
           </section>
@@ -353,9 +353,9 @@ export default function PrivacyPolicyPage() {
               <li><strong>Opt-Out:</strong> Opt out of marketing communications and certain data uses (CCPA)</li>
             </ul>
             <p className="text-zinc-300 leading-relaxed mt-3">
-              To exercise these rights, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 hover:text-orange-300">support@visionxixlabs.com</a>. We will respond to your request within 30 days (or as required by applicable law). We may need to verify your identity before processing your request.
+              To exercise these rights, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 underline underline-offset-2 hover:text-orange-300">support@visionxixlabs.com</a>. We will respond to your request within 30 days (or as required by applicable law). We may need to verify your identity before processing your request.
             </p>
-            <p className="text-zinc-500 text-sm mt-3">
+            <p className="text-zinc-400 text-sm mt-3">
               <strong>Note:</strong> Some rights may be limited for enterprise clients where data processing is necessary for contract performance or where we act as a data processor under your instructions.
             </p>
           </section>
@@ -420,7 +420,7 @@ export default function PrivacyPolicyPage() {
               <li>Provide for audit rights and compliance assistance</li>
             </ul>
             <p className="text-zinc-300 leading-relaxed mt-3">
-              If you require a DPA, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 hover:text-orange-300">support@visionxixlabs.com</a>. We will work with you to execute a DPA that meets your compliance requirements.
+              If you require a DPA, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 underline underline-offset-2 hover:text-orange-300">support@visionxixlabs.com</a>. We will work with you to execute a DPA that meets your compliance requirements.
             </p>
           </section>
 
@@ -440,23 +440,23 @@ export default function PrivacyPolicyPage() {
                 Email:{" "}
                 <a
                   href="mailto:support@visionxixlabs.com"
-                  className="text-orange-400 hover:text-orange-300"
+                  className="text-orange-400 underline underline-offset-2 hover:text-orange-300"
                 >
                   support@visionxixlabs.com
                 </a>
               </p>
-              <p className="text-zinc-500 text-sm mt-2">
+              <p className="text-zinc-400 text-sm mt-2">
                 For privacy-specific inquiries, please include &ldquo;Privacy Policy&rdquo; in the subject line.
               </p>
             </div>
-            <p className="text-zinc-500 text-sm">
+            <p className="text-zinc-400 text-sm">
               <strong>EU Representative:</strong> If you are located in the EU and wish to contact us regarding GDPR-related matters, you may also contact your local data protection authority.
             </p>
           </section>
 
           {/* Footer Note */}
           <div className="border-t border-white/6 pt-6 mt-8">
-            <p className="text-sm text-zinc-500 text-center">
+            <p className="text-sm text-zinc-400 text-center">
               This Privacy Policy applies to all products and services offered by Vision XIX Labs LLC, including VisaNova and RecallEase mobile applications, our website, and cloud and AI engineering consulting services.
             </p>
           </div>

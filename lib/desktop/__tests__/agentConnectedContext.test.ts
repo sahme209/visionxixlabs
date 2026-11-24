@@ -54,8 +54,8 @@ it("searches connected catalogs, keeps selected context visible, and sends the e
   fireEvent.change(screen.getByLabelText("Active GitHub repository"), { target: { value: repo2.fullName } });
   fireEvent.change(screen.getByRole("searchbox", { name: "Search deployment environments" }), { target: { value: "stag" } });
   fireEvent.change(screen.getByLabelText("Active deployment environment"), { target: { value: "env-2" } });
-  expect(screen.getByLabelText("Selected Agent context").textContent).toContain("fixture/payments");
-  expect(screen.getByLabelText("Selected Agent context").textContent).toContain("Staging");
+  expect(screen.getByRole("group", { name: "Selected Agent context" }).textContent).toContain("fixture/payments");
+  expect(screen.getByRole("group", { name: "Selected Agent context" }).textContent).toContain("Staging");
   fireEvent.change(search, { target: { value: "no matching repository" } });
   expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe(repo2.fullName);
   fireEvent.change(screen.getByRole("textbox", {name:"Agent request"}), { target: { value: "Inspect selected context" } });
@@ -70,7 +70,7 @@ it("does not use another workspace's stored target while catalogs are pending or
   render(createElement(AgentChatView)); await openWorkspaceContext();
   expect(m.client.listGithubBranches).not.toHaveBeenCalled(); expect(m.client.listGithubFiles).not.toHaveBeenCalled();
   await act(async () => { repositories.resolve({ ok: false, error: "Unavailable" }); environments.resolve({ ok: false, error: "Unavailable" }); });
-  expect(screen.getByLabelText("Selected Agent context").textContent).not.toContain("foreign");
+  expect(screen.getByRole("group", { name: "Selected Agent context" }).textContent).not.toContain("foreign");
   expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe("");
   expect((screen.getByLabelText("Active deployment environment") as HTMLSelectElement).value).toBe("");
   fireEvent.click(screen.getByRole("button", { name: "Retry repository and environment catalogs" }));
@@ -102,7 +102,7 @@ it("preserves explicit manual repository recovery without claiming connected cat
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).disabled).toBe(false));
   fireEvent.change(screen.getByLabelText("Active GitHub repository"), { target: { value: "__manual__" } });
   fireEvent.change(screen.getByLabelText("Repository owner and name"), { target: { value: "explicit/recovery" } });
-  expect(screen.getByLabelText("Selected Agent context").textContent).toContain("explicit/recovery (manual, catalog unverified)");
+  expect(screen.getByRole("group", { name: "Selected Agent context" }).textContent).toContain("explicit/recovery (manual, catalog unverified)");
   fireEvent.change(screen.getByRole("textbox", { name: "Repository owner and name" }), { target: { value: "explicit/recovery" } });
   fireEvent.change(screen.getByRole("textbox", { name: "Agent request" }), { target: { value: "Inspect manually entered repository" } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -197,7 +197,7 @@ it("keeps compact context discoverable and preserves the draft while opening con
   fireEvent.click(summary);
   expect(summary.getAttribute("aria-expanded")).toBe("false");
   expect(composer.value).toBe("Keep my unsent work");
-  expect(screen.getByLabelText("Agent composer")).toBeTruthy();
+  expect(screen.getByRole("group", { name: "Agent composer" })).toBeTruthy();
   const configuration = screen.getByRole("button", { name: /Agent configuration ·/ });
   expect(composer.compareDocumentPosition(configuration) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 

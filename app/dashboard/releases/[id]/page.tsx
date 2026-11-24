@@ -55,20 +55,32 @@ export default function ReleaseOverviewPage() {
   const search = useSearchParams();
   const releaseId = String(params.id);
   const repositoryId = search.get("repositoryId") ?? "";
+  return <ReleaseOverview key={JSON.stringify([releaseId, repositoryId])} releaseId={releaseId} repositoryId={repositoryId} />;
+}
 
+function ReleaseOverview({releaseId, repositoryId}: {releaseId: string; repositoryId: string}) {
   const [resp, setResp] = useState<RespBody | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const request = new AbortController();
     const url = `/api/dashboard/release-detail/${encodeURIComponent(releaseId)}${repositoryId ? `?repositoryId=${encodeURIComponent(repositoryId)}` : ""}`;
-    fetch(url, { credentials: "include" })
+    fetch(url, { credentials: "include", cache: "no-store", signal: request.signal })
       .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
-      .catch((e) => { if (!cancelled) setNetworkError(e instanceof Error ? e.message : "Network error."); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      .then((result: RespBody) => {
+        if (request.signal.aborted) return;
+        if (result?.ok === true && result.data?.release?.id !== releaseId) {
+          setNetworkError("Release details could not be verified.");
+        } else if (result?.ok === true || result?.ok === false) {
+          setResp(result);
+        } else {
+          setNetworkError("Release details could not be loaded.");
+        }
+      })
+      .catch(() => { if (!request.signal.aborted) setNetworkError("Release details could not be loaded."); })
+      .finally(() => { if (!request.signal.aborted) setLoading(false); });
+    return () => request.abort();
   }, [releaseId, repositoryId]);
 
   const data = resp?.ok ? resp.data : null;
@@ -321,13 +333,13 @@ function ActivityTimeline({ releaseId }: { releaseId: string }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/dashboard/release-activity/${encodeURIComponent(releaseId)}`, { credentials: "include" })
+    const request = new AbortController();
+    fetch(`/api/dashboard/release-activity/${encodeURIComponent(releaseId)}`, { credentials: "include", cache: "no-store", signal: request.signal })
       .then((r) => r.json())
-      .then((j: TimelineRespBody) => { if (!cancelled) setResp(j); })
-      .catch(() => { /* swallow — surface is optional */ })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      .then((j: TimelineRespBody) => { if (!request.signal.aborted) setResp(j); })
+      .catch(() => { /* Activity is optional and does not block release details. */ })
+      .finally(() => { if (!request.signal.aborted) setLoading(false); });
+    return () => request.abort();
   }, [releaseId]);
 
   if (loading) {

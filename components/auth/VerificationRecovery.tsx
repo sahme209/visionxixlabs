@@ -5,9 +5,9 @@ import Link from "next/link";
 import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 
 /** Public account-neutral recovery, never a claim that a mailbox/account exists. */
-export function VerificationRecovery({ initialEmail = "", callbackUrl, showSupportLink = true }: { initialEmail?: string; callbackUrl?: string | null; showSupportLink?: boolean }) {
+export function VerificationRecovery({ initialEmail = "", callbackUrl, showSupportLink = true, initiallyOpen = false }: { initialEmail?: string; callbackUrl?: string | null; showSupportLink?: boolean; initiallyOpen?: boolean }) {
   const [email, setEmail] = useState(initialEmail);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -43,7 +43,7 @@ export function VerificationRecovery({ initialEmail = "", callbackUrl, showSuppo
         <label className="block text-zinc-300">Verification email address
           <input type="email" autoComplete="email" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 [@media(pointer:coarse)]:text-base outline-hidden focus:border-white/30 focus:ring-2 focus:ring-white/15" />
         </label>
-        <button type="submit" disabled={pending} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-zinc-200 disabled:opacity-50">{pending ? "Requesting link…" : "Request verification link"}</button>
+        <button type="submit" aria-disabled={pending} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-zinc-200 aria-disabled:opacity-50">{pending ? "Requesting link…" : "Request verification link"}</button>
       </form>
       {message && <p role="status" className="text-zinc-300">{message}</p>}
       {error && <p role="alert" className="text-zinc-200">{error}</p>}

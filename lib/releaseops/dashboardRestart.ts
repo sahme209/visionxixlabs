@@ -101,7 +101,7 @@ export async function requestDashboardRestart(repo: Repo, input: {
             return fail("release_source_changed");
         const reservation = await deps.reserve(repo as unknown as DeploymentReservationRepo, { organizationId, idempotencyKey: key, environmentId: environment.id, repositoryFullName: `${repository.remoteOwner}/${repository.remoteName}`, sourceRef: release.releaseTag, sourceKind: "tag", sourceCommitSha: policy.sourceCommitSha, branchPolicyId: policy.policyId, promotedFromExecutionId: null, pullRequestUrl: policy.pullRequestUrl, source: "dashboard", triggeredByUserId: userId });
         if (!reservation.ok)
-            return fail(reservation.error, reservation.error === "deployment_quota_exhausted" ? 429 : 409);
+            return fail(reservation.error, reservation.error === "deployment_quota_unavailable" ? 503 : 409);
         if (reservation.reused && reservation.reservation.status === "reserved")
             return fail("deployment_outcome_unknown");
         if (reservation.reused)

@@ -108,3 +108,15 @@ it('refuses changed claim ownership for outbound and credential proof without to
  await expect(f.repo.$transaction((tx:any)=>store.assertClaimedCredentialAuthority(tx,f.scope,op.id,f.plan.inputJson.plan))).rejects.toThrow();
  expect(f.rows).toEqual(before);expect(f.events).toEqual(events);
 });
+
+it('projects dated stored merge events for the original session and exact current intake',async()=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);
+ expect(await f.store.getHistory(f.scope,prepared.id,f.plan.inputJson)).toEqual([{type:'prepared',at:f.now.toISOString()}]);
+ await expect(f.store.getHistory({...f.scope,sessionId:'replacement'},prepared.id,f.plan.inputJson)).rejects.toThrow();
+ f.events[0].occurredAt=new Date(f.now.getTime()-1000);
+ await expect(f.store.getHistory(f.scope,prepared.id,f.plan.inputJson)).rejects.toThrow();
+ f.events[0].occurredAt=f.now;
+ f.release.version++;
+ await expect(f.store.getHistory(f.scope,prepared.id,f.plan.inputJson)).rejects.toThrow();
+ expect(f.rows[0].attemptCount).toBe(0);
+});
