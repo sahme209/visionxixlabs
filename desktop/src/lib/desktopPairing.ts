@@ -1,3 +1,4 @@
+import { DESKTOP_PRODUCT_NAME } from "./desktopMetadata";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import { type PairedSession } from "./authSession";
@@ -27,6 +28,9 @@ function trustedVerificationUrl(value: string, origin: string, challenge: string
   return url.toString();
 }
 const FINGERPRINT_KEY = "desktop.device.fingerprint";
+const MAX_PAIRING_SECONDS = 600;
+const POLL_INTERVAL_MS = 2000;
+const PAIRING_EXPIRED = "Sign-in expired. Please try again.";
 
 async function deviceFingerprint(): Promise<string> {
   const existing = await readSecret<string>(FINGERPRINT_KEY);
@@ -96,12 +100,14 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
   const origin = trustedPairingOrigin();
   const fingerprint = await deviceFingerprint();
   throwIfCancelled(signal);
-  const start = await jsonRequest<{ challenge?: string; verificationUrl?: string; error?: string }>(
+  const devicePlatform = await platform();
+  const startedAt = Date.now();
+  const start = await jsonRequest<{ challenge?: string; verificationUrl?: string; expiresInSeconds?: number; error?: string }>(
     origin, "/api/desktop/pair/start",
     {
       deviceFingerprint: fingerprint,
-      deviceLabel: `${navigator.platform || "Desktop"} · V19`,
-      platform: await platform(),
+      deviceLabel: `${navigator.platform || "Desktop"} · ${DESKTOP_PRODUCT_NAME}`,
+      platform: devicePlatform,
       desktopVersion: DESKTOP_VERSION,
       intent,
     },
@@ -111,16 +117,25 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
     throw new Error(start.body.error || "Could not start desktop sign-in.");
   }
 
+  // Count the service lifetime from the request start. Waiting for the HTTP
+  // response or the OS browser must not extend it. Older servers omit the field.
+  const lifetime = start.body.expiresInSeconds === undefined ? MAX_PAIRING_SECONDS : start.body.expiresInSeconds;
+  if (!Number.isSafeInteger(lifetime) || lifetime <= 0) {
+    throw new Error("The service returned an invalid sign-in lifetime. Try again.");
+  }
+  const deadline = startedAt + Math.min(lifetime, MAX_PAIRING_SECONDS) * 1000;
   throwIfCancelled(signal);
+  if (Date.now() >= deadline) throw new Error(PAIRING_EXPIRED);
   const verificationUrl = trustedVerificationUrl(start.body.verificationUrl, origin, start.body.challenge, intent);
   if (trustedPairingOrigin() !== origin) throw new Error("The sign-in service changed. Start sign-in again.");
   await open(verificationUrl);
   throwIfCancelled(signal);
+  if (Date.now() >= deadline) throw new Error(PAIRING_EXPIRED);
   onWaiting();
 
-  const deadline = Date.now() + 10 * 60 * 1000;
   while (Date.now() < deadline) {
-    await waitForNextPoll(signal);
+    await waitForNextPoll(Math.min(POLL_INTERVAL_MS, deadline - Date.now()), signal);
+    if (Date.now() >= deadline) break;
     const status = await jsonRequest<{
       status?: "pending" | "approved";
       token?: string;
@@ -140,10 +155,10 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
       return identity;
     }
   }
-  throw new Error("Sign-in expired. Please try again.");
+  throw new Error(PAIRING_EXPIRED);
 }
 
-function waitForNextPoll(signal?: AbortSignal): Promise<void> {
+function waitForNextPoll(delay: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
       reject(new DOMException("Desktop sign-in cancelled.", "AbortError"));
@@ -156,7 +171,7 @@ function waitForNextPoll(signal?: AbortSignal): Promise<void> {
     const timeout = setTimeout(() => {
       signal?.removeEventListener("abort", onAbort);
       resolve();
-    }, 2000);
+    }, delay);
     signal?.addEventListener("abort", onAbort, { once: true });
   });
 }

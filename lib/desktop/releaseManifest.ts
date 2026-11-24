@@ -104,9 +104,14 @@ function emptyManifest(note?: string): DesktopReleaseManifest {
 
 function classifyAsset(name: string): DesktopPlatform | null {
   const n = name.toLowerCase();
-  if (/(aarch64|arm64).*\.(dmg|app\.tar\.gz)$/.test(n) || /\.app\.tar\.gz$/.test(n) && n.includes("aarch64")) return "macos-arm";
-  if (/(x86_64|intel|x64).*\.(dmg|app\.tar\.gz)$/.test(n) || /\.dmg$/.test(n) && n.includes("x64"))           return "macos-intel";
-  if (/\.dmg$/.test(n) && !n.includes("intel") && !n.includes("aarch") && !n.includes("arm")) return "macos-arm"; // default ARM bundle
+  // The release workflow qualifies disk images for first-time installation.
+  // Tauri updater archives are distributed through the updater manifest.
+  if (n.endsWith(".dmg")) {
+    if (/(aarch64|arm64)/.test(n)) return "macos-arm";
+    if (/(x86_64|intel|x64)/.test(n)) return "macos-intel";
+    if (!n.includes("aarch") && !n.includes("arm")) return "macos-arm"; // legacy ARM bundle
+    return null;
+  }
   if (/\.msi$/.test(n) || /\.exe$/.test(n))                                                                    return "windows-x64";
   if (/\.appimage$/.test(n) || /\.deb$/.test(n) || /\.rpm$/.test(n))                                            return "linux-x64";
   return null;

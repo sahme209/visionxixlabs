@@ -1,5 +1,17 @@
 > **Superseded November 15, 2026:** the mounted local presentation now uses direct scenario/stage/story selection with no player controls or automatic story clock. This document and its original bindings are historical. See [the current internal guide](../product/knowledge/website-manual-illustration-controls-2026-11-15.md) and its source manifest. Nothing here grants customer publication or runtime authority.
 
+## Scripted story selection stills
+
+The Demo page uses three 640 × 320 WebP stills taken from the scripted tour, captured from the compiled local website at source `b50a127d4474ece388b78232820f600e1d2207da`. The crops use Chromium at 1440 × 900 CSS pixels, device scale 2 and reduced motion. Each image shows the named workflow's sample response at a fixed step.
+
+| Asset | Story | Captured step |
+| --- | --- | --- |
+| `workspace.webp` | Code & review | 2 · Make a small, reviewable edit |
+| `agent.webp` | Agent & approval | 3 · Decide on the exact action |
+| `cloud.webp` | Terraform & cloud | 3 · Keep the release on hold |
+
+The cards choose a story and begin it at the first step. Their text names the workflow and the image adds visual context. Keep the stills bundled locally, and refresh them when the corresponding scripted response changes. Authentic native recordings have their own provenance and qualification requirements.
+
 # Interactive workflow stories
 
 Reviewed 2026-10-18 against main bd44b180. This is a scoped replacement of the existing CinematicAxiomDemo, already embedded on home, product, demo and support pages. It changes no page layout, support workflow or production setting.

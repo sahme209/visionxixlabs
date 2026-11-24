@@ -23,11 +23,11 @@ export function GovernanceAssembly({compact=false}:{compact?:boolean}){
     <p className={styles.recordKicker}>Record {model.record.number} / concept</p>
     <p className={styles.recordTitle}>{model.record.record}</p><p className={styles.fields}>{model.record.fields}</p>
     <p className={styles.detailText}>{model.record.detail}</p><p className={styles.boundary}>{model.record.boundary}</p>
-    <div className={styles.viewControls} aria-label="Assembly view">
+    <div className={styles.viewControls} role="group" aria-label="Assembly view">
      <button type="button" aria-pressed={view==='inspect'} aria-controls={sceneId} onClick={()=>setView('inspect')}>Inspect layers</button>
      <button type="button" aria-pressed={view==='assembled'} aria-controls={sceneId} onClick={()=>setView('assembled')}>Assemble layers</button>
     </div>
-    <div className={styles.cameraControls} aria-label="Camera view">
+    <div className={styles.cameraControls} role="group" aria-label="Camera view">
      <button type="button" aria-label="Camera left" aria-controls={sceneId} onClick={()=>setCamera(value=>Math.max(-16,value-8))}>↶ <span>Left</span></button>
      <button type="button" aria-label="Reset camera" aria-controls={sceneId} onClick={()=>setCamera(0)}>Reset view</button>
      <button type="button" aria-label="Camera right" aria-controls={sceneId} onClick={()=>setCamera(value=>Math.min(16,value+8))}><span>Right</span> ↷</button>
@@ -60,7 +60,7 @@ export function GovernanceAssembly({compact=false}:{compact?:boolean}){
    </div>
    {compact?<details className={styles.compactDetails} open={detailsOpen} onToggle={event=>setDetailsOpen(event.currentTarget.open)}><summary>Read the selected record</summary>{recordPanel}</details>:recordPanel}
   </div>
-  <div className={styles.outcomes} aria-label="Possible outcome categories, not actual results">
+  <div className={styles.outcomes} role="group" aria-label="Possible outcome categories, not actual results">
    <p className={styles.outcomeHeading}>An outcome is a question of evidence.</p>
    <div><p><span>Confirmed evidence</span>Inspect the actual recorded result.</p><p><span>Refused</span>The action was declined.</p><p><span>Unknown</span>Keep the original record; inspect before acting.</p></div>
   </div>

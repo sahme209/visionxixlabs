@@ -87,16 +87,15 @@ export default function QuickstartChecklistPage() {
                 This checklist does not authorize production changes. Use dedicated test accounts and least-privilege credentials. The website sandbox is isolated sample data; the installed app must display actual connection and operation results.
             </Callout>
 
-            <ol className="relative space-y-3 mb-12">
-                <span aria-hidden className="absolute left-[26px] top-3 bottom-3 w-px bg-linear-to-b from-brand-coral/40 via-brand-orange/30 to-transparent" />
+            <ol className="relative space-y-3 mb-12 before:pointer-events-none before:absolute before:bottom-3 before:left-[26px] before:top-3 before:w-px before:bg-linear-to-b before:from-brand-coral/40 before:via-brand-orange/30 before:to-transparent">
                 {STEPS.map((step) => (
                     <li key={step.num} className="relative rounded-2xl border border-white/6 bg-white/1.5 p-5 pl-16 hover:border-brand-coral/25 hover:bg-brand-coral/2 transition-all">
-                        <span className="absolute left-4 top-5 w-9 h-9 rounded-full bg-linear-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
+                        <span aria-hidden="true" className="absolute left-4 top-5 w-9 h-9 rounded-full bg-linear-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
                             {step.num}
                         </span>
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                            <h3 className="text-[15px] font-semibold text-white leading-tight">{step.title}</h3>
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 whitespace-nowrap mt-1">{step.status}</span>
+                        <div className="mb-2 flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+                            <h2 className="min-w-0 flex-[1_1_11rem] text-[15px] font-semibold leading-tight text-white">{step.title}</h2>
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 sm:mt-1">{step.status}</span>
                         </div>
                         <p className="text-[13.5px] text-zinc-400 leading-relaxed mb-3">{step.body}</p>
                         {step.link && (
@@ -105,7 +104,7 @@ export default function QuickstartChecklistPage() {
                                 className="inline-flex items-center gap-1 text-[12px] font-medium text-brand-coral/90 hover:text-brand-coral transition-colors"
                             >
                                 {step.link.label}
-                                <ArrowRightIcon className="h-3 w-3" />
+                                <ArrowRightIcon aria-hidden="true" className="h-3 w-3" />
                             </Link>
                         )}
                     </li>
@@ -114,10 +113,10 @@ export default function QuickstartChecklistPage() {
 
             <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/3 p-6 mb-12">
                 <header className="flex items-center gap-2 mb-3">
-                    <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
-                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-400">
+                    <CheckCircleIcon aria-hidden="true" className="h-4 w-4 text-emerald-400" />
+                    <h2 className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-400">
                         Completion evidence
-                    </p>
+                    </h2>
                 </header>
                 <ul className="space-y-2 text-[13.5px] text-zinc-300 leading-relaxed">
                     <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">✓</span> Installed version and architecture recorded.</li>
@@ -129,7 +128,7 @@ export default function QuickstartChecklistPage() {
             </section>
 
             <section>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500 mb-4">Read next</p>
+                <h2 className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-400 mb-4">Read next</h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                     {[
                         { href: "/docs/security-model", icon: ShieldCheckIcon, title: "Security model", desc: "Access, storage, tenant boundaries, and revocation." },
@@ -141,7 +140,7 @@ export default function QuickstartChecklistPage() {
                         return (
                             <Link key={card.href} href={card.href} className="group rounded-xl border border-white/6 bg-white/1.5 p-4 hover:border-brand-coral/25 hover:bg-brand-coral/3 transition-all">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Icon className="h-4 w-4 text-brand-coral/70 group-hover:text-brand-coral transition-colors" />
+                                    <Icon aria-hidden="true" className="h-4 w-4 text-brand-coral/70 group-hover:text-brand-coral transition-colors" />
                                     <p className="text-[14px] font-semibold text-white">{card.title}</p>
                                 </div>
                                 <p className="text-[12.5px] text-zinc-400 leading-snug">{card.desc}</p>

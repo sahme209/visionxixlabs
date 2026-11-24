@@ -1,12 +1,12 @@
 /** @vitest-environment jsdom */
 import {createElement} from "react";
 import {afterEach,beforeEach,expect,it,vi} from "vitest";
-import {act,cleanup,fireEvent,render,screen,waitFor} from "@testing-library/react";
-const m=vi.hoisted(()=>({read:vi.fn(),write:vi.fn()}));
+import {act,cleanup,fireEvent,render,screen,waitFor,within} from "@testing-library/react";
+const m=vi.hoisted(()=>({read:vi.fn(),write:vi.fn(),notify:vi.fn()}));
 vi.mock("@tauri-apps/plugin-shell",()=>({open:vi.fn()}));
 vi.mock("@tauri-apps/api/core",()=>({invoke:vi.fn()}));
 vi.mock("../../../desktop/src/lib/preferences",()=>({readDesktopPreferences:m.read,writeDesktopPreferences:m.write}));
-vi.mock("../../../desktop/src/lib/notifications",()=>({markNotificationPrefDirty:vi.fn(),notifyResult:vi.fn()}));
+vi.mock("../../../desktop/src/lib/notifications",()=>({markNotificationPrefDirty:vi.fn(),notifyResult:m.notify}));
 import {SettingsView} from "../../../desktop/src/views/SettingsView";
 const prefs={theme:"dark",notifications_enabled:false,reduce_motion:false,high_contrast:false,interface_density:"comfortable",submit_with_command_enter:false,new_message_behavior:"queue"};
 const show=()=>render(createElement(SettingsView,{identity:{organizationId:"fixture",capabilities:[]} as never}));
@@ -18,9 +18,53 @@ it("prevents overlapping preference writes and shows when the change is durably 
  await act(async()=>resolve());await screen.findByText("Saved on this computer.");
  fireEvent.click(screen.getByRole("switch",{name:"System notifications"}));expect(m.write).toHaveBeenCalledTimes(2);expect(m.write.mock.calls[1][0].notifications_enabled).toBe(false);
 });
+it("reports native notification test outcomes without changing preferences", async () => {
+ m.read.mockResolvedValue({...prefs, notifications_enabled:true});
+ let finish!:(result:"denied")=>void;
+ m.notify.mockImplementationOnce(()=>new Promise(resolve=>{finish=resolve;})).mockResolvedValueOnce("requested");
+ show();
+ const notifications = within(screen.getByRole("region",{name:"Notifications"}));
+ const test = notifications.getByRole("button",{name:"Test"});
+ await waitFor(()=>expect(test.matches(":disabled")).toBe(false));
+ test.focus();
+ fireEvent.click(test);
+ fireEvent.click(test);
+ expect(m.notify).toHaveBeenCalledOnce();
+ expect(test.getAttribute("aria-disabled")).toBe("true");
+ expect(notifications.getByRole("switch").matches(":disabled")).toBe(true);
+ await act(async()=>finish("denied"));
+ expect(notifications.getByRole("status").textContent).toContain("Allow notifications for V19 in system settings");
+ expect(document.activeElement).toBe(test);
+ fireEvent.click(test);
+ expect(await notifications.findByText("Test requested. Check your system notifications.")).toBeTruthy();
+ expect(m.write).not.toHaveBeenCalled();
+});
 it("restores the prior preference and hides raw storage failures",async()=>{
  m.write.mockRejectedValue(new Error("private keychain diagnostic"));show();const toggle=await screen.findByRole("switch",{name:"System notifications"});await waitFor(()=>expect(toggle.hasAttribute("disabled")).toBe(false));fireEvent.click(toggle);
  await screen.findByText("This preference change could not be confirmed. Reopen Settings to check it before making another change.");expect(toggle.getAttribute("aria-checked")).toBe("false");expect(screen.queryByText("private keychain diagnostic")).toBeNull();fireEvent.click(toggle);expect(m.write).toHaveBeenCalledTimes(1);
+});
+it("keeps independent workspace and sign-out controls available while a local save is unconfirmed", async () => {
+  let reject!: (error: Error) => void;
+  m.write.mockReturnValueOnce(new Promise<void>((_, fail) => { reject = fail; }));
+  show();
+  const notifications = screen.getByRole("switch", {name: "System notifications"});
+  await waitFor(() => expect(notifications.matches(":disabled")).toBe(false));
+  fireEvent.click(notifications);
+  const profile = screen.getByRole("button", {name: "Review profile"});
+  expect(notifications.matches(":disabled")).toBe(true);
+  expect(profile.matches(":disabled")).toBe(false);
+  expect(screen.getByRole("button", {name: "Open governance"}).matches(":disabled")).toBe(false);
+
+  fireEvent.click(profile);
+  expect(screen.getByRole("switch", {name: "Hide email address"}).matches(":disabled")).toBe(true);
+  await act(async () => reject(new Error("Private storage error")));
+  expect(screen.getByRole("alert").textContent).toContain("This preference change could not be confirmed");
+  expect(screen.getByRole("switch", {name: "Hide email address"}).matches(":disabled")).toBe(true);
+  const logOut = screen.getByRole("button", {name: "Log out"});
+  expect(logOut.matches(":disabled")).toBe(false);
+  fireEvent.click(logOut);
+  expect(within(screen.getByRole("dialog")).getByRole("button", {name: "Cancel"}).matches(":disabled")).toBe(false);
+  expect(m.write).toHaveBeenCalledTimes(1);
 });
 it("keeps local preference controls unavailable if stored settings could not be read",async()=>{
  m.read.mockRejectedValue(new Error("private disk diagnostic"));show();await screen.findByText("Local preferences could not be loaded. Reopen Settings to try again.");expect(screen.getByRole("switch",{name:"System notifications"}).hasAttribute("disabled")).toBe(true);expect(screen.queryByText("private disk diagnostic")).toBeNull();

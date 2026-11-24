@@ -4,16 +4,14 @@
  * Inbound lane for incident providers (PagerDuty / Opsgenie / Slack /
  * Microsoft Teams). Same shape as the telemetry receiver:
  *
- *   - HMAC-SHA256 verification against INCIDENT_WEBHOOK_SECRET.
- *   - Refuses every request when secret is unset — never auto-accepts.
+ *   - HMAC-SHA256 verification using a secret assigned to one workspace
+ *     and provider. Incoming workspace assertions must match that assignment.
  *   - Per-provider normaliser maps vendor payload → canonical
  *     IncidentRecord.
  *   - Payloads pass through redactPayload before persistence.
- *   - In-memory ephemeral queue (cap 500) until DATABASE_URL lands.
+ *   - Normalized observations are written durably after source verification.
  *
- * The receiver NEVER pages humans back or auto-resolves the
- * incident in the source system — it only enqueues a typed record
- * the autonomy loop can read.
+ * The receiver stores normalized evidence for read-only report consumers.
  */
 
 import "server-only";
@@ -21,30 +19,13 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "crypto";
 import { loadAppEnv } from "@/lib/config/env";
 import { redactPayload } from "@/lib/api/redaction";
+import {MAX_INBOUND_BODY_BYTES, MAX_INBOUND_OBSERVATIONS, storeInboundObservations} from "@/lib/observations/inboundObservationStore";
 import type {
   IncidentProvider,
   IncidentRecord,
   IncidentSeverity,
   IncidentStatus,
 } from "./incidentResponseModel";
-
-// ---------------------------------------------------------------------------
-// Queue
-// ---------------------------------------------------------------------------
-
-interface QueuedIncident extends IncidentRecord { receivedAt: string }
-const QUEUE: QueuedIncident[] = [];
-const MAX_QUEUE = 500;
-
-export function readIncidentQueue(): QueuedIncident[] {
-  return [...QUEUE].reverse();
-}
-
-export function clearIncidentQueue(): number {
-  const n = QUEUE.length;
-  QUEUE.length = 0;
-  return n;
-}
 
 // ---------------------------------------------------------------------------
 // Receiver entry
@@ -56,6 +37,7 @@ export interface ReceiveIncidentInput {
   provider: IncidentReceiverProvider;
   rawBody: string;
   signatureHeader: string | null;
+  tenantHeader: string | null;
 }
 
 export interface ReceiveIncidentResult {
@@ -66,12 +48,17 @@ export interface ReceiveIncidentResult {
   records: IncidentRecord[];
 }
 
-export function receiveIncidentWebhook(input: ReceiveIncidentInput): ReceiveIncidentResult {
-  const env = loadAppEnv();
-  const secret = env.incidentWebhookSecret;
+export async function receiveIncidentWebhook(input: ReceiveIncidentInput): Promise<ReceiveIncidentResult> {
+  const {incidentWebhookSecret: secret, incidentWebhookTenantId: tenantId, incidentWebhookProvider: provider} = loadAppEnv();
 
   if (!secret) {
     return { ok: false, status: 401, enqueued: 0, reason: "secret_not_configured", records: [] };
+  }
+  if (!tenantId || !provider) {
+    return { ok: false, status: 401, enqueued: 0, reason: "receiver_not_configured", records: [] };
+  }
+  if (input.provider !== provider || (input.tenantHeader !== null && input.tenantHeader !== tenantId)) {
+    return { ok: false, status: 401, enqueued: 0, reason: "invalid_source", records: [] };
   }
   if (!input.signatureHeader) {
     return { ok: false, status: 401, enqueued: 0, reason: "missing_signature", records: [] };
@@ -80,6 +67,9 @@ export function receiveIncidentWebhook(input: ReceiveIncidentInput): ReceiveInci
     return { ok: false, status: 401, enqueued: 0, reason: "invalid_signature", records: [] };
   }
 
+  if (Buffer.byteLength(input.rawBody) > MAX_INBOUND_BODY_BYTES) {
+    return {ok: false, status: 413, enqueued: 0, reason: "body_size_invalid", records: []};
+  }
   let parsed: unknown;
   try { parsed = JSON.parse(input.rawBody); }
   catch { return { ok: false, status: 400, enqueued: 0, reason: "invalid_json", records: [] }; }
@@ -91,12 +81,15 @@ export function receiveIncidentWebhook(input: ReceiveIncidentInput): ReceiveInci
     return { ok: true, status: 202, enqueued: 0, reason: "no_records_in_payload", records: [] };
   }
 
-  const now = new Date().toISOString();
-  for (const r of records) {
-    QUEUE.push({ ...r, receivedAt: now });
-    if (QUEUE.length > MAX_QUEUE) QUEUE.shift();
+  if (records.length > MAX_INBOUND_OBSERVATIONS) {
+    return {ok: false, status: 413, enqueued: 0, reason: "batch_size_invalid", records: []};
   }
-  return { ok: true, status: 200, enqueued: records.length, records };
+  try {
+    const enqueued = await storeInboundObservations(tenantId, "incident", provider, input.rawBody, records);
+    return {ok: true, status: 200, enqueued, records: enqueued ? records : []};
+  } catch {
+    return {ok: false, status: 503, enqueued: 0, reason: "storage_unavailable", records: []};
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -13,6 +13,7 @@ mod menu;
 mod secure;
 mod credential_backend;
 mod tray;
+mod ticket_export;
 mod verification;
 mod window_state;
 
@@ -46,11 +47,13 @@ fn main() {
             }
         }))
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_system_info,
+            ticket_export::export_ticket_csv,
             application_focus::computer_observation_focus_subscribe,
             computer_input::computer_input_status,
             computer_input::computer_input_prepare,

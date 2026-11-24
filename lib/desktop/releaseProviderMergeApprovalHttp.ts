@@ -1,3 +1,4 @@
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createGovernanceMergeApprovalHttpPorts} from '@/lib/governance/intelligence/mergeApprovalHttpComposition';
 import type {AwsConnectionReadRepo} from '@/lib/cloud/aws/enrollment/scopedConnection';
 import {GovernanceBaselineStale} from '@/lib/governance/intelligence/errors';
@@ -15,21 +16,25 @@ import {consumeToken} from '@/lib/api/rateLimiter';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {parseReleaseOperationPlanInput,RELEASE_OPERATION_PLAN_KIND} from '@/lib/tauri/releaseOperationPlanContract';
 import {createReleaseProviderMergeApprovalStore} from '@/lib/tauri/releaseProviderMergeApprovalStore';
-import {listReleaseOperationPlans,type ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {releaseOperationPlanId,listReleaseOperationPlans,type ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 const enabled=()=>process.env.AXIOM_RELEASE_PROVIDER_APPROVALS_ENABLED==='true';
 class Refusal extends Error{constructor(readonly code:string,readonly status:number){super(code)}}
 const issueSchema=z.object({expectedPlanVersion:z.literal(1),clientRequestId:z.string().uuid(),sourcePolicy:z.literal('expected_head_observed_base'),governanceBaselineDigest:z.string().regex(/^[a-f0-9]{64}$/).optional()}).strict();
 const revokeSchema=z.object({id:z.string().regex(/^release_provider_approval_[a-f0-9]{64}$/),expectedVersion:z.literal(0),clientRequestId:z.string().uuid()}).strict();
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
 async function body(request:NextRequest,signal:AbortSignal){if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json'||!request.body)throw new Refusal('invalid_provider_approval',400);const reader=request.body.getReader();let size=0;const chunks:Uint8Array[]=[];try{while(true){const part=await withGithubAbort(reader.read(),signal);if(part.done)break;size+=part.value.byteLength;if(size>2048)throw new Refusal('invalid_provider_approval',400);chunks.push(part.value)}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)))}finally{void reader.cancel().catch(()=>{});reader.releaseLock()}}
-async function principal(request:NextRequest,manage:boolean){const p=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:manage?'agent:approve':'github:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:`${request.method} /api/desktop/deployments/:id/operation-plans/:planId/provider-approval`});if(!p||p.credentialKind!=='desktop_session')throw new Refusal('desktop_session_required',401);if(!p.capabilities.includes('github:read')||manage&&!p.capabilities.includes('agent:approve'))throw new Refusal('provider_approval_permission_required',403);return p}
+async function principal(request:NextRequest,manage:boolean){const p=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:manage?'agent:approve':'github:read',requireWorkspaceMembership:!request.nextUrl.searchParams.has('historyVersion'),allowApiKey:false,recordHeartbeat:false,route:`${request.method} /api/desktop/deployments/:id/operation-plans/:planId/provider-approval`});if(!p||p.credentialKind!=='desktop_session')throw new Refusal('desktop_session_required',401);if(!p.capabilities.includes('github:read')||manage&&!p.capabilities.includes('agent:approve'))throw new Refusal('provider_approval_permission_required',403);return p}
 export interface ProviderMergeApprovalHttpPorts {governance?:{readBaseline(scope:ProviderMergeScope,plan:ReleaseOperationPlan,release:unknown,signal:AbortSignal):Promise<string|undefined>;assertBaseline:NonNullable<ReleaseProviderMergeApprovalDependencies['assertGovernanceBaseline']>}}
 export async function handleReleaseProviderMergeApproval(request:NextRequest,requestId:string,planId:string,ports:ProviderMergeApprovalHttpPorts={}){try{
  if(!['GET','POST','DELETE'].includes(request.method))throw new Refusal('method_not_allowed',405);
- if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.nextUrl.searchParams.size||request.url.length>2048)throw new Refusal('invalid_provider_approval',400);
- if(request.method!=='DELETE'&&!Object.hasOwn(ports,'governance'))ports={...ports,governance:createGovernanceMergeApprovalHttpPorts(request,prisma as unknown as ReleaseOperationPlanRepo&AwsConnectionReadRepo,()=>process.env.AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED==='true')};
- const governance=request.method==='DELETE'?undefined:ports.governance?{readBaseline:ports.governance.readBaseline,assertBaseline:ports.governance.assertBaseline}:undefined;
- if(request.method!=='DELETE'&&Object.hasOwn(ports,'governance')&&(!governance||typeof governance.readBaseline!=='function'||typeof governance.assertBaseline!=='function'))throw new Refusal('provider_governance_unavailable',503);
+ if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.url.length>2048)throw new Refusal('invalid_provider_approval',400);
+ const params=[...request.nextUrl.searchParams.entries()];
+ const historyVersion=params[0]?.[1];
+ if(params.length&&(request.method!=='GET'||params.length!==1||params[0][0]!=='historyVersion'
+  ||!historyVersion||!/^[1-9][0-9]{0,9}$/.test(historyVersion)||Number(historyVersion)>2147483647))throw new Refusal('invalid_provider_approval',400);
+ if(!historyVersion&&request.method!=='DELETE'&&!Object.hasOwn(ports,'governance'))ports={...ports,governance:createGovernanceMergeApprovalHttpPorts(request,prisma as unknown as ReleaseOperationPlanRepo&AwsConnectionReadRepo,()=>process.env.AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED==='true')};
+ const governance=historyVersion||request.method==='DELETE'?undefined:ports.governance?{readBaseline:ports.governance.readBaseline,assertBaseline:ports.governance.assertBaseline}:undefined;
+ if(!historyVersion&&request.method!=='DELETE'&&Object.hasOwn(ports,'governance')&&(!governance||typeof governance.readBaseline!=='function'||typeof governance.assertBaseline!=='function'))throw new Refusal('provider_governance_unavailable',503);
  const manage=request.method!=='GET',actor=await principal(request,manage),signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
  if(!consumeToken(`release-provider-approval:${actor.organizationId}:${actor.userId}`,{capacity:10,tokensPerSecond:0.2}).allowed)throw new Refusal('provider_approval_rate_limited',429);
  const mutation=request.method==='POST'?issueSchema.parse(await body(request,signal)):request.method==='DELETE'?revokeSchema.parse(await body(request,signal)):null;
@@ -39,9 +44,21 @@ export async function handleReleaseProviderMergeApproval(request:NextRequest,req
  if(request.method==='POST'&&!featureEnabled())throw new Refusal('provider_approvals_disabled',409);
  const release=await withGithubAbort(prisma.tauriDeploymentRequest.findFirst({where:{id:requestId,organizationId:org}}),signal);
  if(!release||release.organizationId!==org||release.id!==requestId||release.requesterUserId!==stored.releaseRequesterUserId)throw new Refusal('provider_approval_refresh_required',409);
+ if(historyVersion&&(release.version!==Number(historyVersion)||stored.plan.requestVersion!==release.version
+  ||binding.id!==planId||binding.organizationId!==org||binding.workflowKind!==RELEASE_OPERATION_PLAN_KIND
+  ||stored.planDigest!==sha256ContentHash(stored.plan)||stored.plan.intakeDigest!==sha256ContentHash({requestVersion:release.version,intake:release.intakeJson})
+  ||planId!==releaseOperationPlanId(org,requestId,release.version,stored.planDigest)))throw new Refusal('provider_approval_refresh_required',409);
  const assertCaller=async()=>{signal.throwIfAborted();const current=await withGithubAbort(principal(request,manage),signal);if(current.id!==actor.id||current.userId!==actor.userId||current.organizationId!==actor.organizationId)throw new Refusal('desktop_session_required',401);if(request.method==='POST'&&!featureEnabled())throw new Refusal('provider_approvals_disabled',409);signal.throwIfAborted()};
  const assertAuthority:NonNullable<import('@/lib/tauri/releaseProviderMergeApprovalStore').ReleaseProviderMergeApprovalDependencies['assertCurrent']>=async(tx,input)=>{await assertCaller();if(input.scope.organizationId!==org||input.scope.actorUserId!==actor.userId||input.scope.sessionId!==actor.id||input.purpose!=='provider_merge'||input.sourcePolicy!=='expected_head_observed_base')throw new Refusal('provider_approval_permission_required',403);if(input.approverSessionId){const sessions=await tx.$queryRaw<Array<{id:string;userId:string;organizationId:string;live:boolean}>>`SELECT "id","userId","organizationId",("revokedAt" IS NULL AND "expiresAt" > clock_timestamp()) AS "live" FROM "DesktopSessionRecord" WHERE "id"=${input.approverSessionId} AND "userId"=${input.actorUserId} AND "organizationId"=${org} FOR SHARE`;const session=sessions[0];if(sessions.length!==1||!session||session.id!==input.approverSessionId||session.userId!==input.actorUserId||session.organizationId!==org||session.live!==true)throw new Refusal('provider_approval_permission_required',403)}const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;role:string;acceptedAt:Date|null}>>`SELECT "organizationId","userId","role","acceptedAt" FROM "OrgMembership" WHERE "organizationId"=${org} AND "userId"=${input.actorUserId} FOR SHARE`;const member=rows[0];if(rows.length!==1||!member||member.organizationId!==org||member.userId!==input.actorUserId||!member.acceptedAt||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(member.role)||!hasDesktopCapability(member.role as DesktopWorkspaceRole,'github:read')||input.role!=='reader'&&!hasDesktopCapability(member.role as DesktopWorkspaceRole,input.role==='approver'?'agent:approve':'deploy:execute'))throw new Refusal('provider_approval_permission_required',403);await assertCaller()};
  const scope={organizationId:org,actorUserId:String(actor.userId),sessionId:String(actor.id)};
+ if(historyVersion){
+  const store=createReleaseProviderMergeApprovalStore(prisma as unknown as ReleaseOperationPlanRepo,{assertCurrent:assertAuthority});
+  const data=await withGithubAbort(store.getHistory(scope,{
+   requestId,requestVersion:release.version,planId,planDigest:stored.planDigest,intakeDigest:stored.plan.intakeDigest,executorUserId:release.requesterUserId,
+  }),signal);
+  await assertCaller();
+  return reply({ok:true,data});
+ }
  let governanceBaselineDigest:string|undefined,governanceUnavailable=false;
  if(governance){try{governanceBaselineDigest=await withGithubAbort(governance.readBaseline(scope,stored.plan,release,signal),signal);if(governanceBaselineDigest!==undefined&&!/^[a-f0-9]{64}$/.test(governanceBaselineDigest))throw new Refusal('provider_governance_unavailable',503)}catch(error){if(!(error instanceof GovernanceBaselineStale))throw error;governanceUnavailable=true}await assertCaller()}
  if(request.method==='POST'){const input=issueSchema.parse(mutation);if((!governance||governanceBaselineDigest===undefined)&&input.governanceBaselineDigest!==undefined)throw new Refusal('invalid_provider_approval',400);if(governanceUnavailable||input.governanceBaselineDigest!==governanceBaselineDigest)throw new Refusal('provider_approval_refresh_required',409)}

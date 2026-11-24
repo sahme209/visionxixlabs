@@ -68,7 +68,7 @@ site found a real, specific violation of it.
 
 | Asset | Location | Status |
 |---|---|---|
-| `DeploymentLifecycleDemo` (interactive 9-stage Playbook walkthrough) | `app/page.tsx` (homepage hero) | Illustrative — explicitly labeled "Illustrative flow · no live action" in its own header; respects reduced-motion; no real data shown. |
+| `CinematicAxiomDemo` interactive tour | Homepage workspace preview and `/demo` | Scripted sample data with user-selected stages and reduced-motion support. |
 | "Your first five minutes" step sequence | `app/download/page.tsx` | Text-based description of the real pairing flow (install → sign in → authorize → restricted workspace → next steps) — not a screenshot sequence; explicitly states this in the copy. |
 
 **Known gap, not yet closed:** this checklist exists to govern real screenshots
@@ -80,22 +80,26 @@ pipeline). Until that capture work happens, the homepage/download media above
 remain the only release media, and both are illustrative-labeled or
 text-based by design rather than real screenshots standing in as real ones.
 
-## Capturing real homepage screenshots/video
+## Reviewing website previews and releasing workspace media
 
-`scripts/capture-homepage-media.mjs` drives a real local dev server with
-Playwright and saves whatever actually renders — desktop + mobile full-page
-screenshots and a ~30s video of the real page (see the script's header
-comment for exact usage). It does not fabricate anything; it fails loudly if
-the dev server isn't reachable.
+`scripts/capture-homepage-media.mjs` captures the website for review. It writes to
+`work/homepage-media-preview/` by default and refuses output anywhere under
+`public/`. Website preview captures do not feed the homepage workspace player.
 
-Before publishing anything it produces:
+After B3 native qualification, use a sanitized recording of a specific installed
+V19 build. In `lib/marketing/homepage-media.json`, replace `null` only in the same
+reviewed change as the published media. Record the title, exact release tag
+(`version`), `platform` (`macos`, `windows` or `linux`), full source commit
+(`sourceCommit`), duration in whole seconds (`durationSeconds`) and a readable plain
+text `transcript`. Compare the build and tag with the release evidence before
+reviewing the recording. Include the following files under
+`public/media/workspace/<version>/<platform>/`:
 
-1. Run the 5-point checklist at the top of this doc against the output.
-2. **Add captions/a transcript to the video manually** — the script only
-   records raw video; it does not generate captions. A plain text transcript
-   of what's shown (e.g. "0:00 homepage loads", "0:03 Playbook demo begins
-   cycling through Request → Readiness → ...") satisfies the accessibility
-   baseline below until real captions are burned in.
-3. Confirm the homepage content at capture time matches what's actually
-   deployed — re-capture if `app/page.tsx` has changed since.
+- `poster.webp` with a readable preview of the actual recorded workflow.
+- `walkthrough.webm` for the user-controlled player.
+- `captions.vtt` with synchronized English captions.
 
+Supply the transcript and all three assets. The homepage retains its scripted tour
+until the complete entry is present. Review the poster, keyboard playback,
+captions, transcript and still view at desktop and mobile widths, and recheck the
+exact deployed build at the release gate.

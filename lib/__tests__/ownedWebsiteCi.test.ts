@@ -126,8 +126,8 @@ it('collects a failed window as closed public fields without config, logs or pro
   const f = fixture(); f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty', sourceUnchanged: true, error: 'PRIVATE' });
   f.put('capture.json', { success: false, timedOutOperation: 'cdp.Page.navigate' });
   f.put('done.json', { success: false, nonce: f.config.nonce });
-  writeFileSync(join(f.directory, 'bounded-runtime.log'), 'PRIVATE');
-  const observed=f.run();expect(observed.outcome).toBe('failed');expect(observed.startupDiagnostic.status).toBe('unavailable');
+  writeFileSync(join(f.directory, 'bounded-runtime.log'), 'PRIVATE', { mode: 0o600 });
+  const observed=f.run();expect(observed.outcome).toBe('failed');expect(observed.startupDiagnostic).toEqual({status: 'observed', categories: []});
   const output = readFileSync(join(f.destination, 'summary.json'), 'utf8');
   expect(output).toContain('cdp.Page.navigate'); expect(output).not.toContain('PRIVATE'); expect(output).not.toContain(f.directory);
 });

@@ -8,7 +8,7 @@ const ask = (q: string) => answerQuestion(index, q);
 
 describe("Ask Axiom knowledge base", () => {
   it("is versioned, public-only and every entry cites a public path", () => {
-    expect(KNOWLEDGE_VERSION).toMatch(/^ask-axiom-kb-\d{4}-\d{2}-\d{2}$/);
+    expect(KNOWLEDGE_VERSION).toMatch(/^ask-axiom-kb-\d{4}-\d{2}-\d{2}(?:\.r[1-9]\d*)?$/);
     const entries = knowledgeEntries();
     expect(entries.length).toBeGreaterThan(40);
     for (const e of entries) { expect(e.href.startsWith("/")).toBe(true); expect(e.body.length).toBeGreaterThan(10); }
@@ -76,7 +76,7 @@ describe("V19 display name and legacy support compatibility", () => {
     expect(tokenize("V19")).toEqual(tokenize("Axiom Agent"));
   });
   it("retains stable version format, IDs and public-only retrieval eligibility", () => {
-    expect(KNOWLEDGE_VERSION).toBe("ask-axiom-kb-2026-11-15");
+    expect(KNOWLEDGE_VERSION).toBe("ask-axiom-kb-2026-11-24.r1");
     for (const entry of knowledgeEntries()) {
       expect(entry.href).toMatch(/^\/(?:docs(?:\/|#|$)|product#|integrations$|plans$|contact$|security$|trust$)/);
       expect(entry.href).not.toContain("/recovery/");

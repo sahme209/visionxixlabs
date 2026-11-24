@@ -33,5 +33,6 @@ export function canonicalAuthPageUrl(origin: string, page: "signin" | "signup", 
   }
   if (page === "signin" && params.switchAccount === "1") destination.searchParams.set("switchAccount", "1");
   if (page === "signin" && params.verified === "1") destination.searchParams.set("verified", "1");
+  if (page === "signin" && params.error === "VerificationLinkInvalid") destination.searchParams.set("error", params.error);
   return destination.toString();
 }

@@ -209,6 +209,47 @@ export type AddOnCheckoutResult =
   | { ok: true; url: string; sessionId: string }
   | { ok: false; outcome: "not_dispatched" | "unknown"; reason: string };
 
+async function testCreditStripe() {
+  const {default: Stripe} = await import("stripe");
+  return new Stripe(process.env.STRIPE_SECRET_KEY!.trim(), {
+    apiVersion: "2024-06-20" as import("stripe").Stripe.LatestApiVersion,
+    maxNetworkRetries: 0,
+    timeout: 10_000,
+  });
+}
+
+function hostedCreditCheckoutUrl(value: string | null): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "checkout.stripe.com"
+      && !url.username && !url.password && !url.port ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Read only the original saved session. The signed webhook owns fulfillment. */
+export async function recoverAddOnCheckoutSession(input: Pick<CreateAddOnCheckoutInput,
+  "purchaseId" | "organizationId" | "sku" | "priceCents"> & {sessionId: string}): Promise<string | null> {
+  if (resolveStripeMode() !== "test" || !/^cs_test_[A-Za-z0-9_]+$/.test(input.sessionId)) return null;
+  try {
+    const stripe = await testCreditStripe();
+    const session = await stripe.checkout.sessions.retrieve(input.sessionId);
+    const metadata = session.metadata;
+    if (session.id !== input.sessionId || session.livemode !== false || session.mode !== "payment"
+      || session.status !== "open" || session.payment_status !== "unpaid"
+      || !Number.isSafeInteger(session.expires_at) || session.expires_at * 1000 <= Date.now()
+      || session.currency !== "usd" || session.amount_total !== input.priceCents
+      || session.client_reference_id !== input.organizationId
+      || metadata?.purpose !== "axiom_ai_credit_add_on" || metadata.addOnPurchaseId !== input.purchaseId
+      || metadata.organizationId !== input.organizationId || metadata.sku !== input.sku) return null;
+    return hostedCreditCheckoutUrl(session.url);
+  } catch {
+    return null;
+  }
+}
+
 export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput): Promise<AddOnCheckoutResult> {
   if (resolveStripeMode() !== "test") {
     return { ok: false, outcome: "not_dispatched", reason: "AI credit checkout requires AXIOM_STRIPE_MODE=test with an sk_test_ key." };
@@ -217,26 +258,14 @@ export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput
     return { ok: false, outcome: "not_dispatched", reason: "The add-on price is invalid." };
   }
 
-  type StripeCheckoutCtor = new (key: string, opts?: unknown) => {
-    checkout: {
-      sessions: {
-        create: (
-          params: unknown,
-          options?: { idempotencyKey?: string },
-        ) => Promise<{ id: string; url?: string | null }>;
-      };
-    };
-  };
-  let StripeCtor: StripeCheckoutCtor;
+  let stripe: Awaited<ReturnType<typeof testCreditStripe>>;
   try {
-    const mod = (await import("stripe")) as unknown as { default: StripeCheckoutCtor };
-    StripeCtor = mod.default;
-  } catch (err) {
-    return { ok: false, outcome: "not_dispatched", reason: `Stripe SDK unavailable: ${err instanceof Error ? err.message : String(err)}` };
+    stripe = await testCreditStripe();
+  } catch {
+    return { ok: false, outcome: "not_dispatched", reason: "Stripe SDK unavailable." };
   }
 
   try {
-    const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20" });
     const metadata = {
       purpose: "axiom_ai_credit_add_on",
       addOnPurchaseId: input.purchaseId,
@@ -260,8 +289,11 @@ export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput
       metadata,
       payment_intent_data: { metadata },
     }, { idempotencyKey: input.idempotencyKey });
-    if (!session.url) return { ok: false, outcome: "unknown", reason: "Stripe did not return a checkout URL." };
-    return { ok: true, url: session.url, sessionId: session.id };
+    const url = hostedCreditCheckoutUrl(session.url);
+    if (!url || !/^cs_test_[A-Za-z0-9_]+$/.test(session.id)) {
+      return { ok: false, outcome: "unknown", reason: "Stripe did not return a verified test checkout URL." };
+    }
+    return { ok: true, url, sessionId: session.id };
   } catch (err) {
     return { ok: false, outcome: "unknown", reason: `Stripe create failed: ${err instanceof Error ? err.message : String(err)}` };
   }

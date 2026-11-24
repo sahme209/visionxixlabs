@@ -4,7 +4,7 @@ import { ownedPlansBinding, ownedPlansIntentState } from "@/lib/billing/ownedChe
 import { isolatedRuntimeRequested } from "@/lib/billing/isolatedApplication/runtime";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { COUNTED_DEPLOYMENT_DEFINITION, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 import { AI_RATE_CARD, customerPriceCents, EFFORT_LEVEL_ESTIMATE, effortLevelCostRangeCents, customerUsdPerMTok, providerCostBudgetCentsForPrice } from "@/lib/billing/aiRateCard";
 import { ADD_ON_CATALOG } from "@/lib/billing/addOnCatalog";
 import { currentContext } from "@/lib/auth/currentContext";
@@ -62,7 +62,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
       {cancellationReturnContext && <p role="status" className="mx-auto mt-6 max-w-[1280px] px-5 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-10">Back from checkout. This page makes no billing changes and the URL does not confirm a payment outcome. <Link href="/control/usage-billing" className="text-orange-300 underline underline-offset-4">Review workspace billing</Link>.</p>}
 
       <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-16">
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Get started</p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400">Get started</p>
         <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16">
           <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.04] tracking-tighter text-zinc-100">
             Free to explore.<br /><span className="text-zinc-400">Prepay only for the AI you use.</span>
@@ -75,10 +75,10 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
 
       <section aria-label="How V19 is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-10 lg:pb-16">
         <article className="flex flex-col rounded-xl border border-white/9 bg-[#181818] p-6">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">V19</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">V19</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Free to explore</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
-            <li>{AI_RATE_CARD.freeMonthlyDeployments} counted deployments per organization each month</li>
+            <li>No V19 monthly cap on deployments through your own runner</li>
             <li>Approval gates, audit history and recovery included</li>
             <li>No card required to create a workspace</li>
           </ul>
@@ -88,10 +88,10 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
         </article>
 
         <article className="flex flex-col rounded-xl border border-white/15 bg-brand-ink-card p-6">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">AI usage</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">AI usage</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Prepaid credits, the only paid part</h2>
           <figure className="mt-5 rounded-lg border border-white/8 bg-black/30 p-4" aria-label="Example credit meter">
-            <figcaption className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">Example credit meter</figcaption>
+            <figcaption className="text-[11px] uppercase tracking-[0.14em] text-zinc-400">Example credit meter</figcaption>
             <div className="mt-3 flex items-baseline justify-between text-sm text-zinc-300"><span>Prepaid balance</span><span className="tabular-nums text-zinc-100">{usd(AI_RATE_CARD.minimumTopUpCents)}</span></div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8" aria-hidden><div className="h-full w-full rounded-full bg-zinc-300" /></div>
             <p className="mt-3 text-xs leading-5 text-zinc-400">Shown before you run it: a typical code analysis costs about {usd(exampleCustomerCents)}.</p>
@@ -105,12 +105,12 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             <a href="#ai-rates" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4">See AI rates</a>
             {creditPurchasesOpen
               ? <Link href="/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing" className="flex min-h-11 items-center justify-center rounded-lg bg-white px-5 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200">Buy prepaid credits</Link>
-              : <p className="text-xs leading-5 text-zinc-500">Credit purchases are not open yet. No charge can be started from this page.</p>}
+              : <p className="text-xs leading-5 text-zinc-400">Credit purchases are not open yet. No charge can be started from this page.</p>}
           </div>
         </article>
 
         <article className="flex flex-col rounded-xl border border-white/9 bg-[#181818] p-6">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Enterprise</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Enterprise</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Scoped evaluation</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
             <li>Free, time-boxed evaluation of {AI_RATE_CARD.enterpriseEvaluation.minDays}–{AI_RATE_CARD.enterpriseEvaluation.maxDays} days</li>
@@ -125,16 +125,16 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
 
       <section id="ai-rates" aria-labelledby="ai-rates-heading" className="border-y border-white/[0.07] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
         <div className="mx-auto max-w-[1184px]">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Before any charge</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Before any charge</p>
           <h2 id="ai-rates-heading" className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">AI rates, limits and refunds</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
             Rate card <span className="text-zinc-200">{AI_RATE_CARD.version}</span>, effective {AI_RATE_CARD.effectiveDate}. Customer price is {AI_RATE_CARD.marginMultiplier}× the provider&apos;s published token cost.
           </p>
 
-          <div className="mt-8 overflow-x-auto">
+          <div role="region" aria-label="Per-model AI rates" tabIndex={0} className="mt-8 overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300">
             <table className="w-full min-w-[560px] text-left text-sm">
               <caption className="sr-only">Per-model AI rates in USD per million tokens</caption>
-              <thead className="text-xs text-zinc-500">
+              <thead className="text-xs text-zinc-400">
                 <tr><th scope="col" className="py-2 pr-4 font-medium">Model</th><th scope="col" className="py-2 pr-4 font-medium">Input</th><th scope="col" className="py-2 pr-4 font-medium">Cached input</th><th scope="col" className="py-2 pr-4 font-medium">Output</th></tr>
               </thead>
               <tbody className="text-zinc-200">
@@ -149,7 +149,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs leading-5 text-zinc-500">
+          <p className="mt-3 text-xs leading-5 text-zinc-400">
             Example: {EXAMPLE_INPUT_TOKENS.toLocaleString("en-US")} input and {EXAMPLE_OUTPUT_TOKENS.toLocaleString("en-US")} output tokens on {exampleRate.displayName} cost {usd(exampleProviderCents)} at provider rates, so you pay {usd(exampleCustomerCents)}. Provider rates: {AI_RATE_CARD.providerRateSource}.
           </p>
 
@@ -160,10 +160,10 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           </section>
 
           <h3 className="mt-10 text-sm font-medium text-zinc-100">Expected cost per action, by AI level</h3>
-          <div className="mt-3 overflow-x-auto">
+          <div role="region" aria-label="Estimated cost by AI level" tabIndex={0} className="mt-3 overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300">
             <table className="w-full min-w-[520px] text-left text-sm text-zinc-300">
               <caption className="sr-only">Estimated cost per action by AI level, in USD</caption>
-              <thead className="text-xs text-zinc-500"><tr><th scope="col" className="pb-2 pr-4 font-normal">Level</th><th scope="col" className="pb-2 pr-4 font-normal">Up to</th><th scope="col" className="pb-2 pr-4 font-normal">Typical use</th><th scope="col" className="pb-2 font-normal">Estimated range</th></tr></thead>
+              <thead className="text-xs text-zinc-400"><tr><th scope="col" className="pb-2 pr-4 font-normal">Level</th><th scope="col" className="pb-2 pr-4 font-normal">Up to</th><th scope="col" className="pb-2 pr-4 font-normal">Typical use</th><th scope="col" className="pb-2 font-normal">Estimated range</th></tr></thead>
               <tbody>
                 {EFFORT_LEVEL_ESTIMATE.levels.map((level) => {
                   const range = effortLevelCostRangeCents(level.label);
@@ -179,7 +179,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs leading-5 text-zinc-500">
+          <p className="mt-3 text-xs leading-5 text-zinc-400">
             Estimates on {exampleRate.displayName}. Every level uses the same 1.5x; higher levels cost more only because they can take more steps. The low end is an action that finishes in one short step; the high end is every allowed step using large context and maximum output. The exact hold is shown before each action, and you pay 1.5x the actual provider cost, never more than the hold.
           </p>
 
@@ -193,8 +193,8 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             <div>
               <h3 className="text-sm font-medium text-zinc-100">Limits</h3>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-zinc-400">
-                <li>{AI_RATE_CARD.freeMonthlyDeployments} counted deployments per organization each month. Design partners may receive a higher agreed limit.</li>
-                <li>{COUNTED_DEPLOYMENT_DEFINITION} Retries, polling and automatic rollback of the same dispatch do not count again.</li>
+                <li>Workspace approvals and your CI and cloud provider limits still apply.</li>
+                <li>Your CI and cloud providers bill you separately for their services.</li>
                 <li>Before an action runs, a hold slightly above the expected price is placed on your balance. You pay only the final price; the rest is released.</li>
               </ul>
             </div>
@@ -224,7 +224,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
 
       <section className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 py-16 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">No billing decision required</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">No billing decision required</p>
           <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">See the workflow before you prepay anything.</h2>
         </div>
         <Link href="/demo" className="inline-flex min-h-11 shrink-0 items-center justify-center self-start rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4 lg:self-auto">

@@ -5,12 +5,13 @@ import { hash } from "bcryptjs";
 import { deriveWorkspaceIdFromEmail } from "../../auth/workspaceId";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { spawn, execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, realpathSync, writeFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomBytes, createHash } from "node:crypto";
 import { PrismaClient, type Prisma } from "@/lib/prismaClient";
 import { createNewTestSubscriptionService, type ProviderBoundary } from "../newTestSubscription/service";
-import { reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
+import { attachAICreditReservationUsage, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
+import { recordAIUsageEvent } from "../recordAIUsageEvent";
 import { applyMargin } from "../aiBillingMargin";
 import { postgresFixtureStore } from "../newTestSubscription/postgresFixtureStore";
 import Stripe from "stripe";
@@ -25,7 +26,9 @@ import { registerAnniversaryAcceptance } from "./fixtures/newTestAnniversaryAcce
 import { registerLegacyAgentAdmissionAcceptance } from "./fixtures/legacyAgentAdmissionAcceptance";
 import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newTestAnniversaryHttp";
 import { ownedCheckoutLaunchPolicy } from "./fixtures/ownedCheckoutLaunchPolicy";
-import { reverseAICreditRefund } from "../aiCreditFulfillment";
+import { fulfillAICreditCheckout, reverseAICreditRefund } from "../aiCreditFulfillment";
+import { readCurrentAIAllowance } from "../currentAIAllowance";
+import { settleGatewayGenerationInTransaction, type GatewayUsageTransaction } from "../reconcileGatewayUsage";
 // Paid coverage is checked against the real DB clock, so the synthetic billing period must be the current UTC month (fixed Oct 2026 dates expired on Nov 1).
 const PERIOD_NOW = new Date(), PERIOD_START = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth(), 1)).toISOString(), PERIOD_END = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth() + 1, 1)).toISOString(), PERIOD_MONTH = PERIOD_START.slice(0, 7);
 
@@ -68,13 +71,28 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
   const request = { clientIntentKey: "intent_key_12345678", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, email: "synthetic@example.invalid", successUrl: "https://isolated.invalid/success", cancelUrl: "https://isolated.invalid/cancel" };
   const core = (boundary = provider) => { const store = postgresFixtureStore(url, runtime, "acct-test"); stores.push(store); return createNewTestSubscriptionService({ store, provider: boundary, configuredPrices: { "pro:monthly": "price-test" }, now: () => now, id: () => randomBytes(12).toString("hex"), digest: text => createHash("sha256").update(text).digest("hex") }); };
   beforeAll(async () => {
-    execFileSync("docker", ["run", "--pull=never", "-d", "--name", name, "-e", `POSTGRES_PASSWORD=${password}`, "-e", "POSTGRES_DB=axiom_new_test_contract_rehearsal", "-p", "127.0.0.1::5432", "postgres:17-alpine"], { stdio: "pipe" }); started = true;
-    const port = execFileSync("docker", ["port", name, "5432/tcp"], { encoding: "utf8" }).trim().split(":").pop();
-    url = `postgresql://postgres:${password}@127.0.0.1:${port}/axiom_new_test_contract_rehearsal`;
+    const localUrl = process.env.AXIOM_OWNED_COMMERCIAL_PG_URL;
+    const localData = process.env.AXIOM_OWNED_COMMERCIAL_PG_DATA;
+    if (localUrl || localData) {
+      if (!localUrl || !localData || !/^\/(?:private\/)?tmp\/axiom-commercial-pg\.[A-Za-z0-9]+\/data$/.test(localData)
+        || realpathSync(localData) !== localData || readFileSync(resolve(localData, "PG_VERSION"), "utf8").trim() !== "17") {
+        throw new Error("owned_local_pg17_cluster_required");
+      }
+      url = localUrl;
+    } else {
+      execFileSync("docker", ["run", "--pull=never", "-d", "--name", name, "-e", `POSTGRES_PASSWORD=${password}`, "-e", "POSTGRES_DB=axiom_new_test_contract_rehearsal", "-p", "127.0.0.1::5432", "postgres:17-alpine"], { stdio: "pipe" });
+      started = true;
+      const port = execFileSync("docker", ["port", name, "5432/tcp"], { encoding: "utf8" }).trim().split(":").pop();
+      url = `postgresql://postgres:${password}@127.0.0.1:${port}/axiom_new_test_contract_rehearsal`;
+    }
     newTestPrismaEnvironment(process.env, process.execArgv, url);
     db = createDatabaseClient(url);
     refundBinding.client = db; refundBinding.url = url;
     for (let attempt = 0; ; attempt++) { try { await db.$queryRawUnsafe("SELECT 1"); break; } catch { if (attempt > 40) throw new Error("owned_fixture_not_ready"); await new Promise(resolve => setTimeout(resolve, 100)); } }
+    if (localData) {
+      const [actual] = await db.$queryRawUnsafe<Array<{ directory: string }>>("SELECT current_setting('data_directory') AS directory");
+      if (actual?.directory !== localData) throw new Error("owned_local_pg17_directory_mismatch");
+    }
     const tables = await db.$queryRawUnsafe<Array<{ count: number }>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'"); expect(tables[0].count).toBe(0);
     for (const envName of [".env", ".env.local", ".env.production", "prisma/.env"]) if (existsSync(resolve(envName))) throw new Error("fixture_refuses_env_files");
     const schemaEnvironment = process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1" || process.env.AXIOM_RUN_OWNED_COMMERCIAL_HTTP === "1"
@@ -134,7 +152,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const userId of ["owner", "member-2", "member-3"]) await db.orgMembership.create({ data: { userId, organizationId: scope.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
     await db.usageEvent.create({ data: { organizationId: scope.organizationId, eventKind: "ai_invocation", billedCents: 100, createdAt: new Date(now) } });
     await db.aIUsageReservation.create({ data: { organizationId: scope.organizationId, idempotencyKey: "synthetic_pending_hold", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(now - 1000) } });
-    await db.addOnPurchase.create({ data: { organizationId: scope.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", idempotencyKey: "synthetic_topup", purchasedBy: "owner", correlationId: "fixture" } });
+    await db.addOnPurchase.create({ data: { organizationId: scope.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", appliedAt: new Date(), idempotencyKey: "synthetic_topup", purchasedBy: "owner", correlationId: "fixture" } });
 
   }, 30000);
   afterAll(async () => {
@@ -145,6 +163,90 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     const failed = outcomes.filter((result): result is PromiseRejectedResult => result.status === "rejected");
     if (failed.length) throw new AggregateError(failed.map(result => result.reason), "owned_fixture_cleanup_failed");
   });
+  it("binds Gateway usage replays to the original workspace and request", async () => {
+    const input = {
+      organizationId: "owned-gateway-replay-a", provider: "vercel_gateway", model: "fixture-model",
+      externalUsageId: "gen_owned_replay", inputTokens: 5, outputTokens: 2,
+      triggeredBy: "owner", correlationId: "fixture-request", aiInvocationId: "fixture-invocation",
+    };
+    const saved = await recordAIUsageEvent(input, db);
+    expect(saved).toMatchObject({recorded: true, pendingSettlement: true});
+    expect(await recordAIUsageEvent(input, db)).toEqual(saved);
+
+    const otherInputs = [
+      {...input, organizationId: "owned-gateway-replay-b"},
+      {...input, correlationId: "other-request"},
+      {...input, aiInvocationId: undefined},
+      {...input, triggeredBy: "other-member"},
+    ];
+    for (const attempt of otherInputs) {
+      expect(await recordAIUsageEvent(attempt, db)).toMatchObject({recorded: false, usageEventId: null, reason: "persist_failed"});
+    }
+
+    const raceId = "gen_owned_concurrent_replay";
+    const results = await Promise.all([
+      recordAIUsageEvent({...input, externalUsageId: raceId}, db),
+      recordAIUsageEvent({...input, externalUsageId: raceId, organizationId: "owned-gateway-replay-b"}, db),
+    ]);
+    expect(results.filter(result => result.recorded)).toHaveLength(1);
+    expect(results.find(result => !result.recorded)?.usageEventId).toBeNull();
+    expect(await db.usageEvent.findUnique({where:{externalUsageId:input.externalUsageId}}))
+      .toMatchObject({id: saved.usageEventId, organizationId: input.organizationId, correlationId: input.correlationId, billedCents: 0, billingStatus: "pending"});
+    expect(await db.usageEvent.count({where:{externalUsageId:raceId}})).toBe(1);
+  });
+
+  it("reconciles the visible prepaid allowance through checkout, refund and usage settlement", async () => {
+    const organizationId = "owned-visible-prepaid-allowance";
+    await db.tenantBillingPlan.create({data:{organizationId, tier:"growth", status:"active"}});
+    const purchase = await db.addOnPurchase.create({data:{
+      organizationId, sku:"ai_credits_small", pricePaidCents:1000, deliveredAICreditsCents:1000,
+      validFor:"permanent", periodMonth:PERIOD_MONTH, status:"pending",
+      idempotencyKey:"owned-allowance-topup", purchasedBy:"owner", correlationId:"fixture",
+    }});
+    const allowance = () => readCurrentAIAllowance(db, organizationId);
+    const metadata = {purpose:"axiom_ai_credit_add_on", addOnPurchaseId:purchase.id, organizationId, sku:purchase.sku};
+    const intent = "pi_owned_allowance";
+    const refund = (amount: number) => reverseAICreditRefund({id:`evt_owned_allowance_refund_${amount}`, type:"charge.refunded"}, {
+      payment_intent:intent, amount_refunded:amount, currency:"usd", metadata,
+    });
+
+    await refund(250);
+    expect(await allowance()).toMatchObject({
+      available:true, baseCents:20000, addOnCents:0, usedCents:0, heldCents:0, includedRemainingCents:20000, overagePolicy:"hard_stop",
+    });
+    await fulfillAICreditCheckout({id:"evt_owned_allowance_checkout", type:"checkout.session.completed"}, {
+      id:"cs_owned_allowance", payment_status:"paid", payment_intent:intent, amount_total:1000, currency:"usd", metadata,
+    });
+    expect(await allowance()).toMatchObject({addOnCents:750, poolCents:20750, includedRemainingCents:20750});
+
+    const hold = await reserveAICredits(db, {organizationId, idempotencyKey:"owned_visible_charge_hold", reservedCents:200});
+    if (!hold.ok) throw new Error("expected_owned_allowance_reservation");
+    const generationId = "gen_owned_allowance";
+    const usage = await recordAIUsageEvent({
+      organizationId, provider:"vercel_gateway", model:"fixture-model", inputTokens:120,
+      outputTokens:70, externalUsageId:generationId, triggeredBy:"owner",
+    },db);
+    if (!usage.recorded || !usage.usageEventId) throw new Error("expected_owned_pending_usage");
+    expect(await attachAICreditReservationUsage(db, organizationId, hold.reservation.id, usage.usageEventId)).toBe(true);
+    expect(await allowance()).toMatchObject({usedCents:0, heldCents:200, includedRemainingCents:20550});
+
+    const event = {id:usage.usageEventId, externalUsageId:generationId};
+    await db.$transaction(tx => settleGatewayGenerationInTransaction(tx as unknown as GatewayUsageTransaction, event, {
+      id:generationId, totalCost:0.72, model:"fixture-model", providerName:"fixture-provider",
+      promptTokens:120, completionTokens:70, cachedTokens:0,
+    }), {isolationLevel:"Serializable"});
+    const billed = applyMargin(72);
+    expect(await db.usageEvent.findUnique({where:{id:event.id}}))
+      .toMatchObject({organizationId, billingStatus:"settled", billedCents:billed, costCents:72});
+    expect(await allowance()).toMatchObject({usedCents:billed, heldCents:0, includedRemainingCents:20750-billed});
+
+    await refund(1000);
+    await refund(500);
+    expect(await allowance()).toMatchObject({addOnCents:0, usedCents:billed, heldCents:0, includedRemainingCents:20000-billed});
+    const exhausted = await reserveAICredits(db, {organizationId, idempotencyKey:"owned_visible_over_limit", reservedCents:20001-billed});
+    expect(exhausted).toEqual({ok:false, error:"ai_credit_pool_exhausted"});
+  });
+
   it("binds captured original collection once, protects financial/tenant state and models monthly remaining pool", async () => {
     expect(applyMargin(2)).toBe(3); // reuse established actual-cost ledger arithmetic; no new pricing formula
     const service = core();
@@ -260,7 +362,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await deliver("evt-sdk-bound", "checkout.session.completed")).toBe("applied");
     await db.usageEvent.create({ data: { organizationId: actor.organizationId, eventKind: "ai_invocation", billedCents: 700, createdAt: new Date(now) } });
     await db.aIUsageReservation.create({ data: { organizationId: actor.organizationId, idempotencyKey: "lifecycle_unresolved_hold", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(0) } });
-    await db.addOnPurchase.create({ data: { organizationId: actor.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", idempotencyKey: "lifecycle_existing_topup", purchasedBy: "owner", correlationId: "fixture" } });
+    await db.addOnPurchase.create({ data: { organizationId: actor.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", appliedAt: new Date(), idempotencyKey: "lifecycle_existing_topup", purchasedBy: "owner", correlationId: "fixture" } });
     const financial = async () => ({ usage: await db.usageEvent.findMany({ where: { organizationId: actor.organizationId } }), holds: await db.aIUsageReservation.findMany({ where: { organizationId: actor.organizationId } }), credits: await db.addOnPurchase.findMany({ where: { organizationId: actor.organizationId } }) });
     const before = await financial();
     cancel = true;

@@ -81,6 +81,20 @@ export async function recordAIUsageEvent(
           metadata: { ...(input.metadata ?? {}), costSource: "gateway_generation_lookup" } as object,
         },
       });
+      // The global provider generation key identifies a receipt, not its owner.
+      // A duplicate is a replay only when the persisted request binding matches.
+      if (
+        event.organizationId !== input.organizationId
+        || event.provider !== input.provider
+        || event.eventKind !== "ai_invocation"
+        || event.externalUsageId !== input.externalUsageId
+        || event.triggeredBy !== (input.triggeredBy ?? null)
+        || event.correlationId !== (input.correlationId ?? null)
+        || event.aiInvocationId !== (input.aiInvocationId ?? null)
+        || (event.metadata && typeof event.metadata === "object" && Object.hasOwn(event.metadata, "axiomTestAllocationV2"))
+      ) {
+        return { recorded: false, usageEventId: null, cost: null, reason: "persist_failed" };
+      }
       return { recorded: true, usageEventId: event.id, cost: null, pendingSettlement: event.billingStatus === "pending" };
     } catch {
       return { recorded: false, usageEventId: null, cost: null, reason: "persist_failed" };

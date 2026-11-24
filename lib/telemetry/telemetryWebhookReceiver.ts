@@ -1,11 +1,8 @@
 /**
  * Telemetry Webhook Receiver.
  *
- * Inbound lane that **actually accepts external signals**. Validates
- * an HMAC-SHA256 signature against a per-source shared secret, then
- * normalises the vendor payload into the canonical TelemetrySignal
- * shape. The autonomy loop downstream sees only the typed shape;
- * it never touches vendor payloads directly.
+ * Verifies incoming webhook credentials and stores normalized telemetry signals.
+ * Downstream readers receive the normalized evidence.
  *
  * Currently supports:
  *   - Grafana Alertmanager webhook v4
@@ -15,46 +12,24 @@
  *   - Sentry webhook
  *
  * Hard rules:
- *   - HMAC required when TELEMETRY_WEBHOOK_SECRET is set; without
- *     the env var, the receiver returns 401 — never auto-accepts.
+ *   - Webhook credentials are bound to a workspace and provider.
+ *     Workspace hints never select the evidence owner.
  *   - Payloads pass through redactPayload before persistence.
- *   - The receiver NEVER triggers a remediation — it only enqueues
- *     a typed signal. Autonomy loop reads from the queue.
+ *   - The receiver stores typed evidence for read-only report consumers.
  */
 
 import "server-only";
 
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHash, createHmac, timingSafeEqual } from "crypto";
 import { loadAppEnv } from "@/lib/config/env";
 import { redactPayload } from "@/lib/api/redaction";
+import {MAX_INBOUND_BODY_BYTES, MAX_INBOUND_OBSERVATIONS, storeInboundObservations} from "@/lib/observations/inboundObservationStore";
 import type {
   TelemetryProvider,
   TelemetrySeverity,
   TelemetrySignal,
   TelemetrySignalKind,
 } from "./telemetryIngestModel";
-
-// ---------------------------------------------------------------------------
-// In-memory queue (ephemeral until DATABASE_URL persistence wires)
-// ---------------------------------------------------------------------------
-
-interface QueuedSignal extends TelemetrySignal {
-  receivedAt: string;
-  rawProvider: string;
-}
-
-const QUEUE: QueuedSignal[] = [];
-const MAX_QUEUE = 500;
-
-export function readTelemetryQueue(): QueuedSignal[] {
-  return [...QUEUE].reverse();
-}
-
-export function clearTelemetryQueue(): number {
-  const n = QUEUE.length;
-  QUEUE.length = 0;
-  return n;
-}
 
 // ---------------------------------------------------------------------------
 // Public entry — accepts vendor-typed inbound + emits canonical signal
@@ -67,7 +42,10 @@ export interface ReceiveTelemetryInput {
   rawBody: string;
   /** Signature header (provider-specific). */
   signatureHeader: string | null;
-  /** Optional tenant-id hint header. */
+  authorizationHeader?: string | null;
+  signingBytes?: Buffer;
+  sentryResource?: string;
+  /** Optional sender workspace assertion. Must agree with the configured binding. */
   tenantHeader: string | null;
 }
 
@@ -78,27 +56,41 @@ export interface ReceiveTelemetryResult {
   enqueued: number;
   /** Reason / error code (only when !ok). */
   reason?: string;
-  /** The normalised signals (also enqueued in the in-memory store). */
+  /** The normalized signals accepted by the durable store. */
   signals: TelemetrySignal[];
 }
 
-export function receiveTelemetryWebhook(input: ReceiveTelemetryInput): ReceiveTelemetryResult {
-  const env = loadAppEnv();
-  const secret = env.telemetryWebhookSecret;
-
-  // HMAC required when the secret is configured. Never auto-accept.
-  if (secret) {
+export async function receiveTelemetryWebhook(input: ReceiveTelemetryInput): Promise<ReceiveTelemetryResult> {
+  const {
+    telemetryWebhookSecret: secret, telemetryWebhookTenantId: tenantId, telemetryWebhookProvider: provider,
+    telemetrySentryInstallationId, telemetryPrometheusBearerDigest,
+  } = loadAppEnv();
+  const bearerDigest = provider === "prometheus" ? telemetryPrometheusBearerDigest : undefined;
+  if (!bearerDigest && !secret) {
+    return { ok: false, status: 401, enqueued: 0, reason: "secret_not_configured", signals: [] };
+  }
+  if (!tenantId || !provider) {
+    return { ok: false, status: 401, enqueued: 0, reason: "receiver_not_configured", signals: [] };
+  }
+  if (input.provider !== provider || (input.tenantHeader !== null && input.tenantHeader !== tenantId)) {
+    return { ok: false, status: 401, enqueued: 0, reason: "invalid_source", signals: [] };
+  }
+  if (bearerDigest) {
+    if (!verifyAlertmanagerBearer(bearerDigest, input.authorizationHeader)) {
+      return { ok: false, status: 401, enqueued: 0, reason: "invalid_authorization", signals: [] };
+    }
+  } else {
     if (!input.signatureHeader) {
       return { ok: false, status: 401, enqueued: 0, reason: "missing_signature", signals: [] };
     }
-    if (!verifyHmac(secret, input.rawBody, input.signatureHeader)) {
+    if (!secret || !verifyHmac(secret, input.signingBytes ?? input.rawBody, input.signatureHeader)) {
       return { ok: false, status: 401, enqueued: 0, reason: "invalid_signature", signals: [] };
     }
-  } else {
-    // No secret configured — receiver refuses by default. Operator must opt-in.
-    return { ok: false, status: 401, enqueued: 0, reason: "secret_not_configured", signals: [] };
   }
 
+  if (Buffer.byteLength(input.rawBody) > MAX_INBOUND_BODY_BYTES) {
+    return {ok: false, status: 413, enqueued: 0, reason: "body_size_invalid", signals: []};
+  }
   let parsed: unknown;
   try {
     parsed = JSON.parse(input.rawBody);
@@ -106,25 +98,49 @@ export function receiveTelemetryWebhook(input: ReceiveTelemetryInput): ReceiveTe
     return { ok: false, status: 400, enqueued: 0, reason: "invalid_json", signals: [] };
   }
   const redacted = redactPayload(parsed);
-
-  const signals = normalise(input.provider, redacted);
+  let signals: TelemetrySignal[];
+  if (input.provider === "sentry" && input.sentryResource !== undefined) {
+    if (input.sentryResource !== "issue") {
+      return {ok: true, status: 202, enqueued: 0, signals: []};
+    }
+    const body = redacted as SentryIssueDelivery | null;
+    const installation = body?.installation?.uuid;
+    if (typeof installation !== "string" || !isSentryInstallationId(installation) ||
+        installation.toLowerCase() !== telemetrySentryInstallationId) {
+      return {ok: false, status: 401, enqueued: 0, reason: "invalid_source", signals: []};
+    }
+    signals = normaliseSentryIssue(body);
+  } else {
+    signals = normalise(input.provider, redacted);
+  }
   if (signals.length === 0) {
     return { ok: true, status: 202, enqueued: 0, signals: [], reason: "no_signals_in_payload" };
   }
 
-  const now = new Date().toISOString();
-  for (const s of signals) {
-    QUEUE.push({ ...s, receivedAt: now, rawProvider: input.provider });
-    if (QUEUE.length > MAX_QUEUE) QUEUE.shift();
+  if (signals.length > MAX_INBOUND_OBSERVATIONS) {
+    return {ok: false, status: 413, enqueued: 0, reason: "batch_size_invalid", signals: []};
   }
-  return { ok: true, status: 200, enqueued: signals.length, signals };
+  try {
+    const enqueued = await storeInboundObservations(tenantId, "telemetry", provider, input.rawBody, signals);
+    return {ok: true, status: 200, enqueued, signals: enqueued ? signals : []};
+  } catch {
+    return {ok: false, status: 503, enqueued: 0, reason: "storage_unavailable", signals: []};
+  }
 }
 
 // ---------------------------------------------------------------------------
 // HMAC verification
 // ---------------------------------------------------------------------------
 
-function verifyHmac(secret: string, body: string, signatureHeader: string): boolean {
+function verifyAlertmanagerBearer(expected: string, header: string | null | undefined): boolean {
+  if (!header || !/^[0-9a-f]{64}$/i.test(expected)) return false;
+  const token = /^Bearer ([A-Za-z0-9._~+/-]{1,512}={0,2})$/i.exec(header)?.[1];
+  if (!token) return false;
+  const digest = createHash("sha256").update(token).digest();
+  return timingSafeEqual(Buffer.from(expected, "hex"), digest);
+}
+
+function verifyHmac(secret: string, body: string | Buffer, signatureHeader: string): boolean {
   // Accept either raw hex digest or `sha256=<digest>` form.
   const provided = signatureHeader.replace(/^sha256=/i, "").trim();
   const computed = createHmac("sha256", secret).update(body).digest("hex");
@@ -220,6 +236,43 @@ function normaliseDatadog(body: unknown): TelemetrySignal[] {
     sourceMode: "live",
     confidence: 0.9,
     safeNextAction: { label: "Open Risk Queue", href: "/dashboard/risks" },
+  }];
+}
+
+interface SentryIssueDelivery {
+  installation?: {uuid?: unknown};
+  action?: unknown;
+  data?: {issue?: {id?: unknown; status?: unknown; firstSeen?: unknown; level?: unknown; project?: {slug?: unknown}}};
+}
+
+function isSentryInstallationId(value: string): boolean {
+  return /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value);
+}
+
+function normaliseSentryIssue(body: SentryIssueDelivery | null): TelemetrySignal[] {
+  const issue = body?.data?.issue;
+  if (!issue || typeof issue.id !== "string" || !/^\d{1,24}$/.test(issue.id)) return [];
+  const action = body?.action;
+  const resolved = action === "resolved" && issue.status === "resolved";
+  const firing = (action === "created" || action === "unresolved") && issue.status === "unresolved";
+  if (!resolved && !firing) return [];
+  const firstSeen = issue.firstSeen;
+  if (typeof firstSeen !== "string" || !/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(firstSeen) || !Number.isFinite(Date.parse(firstSeen))) return [];
+  const project = issue.project?.slug;
+  const scope = typeof project === "string" && /^[a-z0-9_-]{1,100}$/i.test(project) ? project : "sentry";
+  return [{
+    id: `sentry:issue:${issue.id}:${action}`,
+    kind: resolved ? "alert_resolved" : "alert_firing",
+    severity: mapSeverityLabel(typeof issue.level === "string" ? issue.level : undefined),
+    scope,
+    headline: `Sentry issue ${issue.id} ${action}`,
+    detail: "Timestamp records when Sentry first observed the issue.",
+    firedAt: new Date(firstSeen).toISOString(),
+    sourceProvider: "sentry",
+    evidenceRef: `sentry:issue:${issue.id}`,
+    sourceMode: "live",
+    confidence: 0.85,
+    safeNextAction: {label: "Open Risk Queue", href: "/dashboard/risks"},
   }];
 }
 

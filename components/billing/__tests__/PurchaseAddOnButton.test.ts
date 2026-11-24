@@ -4,7 +4,7 @@
  */
 import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 const io = vi.hoisted(() => ({ push: vi.fn(), fetch: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: io.push }) }));
 import { PurchaseAddOnButton } from "../PurchaseAddOnButton";
@@ -83,6 +83,35 @@ describe("credit purchase customer intent", () => {
     complete(response({ ok: true, url: "https://checkout.stripe.test/old_workspace" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Buy" })).toBeTruthy());
     expect(io.push).not.toHaveBeenCalled();
+  });
+
+  it("requires a fresh checkout action after leaving and returning to the original workspace", async () => {
+    let complete!: (value: Response) => void;
+    io.fetch.mockImplementationOnce(() => new Promise<Response>((resolve) => { complete = resolve; }));
+    const component = view();
+    fireEvent.click(screen.getByRole("button", { name: "Buy" }));
+    const intent = sessionStorage.getItem(storageKey);
+    component.rerender(createElement(PurchaseAddOnButton, { ...props, organizationId: "org_2" }));
+    component.rerender(createElement(PurchaseAddOnButton, props));
+    await act(async () => complete(response({ ok: true, url: "https://checkout.stripe.test/obsolete" })));
+
+    expect(io.push).not.toHaveBeenCalled();
+    io.fetch.mockResolvedValueOnce(response({ ok: true, url: "https://checkout.stripe.test/resumed" }));
+    fireEvent.click(screen.getByRole("button", { name: "Buy" }));
+    await waitFor(() => expect(io.push).toHaveBeenCalledExactlyOnceWith("https://checkout.stripe.test/resumed"));
+    expect(io.fetch.mock.calls[1][1].headers["Idempotency-Key"]).toBe(intent);
+  });
+
+  it("ignores a late checkout redirect after leaving the add-ons page", async () => {
+    let complete!: (value: Response) => void;
+    io.fetch.mockImplementationOnce(() => new Promise<Response>((resolve) => { complete = resolve; }));
+    const component = view();
+    fireEvent.click(screen.getByRole("button", { name: "Buy" }));
+    component.unmount();
+    await act(async () => complete(response({ ok: true, url: "https://checkout.stripe.test/obsolete" })));
+
+    expect(io.push).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem(storageKey)).toBeTruthy();
   });
 
   it("separates workspace intent keys", async () => {

@@ -110,7 +110,7 @@ export default function HandbookPage() {
 
         <div className="space-y-20">
           {SECTIONS.map((s) => (
-            <article key={s.num} id={`hb-${s.num}`} className="relative scroll-mt-24">
+            <article key={s.num} id={`hb-${s.num}`} tabIndex={-1} className="relative scroll-mt-6">
               <div className="mb-10 h-px bg-white/[0.08]" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-zinc-400 tabular-nums text-[11px]">{s.num}</span>

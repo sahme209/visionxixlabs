@@ -13,6 +13,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
+import type { Prisma } from "@/lib/prismaClient";
 import type { SecureAuditStore, AuditRecord, AuditAction, AuditOutcome } from "./secureAudit";
 import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId, CorrelationId, AuditEventId } from "@/lib/domain/ids";
@@ -50,26 +51,27 @@ function fromRow(row: AuditRow): AuditRecord {
   };
 }
 
+export async function appendPrismaAuditRecord(client: Pick<Prisma.TransactionClient, "secureAuditRecord">, record: AuditRecord) {
+  await client.secureAuditRecord.create({
+    data: {
+      id: record.id,
+      organizationId: record.organizationId,
+      actorUserId: record.actorUserId ?? null,
+      actorKind: record.actorKind,
+      action: record.action,
+      outcome: record.outcome,
+      entityRef: record.entityRef ?? null,
+      correlationId: record.correlationId,
+      source: record.source,
+      occurredAt: new Date(record.occurredAt),
+      detail: record.detail,
+      errorCode: record.errorCode ?? null,
+    },
+  });
+}
+
 export const prismaAuditStore: SecureAuditStore = {
-  async append(record) {
-    // Prisma client model accessor (camelCased from SecureAuditRecord).
-    await (prisma as unknown as { secureAuditRecord: { create: (args: unknown) => Promise<unknown> } }).secureAuditRecord.create({
-      data: {
-        id: record.id,
-        organizationId: record.organizationId,
-        actorUserId: record.actorUserId ?? null,
-        actorKind: record.actorKind,
-        action: record.action,
-        outcome: record.outcome,
-        entityRef: record.entityRef ?? null,
-        correlationId: record.correlationId,
-        source: record.source,
-        occurredAt: new Date(record.occurredAt),
-        detail: record.detail ?? null,
-        errorCode: record.errorCode ?? null,
-      },
-    });
-  },
+  append: record => appendPrismaAuditRecord(prisma, record),
 
   async query({ organizationId, action, sinceIso, limit }) {
     const where: Record<string, unknown> = { organizationId };

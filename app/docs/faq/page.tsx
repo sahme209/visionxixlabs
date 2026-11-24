@@ -37,8 +37,8 @@ export default function FaqPage() {
 
       <DocSection id="more" title="Need a specific answer?">
         <p className="text-zinc-400">
-          See <Link href="/docs/troubleshooting" className="text-orange-300 hover:text-orange-200">troubleshooting</Link> for connection errors,
-          review the <Link href="/plans" className="text-orange-300 hover:text-orange-200">plan proposal</Link>, or open the in-product documentation from the desktop app.
+          See <Link href="/docs/troubleshooting" className="text-orange-300 underline underline-offset-2 hover:text-orange-200">troubleshooting</Link> for connection errors,
+          review the <Link href="/plans" className="text-orange-300 underline underline-offset-2 hover:text-orange-200">plan proposal</Link>, or open the in-product documentation from the desktop app.
         </p>
       </DocSection>
 

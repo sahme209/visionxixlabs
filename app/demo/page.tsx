@@ -15,10 +15,10 @@ const workflowGuides = [
     meta: "GitHub · Version-specific guide",
   },
   {
-    title: "Inspect an Airflow dependency",
-    detail: "Read the connector’s current scope and validation requirements. DAG monitoring, dependency conditions and action paths depend on the enabled implementation and exact operation checks.",
-    href: "/integrations",
-    meta: "Airflow · Implementation scope",
+    title: "Inspect an Airflow run",
+    detail: "Validate the connection and inspect the DAG’s available runs. A validated connection does not grant permission to start, retry or schedule a run.",
+    href: "/docs/integration-setup#airflow",
+    meta: "Airflow · Setup and run evidence",
   },
   {
     title: "Understand the AWS ECS workflow",
@@ -51,7 +51,7 @@ export default function DemoLanding() {
 
         <p className="mx-auto max-w-[1280px] px-5 pt-4 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-10">Recorded product walkthroughs are not available on this page. Authentic recordings need their own version, source and availability context; the controls below operate the scripted tour only.</p>
 
-        <CinematicAxiomDemo />
+        <CinematicAxiomDemo showDemoLink={false} showStoryPreviews />
 
         <section className="public-demo-guides">
           <div className="public-demo-guide-panel">

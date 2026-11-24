@@ -111,3 +111,28 @@ it('binds outbound metadata to the actual original claimed deployment without re
  await expect((f.store as any).readClaimedOutboundLocked(f.repo,{...f.scope,sessionId:'other'},p.id,f.plan)).rejects.toThrow();
  f.advance();expect(()=>proof.fresh()).toThrow();
 });
+
+it('reads the original session’s dated deployment chain with a locked current release version', async () => {
+ const f = fixture();
+ const intakeJson = {title: "Synthetic release"};
+ f.plan.intakeDigest = sha256ContentHash({requestVersion:f.plan.releaseVersion,intake:intakeJson});
+ f.approval.planDigest = sha256ContentHash(f.plan);
+ const query = f.repo.$queryRaw.getMockImplementation();
+ let releaseVersion = f.plan.releaseVersion;
+ f.repo.$queryRaw.mockImplementation((sql: TemplateStringsArray, ...values: unknown[]) => sql.join('').includes('TauriDeploymentRequest')
+  ? [{id:f.plan.releaseId, organizationId:f.plan.organizationId, version:releaseVersion, requesterUserId:f.plan.requesterUserId, intakeJson}] : query(sql, ...values));
+ const prepared = await f.store.prepare(f.scope, f.plan);
+ await f.store.claim(f.scope, prepared.id);
+ await f.store.finish(f.scope, prepared.id, {state:'accepted',receipt:f.receipt});
+ const matches = (plan: DeploymentPlan) => sha256ContentHash(plan) === sha256ContentHash(f.plan);
+ expect(await f.store.getHistory(f.scope, prepared.id, matches)).toEqual(f.events.map((event, index) => ({
+  type: ['prepared','dispatching','accepted'][index], at: event.occurredAt.toISOString(),
+ })));
+ await expect(f.store.getHistory({...f.scope, sessionId:'other'}, prepared.id, matches)).rejects.toThrow();
+ f.events[2].occurredAt = new Date(f.rows[0].createdAt.getTime()-1000);
+ await expect(f.store.getHistory(f.scope, prepared.id, matches)).rejects.toThrow();
+ f.events[2].occurredAt = new Date(f.rows[0].updatedAt);
+ releaseVersion++;
+ await expect(f.store.getHistory(f.scope, prepared.id, matches)).rejects.toThrow();
+ expect(f.deps.consumeIndependentApproval).toHaveBeenCalledOnce();
+});

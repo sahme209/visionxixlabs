@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { buildDocsCorpus } from "./support/build-docs-corpus.mjs";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const packageJson = JSON.parse(readFileSync(join(projectRoot, "package.json"), "utf8"));
@@ -49,16 +50,29 @@ if (missingExternals.length > 0) {
 }
 
 // This is a read-only freshness check, never automatic content generation.
+let guideIndex;
 let headingIndexCurrent = false;
 try {
   const require = createRequire(import.meta.url);
-  const expected = JSON.stringify(require("./generate-docs-heading-index.cjs").build(), null, 2) + "\n";
+  guideIndex = require("./generate-docs-heading-index.cjs").build();
+  const expected = JSON.stringify(guideIndex, null, 2) + "\n";
   headingIndexCurrent = readFileSync(join(projectRoot, "lib/docs/guide-heading-index.json"), "utf8") === expected;
 } catch {
   // Missing, malformed or unavailable source/index data must stop the build.
 }
 if (!headingIndexCurrent) {
   throw new Error("Public guide heading index is missing or stale. Run node scripts/generate-docs-heading-index.cjs and review the resulting source-bound index before building.");
+}
+
+let corpusCurrent = false;
+try {
+  const expected = JSON.stringify(buildDocsCorpus(guideIndex.guides), null, 1) + "\n";
+  corpusCurrent = readFileSync(join(projectRoot, "lib/support/docsCorpus.json"), "utf8") === expected;
+} catch {
+  // The support index must come from the same reviewed public routes and bytes.
+}
+if (!corpusCurrent) {
+  throw new Error("Public support corpus is missing or stale. Run node scripts/support/build-docs-corpus.mjs and review the resulting source-bound corpus before building.");
 }
 
 console.log(

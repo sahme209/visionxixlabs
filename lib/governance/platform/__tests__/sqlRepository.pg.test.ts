@@ -163,12 +163,20 @@ import {STSClient} from '@aws-sdk/client-sts';
 import {templateAccessEffect} from '@/lib/cloud/aws/platformTemplatePlan';
 import {ensureTemplatePublished} from '@/lib/cloud/aws/templateHosting';
 import * as templateSource from '@/lib/cloud/aws/platformTemplateSource';
+function syntheticTemplateRequest(request: {headers: Headers; signal?: AbortSignal}) {
+ const timing = ecsFixtureTiming();
+ return createPlatformRequestComposition(syntheticRequestContext(request, timing.signal), {
+  repo:createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),
+  verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:timing.clock,
+ });
+}
+
 async function templateFixture(beforeReview?:(id:string)=>void){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');vi.stubEnv('AWS_SHARED_CREDENTIALS_FILE','/private/tmp/axiom-no-synthetic-aws-credentials');vi.stubEnv('AWS_CONFIG_FILE','/private/tmp/axiom-no-synthetic-aws-config');vi.stubEnv('AWS_PROFILE','axiom-synthetic');
  const bytes=readFileSync('public/aws/axiom-agent-quick-deploy.yaml'),accountId='123456789012',input={accountId,region:'us-east-2',objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
  const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')});
- const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request);
- const handler=createPlatformReviewHttp(),prepareHandler=createPlatformTemplatePreparationHttp();
+ const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await syntheticTemplateRequest(request);
+ const handler=createPlatformReviewHttp(syntheticTemplateRequest),prepareHandler=createPlatformTemplatePreparationHttp(syntheticTemplateRequest);
  vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return handler(new Request(url,init));if(url==='https://fixture.example.test/api/desktop/platform-governance/template')return prepareHandler(new Request(url,init));throw Error('unexpected_external_destination')});
  function context(sessionId:string){const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
  const client=createPlatformTemplateClient(context(actor.sessionId)),reference=randomUUID(),selection={...input,operation:'access',expiresAt:new Date(Date.now()+60000).toISOString()},saved=await client.prepare(selection,reference);
@@ -178,7 +186,7 @@ async function templateFixture(beforeReview?:(id:string)=>void){
  expect(preview.ok).toBe(true);if(!preview.ok||preview.data.kind!=='template.source')throw Error('template_preview_unavailable');expect(preview.data.yaml).toBe(bytes.toString('utf8'));expect(preview.data.bytesDigest).toBe(effect.target.bytesDigest);
  const previewEvents=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(previewEvents).toEqual([{kind:'proposed'}]);
  beforeReview?.(id);
- const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
+ const independent=await syntheticTemplateRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
  return {bytes,input,id,request,binding:bindPlatformExecution(requester,id)};
 }
@@ -520,10 +528,13 @@ it.skipIf(!enabled)('keeps changed-template review proposed with zero attempts o
 it.skipIf(!enabled)('joins prepared canonical bucket target review with actual HMAC and SQL but no AWS calls',async()=>{
  try{
   await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');
-  const sts=vi.spyOn(STSClient.prototype,'send'),s3=vi.spyOn(S3Client.prototype,'send'),prepare=createPlatformTemplatePreparationHttp(),review=createPlatformReviewHttp();
+  const sts=vi.spyOn(STSClient.prototype,'send'),s3=vi.spyOn(S3Client.prototype,'send'),prepare=createPlatformTemplatePreparationHttp(syntheticTemplateRequest),review=createPlatformReviewHttp(syntheticTemplateRequest);
   vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/template')return prepare(new Request(url,init));if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return review(new Request(url,init));throw Error('unexpected_external_destination')}));
   function context(sessionId:string){const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
-  const owner=context(actor.sessionId),other=context(reviewer.sessionId),saved=await createPlatformTemplateClient(owner).prepare({operation:'create_bucket',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(Date.now()+60000).toISOString()},randomUUID());if(!saved.ok)throw Error('bucket_preparation_unavailable');
+  const owner=context(actor.sessionId),other=context(reviewer.sessionId),selection={operation:'create_bucket' as const,accountId:'123456789012',region:'us-east-2',expiresAt:new Date(Date.now()+60000).toISOString()};
+  const unqualified = await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+owner.getConfig().sessionToken}),signal:new AbortController().signal});
+  await expect(unqualified.prepareTemplate(selection,randomUUID())).rejects.toThrow('platform_principal_time_unavailable');
+  const saved=await createPlatformTemplateClient(owner).prepare(selection,randomUUID());if(!saved.ok)throw Error('bucket_preparation_unavailable');
   const record=await createPlatformReviewClient(other).inspect(saved.data.actionId);if(!record.ok)throw Error('bucket_history_unavailable');
   const preview=await createPlatformTemplateClient(other).preview(record.data);expect(preview).toMatchObject({ok:true,data:{kind:'template.bucket',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed'}});
   const approved=await createPlatformReviewClient(other).approve(record.data);expect(approved).toMatchObject({ok:true,data:{status:'approved',attemptCount:0,reviewerUserId:reviewer.userId}});expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();

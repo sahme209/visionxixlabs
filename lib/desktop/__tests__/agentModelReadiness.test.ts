@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), preferences: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn(), deploymentRequests: vi.fn(), listDeploymentExecutions: vi.fn(), airflowConnection: vi.fn(), listAirflowAutomations: vi.fn() } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), preferences: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listWorkspaceMembers: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn(), deploymentRequests: vi.fn(), listDeploymentExecutions: vi.fn(), airflowConnection: vi.fn(), listAirflowAutomations: vi.fn() } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
 vi.mock("../../../desktop/src/lib/useNativeMenuActions", () => ({ useNativeMenuActions: vi.fn() }));
@@ -15,6 +15,7 @@ function deferred<T>() { let resolve!: (value: T) => void; const promise = new P
 const summary = { id: "conversation-1", title: "Saved chat", createdAt: "2026-10-16T00:00:00Z", updatedAt: "2026-10-16T00:00:00Z", turnCount: 0 };
 beforeEach(() => {
   vi.resetAllMocks(); m.invoke.mockRejectedValue(new Error("native_fixture_unavailable")); m.preferences.mockResolvedValue(null); window.localStorage.clear(); Element.prototype.scrollTo = vi.fn(); m.client.config = {};
+  m.client.listWorkspaceMembers.mockResolvedValue({ ok: false, error: "fixture_members_unavailable" });
   m.client.listAgentConversations.mockResolvedValue({ ok: true, data: { conversations: [summary] } });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [] } });
   m.client.aiProviderStatus.mockResolvedValue(ready);
@@ -134,7 +135,7 @@ it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: 
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
   m.client.aiProviderStatus.mockResolvedValueOnce({ ...ready, data: { ...ready.data, policy: { ...ready.data.policy, enabled: false } } }).mockResolvedValueOnce(failure).mockResolvedValue(ready);
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/})); fireEvent.click(await screen.findByRole("button", { name: "Model settings" }));
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"})); fireEvent.click(await screen.findByRole("button", { name: "Model settings" }));
   await screen.findByRole("heading", { name: "Models" });
   await screen.findByRole("alert");
   expect(screen.queryByText(/No service-configured models are available/)).toBeNull();
@@ -224,7 +225,7 @@ it("opens Agent permissions in Settings without resending or discarding the curr
 it("preserves the actual App composer, profile and environment across an in-app Settings visit", async () => {
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/})); await openWorkspaceContext(); await draft();
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"})); await openWorkspaceContext(); await draft();
   await openAgentConfiguration();
   fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: "code_review" } });
   fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
@@ -321,10 +322,11 @@ it("retains an unsaved local file across actual App navigation without another f
     if (command === "read_repository_file") return "saved local content";
     throw new Error(`Unexpected command ${command}`);
   });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/}));
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"}));
   await openAgentConfiguration();
   await screen.findByRole("button", {name: "Agent permissions"});
   fireEvent.click(screen.getByRole("button", {name: "Repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Open local editor"}));
   fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
   fireEvent.change(await screen.findByRole("textbox", {name: "Editing main.ts"}), {target: {value: "unsaved local draft"}});
   fireEvent.click(screen.getByRole("button", {name: "Agent"}));
@@ -447,8 +449,8 @@ it("connects an enabled marketplace skill to the actual App's retained Agent dra
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
   m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled"}]}});
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/})); await draft();
-  fireEvent.click(screen.getByRole("button", {name: "Apps & skills"}));
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"})); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "Apps & Skills"}));
   fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
   await waitFor(() => expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request"));
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
@@ -509,8 +511,9 @@ it("connects confirmed local selection to the actual App Agent while retaining t
     if (command === "read_repository_file") return "original code";
     throw new Error(`Unexpected command ${command}`);
   });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/})); await draft();
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"})); await draft();
   fireEvent.click(screen.getByRole("button", {name: "Repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Open local editor"}));
   fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
   const editor = await screen.findByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement;
   fireEvent.change(editor, {target: {value: "unsaved selected code"}});
@@ -540,7 +543,7 @@ it.each([false, true, "with-new-file"])("connects a saved AI file proposal to lo
     if (command === "write_repository_file") return;
     throw new Error(`Unexpected command ${command}`);
   });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/}));
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"}));
   fireEvent.click(await screen.findByRole("button", {name: "Review in local editor"}));
   expect(screen.getByLabelText(multi ? "Agent proposed diff for main.ts" : "Agent proposed local diff")).toBeTruthy();
   if (multi) expect(screen.getByLabelText("Agent proposed diff for other.ts")).toBeTruthy();
@@ -567,8 +570,9 @@ it("returns a failed native check receipt to an unsent scoped Agent prompt", asy
     if (command === "run_repository_check") return {checkId: "npm:test", success: false, exitCode: 1, output: "test assertion failed", durationMs: 1};
     throw Error(`Unexpected command ${command}`);
   });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/})); await draft();
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"})); await draft();
   fireEvent.click(screen.getByRole("button", {name: "Repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Open local editor"}));
   fireEvent.click(await screen.findByRole("button", {name: "Tests"}));
   fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
   await screen.findByText("test assertion failed");
@@ -593,7 +597,7 @@ it("opens the repository on its first visit from the shared Documentation journe
     if (command === "read_repository_file") return "saved local content";
     throw new Error(`Unexpected command ${command}`);
   });
-  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/}));
+  render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"}));
   await openAgentConfiguration();
   await screen.findByRole("button", {name: "Agent permissions"});
   fireEvent.click(screen.getByRole("button", {name: "Documentation"}));
@@ -860,12 +864,14 @@ it("keeps the editor and Agent drafts mounted across split workspace and Setting
   if(command==="list_repository_files")return ["main.ts"];if(command==="detect_repository_checks"||command==="list_repository_worktrees")return [];
   if(command==="read_repository_file")return "Saved file";throw Error("unexpected fixture command");
  });
- render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: /Open Agent/}));await draft();fireEvent.click(screen.getByRole("button",{name:"Editor & Agent"}));expect(screen.getByRole("button",{name:"Single pane"})).toBeTruthy();
+ render(createElement(App)); fireEvent.click(await screen.findByRole("button", {name: "Build with AI"}));await draft();fireEvent.click(screen.getByLabelText("Workspace access: active"));fireEvent.click(screen.getByRole("button",{name:"Editor & Agent"}));
+ fireEvent.click(screen.getByLabelText("Workspace access: active"));expect(screen.getByRole("button",{name:"Single pane"}).getAttribute("aria-pressed")).toBe("true");
+ fireEvent.click(screen.getByLabelText("Workspace access: active"));
  fireEvent.click(await screen.findByRole("button",{name:"main.ts"}));fireEvent.change(await screen.findByRole("textbox",{name:"Editing main.ts"}),{target:{value:"Editor draft"}});
  expect((screen.getByRole("textbox",{name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
  fireEvent.click(screen.getByRole("button",{name:"Settings"}));await screen.findByRole("button",{name:"Back to workspace"});fireEvent.click(screen.getByRole("button",{name:"Back to workspace"}));
  expect((screen.getByRole("textbox",{name:"Editing main.ts"}) as HTMLTextAreaElement).value).toBe("Editor draft");
- fireEvent.click(screen.getByRole("button",{name:"Single pane"}));
+ fireEvent.click(screen.getByLabelText("Workspace access: active"));fireEvent.click(screen.getByRole("button",{name:"Single pane"}));
  expect((screen.getByRole("textbox",{name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
  expect(m.invoke.mock.calls.filter(([command])=>command==="read_repository_file")).toHaveLength(1);expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
@@ -1232,26 +1238,28 @@ it("offers the unified welcome and enters the retained AI workspace without send
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
   render(createElement(App));
-  await screen.findByRole("heading", {name: /Your next move.*in focus/});
-  expect(screen.getByRole("button", {name: "V19 home"}).getAttribute("aria-current")).toBe("page");
+  await screen.findByRole("heading", {name: /Good (morning|afternoon|evening)/});
+  expect(screen.getByRole("button", {name: "Home"}).getAttribute("aria-current")).toBe("page");
   expect(screen.getByRole("button", {name: "Agent"}).getAttribute("aria-current")).toBeNull();
-  expect(screen.getByRole("button", {name: /Review operations/})).toBeTruthy();
-  expect(screen.getByRole("button", {name: /Plan a release/})).toBeTruthy();
-  fireEvent.click(screen.getByRole("button", {name: /Open Agent/}));
+  expect(screen.getByRole("button", {name: "Automate Operations"})).toBeTruthy();
+  expect(screen.getByRole("button", {name: "Deploy and Manage"})).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", {name: "Build with AI"}));
   await draft();
+  fireEvent.click(screen.getByLabelText("Workspace access: active"));
   expect(screen.getByRole("button", {name: "Editor & Agent"}).getAttribute("aria-pressed")).toBe("false");
   fireEvent.click(screen.getByRole("button", {name: "Editor & Agent"}));
+  fireEvent.click(screen.getByLabelText("Workspace access: active"));
   expect(screen.getByRole("button", {name: "Single pane"}).getAttribute("aria-pressed")).toBe("true");
   fireEvent.click(screen.getByRole("button", {name: "Repositories"}));
   expect(screen.queryByRole("textbox", {name: "Agent request"})).toBeNull();
   expect(screen.getByRole("button", {name: "Repositories"}).getAttribute("aria-current")).toBe("page");
   fireEvent.click(screen.getByRole("button", {name: "Agent"}));
   expect(screen.getByRole("button", {name: "Agent"}).getAttribute("aria-current")).toBe("page");
-  expect(screen.getByRole("button", {name: "V19 home"}).getAttribute("aria-current")).toBeNull();
+  expect(screen.getByRole("button", {name: "Home"}).getAttribute("aria-current")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
-  await screen.findByRole("heading", {name: /Your next move.*in focus/});
-  fireEvent.click(screen.getByRole("button", {name: /Open Agent/}));
+  await screen.findByRole("heading", {name: /Good (morning|afternoon|evening)/});
+  fireEvent.click(screen.getByRole("button", {name: "Build with AI"}));
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
 });
 
@@ -1261,11 +1269,11 @@ it("enters real deployment intake from welcome and retains its unsent form throu
   m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
   m.client.listDeploymentExecutions.mockResolvedValue({ok: true, data: {executions: []}});
   render(createElement(App));
-  fireEvent.click(await screen.findByRole("button", {name: /Plan a release/}));
+  fireEvent.click(await screen.findByRole("button", {name: "Deploy and Manage"}));
   fireEvent.click(await screen.findByRole("button", {name: "Start from ticket"}));
   fireEvent.change(screen.getByRole("textbox", {name: "Request title"}), {target: {value: "Unsent release acceptance"}});
   fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
-  fireEvent.click(await screen.findByRole("button", {name: /Plan a release/}));
+  fireEvent.click(await screen.findByRole("button", {name: "Deploy and Manage"}));
   expect((screen.getByRole("textbox", {name: "Request title"}) as HTMLInputElement).value).toBe("Unsent release acceptance");
   fireEvent.click(screen.getByRole("button", {name: "Back to release requests"}));
   expect(screen.queryByRole("textbox", {name: "Request title"})).toBeNull();
@@ -1277,7 +1285,7 @@ it("enters real Airflow recovery and opens connection setup without connecting",
   m.client.airflowConnection.mockResolvedValue({ok: true, data: {connected: false, status: "not_connected"}});
   m.client.listAirflowAutomations.mockResolvedValue({ok: true, data: {automations: [], executions: []}});
   render(createElement(App));
-  fireEvent.click(await screen.findByRole("button", {name: /Review operations/}));
+  fireEvent.click(await screen.findByRole("button", {name: "Automate Operations"}));
   await screen.findByRole("heading", {name: "Connect Airflow first"});
   fireEvent.click(screen.getByRole("button", {name: "Open connection setup"}));
   expect((await screen.findByRole("button", {name: "Validate & connect"}) as HTMLButtonElement).disabled).toBe(true);
@@ -1289,8 +1297,8 @@ it("can enter Agent for the first time through a verified marketplace handoff fr
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
   m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled"}]}});
   render(createElement(App));
-  await screen.findByRole("heading", {name: /Your next move.*in focus/});
-  fireEvent.click(screen.getByRole("button", {name: "Apps & skills"}));
+  await screen.findByRole("heading", {name: /Good (morning|afternoon|evening)/});
+  fireEvent.click(screen.getByRole("button", {name: "Apps & Skills"}));
   fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
   await waitFor(() => expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("/safe-repository-change "));
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
@@ -1326,4 +1334,161 @@ it("observes review-only approval on focus without model continuation or an exec
  m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[proposed]}});render(createElement(AgentChatView));await screen.findByRole("button",{name:"Record approval"});
  m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{...proposed,status:"approved"}]}});fireEvent(window,new Event("focus"));
  await screen.findByText("Approval recorded");expect(screen.queryByRole("button",{name:"Record approval"})).toBeNull();expect(screen.queryByRole("button",{name:/execute approved/i})).toBeNull();expect(m.client.sendAgentMessage).not.toHaveBeenCalled();expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("retains each Home planning intent and prepares an unsent Agent request", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  render(createElement(App));
+  const request = await screen.findByRole("textbox", {name: "Planning request"});
+  expect(screen.getByRole<HTMLButtonElement>("button", {name: "Create plan"}).disabled).toBe(true);
+  fireEvent.change(request, {target: {value: "Ship the approved billing update"}});
+  fireEvent.click(screen.getByRole("button", {name: "Investigate issue"}));
+  expect((request as HTMLTextAreaElement).value).toBe("");
+  fireEvent.change(request, {target: {value: "Check the staging timeout"}});
+  fireEvent.click(screen.getByRole("button", {name: "Plan a release"}));
+  expect((request as HTMLTextAreaElement).value).toBe("Ship the approved billing update");
+  fireEvent.click(screen.getByRole("button", {name: "Create plan"}));
+  const agent = await screen.findByRole<HTMLTextAreaElement>("textbox", {name: "Agent request"});
+  await waitFor(() => expect(agent.value).toBe("Prepare a release plan for review.\n\nShip the approved billing update"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
+  expect(screen.getByRole<HTMLTextAreaElement>("textbox", {name: "Planning request"}).value).toBe("Ship the approved billing update");
+});
+
+it("carries only explicitly selected workspace context into the unsent Home draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: ["pipeline:read", "github:read"], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  m.client.listEnvironments.mockResolvedValue({ok: true, data: {environments: [{id: "env-1", name: "Development", slug: "development", tier: "dev"}]}});
+  render(createElement(App));
+  const request = await screen.findByRole("textbox", {name: "Planning request"});
+  expect(m.client.listGithubRepositories).not.toHaveBeenCalled();
+  expect(m.client.listEnvironments).not.toHaveBeenCalled();
+  expect(document.getElementById(request.getAttribute("aria-describedby") ?? "")?.textContent).toBe("Planning only. Nothing is deployed.");
+  fireEvent.change(request, {target: {value: "Review the release"}});
+  const repositoryButton = screen.getByRole("button", {name: /^Choose repository/});
+  fireEvent.click(repositoryButton);
+  const repositoryPanel = screen.getByRole("region", {name: "Repository planning context"});
+  expect(document.activeElement).toBe(repositoryPanel);
+  await screen.findByRole("option", {name: "fixture/repository"});
+  expect(m.client.listEnvironments).not.toHaveBeenCalled();
+  expect(screen.getByRole<HTMLSelectElement>("combobox", {name: "Repository"}).value).toBe("");
+  fireEvent.change(screen.getByRole("combobox", {name: "Repository"}), {target: {value: "fixture/repository"}});
+  expect(fireEvent.keyDown(screen.getByRole("combobox", {name: "Repository"}), {key: "Escape"})).toBe(true);
+  fireEvent.keyDown(repositoryPanel, {key: "Escape"});
+  expect(document.activeElement).toBe(repositoryButton);
+  expect(repositoryButton.getAttribute("aria-expanded")).toBe("false");
+  const environmentButton = screen.getByRole("button", {name: /^Choose environment/});
+  fireEvent.click(environmentButton);
+  const environmentPanel = screen.getByRole("region", {name: "Environment planning context"});
+  expect(document.activeElement).toBe(environmentPanel);
+  await screen.findByRole("option", {name: "Development · development"});
+  fireEvent.change(screen.getByRole("combobox", {name: "Environment"}), {target: {value: "env-1"}});
+  fireEvent.click(within(environmentPanel).getByRole("button", {name: "Done"}));
+  expect(document.activeElement).toBe(environmentButton);
+  expect(environmentButton.getAttribute("aria-expanded")).toBe("false");
+  expect(screen.getByRole("button", {name: /^Choose repository/}).textContent).toContain("fixture/repository");
+  expect(screen.getByRole("button", {name: /^Choose environment/}).textContent).toContain("Development");
+  expect((request as HTMLTextAreaElement).value).toBe("Review the release");
+  fireEvent.click(screen.getByRole("button", {name: "Create plan"}));
+  const agent = await screen.findByRole<HTMLTextAreaElement>("textbox", {name: "Agent request"});
+  await waitFor(() => expect(agent.value).toBe('Prepare a release plan for review.\n\nWorkspace repository: "fixture/repository"\nWorkspace environment: "development"\n\nReview the release'));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+});
+
+it("loads the Home environment catalog without GitHub authority", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "operator", capabilities: ["pipeline:read"], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  m.client.listEnvironments.mockRejectedValue(new Error("fixture_outage"));
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: /^Choose environment/}));
+  await screen.findByRole("option", {name: "Environments unavailable"});
+  expect(screen.queryByRole("combobox", {name: "Repository"})).toBeNull();
+  expect(m.client.listGithubRepositories).not.toHaveBeenCalled();
+});
+
+it("keeps the existing Agent draft when a Home request arrives", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: "Build with AI"}));
+  await draft();
+  fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
+  fireEvent.click(screen.getByRole("button", {name: "Ask V19"}));
+  fireEvent.change(screen.getByRole("textbox", {name: "Planning request"}), {target: {value: "Describe staged release readiness"}});
+  fireEvent.click(screen.getByRole("button", {name: "Review question"}));
+  const agent = await screen.findByRole<HTMLTextAreaElement>("textbox", {name: "Agent request"});
+  expect(agent.value).toBe("Keep this unsent request");
+  expect(screen.getByText(/new request is ready once/)).toBeTruthy();
+  fireEvent.change(agent, {target: {value: ""}});
+  await waitFor(() => expect(agent.value).toBe("Describe staged release readiness"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("opens the selected Documentation stage as an unsent Agent draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: "Documentation"}));
+  fireEvent.click(screen.getByRole("button", {name: "Verify"}));
+  fireEvent.click(screen.getByRole("button", {name: "Ask about this page"}));
+  const request = await screen.findByRole<HTMLTextAreaElement>("textbox", {name: "Agent request"});
+  await waitFor(() => expect(request.value).toContain("https://visionxixlabs.com/docs/getting-started#guide-stage-recover"));
+  expect(request.value).toContain("Validate and recover");
+  expect(request.value).toContain("Preserve failures and confirm rollback readiness");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("returns from a guide action to its exact button while preserving guide context", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
+  m.client.deploymentRequests.mockResolvedValue({ok: true, data: []});
+  m.client.listDeploymentExecutions.mockResolvedValue({ok: true, data: {executions: []}});
+  render(createElement(App));
+  const documentation = await screen.findByRole("button", {name: "Documentation"});
+  fireEvent.click(documentation);
+  const search = screen.getByRole<HTMLInputElement>("searchbox", {name: "Search documentation"});
+  fireEvent.change(search, {target: {value: "release"}});
+  const verify = screen.getByRole("button", {name: "Verify"});
+  fireEvent.click(verify);
+  const review = screen.getByRole("button", {name: "Review deployment evidence"});
+  review.focus();
+  fireEvent.click(review);
+  await screen.findByRole("heading", {name: "Deployments", level: 1});
+  documentation.focus();
+  fireEvent.click(documentation);
+
+  expect(document.activeElement).toBe(review);
+  expect(search.value).toBe("release");
+  expect(verify.getAttribute("aria-current")).toBe("location");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("keeps a plan-review entry read-only even when conversation history is empty", async () => {
+  m.client.listAgentConversations.mockResolvedValue({ok: true, data: {conversations: []}});
+  render(createElement(AgentChatView, {deferNewConversation: true}));
+  await screen.findByRole("option", {name: "Fixture model"});
+  expect(m.client.listAgentConversations).toHaveBeenCalled();
+  expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("uses a recorded response timestamp and omits an invalid one", async () => {
+  const recorded = "2026-10-20T10:14:00.000Z";
+  m.client.getAgentConversation.mockResolvedValue({ok: true, data: {...summary, actions: [], turns: [
+    {id: "valid-time", role: "assistant", content: "Dated response", createdAt: recorded},
+    {id: "invalid-time", role: "assistant", content: "Undated response", createdAt: "unavailable"},
+  ]}});
+  render(createElement(AgentChatView));
+  const content = await screen.findByText("Dated response");
+  const time = content.closest('[role="group"]')?.querySelector("time");
+  expect(time?.getAttribute("datetime")).toBe(recorded);
+  expect(time?.getAttribute("aria-label")).toBe(new Date(recorded).toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"}));
+  expect(screen.getByText("Undated response").closest('[role="group"]')?.querySelector("time")).toBeNull();
 });

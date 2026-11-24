@@ -1,8 +1,7 @@
 /**
- * POST /api/ai/health
+ * GET or POST /api/ai/health
  *
- * Runs health checks only for provider families approved by the caller's
- * workspace policy. Read-only — no state mutation.
+ * Reads configured workspace routes. Provider inference requires separate admission.
  */
 
 import type { NextRequest } from "next/server";
@@ -30,21 +29,19 @@ export async function POST(req: NextRequest) {
       throw AxiomErrors.policy("ai.provider_policy_unavailable", "AI provider policy is not ready for this workspace.");
     }
     const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
-    const rows = policy.enabled ? await manager.healthCheckAll(policy.allowedProviders) : [];
-    const healthyProviderCount = rows.filter((row) => row.ok).length;
-    const sourceMode = !policy.enabled
-      ? "disabled"
-      : policy.allowedProviders.length === 0
-        ? "preview"
-        : healthyProviderCount === rows.length
-          ? "live"
-          : healthyProviderCount > 0
-            ? "partial_live"
-            : "blocked";
-    return apiOk({ rows, policyEnabled: policy.enabled, generatedAt: new Date().toISOString() }, {
+    const rows = policy.allowedProviders.map((provider) => ({
+      provider,
+      model: policy.modelSelections[provider] ?? null,
+    }));
+    return apiOk({
+      rows,
+      policyEnabled: policy.enabled,
+      health: "not_measured",
+      generatedAt: new Date().toISOString(),
+    }, {
       correlationId,
       safetyContract: "audit_read_only",
-      sourceMode: asApiSourceMode(sourceMode),
+      sourceMode: asApiSourceMode(policy.enabled ? "preview" : "disabled"),
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "audit_read_only" });

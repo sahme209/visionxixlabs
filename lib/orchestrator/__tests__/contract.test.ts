@@ -16,10 +16,23 @@ describe("orchestrator contract foundations (A9.5)", () => {
   });
 
   it("C01: refuses unknown schema, unknown engine and unsupported operations before any I/O", () => {
+    expect(Reflect.set(ENGINE_KINDS, 0, "unreviewed")).toBe(false);
     expect(requireCapability({ schemaVersion: "axiom.orchestrator/2", engineKind: "airflow", operation: "status" })).toMatchObject({ ok: false, error: "unsupported" });
     expect(requireCapability({ schemaVersion: "axiom.orchestrator/1", engineKind: "temporal", operation: "status" })).toMatchObject({ ok: false, error: "unsupported" });
     expect(requireCapability({ schemaVersion: "axiom.orchestrator/1", engineKind: "prefect", operation: "start" })).toMatchObject({ ok: false, error: "unsupported", detail: expect.stringMatching(/start is not supported/) });
     expect(requireCapability({ schemaVersion: "axiom.orchestrator/1", engineKind: "dagster", operation: "status" }).ok).toBe(true);
+  });
+
+  it.each(ENGINE_KINDS)("keeps the reviewed %s profile immutable through a capability result", engineKind => {
+    const result = requireCapability({schemaVersion: "axiom.orchestrator/1", engineKind, operation: "status"});
+    if (!result.ok) throw Error("expected_status_profile");
+    const {profile} = result;
+    expect(Reflect.set(profile, "profileVersion", "unreviewed")).toBe(false);
+    expect(Reflect.set(profile.capabilities, "start", "supported")).toBe(false);
+    expect(Reflect.set(profile.observationLimits, "maxEntries", 1000)).toBe(false);
+    expect(Reflect.set(profile.limits, 0, "unreviewed")).toBe(false);
+    expect(requireCapability({schemaVersion: "axiom.orchestrator/1", engineKind, operation: "start"}))
+      .toMatchObject({ok: false, error: "unsupported"});
   });
 
   it("C09: cancellation is reported as not supported, never simulated", () => {
@@ -33,6 +46,10 @@ describe("orchestrator contract foundations (A9.5)", () => {
     expect(normalizeState("argo_workflows", "Error", at).state).toBe("failed");
     for (const e of ENGINE_KINDS) { expect(normalizeState(e, "deferred-mystery", at).state).toBe("unknown"); expect(normalizeState(e, null, at).state).toBe("unknown"); }
     for (const e of ENGINE_KINDS) expect(NORMALIZED_STATES).toContain(normalizeState(e, "x", at).state);
+  });
+
+  it.each(["constructor", "__proto__", "toString"])("treats inherited provider states as unknown (%s)", nativeState => {
+    for (const engine of ENGINE_KINDS) expect(normalizeState(engine, nativeState, at).state).toBe("unknown");
   });
 
   it("records an anomaly instead of regressing a terminal state", () => {

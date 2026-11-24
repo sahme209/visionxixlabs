@@ -7,16 +7,16 @@ const mocks = vi.hoisted(() => ({
   isSameOriginRequest: vi.fn(),
   create: vi.fn(),
   findUnique: vi.fn(),
-  update: vi.fn(),
   updateMany: vi.fn(),
+  recoverCheckout: vi.fn(),
   createCheckout: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwner }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: mocks.isSameOriginRequest }));
-vi.mock("@/lib/db", () => ({ prisma: { addOnPurchase: { create: mocks.create, findUnique: mocks.findUnique, update: mocks.update, updateMany: mocks.updateMany } } }));
-vi.mock("@/lib/billing/stripeHelper", () => ({ createAddOnCheckoutSession: mocks.createCheckout }));
+vi.mock("@/lib/db", () => ({ prisma: { addOnPurchase: { create: mocks.create, findUnique: mocks.findUnique, updateMany: mocks.updateMany } } }));
+vi.mock("@/lib/billing/stripeHelper", () => ({ createAddOnCheckoutSession: mocks.createCheckout, recoverAddOnCheckoutSession: mocks.recoverCheckout }));
 
 import { POST } from "../route";
 
@@ -36,7 +36,6 @@ describe("AI credit checkout", () => {
     mocks.isAdminOrOwner.mockReturnValue(true);
     mocks.currentContext.mockResolvedValue({ isAuthenticated: true, organizationId: "org-1", userId: "user-1", email: "owner@example.com", roles: ["owner"] });
     mocks.create.mockResolvedValue({ id: "purchase-1", organizationId: "org-1", sku: "ai_credits_small", status: "pending", pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", createdAt: new Date() });
-    mocks.update.mockResolvedValue({});
     mocks.updateMany.mockResolvedValue({ count: 1 });
     mocks.createCheckout.mockResolvedValue({ ok: true, url: "https://checkout.stripe.test/session", sessionId: "cs_test_1" });
   });
@@ -78,7 +77,7 @@ describe("AI credit checkout", () => {
       data: expect.objectContaining({ pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", status: "pending" }),
     }));
     expect(mocks.createCheckout).toHaveBeenCalledWith(expect.objectContaining({ priceCents: 1000, purchaseId: "purchase-1" }));
-    expect(mocks.update).toHaveBeenCalledWith({ where: { id: "purchase-1" }, data: { stripeCheckoutSessionId: "cs_test_1" } });
+    expect(mocks.updateMany).toHaveBeenCalledWith({ where: { id: "purchase-1", organizationId: "org-1", status: "pending", stripePaymentIntentId: null, OR: [{stripeCheckoutSessionId:null},{stripeCheckoutSessionId:"cs_test_1"}] }, data: { stripeCheckoutSessionId: "cs_test_1" } });
   });
 
   it("preserves pending intent when provider outcome is unknown", async () => {
@@ -88,8 +87,17 @@ describe("AI credit checkout", () => {
     await expect(response.json()).resolves.toEqual({
       ok: false,
       error: "stripe_checkout_unavailable",
+      purchaseId: "purchase-1",
       message: "Checkout outcome is uncertain. Keep this purchase reference and contact support; do not start another purchase.",
     });
     expect(mocks.updateMany).not.toHaveBeenCalled();
   });
+  it("withholds a new Checkout URL when the purchase changes after dispatch", async () => {
+    mocks.updateMany.mockResolvedValue({count:0});
+    const result = await POST(request());
+    expect(result.status).toBe(409);
+    expect(await result.json()).toEqual({ok:false,error:"checkout_reconciliation_required",purchaseId:"purchase-1"});
+    expect(mocks.createCheckout).toHaveBeenCalledTimes(1);
+  });
+
 });

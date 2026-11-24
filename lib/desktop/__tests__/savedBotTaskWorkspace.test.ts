@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import {createElement,useState} from "react";
 import {beforeEach,afterEach,it,expect,vi} from "vitest";
-import {render,screen,fireEvent,cleanup,act} from "@testing-library/react";
+import {render,screen,fireEvent,cleanup,act,within} from "@testing-library/react";
 const m=vi.hoisted(()=>({config:{sessionToken:"axm.desk.synthetic"},revision:0,list:vi.fn(),get:vi.fn(),create:vi.fn(),update:vi.fn(),history:vi.fn(),prCapabilities:vi.fn(),reportCapabilities:vi.fn(),reports:vi.fn(),prRuns:vi.fn(),jiraConnections:vi.fn(),jiraOwners:[] as any[]}));
 vi.mock("../../../desktop/src/lib/desktopClient",()=>({desktopClient:{get config(){return m.config},getContextRevision:()=>m.revision,subscribeContext:()=>()=>{},listSavedBotTasks:m.list,getSavedBotTask:m.get,createSavedBotTask:m.create,updateSavedBotTask:m.update,savedBotTaskHistory:m.history,botPrCapabilities:m.prCapabilities,readinessCapabilities:m.reportCapabilities,readinessReportsForTask:m.reports,botPrRunsForTask:m.prRuns}}));
 vi.mock('../../../desktop/src/lib/jiraTicketDiscovery',async()=>({...await vi.importActual('../../../desktop/src/lib/jiraTicketDiscovery'),createJiraTicketDiscoveryClient:(owner:any,readCurrentOwner:any)=>{m.jiraOwners.push({owner,readCurrentOwner});return{connections:m.jiraConnections}}}));
@@ -21,9 +21,135 @@ it("never saves an oversized visible candidate in place of the previous valid te
 it("preserves local edits on version conflict",async()=>{m.update.mockResolvedValue({ok:false,error:'Newer saved version',errorCode:'saved_task_conflict_reload_before_saving',outcomeUnconfirmed:false});render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);fireEvent.change(screen.getByLabelText('What should V19 Bot help with?'),{target:{value:'Preserve these edits'}});fireEvent.click(screen.getByRole('button',{name:'Save task draft'}));await screen.findByText('Newer saved version');expect((screen.getByLabelText('What should V19 Bot help with?') as HTMLTextAreaElement).value).toBe('Preserve these edits');expect(screen.getByRole('button',{name:'Review saved version'})).toBeTruthy();expect(screen.getByRole('button',{name:'Save task draft'})).toHaveProperty('disabled',true)});
 it("retries an unknown save with the same immutable payload and identifier",async()=>{m.create.mockResolvedValueOnce({ok:false,error:'Outcome unconfirmed',errorCode:'saved_task_timeout',outcomeUnconfirmed:true});render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});fill();fireEvent.click(screen.getByRole('button',{name:'Save task draft'}));fireEvent.click(await screen.findByRole('button',{name:'Retry same save'}));await screen.findByText('Saved draft · version 0');expect(m.create.mock.calls[0][0]).toEqual(m.create.mock.calls[1][0]);expect(m.create).toHaveBeenCalledTimes(2)});
 it("ignores late saved-task reads after a context change",async()=>{let resolve!:(v:unknown)=>void;m.get.mockReturnValue(new Promise(r=>{resolve=r}));render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));m.config={sessionToken:'axm.desk.changed'};m.revision++;await act(async()=>resolve({ok:true,data:{task:saved}}));expect(screen.queryByDisplayValue(saved.instruction)).toBeNull()});
+it("reviews a newer saved version after conflict without replacing or sending the local edits",async()=>{
+ const latest={...saved, version:1, instruction:"Newer saved instruction"};
+ m.update.mockResolvedValueOnce({ok:false,error:"Newer saved version",errorCode:"saved_task_conflict_reload_before_saving",outcomeUnconfirmed:false});
+ m.history.mockResolvedValueOnce({ok:true,data:{taskId:id,events:[{version:1,eventType:"draft.updated",content:{title:latest.title,instruction:latest.instruction,context:latest.context},occurredAt:latest.createdAt}],nextBeforeVersion:null}});
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole("button",{name:"Open saved task Saved example"}));
+ const editor=await screen.findByDisplayValue(saved.instruction);
+ fireEvent.change(editor,{target:{value:"Keep my unsent instruction"}});
+ fireEvent.click(screen.getByRole("button",{name:"Save task draft"}));
+ fireEvent.click(await screen.findByRole("button",{name:"Review saved version"}));
+ const history=within(await screen.findByRole("region",{name:"Saved draft history"}));
+ fireEvent.click(await history.findByText("Version 1"));
+ fireEvent.click(history.getByText("Compare with editor"));
+ const compare=within(history.getByRole("region",{name:"Instruction comparison"}));
+ expect(compare.getByText("Newer saved instruction")).toBeTruthy();
+ expect(compare.getByText("Keep my unsent instruction")).toBeTruthy();
+ expect(history.queryByRole("region",{name:"Title comparison"})).toBeNull();
+ expect(m.history).toHaveBeenCalledExactlyOnceWith(id,undefined,expect.any(AbortSignal));
+ expect(m.get).toHaveBeenCalledOnce();
+ expect(m.update).toHaveBeenCalledOnce();
+ expect(m.create).not.toHaveBeenCalled();
+ expect(editor).toHaveProperty("value","Keep my unsent instruction");
+ fireEvent.click(screen.getByRole("button",{name:"Close task details"}));
+ fireEvent.click(screen.getByRole("button",{name:"Open latest saved draft"}));
+ expect(screen.getByRole("button",{name:"Keep editing"})).toBeTruthy();
+ expect(editor).toHaveProperty("value","Keep my unsent instruction");
+ const keepEditing=screen.getByRole("button",{name:"Keep editing"});
+ fireEvent.keyDown(keepEditing,{key:"Escape"});
+ expect(screen.queryByRole("button",{name:"Keep editing"})).toBeNull();
+ expect(document.activeElement).toBe(screen.getByRole("button",{name:"Open latest saved draft"}));
+ expect(editor).toHaveProperty("value","Keep my unsent instruction");
+ expect(m.get).toHaveBeenCalledOnce();
+});
+
+it("opens the selected draft's version history from the summary without saving edits",async()=>{
+ render(createElement(Host));
+ expect(screen.queryByRole('button',{name:'View saved versions'})).toBeNull();
+ fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));
+ const editor=await screen.findByDisplayValue(saved.instruction);
+ fireEvent.change(editor,{target:{value:'Unsent history review'}});
+ expect(m.history).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole('button',{name:'View saved versions'}));
+ await screen.findByText('Version 0');
+ expect(m.history).toHaveBeenCalledExactlyOnceWith(id,undefined,expect.any(AbortSignal));
+ expect(editor).toHaveProperty('value','Unsent history review');
+ expect(m.update).not.toHaveBeenCalled();
+ expect(m.create).not.toHaveBeenCalled();
+});
+it("reopens the exact recorded version from the summary while retaining editor text",async()=>{
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole("button",{name:"Open saved task Saved example"}));
+ const editor=await screen.findByDisplayValue(saved.instruction);
+ fireEvent.change(editor,{target:{value:"Keep this draft while reviewing history"}});
+ fireEvent.click(screen.getByRole("button",{name:"View saved versions"}));
+ const row=(await within(screen.getByRole("region",{name:"Saved draft history"})).findByText("Version 0")).closest("summary")!;
+ fireEvent.click(screen.getByRole("button",{name:"Close task details"}));
+ const shortcut=screen.getByRole("button",{name:"Inspect saved version 0"});
+ vi.spyOn(shortcut,"getClientRects").mockReturnValue({length:1} as DOMRectList);
+ expect(shortcut.querySelector("time")?.dateTime).toBe(saved.createdAt);
+ fireEvent.click(shortcut);
+ expect(document.activeElement).toBe(row);
+ expect(row.closest("details")?.open).toBe(true);
+ fireEvent.keyDown(row,{key:"Escape"});
+ expect(document.activeElement).toBe(shortcut);
+ expect(editor).toHaveProperty("value","Keep this draft while reviewing history");
+ expect(m.history).toHaveBeenCalledTimes(1);
+ expect(m.update).not.toHaveBeenCalled();
+ expect(m.create).not.toHaveBeenCalled();
+});
+
+it("keeps history failures and retries in the inspector without losing editor or pagination focus",async()=>{
+ let complete!:(result:unknown)=>void;
+ const event={version:0,eventType:"draft.created",content:{title:saved.title,instruction:saved.instruction,context:saved.context},occurredAt:saved.createdAt};
+ m.history.mockResolvedValueOnce({ok:false,error:"History lookup unavailable"})
+  .mockResolvedValueOnce({ok:true,data:{taskId:id,events:[{...event,version:1,eventType:"draft.updated"}],nextBeforeVersion:1}})
+  .mockImplementationOnce(()=>new Promise(resolve=>{complete=resolve}));
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));
+ const editor=await screen.findByDisplayValue(saved.instruction);
+ fireEvent.change(editor,{target:{value:'Retain my editor text'}});
+ fireEvent.click(screen.getByRole('button',{name:'View saved versions'}));
+ const panel=screen.getByRole('region',{name:'Saved draft history'});
+ expect((await within(panel).findByRole('alert')).textContent).toBe('History lookup unavailable');
+ fireEvent.click(within(panel).getByRole('button',{name:'Retry history'}));
+ const older=await within(panel).findByRole('button',{name:'Older history'});
+ older.focus();
+ fireEvent.click(older);
+ fireEvent.click(older);
+ expect(m.history).toHaveBeenCalledTimes(3);
+ expect(m.history).toHaveBeenLastCalledWith(id,1,expect.any(AbortSignal));
+ expect(older.getAttribute('aria-disabled')).toBe('true');
+ expect(document.activeElement).toBe(older);
+ await act(async()=>complete({ok:true,data:{taskId:id,events:[event],nextBeforeVersion:null}}));
+ expect(document.activeElement).toBe(within(panel).getByRole('heading',{name:'Version history'}));
+ const base=within(panel).getByText('Version 0').closest('summary')!;
+ expect(base.querySelector('time')?.dateTime).toBe(saved.createdAt);
+ expect(within(base).getByText('Editor base')).toBeTruthy();
+ expect(within(panel).getByText('Newer saved version')).toBeTruthy();
+ expect(editor).toHaveProperty('value','Retain my editor text');
+ expect(m.update).not.toHaveBeenCalled();
+});
+
 it("shows immutable history without replacing current unsent edits",async()=>{render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);fireEvent.change(screen.getByLabelText('What should V19 Bot help with?'),{target:{value:'Unsaved edit retained'}});fireEvent.click(screen.getByRole('button',{name:'History'}));await screen.findByText('Version 0');expect((screen.getByLabelText('What should V19 Bot help with?') as HTMLTextAreaElement).value).toBe('Unsaved edit retained')});
 
 it("wires real saved-task controls into the paired Bot route",async()=>{render(createElement(AxiomBotView,{identity:{kind:"desktop_session",organizationId:"org-a",capabilities:["workspace:read"],access:{allowed:true,code:"active",title:"Active",message:"Verified",planTier:"pro",billingStatus:"active",accessRequestPath:"/access",pricingPath:"/pricing"}}}));await screen.findByRole('button',{name:'Open saved task Saved example'});expect(screen.getByRole('button',{name:'Save task draft'})).toBeTruthy();expect(screen.queryByRole('button',{name:/^Run/})).toBeNull()});
+
+it("starts a local draft from the header and protects unsaved editor text",async()=>{
+ const identity={kind:"desktop_session" as const,organizationId:"org-a",capabilities:["workspace:read"],access:{allowed:true,code:"active" as const,title:"Active",message:"Verified",planTier:"pro",billingStatus:"active",accessRequestPath:"/access",pricingPath:"/pricing"}};
+ const {container}=render(createElement(AxiomBotView,{identity}));
+ const savedRow=await screen.findByRole("button",{name:"Open saved task Saved example"});
+ fireEvent.click(savedRow);
+ const editor=await screen.findByDisplayValue(saved.instruction);
+ fireEvent.change(editor,{target:{value:"Keep this edit"}});
+ const newTask=screen.getByRole("button",{name:"New draft"});
+ expect(container.querySelector(".studio-task-heading")?.contains(newTask)).toBe(true);
+ fireEvent.click(newTask);
+ fireEvent.keyDown(document.activeElement!,{key:"Escape"});
+ expect(document.activeElement).toBe(newTask);
+ expect(editor).toHaveProperty("value","Keep this edit");
+ fireEvent.click(newTask);
+ fireEvent.click(screen.getByRole("button",{name:"Start new draft"}));
+ const newEditor=screen.getByRole("textbox",{name:"What should V19 Bot help with?"});
+ expect(document.activeElement).toBe(newEditor);
+ expect(newEditor).toHaveProperty("value","");
+ expect(savedRow).toBe(screen.getByRole("button",{name:"Open saved task Saved example"}));
+ expect(m.get).toHaveBeenCalledOnce();
+ expect(m.create).not.toHaveBeenCalled();
+ expect(m.update).not.toHaveBeenCalled();
+});
 
 it("locks edits while opening a saved draft",async()=>{let resolve!:(v:unknown)=>void;m.get.mockReturnValue(new Promise(r=>{resolve=r}));render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));expect(screen.getByLabelText('Bot task title')).toHaveProperty('disabled',true);await act(async()=>resolve({ok:true,data:{task:saved}}))});
 it("dismisses replacement confirmation while retaining unknown-save retry",async()=>{m.create.mockResolvedValueOnce({ok:false,error:'Outcome unconfirmed',errorCode:'saved_task_timeout',outcomeUnconfirmed:true});render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});fill();fireEvent.click(screen.getByRole('button',{name:'New draft'}));expect(screen.getByRole('button',{name:'Start new draft'})).toBeTruthy();fireEvent.click(screen.getByRole('button',{name:'Save task draft'}));await screen.findByRole('button',{name:'Retry same save'});expect(screen.queryByRole('button',{name:'Start new draft'})).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Retry same save'}));await screen.findByText('Saved draft · version 0');expect(m.create.mock.calls[0][0]).toEqual(m.create.mock.calls[1][0])});
@@ -151,4 +277,45 @@ it('retains ordinary inspector arrow/Home/End navigation and task-list Escape fo
  const first=screen.getByRole('tab',{name:'Details'});first.focus();
  for(const [key,name] of [['ArrowRight','Workspace report'],['End','Computer'],['Home','Details'],['ArrowLeft','Computer']] as const){fireEvent.keyDown(document.activeElement!,{key});const tab=screen.getByRole('tab',{name});expect(tab.getAttribute('aria-selected')).toBe('true');expect(document.activeElement).toBe(tab)}
  const tasks=screen.getByRole('button',{name:'Tasks'});fireEvent.click(tasks);const filter=screen.getByLabelText('Filter loaded tasks');expect(document.activeElement).toBe(filter);fireEvent.keyDown(filter,{key:'Escape'});expect(tasks.getAttribute('aria-expanded')).toBe('false');expect(document.activeElement).toBe(tasks);expect(screen.getByLabelText('What should V19 Bot help with?')).toHaveProperty('value','Public test instruction');expect(m.create).not.toHaveBeenCalled();expect(m.update).not.toHaveBeenCalled();
+});
+
+it('summarizes the selected draft without granting shared access or replacing unsent edits', async () => {
+  render(createElement(Host));
+  fireEvent.click(await screen.findByRole('button', {name: 'Open saved task Saved example'}));
+  const instruction = await screen.findByDisplayValue(saved.instruction);
+  const summary = within(screen.getByRole('complementary', {name: 'Task draft summary'}));
+
+  expect(summary.getByText('Creator only')).toBeTruthy();
+  expect(summary.getByText('All changes saved')).toBeTruthy();
+  expect(summary.getByText('0')).toBeTruthy();
+  fireEvent.change(instruction, {target: {value: 'Unsaved instruction'}});
+  expect(summary.getByText('Unsaved changes')).toBeTruthy();
+  expect(m.update).not.toHaveBeenCalled();
+});
+
+it("opens the editor, draft context and exact history without replacing or uploading unsent edits",async()=>{
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole("button",{name:"Open saved task Saved example"}));
+ const instruction=await screen.findByDisplayValue(saved.instruction);
+ const navigation=within(screen.getByRole("navigation",{name:"Saved task sections"}));
+ fireEvent.click(navigation.getByRole("button",{name:"Editor"}));
+ expect(document.activeElement).toBe(instruction);
+ fireEvent.change(instruction,{target:{value:"Keep unsent instructions"}});
+ const contextButton=navigation.getByRole("button",{name:"Context"});
+ vi.spyOn(contextButton,"getClientRects").mockReturnValue({length:1} as DOMRectList);
+ fireEvent.click(contextButton);
+ const context=screen.getByRole("textbox",{name:"Context to include"});
+ expect(document.activeElement).toBe(context);
+ expect(context).toHaveProperty("value",saved.context);
+ fireEvent.change(context,{target:{value:"Keep unsent context"}});
+ fireEvent.keyDown(context,{key:"Escape"});
+ expect(document.activeElement).toBe(contextButton);
+
+ fireEvent.click(navigation.getByRole("button",{name:"Open saved task history"}));
+ await within(screen.getByRole("region",{name:"Saved draft history"})).findByText("Version 0");
+ expect(m.history).toHaveBeenCalledExactlyOnceWith(id,undefined,expect.any(AbortSignal));
+ expect(instruction).toHaveProperty("value","Keep unsent instructions");
+ expect(screen.getByRole("textbox",{name:"Context to include"})).toHaveProperty("value","Keep unsent context");
+ expect(m.create).not.toHaveBeenCalled();
+ expect(m.update).not.toHaveBeenCalled();
 });

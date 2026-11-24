@@ -44,7 +44,9 @@ describe("Get started page (/plans)", () => {
   it("states limits, the refund rule and billing disclosures", async () => {
     await renderPage();
     const text = document.body.textContent ?? "";
-    expect(text).toContain("10 counted deployments per organization each month");
+    expect(text).toContain("No V19 monthly cap on deployments through your own runner");
+    expect(text).toContain("Your CI and cloud providers bill you separately");
+    expect(text).not.toMatch(/10 counted deployments/i);
     expect(text).toContain("Unused prepaid balance is refundable on request within 30 days of purchase.");
     expect(text).toContain("A failed action is released automatically; you are not charged for it.");
     for (const line of AI_RATE_CARD.disclosures) expect(text).toContain(line);

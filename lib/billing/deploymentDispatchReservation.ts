@@ -3,7 +3,6 @@ import { publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
 import { lockPublicOrganization, type PublicSql } from "./publicBillingStore";
 import type { PublicPlanId } from "./publicPlanCatalog";
-import { monthlyDeploymentLimitFor, DESIGN_PARTNER_DEPLOYMENT_OVERRIDES, type DeploymentQuotaOverrides } from "./deploymentAllowance";
 import { billingTierToPublicPlan } from "./deploymentQuota";
 import type { DeploymentExecutionRow } from "@/lib/releaseops/deploymentExecutionResponder";
 
@@ -30,8 +29,6 @@ interface DeploymentReservationTransaction {
   };
   deploymentExecution: {
     findUnique(args: { where: { organizationId_idempotencyKey: { organizationId: string; idempotencyKey: string } } }): Promise<ReservationRow | null>;
-    deleteMany(args: { where: { organizationId: string; status: string; createdAt: { lt: Date } } }): Promise<{ count: number }>;
-    count(args: { where: { organizationId: string; createdAt: { gte: Date; lt: Date } } }): Promise<number>;
     create(args: { data: DeploymentReservationInput & { status: "reserved" } }): Promise<ReservationRow>;
   };
 }
@@ -52,25 +49,12 @@ export interface DeploymentReservationRepo extends DeploymentReservationTransact
 
 export type DeploymentReservationResult =
   | { ok: true; reservation: ReservationRow; reused: boolean; planId: PublicPlanId | null; used: number | null; limit: number | null }
-  | { ok: false; error: "deployment_quota_exhausted" | "deployment_quota_unavailable" | "deployment_already_in_progress" | "idempotency_key_conflict"; limit?: number | null; used?: number };
+  | { ok: false; error: "deployment_quota_unavailable" | "deployment_already_in_progress" | "idempotency_key_conflict" };
 
-function monthRange(now: Date) {
-  return {
-    gte: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
-    lt: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)),
-  };
-}
-
-/**
- * Atomically claims an external deployment and one monthly allowance slot.
- * Serializable isolation prevents two concurrent requests from both seeing
- * the final available slot. A stable key makes client and agent retries safe.
- */
+/** Claims one external dispatch under a stable key before invoking the provider. */
 export async function reserveDeploymentDispatch(
   repo: DeploymentReservationRepo,
   input: DeploymentReservationInput,
-  now = new Date(),
-  overrides: DeploymentQuotaOverrides = DESIGN_PARTNER_DEPLOYMENT_OVERRIDES,
 ): Promise<DeploymentReservationResult> {
   if (!input.idempotencyKey || input.idempotencyKey.length > 200) {
     return { ok: false, error: "deployment_quota_unavailable" };
@@ -99,29 +83,17 @@ export async function reserveDeploymentDispatch(
         const publicPlan=await readPublicEntitlementSnapshot(sql,input.organizationId,configuredPublicBillingIdentity(),decisionNow);
         if(publicPlan){
           if(!publicPlan.usable)return {ok:false as const,error:"deployment_quota_unavailable" as const};
-          const used=await tx.deploymentExecution.count({where:{organizationId:input.organizationId,createdAt:monthRange(decisionNow)}});
-          if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
-          const limit=monthlyDeploymentLimitFor(input.organizationId, overrides);
-          if(used>=limit)return {ok:false as const,error:"deployment_quota_exhausted" as const,used,limit};
           const reservation=await tx.deploymentExecution.create({data:{...input,status:"reserved"}});
-          return {ok:true as const,reservation,reused:false,planId:publicPlan.planId,used,limit};
+          return {ok:true as const,reservation,reused:false,planId:publicPlan.planId,used:null,limit:null};
         }
       }
       // A stale reservation can represent an accepted provider request whose
-      // receipt could not be stored. Never free its quota or idempotency key
+      // receipt could not be stored. Never release its idempotency key
       // merely because time elapsed; reconcile the external outcome first.
       const billing = await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } });
       const planId = billingTierToPublicPlan(billing?.tier, billing?.status);
-      // Every organization: 10 counted deployments per month or its
-      // design-partner override; plans no longer change the number.
-      const limit = monthlyDeploymentLimitFor(input.organizationId, overrides);
-      const used = await tx.deploymentExecution.count({ where: { organizationId: input.organizationId, createdAt: monthRange(now) } });
-      if (!Number.isSafeInteger(used) || used < 0) throw Error("deployment_count_unavailable");
-      if (used >= limit) {
-        return { ok: false as const, error: "deployment_quota_exhausted" as const, used, limit };
-      }
       const reservation = await tx.deploymentExecution.create({ data: { ...input, status: "reserved" } });
-      return { ok: true as const, reservation, reused: false, planId, used, limit };
+      return { ok: true as const, reservation, reused: false, planId, used: null, limit: null };
     }, { isolationLevel: "Serializable" });
   } catch {
     return { ok: false, error: "deployment_quota_unavailable" };

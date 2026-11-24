@@ -61,10 +61,11 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
     async function organizationLock(tx:ReleaseOperationPlanTransaction,scope:ProviderMergeScope){await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(scope.organizationId)}))`}
     async function approval(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, planId: string, executionId?: string) { const read = deps.readProviderApproval; if (typeof read !== 'function')
         return refuse('approval_unavailable'); return approvalSchema.parse(await read(tx, scope, planId, executionId)); }
-    async function load(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, execution: string) {
+    async function loadRecord(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, execution: string, shared = false) {
         if (!/^release_merge_provider_[a-f0-9]{64}$/.test(execution))
             refuse();
-        const rows = await tx.$queryRaw<ReleaseOperationPlanRow[]> `SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${execution} AND "organizationId"=${scope.organizationId} AND "workflowKind"=${RELEASE_PROVIDER_MERGE_KIND} FOR UPDATE`;
+        const rows = shared ? await tx.$queryRaw<ReleaseOperationPlanRow[]> `SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${execution} AND "organizationId"=${scope.organizationId} AND "workflowKind"=${RELEASE_PROVIDER_MERGE_KIND} FOR SHARE`
+            : await tx.$queryRaw<ReleaseOperationPlanRow[]> `SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${execution} AND "organizationId"=${scope.organizationId} AND "workflowKind"=${RELEASE_PROVIDER_MERGE_KIND} FOR UPDATE`;
         if (rows.length !== 1)
             refuse();
         const row = rows[0], s = snapshot(row);
@@ -73,7 +74,10 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         const events = await tx.durableAgentWorkflowEvent.findMany({ where: { workflowRunId: row.id, organizationId: scope.organizationId }, orderBy: { sequence: 'asc' }, take: 4 });
         if (events.length !== row.version + 1 || events.some((e, i) => e.workflowRunId !== row.id || e.organizationId !== scope.organizationId || e.sequence !== i || e.eventType !== 'release_merge_provider.' + (i === 0 ? 'prepared' : i === 1 && s.state !== 'cancelled' ? 'dispatching' : s.state) || e.actorId !== scope.actorUserId || !Number.isFinite(e.occurredAt.getTime())))
             refuse();
-        return row;
+        return {row, events};
+    }
+    async function load(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, execution: string) {
+        return (await loadRecord(tx, scope, execution)).row;
     }
     async function event(tx: ReleaseOperationPlanTransaction, row: ReleaseOperationPlanRow, state: ProviderMergeState) { await tx.durableAgentWorkflowEvent.create({ data: { workflowRunId: row.id, organizationId: row.organizationId, sequence: row.version, eventType: 'release_merge_provider.' + state, actorKind: 'user', actorId: row.requestedByUserId, detailJson: { mode:'provider' }, occurredAt: now() } }); }
     async function live(tx: ReleaseOperationPlanTransaction, binding: Binding, lease?: Date) { const p = planInput(binding), deadline = new Date(Math.min(Date.parse(p.deadlineAt), Date.parse(binding.approval.expiresAt), lease?.getTime() ?? Infinity)); const start = new Date(p.plan.window.startUtc); if (now() < start || now() >= deadline)
@@ -216,6 +220,29 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
             await current(tx,scope,s.binding);
             await live(tx, s.binding, row.leaseExpiresAt!);
         } return dto(updated); }); },
+        async getHistory(rawScope: ProviderMergeScope, execution: string, expectedPlanInput: unknown) {
+            const scope = scopeSchema.parse(rawScope);
+            return repo.$transaction(async tx => {
+                const {row, events} = await loadRecord(tx, scope, execution, true);
+                const {binding} = snapshot(row);
+                const {plan} = planInput(binding);
+                if (sha256ContentHash(binding.planInput) !== sha256ContentHash(expectedPlanInput)
+                    || events.some((event, index) => event.actorKind !== 'user'
+                        || sha256ContentHash(event.detailJson) !== sha256ContentHash({mode:'provider'})
+                        || event.occurredAt < (index ? events[index - 1].occurredAt : row.createdAt))
+                    || events[events.length - 1].occurredAt < row.updatedAt) refuse();
+                await authority(tx, scope, binding);
+                const releases = await tx.$queryRaw<Array<{id:string; organizationId:string; version:number; requesterUserId:string; intakeJson:unknown}>>`
+                    SELECT "id","organizationId","version","requesterUserId","intakeJson" FROM "TauriDeploymentRequest"
+                    WHERE "id"=${plan.requestId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
+                const release = releases[0];
+                if (releases.length !== 1 || release.id !== plan.requestId || release.organizationId !== scope.organizationId
+                    || release.version !== plan.requestVersion || release.requesterUserId !== binding.requesterUserId
+                    || sha256ContentHash({requestVersion:release.version,intake:release.intakeJson}) !== plan.intakeDigest) refuse();
+                await authority(tx, scope, binding);
+                return events.map(event => ({type:event.eventType.slice('release_merge_provider.'.length), at:event.occurredAt.toISOString()}));
+            });
+        },
         async get(rawScope: ProviderMergeScope, execution: string) { const scope=scopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const row=await load(tx,scope,execution),s=snapshot(row);await authority(tx,scope,s.binding);const result=dto(row);await authority(tx,scope,s.binding);return result}); },
         async recover(rawScope: ProviderMergeScope, execution: string, expectedVersion?:number) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); if(expectedVersion!==undefined&&(!Number.isSafeInteger(expectedVersion)||expectedVersion!==row.version))refuse('provider_merge_refresh_required');await authority(tx, scope, s.binding); if (s.state === 'dispatching' && row.leaseExpiresAt!.getTime() <= now().getTime())
             {const updated=await change(tx,row,'unknown',{leaseOwner:null,leaseExpiresAt:null});await authority(tx,scope,s.binding);return dto(updated)}await authority(tx,scope,s.binding);return dto(row); }); },

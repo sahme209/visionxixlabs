@@ -37,3 +37,14 @@ it('keeps unavailable providers out of operator setup guides and does not start 
  expect(screen.queryByRole('button',{name:'Setup guide ↗'})).toBeNull();
  fireEvent.click(slack);expect(f.start).not.toHaveBeenCalled();expect(open).not.toHaveBeenCalled();
 });
+
+it('withholds GitHub consent while its recorded status is unavailable',async()=>{
+ f.status.mockResolvedValueOnce(status('unavailable'));
+ await show();
+ await screen.findByText(/The saved GitHub App status could not be verified/);
+ expect(screen.queryByRole('button',{name:'Connect ↗'})).toBeNull();
+ expect((screen.getByRole('button',{name:'Status unavailable'})as HTMLButtonElement).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'Refresh verified status'}));
+ expect(await screen.findByRole('button',{name:'Connect ↗'})).toBeTruthy();
+ expect(f.start).not.toHaveBeenCalled();expect(open).not.toHaveBeenCalled();
+});

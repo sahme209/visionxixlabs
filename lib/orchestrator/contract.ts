@@ -11,7 +11,7 @@
  */
 
 export const ORCHESTRATOR_SCHEMA = "axiom.orchestrator/1" as const;
-export const ENGINE_KINDS = ["airflow", "prefect", "dagster", "argo_workflows"] as const;
+export const ENGINE_KINDS = Object.freeze(["airflow", "prefect", "dagster", "argo_workflows"] as const);
 export type EngineKind = (typeof ENGINE_KINDS)[number];
 
 /** Normalized engine observation states (design §4). Axiom ledger states are deliberately absent. */
@@ -24,36 +24,43 @@ export type OrchestratorError = (typeof ORCHESTRATOR_ERRORS)[number];
 
 export type Support = "supported" | "unsupported";
 export interface CapabilityProfile {
-  schemaVersion: typeof ORCHESTRATOR_SCHEMA;
-  engineKind: EngineKind;
-  profileVersion: string;
-  capabilities: {
+  readonly schemaVersion: typeof ORCHESTRATOR_SCHEMA;
+  readonly engineKind: EngineKind;
+  readonly profileVersion: string;
+  readonly capabilities: Readonly<{
     listDefinitions: Support; status: Support; taskObservation: Support; events: Support;
     start: Support; cancel: Support; retryAssessment: Support;
-  };
+  }>;
   /** Bounds the adapter honours on every observation. */
-  observationLimits: { maxEntries: number; firstPageOnly: boolean };
+  readonly observationLimits: Readonly<{ maxEntries: number; firstPageOnly: boolean }>;
   /** Plain statements of what this profile does not establish. */
-  limits: readonly string[];
+  readonly limits: readonly string[];
 }
 
 const READ_ONLY_LIMITS = ["Observation only: no submission, cancellation or retry is implemented for this engine.", "A capability never implies Governance coverage."];
 
-/** Reviewed, server-owned profiles. Not request-supplied. */
+function freezeProfile(profile: CapabilityProfile): CapabilityProfile {
+  Object.freeze(profile.capabilities);
+  Object.freeze(profile.observationLimits);
+  Object.freeze(profile.limits);
+  return Object.freeze(profile);
+}
+
+/** Reviewed, server-owned profiles. Their limits also hold for returned references. */
 export const CAPABILITY_PROFILES: Readonly<Record<EngineKind, CapabilityProfile>> = Object.freeze({
-  airflow: { schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "airflow", profileVersion: "airflow-v2-observe-1",
+  airflow: freezeProfile({ schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "airflow", profileVersion: "airflow-v2-observe-1",
     capabilities: { listDefinitions: "supported", status: "supported", taskObservation: "supported", events: "unsupported", start: "unsupported", cancel: "unsupported", retryAssessment: "unsupported" },
     observationLimits: { maxEntries: 20, firstPageOnly: true },
-    limits: ["Existing Airflow triggers stay on their current reviewed path and are not exposed through this contract yet.", "The inspected Airflow client exposes no generic cancel.", ...READ_ONLY_LIMITS.slice(1)] },
-  prefect: { schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "prefect", profileVersion: "prefect-observe-1",
+    limits: ["Existing Airflow triggers stay on their current reviewed path and are not exposed through this contract yet.", "The inspected Airflow client exposes no generic cancel.", ...READ_ONLY_LIMITS.slice(1)] }),
+  prefect: freezeProfile({ schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "prefect", profileVersion: "prefect-observe-1",
     capabilities: { listDefinitions: "supported", status: "supported", taskObservation: "supported", events: "unsupported", start: "unsupported", cancel: "unsupported", retryAssessment: "unsupported" },
-    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: READ_ONLY_LIMITS },
-  dagster: { schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "dagster", profileVersion: "dagster-observe-1",
+    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: READ_ONLY_LIMITS }),
+  dagster: freezeProfile({ schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "dagster", profileVersion: "dagster-observe-1",
     capabilities: { listDefinitions: "supported", status: "supported", taskObservation: "unsupported", events: "unsupported", start: "unsupported", cancel: "unsupported", retryAssessment: "unsupported" },
-    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: READ_ONLY_LIMITS },
-  argo_workflows: { schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "argo_workflows", profileVersion: "argo-observe-1",
+    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: READ_ONLY_LIMITS }),
+  argo_workflows: freezeProfile({ schemaVersion: ORCHESTRATOR_SCHEMA, engineKind: "argo_workflows", profileVersion: "argo-observe-1",
     capabilities: { listDefinitions: "supported", status: "supported", taskObservation: "unsupported", events: "unsupported", start: "unsupported", cancel: "unsupported", retryAssessment: "unsupported" },
-    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: ["Scoped to one namespace.", ...READ_ONLY_LIMITS] },
+    observationLimits: { maxEntries: 20, firstPageOnly: true }, limits: ["Scoped to one namespace.", ...READ_ONLY_LIMITS] }),
 });
 
 /** Native state vocabularies per engine → normalized. Anything not listed is `unknown` (never a guessed terminal). */
@@ -69,7 +76,7 @@ export interface Observation { engineKind: EngineKind; nativeState: string; stat
 /** Normalizes one native state. Keeps the native value so nothing is lost. */
 export function normalizeState(engine: EngineKind, nativeState: unknown, observedAt: Date, complete = false): Observation {
   const native = typeof nativeState === "string" ? nativeState.slice(0, 80) : "";
-  return { engineKind: engine, nativeState: native, state: NATIVE[engine][native] ?? "unknown", observedAt: observedAt.toISOString(), complete };
+  return { engineKind: engine, nativeState: native, state: Object.hasOwn(NATIVE[engine], native) ? NATIVE[engine][native] : "unknown", observedAt: observedAt.toISOString(), complete };
 }
 
 export type CapabilityCheck = { ok: true; profile: CapabilityProfile } | { ok: false; error: OrchestratorError; detail: string };

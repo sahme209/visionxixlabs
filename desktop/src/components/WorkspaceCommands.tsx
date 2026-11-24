@@ -3,17 +3,18 @@ import type {CustomerView} from "../App";
 const COMMANDS: Array<{view: CustomerView; label: string; keywords: string}> = [
   {view: "agent", label: "Open Agent", keywords: "chat conversation assistant"},
   {view: "repository-workspace", label: "Open Repositories", keywords: "github repository git files editor changes diff worktree"},
-  {view: "deployment-requests", label: "Open Releases", keywords: "release workspace deploy approvals recovery"},
+  {view: "deployment-requests", label: "Open Deployments", keywords: "release workspace deploy approvals recovery"},
+  {view: "tickets", label: "Open Tickets", keywords: "incident case change tickets"},
   {view: "airflow-automation", label: "Open Batches", keywords: "airflow automation batch dags workflows"},
-  {view: "plugins-skills", label: "Open Apps & skills", keywords: "apps plugins skills connectors integrations outlook capabilities customization MCP"},
+  {view: "plugins-skills", label: "Open Apps & Skills", keywords: "apps plugins skills connectors integrations outlook capabilities customization MCP"},
   {view: "docs", label: "Open documentation", keywords: "help guidance"},
-  {view: "axiom-bot", label: "Open V19 Bot", keywords: "task draft automation"},
+  {view: "axiom-bot", label: "Open Saved Tasks", keywords: "v19 bot axiom bot task draft automation"},
   {view: "settings", label: "Open settings", keywords: "preferences appearance account billing models permissions"},
 ];
 const DESCRIPTIONS:Record<CustomerView,string>={
  agent:"Research, code and review", "axiom-bot":"Saved tasks and reviewed app actions",
  "repository-workspace":"Files, diffs and repository sync", "deployment-requests":"Scope, approvals and delivery evidence",
- "airflow-automation":"Airflow runs and batch operations", "plugins-skills":"Connections and reusable skills",
+ tickets:"Recorded deployment incidents and change tickets", "airflow-automation":"Airflow runs and batch operations", "plugins-skills":"Connections and reusable skills",
  docs:"Guides and operating references", settings:"Account, models and preferences",
 };
 export function WorkspaceCommands({open, onOpenChange, onNavigate}: {open: boolean; onOpenChange: (open: boolean) => void; onNavigate: (view: CustomerView) => void}) {
@@ -22,7 +23,13 @@ export function WorkspaceCommands({open, onOpenChange, onNavigate}: {open: boole
   const results = COMMANDS.filter(command => `${command.label} ${command.keywords}`.toLowerCase().includes(query.trim().toLowerCase()));
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey && !event.isComposing && event.keyCode !== 229 && event.key.toLowerCase() === "p") {event.preventDefault(); onOpenChange(!open);}
+      const key = event.key.toLowerCase();
+      const commandShortcut = (!event.shiftKey && key === "k") || (event.shiftKey && key === "p");
+      if ((event.metaKey || event.ctrlKey) && commandShortcut && !event.altKey && !event.isComposing && event.keyCode !== 229) {
+        if (!open && document.activeElement?.closest('[aria-modal="true"]')) return;
+        event.preventDefault();
+        onOpenChange(!open);
+      }
     };
     window.addEventListener("keydown", shortcut); return () => window.removeEventListener("keydown", shortcut);
   }, [open, onOpenChange]);

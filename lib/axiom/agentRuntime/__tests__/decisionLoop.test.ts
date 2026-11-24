@@ -33,6 +33,42 @@ describe("runDecisionLoop", () => {
     });
   });
 
+  it.each(["read_github_file", "trigger_aws_deploy", "list_deployment_executions"])(
+    "rejects %s outside the intersection of workspace policy and the explicit skill ceiling",
+    async toolName => {
+      const extract = vi.fn(async () => ({ action: "call_tool", toolName, args: {}, message: "Requested operation" }));
+      mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+      const executeReadOnlyTool = vi.fn(noopReadOnly);
+      const result = await runDecisionLoop({
+        organizationId: "o", userId: "actor", correlationId: "history-scope", transcript: [],
+        operationMode: "inspect",
+        inspectionToolNames: ["list_environments", "list_deployment_executions", "trigger_aws_deploy"],
+        executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
+      });
+      expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
+      expect(executeReadOnlyTool).not.toHaveBeenCalled();
+    },
+  );
+
+  it("reads an exact workspace environment and its recorded outcomes when policy allows both tools", async () => {
+    const tools = ["list_environments", "list_deployment_executions"];
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: tools });
+    const extract = vi.fn()
+      .mockResolvedValueOnce({ action: "call_tool", toolName: tools[1], args: {environmentId: "env_staging"}, message: "Read staging outcomes" })
+      .mockResolvedValueOnce({ action: "respond", message: "Recorded execution review complete." });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const executeReadOnlyTool = vi.fn()
+      .mockResolvedValueOnce({ok: true, result: [{id: "env_staging", name: "Staging"}]})
+      .mockResolvedValueOnce({ok: true, result: [{id: "execution_1", conclusion: "success"}]});
+    const result = await runDecisionLoop({
+      organizationId: "o", userId: "actor", correlationId: "history-success", transcript: [],
+      operationMode: "inspect", inspectionToolNames: tools, executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
+      initialToolCall: {toolName: tools[0], args: {}, message: "Locate staging"},
+    });
+    expect(result).toMatchObject({kind: "final", message: "Recorded execution review complete."});
+    expect(executeReadOnlyTool.mock.calls).toEqual([[tools[0], {}], [tools[1], {environmentId: "env_staging"}]]);
+  });
+
   it("bounds every model transcript while preserving latest intent and selected scope across tool steps",async()=>{
     const prompts:string[]=[];
     const extract=vi.fn(async(text:string)=>{prompts.push(text);return prompts.length===1?{action:"call_tool",toolName:"list_environments",args:{},message:"Read recorded environments"}:{action:"respond",message:"Reviewed partial evidence"}});

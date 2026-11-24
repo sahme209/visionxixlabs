@@ -8,3 +8,19 @@ export const parseReleaseProviderMergeDto=(v:unknown)=>releaseProviderMergeDtoSc
 export const releaseProviderMergeOperationResponseSchema=z.object({operation:releaseProviderMergeDtoSchema.nullable(),providerExecutionAvailable:z.literal(false)}).strict();
 export type ProviderMergeOperationResponse=z.infer<typeof releaseProviderMergeOperationResponseSchema>;
 export const parseReleaseProviderMergeOperationResponse=(v:unknown)=>releaseProviderMergeOperationResponseSchema.parse(v);
+
+const mergeEvent = z.object({type: releaseProviderMergeDtoSchema.shape.state, at: z.string().datetime()}).strict();
+export const providerMergeHistorySchema = z.object({
+  requestId: z.string().regex(/^[A-Za-z0-9_-]{1,160}$/),
+  requestVersion: z.number().int().positive().max(2147483647),
+  planId: z.string().regex(/^release_plan_[a-f0-9]{64}$/),
+  planDigest: z.string().regex(/^[a-f0-9]{64}$/),
+  events: z.array(mergeEvent).max(3),
+}).strict().refine(({events}) => {
+  if (!events.length) return true;
+  if (events[0].type !== 'prepared' || events.some((event, index) => index > 0 && Date.parse(event.at) < Date.parse(events[index - 1].at))) return false;
+  if (events.length === 1) return true;
+  return events[1].type === 'cancelled' ? events.length === 2
+    : events[1].type === 'dispatching' && (events.length === 2 || ['confirmed', 'unknown', 'refused'].includes(events[2].type));
+});
+export type ProviderMergeHistory = z.infer<typeof providerMergeHistorySchema>;

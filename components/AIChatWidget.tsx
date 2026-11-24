@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
+import { containsSupportSecret, SUPPORT_SECRET_NOTICE } from "@/lib/support/secretQuestion";
 import { classifySupportAction, SUPPORT_ACTION_INFO, type SupportAction } from "@/lib/support/supportActions";
 
 interface Message {
@@ -34,13 +35,26 @@ interface Message {
 
 const MSG_KEY = "visionxix-ai-widget-messages";
 
+const REMOVED_SECRET = "[removed: looked like a secret]";
+
+function sanitizeMessage(message: Message): Message {
+  const content = containsSupportSecret(message.content) ? REMOVED_SECRET : message.content;
+  const question = typeof message.question === "string" && !containsSupportSecret(message.question) ? message.question : undefined;
+  return { ...message, content, question };
+}
+
 function loadMessages(): Message[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(MSG_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as { id: string; role: "user" | "assistant"; content: string; timestamp: string; sources?: { title: string; href: string }[] }[];
-    return parsed.slice(-30).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+    const parsed = JSON.parse(raw) as (Omit<Message, "timestamp"> & { timestamp: string })[];
+    return parsed.slice(-30).flatMap(m => {
+      if (!m || typeof m.content !== "string") return [];
+      const timestamp = new Date(m.timestamp);
+      if (!Number.isFinite(timestamp.getTime())) return [];
+      return [sanitizeMessage({ ...m, timestamp })];
+    });
   } catch {
     return [];
   }
@@ -49,7 +63,7 @@ function loadMessages(): Message[] {
 function saveMessages(msgs: Message[]) {
   if (typeof window === "undefined") return;
   try {
-    const toSave = msgs.slice(-30).map((m) => ({ ...m, timestamp: m.timestamp.toISOString() }));
+    const toSave = msgs.slice(-30).map((m) => ({ ...sanitizeMessage(m), timestamp: m.timestamp.toISOString() }));
     localStorage.setItem(MSG_KEY, JSON.stringify(toSave));
   } catch {}
 }
@@ -61,6 +75,14 @@ const SUGGESTIONS = [
   "Are credentials stored?",
 ];
 
+function focusGuideHeading(fragment: string) {
+  const section = document.getElementById(fragment);
+  if (!section) return;
+  const target = section.querySelector<HTMLElement>("h1,h2,h3,h4,h5,h6") ?? section;
+  if (!target.hasAttribute("tabindex")) target.tabIndex = -1;
+  target.focus({ preventScroll: true });
+}
+
 export default function AIChatWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -70,6 +92,9 @@ export default function AIChatWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const pendingGuide = useRef<{ path: string; fragment: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -81,8 +106,33 @@ export default function AIChatWidget() {
     if (mounted && messages.length > 0) saveMessages(messages);
   }, [mounted, messages]);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+    if (!open || !scrollRef.current) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: reducedMotion ? "instant" : "smooth" });
+  }, [open, messages]);
+  useEffect(() => {
+    if (open) titleRef.current?.focus({ preventScroll: true });
+  }, [open]);
+
+  useEffect(() => {
+    const guide = pendingGuide.current;
+    pendingGuide.current = null;
+    if (guide?.path === pathname && window.location.hash === `#${guide.fragment}`) focusGuideHeading(guide.fragment);
+  }, [pathname]);
+
+  function openCitedGuide(href: string) {
+    const match = /^(\/docs(?:\/[a-z0-9-]+)*)#([a-z0-9-]+)$/.exec(href);
+    if (!match) return;
+    const [, path, fragment] = match;
+    if (path === pathname) focusGuideHeading(fragment);
+    else pendingGuide.current = { path, fragment };
+    setOpen(false);
+  }
+
+  function closeChat() {
+    setOpen(false);
+    launcherRef.current?.focus({ preventScroll: true });
+  }
 
   if (pathname?.startsWith("/operator/onboarding")) return null;
   if (["/dashboard", "/control", "/account", "/auth"].some(prefix => pathname?.startsWith(prefix))) return null;
@@ -93,12 +143,25 @@ export default function AIChatWidget() {
 
     setInput("");
     setError(null);
+    const hasSecret = containsSupportSecret(text);
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: "user",
-      content: text,
+      content: hasSecret ? REMOVED_SECRET : text,
       timestamp: new Date(),
     };
+    if (hasSecret) {
+      const notice: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: SUPPORT_SECRET_NOTICE,
+        timestamp: new Date(),
+        sources: [{ title: "Security", href: "/security" }],
+        mode: "grounded",
+      };
+      setMessages((prev) => [...prev, userMsg, notice]);
+      return;
+    }
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
@@ -116,7 +179,7 @@ export default function AIChatWidget() {
         return;
       }
       // Never keep a message that looked like a secret, not even in this browser.
-      if (data.guard === "secret_pasted") setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, content: "[removed: looked like a secret]" } : m)));
+      if (data.guard === "secret_pasted") setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, content: REMOVED_SECRET } : m)));
       // Signed in? Questions about this workspace get a read-only answer from it.
       // Anonymous visitors get 401 before any data is read; secrets never go further.
       if (data.guard !== "secret_pasted") {
@@ -162,6 +225,7 @@ export default function AIChatWidget() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -175,8 +239,13 @@ export default function AIChatWidget() {
   return (
     <>
       <button
+        type="button"
+        ref={launcherRef}
+        tabIndex={open ? -1 : 0}
         onClick={() => setOpen(true)}
         aria-label="Open V19 Assistant"
+        aria-haspopup="dialog"
+        aria-expanded={open}
         className="fixed bottom-6 right-6 z-9998 hidden min-h-11 items-center gap-2.5 rounded-full border border-white/8 bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/16 hover:bg-brand-ink-card hover:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-coral/50 md:flex"
       >
         <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
@@ -190,7 +259,13 @@ export default function AIChatWidget() {
         <div
           className="fixed right-6 left-auto w-[420px] z-9999 hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
-          aria-label="Ask V19 support chat"
+          aria-labelledby="v19-assistant-title"
+          onKeyDown={(event) => {
+            if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+            if (event.key !== "Escape" || event.defaultPrevented) return;
+            event.preventDefault();
+            closeChat();
+          }}
         >
           <div className="flex items-center justify-between border-b border-white/6 bg-zinc-600 px-4 py-3">
             <div className="flex items-center gap-2">
@@ -198,12 +273,13 @@ export default function AIChatWidget() {
                 <SparklesIcon className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-white">V19 Assistant</h2>
+                <h2 id="v19-assistant-title" ref={titleRef} tabIndex={-1} className="text-sm font-semibold text-white">V19 Assistant</h2>
                 <p className="text-xs text-white/90">Ask about cloud operations</p>
               </div>
             </div>
             <button
-              onClick={() => setOpen(false)}
+              type="button"
+              onClick={closeChat}
               aria-label="Close chat"
               className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white"
             >
@@ -213,6 +289,9 @@ export default function AIChatWidget() {
 
           <div
             ref={scrollRef}
+            role="log"
+            aria-label="Conversation"
+            tabIndex={0}
             className="flex max-h-[320px] min-h-[240px] flex-1 flex-col overflow-y-auto p-4 bg-white/2"
           >
             {messages.length === 0 ? (
@@ -227,7 +306,7 @@ export default function AIChatWidget() {
                     <button
                       key={s}
                       onClick={() => setInput(s)}
-                      className="rounded-lg border border-white/6 bg-white/2 px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-zinc-400 hover:text-zinc-600"
+                      className="rounded-lg border border-white/6 bg-white/2 px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-zinc-400 hover:text-zinc-100 focus-visible:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300"
                     >
                       {s}
                     </button>
@@ -271,7 +350,7 @@ export default function AIChatWidget() {
                       )}
                       {m.role === "assistant" && m.sources && m.sources.length > 0 && (
                         <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/6 pt-2 text-[11px]">
-                          {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
+                          {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} onNavigate={() => openCitedGuide(src.href)} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
                         </ul>
                       )}
                     </div>
@@ -293,7 +372,7 @@ export default function AIChatWidget() {
           <div className="border-t border-white/6 px-4 py-2">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-600"
+              className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-200"
             >
               <ChatBubbleBottomCenterTextIcon className="h-4 w-4" />
               Talk to support
@@ -301,7 +380,7 @@ export default function AIChatWidget() {
           </div>
 
           <div className="border-t border-white/6 p-3">
-            {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
+            {error && <p role="alert" className="mb-2 text-xs text-red-300">{error}</p>}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -309,8 +388,9 @@ export default function AIChatWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about setup, security, pricing…"
-                disabled={loading}
-                className="flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300 disabled:opacity-60"
+                aria-label="Ask V19 a question"
+                readOnly={loading}
+                className="flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300"
               />
               <button
                 onClick={sendMessage}
@@ -323,7 +403,7 @@ export default function AIChatWidget() {
             </div>
             <Link
               href="/product"
-              className="mt-2 block text-center text-[10px] text-slate-500 hover:text-zinc-600"
+              className="mt-2 block text-center text-[10px] text-zinc-400 hover:text-zinc-200"
             >
               Learn about V19
             </Link>
@@ -334,16 +414,34 @@ export default function AIChatWidget() {
   );
 }
 
-/** Sends a role request to workspace admins. It never grants anything; admins decide on Members. */
+/** Records a role request for workspace admins to review in Members. */
 function AccessRequestForm() {
-  const [role, setRole] = useState("operator"); const [reason, setReason] = useState(""); const [state, setState] = useState<string | null>(null); const [busy, setBusy] = useState(false);
+  const [role, setRole] = useState("operator");
+  const [reason, setReason] = useState("");
+  const [state, setState] = useState<{ kind: "recorded"; message: string; referenceId?: string } | { kind: "error"; message: string } | null>(null);
+  const [busy, setBusy] = useState(false);
   async function send() {
     setBusy(true);
-    const r = await fetch("/api/support/access-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestedRole: role, reason }) }).then((x) => x.json()).catch(() => null);
-    setState(r?.ok ? r.message : r?.error === "already_has_role" ? "You already have that role or a higher one." : r?.error === "reason_required" ? "Add a short reason." : "Could not send the request.");
-    setBusy(false);
+    try {
+      const response = await fetch("/api/support/access-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestedRole: role, reason }) });
+      const r = await response.json();
+      if (response.ok && r?.ok === true) {
+        setState({ kind: "recorded", message: r.message, referenceId: r.referenceId });
+      } else {
+        setState({ kind: "error", message: r?.error === "already_has_role" ? "You already have that role or a higher one."
+          : r?.error === "reason_required" ? "Add a short reason." : "Could not confirm that the request was recorded." });
+      }
+    } catch {
+      setState({ kind: "error", message: "Could not confirm that the request was recorded." });
+    } finally {
+      setBusy(false);
+    }
   }
-  if (state && state.startsWith("Sent")) return <p role="status" className="mt-2 text-[11px] text-emerald-300">{state}</p>;
+  if (state?.kind === "recorded") return (
+    <p role="status" className="mt-2 break-words text-[11px] text-emerald-300">
+      {state.message}{state.referenceId && <span className="mt-1 block">Reference {state.referenceId}</span>}
+    </p>
+  );
   return (
     <div className="mt-2 space-y-1.5 border-t border-white/6 pt-2 text-[11px]">
       <label className="block text-zinc-400" htmlFor="ask-axiom-role">Role you need</label>
@@ -351,7 +449,7 @@ function AccessRequestForm() {
       <label className="block text-zinc-400" htmlFor="ask-axiom-reason">Why</label>
       <input id="ask-axiom-reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} className="w-full rounded-sm border border-white/10 bg-black/30 px-2 py-1" placeholder="e.g. I approve staging releases for the web team" />
       <button type="button" disabled={busy} onClick={() => void send()} className="rounded-sm bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Ask an admin</button>
-      {state && <p role="alert" className="text-rose-300">{state}</p>}
+      {state?.kind === "error" && <p role="alert" className="text-rose-300">{state.message}</p>}
     </div>
   );
 }

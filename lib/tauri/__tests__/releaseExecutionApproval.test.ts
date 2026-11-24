@@ -66,3 +66,33 @@ it('missing consumption port refuses before burning an attempt',async()=>{const 
 it('late claim authority refusal rolls back BOTH consumption and the execution attempt',async()=>{const f=approvals(),a=await f.issue();const authority=vi.fn(async()=>{if(f.rows.find(x=>x.id===a.id)?.version===1)throw Error('late authority revoked')});const store=createReleaseMergeExecutionStore(f.repo,{...f.deps,assertCurrent:authority,readExecutableApproval:f.approvalStore.readExecutableApproval,consumeExecutableApproval:f.approvalStore.consumeExecutableApproval}),prepared=await store.prepare(f.scope,f.planId);await expect(store.claim(f.scope,prepared.id)).rejects.toThrow();expect(f.rows.find(x=>x.id===a.id).version).toBe(0);expect(f.rows.find(x=>x.id===prepared.id).attemptCount).toBe(0)});
 it.each(['source','connection','window'])('stale %s remains visible and independently revocable without allowing consumption',async mode=>{const f=approvals(),a=await f.issue();if(mode==='source')f.release.version++;if(mode==='connection')f.connection.status='revoked';if(mode==='window')f.now.setTime(Date.parse('2030-01-02T02:01:00Z'));expect(await f.approvalStore.get(f.approver,{planId:f.planId,executorUserId:'executor'})).toMatchObject({id:a.id,status:'stale',canRevoke:true});expect((await f.approvalStore.revoke(f.approver,{id:a.id,expectedVersion:0,clientRequestId:'22222222-2222-4222-8222-222222222222'})).status).toBe('revoked')});
 it('never converts an authority failure into readable stale approval',async()=>{const f=approvals();await f.issue();f.release.version++;f.assertCurrent.mockRejectedValue(Error('paired session revoked'));await expect(f.approvalStore.get(f.approver,{planId:f.planId,executorUserId:'executor'})).rejects.toThrow('paired session revoked')});
+
+it('projects the recorded revocation date without exposing event actors or details', async () => {
+    const f = approvals();
+    const approval = await f.approvalStore.issue(f.approver, {planId: f.planId, expectedPlanVersion: 1,
+        executorUserId: f.release.requesterUserId, clientRequestId: '11111111-1111-4111-8111-111111111111'});
+    f.now.setMinutes(f.now.getMinutes() + 5);
+    await f.approvalStore.revoke(f.approver, {id: approval.id, expectedVersion: 0, clientRequestId: '22222222-2222-4222-8222-222222222222'});
+    const input = {requestId: f.release.id, requestVersion: 3, planId: f.planId, planDigest: approval.planDigest, executorUserId: f.release.requesterUserId};
+    const history = await f.approvalStore.getHistory(f.approver, input);
+    expect(history.events).toEqual([
+        {type: 'approved', at: approval.createdAt},
+        {type: 'revoked', at: f.now.toISOString()},
+    ]);
+    const revokedEvent = f.events.find(event => event.workflowRunId === approval.id && event.sequence === 1);
+    revokedEvent.occurredAt = new Date(Date.parse(approval.createdAt) - 1000);
+    await expect(f.approvalStore.getHistory(f.approver, input)).rejects.toThrow();
+    revokedEvent.occurredAt = new Date(f.now);
+    f.release.version++;
+    await expect(f.approvalStore.getHistory(f.approver, input)).rejects.toThrow();
+});
+
+it('rejects a corrupted stored transition and an unbound digest', async () => {
+    const f = approvals();
+    const approval = await f.approvalStore.issue(f.approver, {planId: f.planId, expectedPlanVersion: 1,
+        executorUserId: f.release.requesterUserId, clientRequestId: '11111111-1111-4111-8111-111111111111'});
+    const input = {requestId: f.release.id, requestVersion: 3, planId: f.planId, planDigest: approval.planDigest, executorUserId: f.release.requesterUserId};
+    await expect(f.approvalStore.getHistory(f.approver, {...input, planDigest: 'f'.repeat(64)})).rejects.toThrow();
+    f.events.find(event => event.workflowRunId === approval.id).actorId = 'foreign';
+    await expect(f.approvalStore.getHistory(f.approver, input)).rejects.toThrow();
+});

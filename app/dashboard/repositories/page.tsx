@@ -14,6 +14,8 @@ import {
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { GitLabConnectionPanel } from "@/components/cockpit/GitLabConnectionPanel";
+import {RepositorySyncControls} from "@/components/cockpit/RepositorySyncControls";
 
 interface ListRow {
   id: string;
@@ -90,7 +92,7 @@ export default function RepositoriesPage() {
         title={<>Every repo. <span className="text-zinc-500">One audit lens.</span></>}
         description="Inventory of repositories the platform discovers via GitHub / GitLab / Azure DevOps adapters. Drives branch validation, release-tag diffs, evidence packs."
         helps="See which repos have weak branch protection, which have open work, and which workflows last ran."
-        connectFirst="Connect a Git provider via the Connectors tab to populate this inventory."
+        connectFirst="Connect a Git provider in Connectors. Where enabled, workspace managers can register and verify GitLab read access on a tracked repository."
         engineers={["DevOps", "Release Captain", "Security"]}
         requiresApproval="Configuration edits (protection settings, PR templates) belong on the provider side."
         actions={[
@@ -148,19 +150,19 @@ export default function RepositoriesPage() {
               {data.repositories.map((r) => (
                 <div key={r.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1">
                       <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
                         {PROVIDER_LABEL[r.provider]}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{r.displayName}</p>
-                      <span className="text-[10px] font-mono text-zinc-500">default: {r.defaultBranch}</span>
+                      <span className="max-w-[38%] shrink-0 truncate text-[10px] font-mono text-zinc-500">default: {r.defaultBranch}</span>
                       {r.flavorBadge && (
                         <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                           {r.flavorBadge}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex max-w-full flex-wrap items-center gap-1.5">
                       <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${PROTECTION_CLASS[r.protectionStrength]}`}>
                         {r.protectionStrength} protection
                       </span>
@@ -179,92 +181,15 @@ export default function RepositoriesPage() {
                       )}
                     </div>
                   </div>
-                  {(r.provider === "github" || r.provider === "gitlab" || r.provider === "azuredevops") && <SyncControls repositoryId={r.id} />}
+                  {(r.provider === "github" || r.provider === "azuredevops") && <RepositorySyncControls repositoryId={r.id} />}
+                  {r.provider === "gitlab" && <GitLabConnectionPanel repositoryId={r.id}>
+                    <RepositorySyncControls repositoryId={r.id} />
+                  </GitLabConnectionPanel>}
                 </div>
               ))}
             </div>
           )}
         </>
-      )}
-    </div>
-  );
-}
-
-type SyncKind = "pull_requests" | "releases" | "workflow_runs";
-
-type SyncOutcome =
-  | { kind: "idle" }
-  | { kind: "running"; which: SyncKind }
-  | { kind: "ok"; which: SyncKind; fetched: number; upserted: number; skipped: number }
-  | { kind: "error"; which: SyncKind; message: string };
-
-function syncFailureMessage(error: unknown, hint: unknown): string {
-  switch (error) {
-    case "github_app_connection_required":
-      return "Connect the approved GitHub App from Integrations before syncing repository evidence.";
-    case "github_read_validation_required":
-      return "Open V19 and complete its read-only GitHub validation before syncing evidence.";
-    case "github_read_validation_unavailable":
-      return "GitHub validation is unavailable right now. No repository evidence was changed.";
-    default:
-      return typeof hint === "string" ? hint : typeof error === "string" ? error.replaceAll("_", " ") : "Sync could not be completed.";
-  }
-}
-
-function SyncControls({ repositoryId }: { repositoryId: string }) {
-  const [outcome, setOutcome] = useState<SyncOutcome>({ kind: "idle" });
-
-  async function trigger(which: SyncKind) {
-    setOutcome({ kind: "running", which });
-    try {
-      const res = await fetch("/api/dashboard/repository-sync", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repositoryId, kind: which }),
-      });
-      const json = await res.json();
-      if (json.ok) {
-        setOutcome({
-          kind: "ok",
-          which,
-          fetched: json.data.fetched,
-          upserted: json.data.upserted,
-          skipped: json.data.skipped,
-        });
-      } else {
-        setOutcome({ kind: "error", which, message: syncFailureMessage(json.error, json.hint) });
-      }
-    } catch (e) {
-      setOutcome({ kind: "error", which, message: e instanceof Error ? e.message : "network error" });
-    }
-  }
-
-  const isRunning = outcome.kind === "running";
-  return (
-    <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[10px] font-mono">
-      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from provider</span>
-      {(["pull_requests", "releases", "workflow_runs"] as const).map((k) => (
-        <button
-          key={k}
-          type="button"
-          disabled={isRunning}
-          onClick={() => trigger(k)}
-          className="px-2 py-1 rounded-sm border border-white/8 bg-white/2 text-zinc-300 hover:border-white/15 hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
-        >
-          {outcome.kind === "running" && outcome.which === k
-            ? "syncing…"
-            : k === "pull_requests" ? "PRs" : k === "releases" ? "Releases" : "Workflow runs"}
-        </button>
-      ))}
-      {outcome.kind === "ok" && (
-        <span className="text-emerald-300">
-          ✓ {outcome.which.replace("_", " ")} · fetched {outcome.fetched} · upserted {outcome.upserted}
-          {outcome.skipped > 0 && ` · skipped ${outcome.skipped}`}
-        </span>
-      )}
-      {outcome.kind === "error" && (
-        <span className="text-rose-300">✗ {outcome.which.replace("_", " ")} · {outcome.message}</span>
       )}
     </div>
   );

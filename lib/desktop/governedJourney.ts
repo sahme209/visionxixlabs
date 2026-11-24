@@ -14,7 +14,7 @@ export const GOVERNED_JOURNEY = [
   },
   {
     id: "govern", title: "Review deployment authority", destination: "deployment-requests",
-    cta: "Open Releases",
+    cta: "Open Deployments",
     detail: "Review the exact environment, artifact, readiness evidence and recovery plan. Obtain the required human approvals before execution. Model output, a local test pass and a GitHub connection do not grant deployment authority.",
   },
   {
@@ -28,6 +28,9 @@ export const GOVERNED_JOURNEY = [
     detail: "Inspect execution results and validation evidence before closing a request. Preserve failures and confirm rollback readiness; a recorded recovery plan is not proof that rollback ran.",
   },
 ] as const;
+export function governedJourneyStageAnchor(stage: typeof GOVERNED_JOURNEY[number]): string {
+  return `guide-stage-${stage.id}`;
+}
 export type GovernedJourneyDestination = typeof GOVERNED_JOURNEY[number]["destination"];
 export const GOVERNED_JOURNEY_AVAILABILITY =
   "This guide explains the workflow. Available actions depend on the installed version, workspace policy, connected credentials and validated adapters. A guide is not proof of end-to-end acceptance.";

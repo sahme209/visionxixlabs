@@ -22,7 +22,7 @@ beforeEach(() => {
   io.usage.mockResolvedValue({ _count: { _all: 2 }, _sum: { inputTokens: 100, outputTokens: 20, billedCents: 30 } });
   io.settled.mockResolvedValue({ _sum: { billedCents: 30 } });
   io.pending.mockResolvedValue(1);
-  io.purchases.mockImplementation(async (query) => query.select?.id ? [] : [{ sku: "credits", status: "paid", validFor: "current_month", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 }]);
+  io.purchases.mockImplementation(async (query) => query.select?.id ? [] : [{ sku: "credits", status: "paid", appliedAt: new Date("2026-10-01T00:00:00Z"), validFor: "current_month", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 }]);
   io.holds.mockResolvedValue({ _sum: { reservedCents: 0 } });
   io.quota.mockResolvedValue({ allowed: true, planId: "pro", used: 2, limit: 10, remaining: 8 });
 });
@@ -32,7 +32,7 @@ describe("canonical customer billing evidence", () => {
   it("renders actual available records and scopes every financial query to the current tenant", async () => {
     render(await Page({}));
     expect(value("Organization seats")).toBe("3 / 3");
-    expect(value("Counted deployments")).toBe("2 / 10");
+    expect(value("Deployment records this month")).toBe("2");
     expect(value("Included AI allowance remaining")).toBe("$204.70");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
@@ -56,13 +56,13 @@ describe("canonical customer billing evidence", () => {
     expect(screen.queryByText(/listed plan and paid top-ups/)).toBeNull();
     expect(screen.queryByText("$0.00 settled")).toBeNull();
     // The independently verified quota is preserved, not replaced with unknown/unlimited.
-    expect(value("Counted deployments")).toBe("2 / 10");
+    expect(value("Deployment records this month")).toBe("2");
   });
 
   it("does not turn a failed quota read into unlimited deployments or hide other available evidence", async () => {
     io.quota.mockResolvedValue({ allowed: false, planId: null, used: null, limit: null, remaining: 0, reason: "deployment_quota_unavailable" });
     render(await Page({}));
-    expect(value("Counted deployments")).toBe("Unavailable");
+    expect(value("Deployment records this month")).toBe("Unavailable");
     expect(screen.queryByText(/unlimited/)).toBeNull();
     expect(screen.getByRole("alert")).toBeTruthy();
     expect(value("Included AI allowance remaining")).toBe("$204.70");
@@ -110,17 +110,10 @@ describe("canonical customer billing evidence", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("preserves a known exhausted quota rather than treating denial as missing evidence", async () => {
-    io.quota.mockResolvedValue({ allowed: false, planId: "pro", used: 10, limit: 10, remaining: 0, reason: "deployment_quota_exhausted" });
-    render(await Page({}));
-    expect(value("Counted deployments")).toBe("10 / 10");
-    expect(screen.queryByRole("alert")).toBeNull();
-  });
-
-  it("renders unlimited only when explicitly established by a successful quota result", async () => {
+  it("shows the count without an allowance denominator", async () => {
     io.quota.mockResolvedValue({ allowed: true, planId: "enterprise", used: 3, limit: null, remaining: null });
     render(await Page({}));
-    expect(value("Counted deployments")).toBe("3 / unlimited");
+    expect(value("Deployment records this month")).toBe("3");
     expect(screen.queryByRole("alert")).toBeNull();
   });
 });
@@ -146,8 +139,8 @@ describe("current enforced AI allowance in the real server page", () => {
   });
   it("uses net current and permanent paid credits without counting refunded credits", async () => {
     io.purchases.mockImplementation(async q => q.select?.id ? [] : [
-      { sku: "current", status: "partially_refunded", validFor: "current_month", deliveredAICreditsCents: 1000, reversedAICreditsCents: 400, deliveredSeats: 0, deliveredConnectors: 0 },
-      { sku: "permanent", status: "paid", validFor: "permanent", deliveredAICreditsCents: 200, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 },
+      { sku: "current", status: "partially_refunded", appliedAt: new Date("2026-10-01T00:00:00Z"), validFor: "current_month", deliveredAICreditsCents: 1000, reversedAICreditsCents: 400, deliveredSeats: 0, deliveredConnectors: 0 },
+      { sku: "permanent", status: "paid", appliedAt: new Date("2026-10-01T00:00:00Z"), validFor: "permanent", deliveredAICreditsCents: 200, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 },
     ]);
     render(await Page({}));
     expect(value("Applied paid top-ups")).toBe("$8.00");
@@ -160,11 +153,11 @@ describe("current enforced AI allowance in the real server page", () => {
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByRole("alert")).toBeTruthy();
   });
-  it("distinguishes exhausted included allowance from overage authorization", async () => {
+  it("shows a prepaid hard stop when the included allowance is exhausted", async () => {
     io.holds.mockResolvedValue({ _sum: { reservedCents: 25000 } });
     render(await Page({}));
     expect(value("Included AI allowance remaining")).toBe("$0.00");
-    expect(screen.getByText(/Current reservation policy: metered billing/)).toBeTruthy();
+    expect(screen.getByText(/Current reservation policy: hard stop/)).toBeTruthy();
     expect(screen.getByText(/not spend authorization/)).toBeTruthy();
   });
 });
@@ -174,7 +167,7 @@ describe("isolated billing page refuses unsupported or unverified claims", () =>
     vi.stubEnv("AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME", "true");
     render(await Page({}));
     expect(io.quota).not.toHaveBeenCalled();
-    expect(value("Counted deployments")).toBe("Unavailable");
+    expect(value("Deployment records this month")).toBe("Unavailable");
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
   });
 });
@@ -202,4 +195,28 @@ it("never labels a pending ledger amount as settled debit", async () => {
   expect(value("Gateway calls")).toBe("2");
   expect(value("Input tokens")).toBe("500");
   expect(io.settled).toHaveBeenCalledWith({ where: { organizationId: "org_evidence", eventKind: "ai_invocation", billingStatus: "settled", createdAt: { gte: expect.any(Date) } }, _sum: { billedCents: true } });
+});
+
+it("distinguishes requested checkout amounts, verified payment, refund and net AI credits", async () => {
+  const createdAt = new Date();
+  const rows = [
+    { id: "pending-fixture", sku: "pending_topup", status: "pending", pricePaidCents: 1000, refundedAmountCents: 250, reversedAICreditsCents: 250, appliedAt: null },
+    { id: "failed-fixture", sku: "failed_topup", status: "failed", pricePaidCents: 2000, refundedAmountCents: 0, reversedAICreditsCents: 0, appliedAt: null },
+    { id: "expired-fixture", sku: "expired_topup", status: "expired", pricePaidCents: 3000, refundedAmountCents: 0, reversedAICreditsCents: 0, appliedAt: null },
+    { id: "paid-fixture", sku: "paid_topup", status: "paid", pricePaidCents: 4000, refundedAmountCents: 0, reversedAICreditsCents: 0, appliedAt: createdAt },
+    { id: "partial-fixture", sku: "partial_topup", status: "partially_refunded", pricePaidCents: 1000, refundedAmountCents: 250, reversedAICreditsCents: 500, appliedAt: createdAt },
+    { id: "refunded-fixture", sku: "refunded_topup", status: "refunded", pricePaidCents: 1000, refundedAmountCents: 1000, reversedAICreditsCents: 2000, appliedAt: createdAt },
+    { id: "unverified-fixture", sku: "unverified_topup", status: "partially_refunded", pricePaidCents: 5000, refundedAmountCents: 500, reversedAICreditsCents: 500, appliedAt: null },
+  ].map(row => ({ deliveredAICreditsCents: 2000, createdAt, ...row }));
+  io.purchases.mockImplementation(async query => query.select?.id ? rows : rows.filter(row => ["paid", "partially_refunded"].includes(row.status)).map(row => ({ ...row, validFor: "permanent", deliveredSeats: 0, deliveredConnectors: 0 })));
+  render(await Page({}));
+  const detail = (label: string) => screen.getByText(label).parentElement!.nextElementSibling!.textContent;
+  expect(detail("pending topup")).toBe("Checkout amount $10.00 · Payment confirmation pending");
+  expect(detail("failed topup")).toBe("Checkout amount $20.00 · No credits applied");
+  expect(detail("expired topup")).toBe("Checkout amount $30.00 · No credits applied");
+  expect(detail("paid topup")).toBe("Paid $40.00 · Credits $20.00");
+  expect(detail("partial topup")).toBe("Paid $10.00 · Refunded $2.50 · Credits $15.00");
+  expect(detail("refunded topup")).toBe("Paid $10.00 · Refunded $10.00 · Credits $0.00");
+  expect(detail("unverified topup")).toBe("Payment confirmation unavailable");
+  expect(value("Applied paid top-ups")).toBe("$35.00");
 });

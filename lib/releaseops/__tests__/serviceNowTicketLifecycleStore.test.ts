@@ -124,3 +124,16 @@ it('retains independent child approval and one attempt, and rejects executor sub
  expect((await f.store.claim(f.scope,child.id)).claimed).toBe(true);const finished=await f.store.finish(f.scope,child.id,{status:'refused'});expect(finished.attemptCount).toBe(1);expect((await f.store.claim(f.scope,child.id)).claimed).toBe(false);expect(f.rows.find(r=>r.id===f.parent.id).version).toBe(f.parent.version);
 });
 it('reads a fixed refusal for its original executor without editing parent history',async()=>{const f=await refusedAssociatedLink(),before=structuredClone(f.rows),p=await f.store.readRefusedLinkProvenance(f.scope,f.parent.id,f.parent.version);expect(p).toMatchObject({id:f.parent.id,version:f.parent.version,status:'refused',attemptCount:1,providerWritePerformed:false});expect(f.rows).toEqual(before);await expect(f.store.readRefusedLinkProvenance(f.approver,f.parent.id,f.parent.version)).rejects.toThrow();await expect(f.store.readRefusedLinkProvenance(f.scope,f.parent.id,100)).rejects.toThrow()});
+
+it.each(['provider','controlled'] as const)('projects the exact saved change only for a confirmed provider write (%s)',async mode=>{
+ const f=lifecycle(mode);
+ const a=await f.prepare();
+ const read=(version=f.candidate.releaseVersion,digest=f.candidate.sourceDigest)=>f.store.readRecordedChange(f.scope,f.candidate.releaseId,version,digest);
+ expect(await read()).toBeNull();
+ await f.approve(a);
+ await f.store.claim(f.scope,a.id);
+ await f.store.finish(f.scope,a.id,{status:'confirmed',issue});
+ expect(await read()).toBe(mode==='provider'?issue.number:null);
+ expect(await read(f.candidate.releaseVersion+1)).toBeNull();
+ expect(await read(f.candidate.releaseVersion,'e'.repeat(64))).toBeNull();
+});

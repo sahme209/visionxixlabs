@@ -4,11 +4,22 @@ function fixture(t){const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdi
  write("package.json",JSON.stringify({scripts:{build:"node scripts/check-vercel-build.mjs && prisma generate && next build"},dependencies:{"@aws-sdk/client-ecs":"fixture"}}));
  write("next.config.ts",'export default {typescript:{tsconfigPath: "tsconfig.next.json"},serverExternalPackages:["@aws-sdk/client-ecs"]};');write("tsconfig.next.json",JSON.stringify({exclude:["desktop","**/__tests__/**","**/*.test.ts","**/*.test.tsx","docs/recovery/**"]}));write("proxy.ts","export {};" );
  write("components/docs/DocsSidebar.tsx",'export const DOC_SECTIONS=[{items:[{href:"/docs"}]}];');write("app/docs/page.tsx",'export default function Page(){return <DocHeader title="Public guide" summary="First summary"/>;}');
- for(const f of ["scripts/check-vercel-build.mjs","scripts/generate-docs-heading-index.cjs"])write(f,fs.readFileSync(path.join(repo,f),"utf8"));fs.symlinkSync(path.join(repo,"node_modules"),path.join(root,"node_modules"));
+ for(const f of ["scripts/check-vercel-build.mjs","scripts/generate-docs-heading-index.cjs","scripts/support/build-docs-corpus.mjs"])write(f,fs.readFileSync(path.join(repo,f),"utf8"));fs.symlinkSync(path.join(repo,"node_modules"),path.join(root,"node_modules"));
  const generator=path.join(root,"scripts/generate-docs-heading-index.cjs");const g=spawnSync(process.execPath,[generator],{encoding:"utf8",env:{PATH:"/usr/bin:/bin"},timeout:5000});assert.equal(g.status,0,g.stderr);
+ write("lib/support/docsCorpus.json","");
+ const corpus=spawnSync(process.execPath,[path.join(root,"scripts/support/build-docs-corpus.mjs")],{encoding:"utf8",env:{PATH:"/usr/bin:/bin"},timeout:5000});assert.equal(corpus.status,0,corpus.stderr);
  function check(){return spawnSync(process.execPath,[path.join(root,"scripts/check-vercel-build.mjs")],{encoding:"utf8",env:{PATH:"/usr/bin:/bin"},timeout:5000});}return {root,write,check};}
 test("fresh public heading index passes the existing prebuild contract",t=>{const f=fixture(t),p=f.check();assert.equal(p.status,0,p.stderr);});
 for(const kind of ["changed-guide","changed-index","missing-index"])test(`prebuild refuses ${kind} without regenerating`,t=>{const f=fixture(t),index=path.join(f.root,"lib/docs/guide-heading-index.json");if(kind==="changed-guide")f.write("app/docs/page.tsx",'export default function Page(){return <DocHeader title="Public guide" summary="Second summary"/>;}');else if(kind==="changed-index"){const d=JSON.parse(fs.readFileSync(index,"utf8"));d.guides[0].fields=["tampered"];fs.writeFileSync(index,JSON.stringify(d));}else fs.unlinkSync(index);const before=fs.existsSync(index)?fs.readFileSync(index):null,p=f.check();assert.notEqual(p.status,0);assert.match(p.stderr,/heading index/i);assert.deepEqual(fs.existsSync(index)?fs.readFileSync(index):null,before);});
+test("prebuild refuses a changed support corpus without regenerating it", t => {
+ const f=fixture(t);
+ const file="lib/support/docsCorpus.json";
+ f.write(file,'{"format":"axiom.support-docs-corpus/1","sections":[{"href":"/private"}]}');
+ const checked=f.check();
+ assert.notEqual(checked.status,0);
+ assert.match(checked.stderr,/public support corpus/i);
+ assert.equal(fs.readFileSync(path.join(f.root,file),"utf8"),'{"format":"axiom.support-docs-corpus/1","sections":[{"href":"/private"}]}');
+});
 test("migration build refusal remains enforced",t=>{const f=fixture(t);f.write("package.json",JSON.stringify({scripts:{build:"prisma migrate deploy"},dependencies:{}}));const p=f.check();assert.notEqual(p.status,0);assert.match(p.stderr,/must not mutate database migration/);});
 
 test("prebuild refuses a missing archived-recovery production boundary",t=>{const f=fixture(t);f.write("tsconfig.next.json",JSON.stringify({exclude:["desktop","**/__tests__/**","**/*.test.ts","**/*.test.tsx"]}));const p=f.check();assert.notEqual(p.status,0);assert.match(p.stderr,/missing build-only exclusions: docs\/recovery\/\*\*/);});

@@ -11,7 +11,7 @@ import "server-only";
 
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
 import { loadAppEnv } from "@/lib/config/env";
-import { readTelemetryQueue } from "./telemetryWebhookReceiver";
+import {readInboundObservations} from "@/lib/observations/inboundObservationStore";
 import { extractAwsCloudWatchAlarms } from "./awsCloudWatchExtractor";
 import { extractDatadogAlertingMonitors } from "./datadogPullExtractor";
 import { extractSentryUnresolvedIssues } from "./sentryPullExtractor";
@@ -44,7 +44,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let cwLive: Awaited<ReturnType<typeof extractAwsCloudWatchAlarms>> | null = null;
   if (awsLive && env.awsCloudWatchPullEnabled) {
     try {
-      cwLive = await extractAwsCloudWatchAlarms();
+      cwLive = await extractAwsCloudWatchAlarms(input.tenantId);
     } catch {
       cwLive = null;
     }
@@ -54,7 +54,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let ddLive: Awaited<ReturnType<typeof extractDatadogAlertingMonitors>> | null = null;
   if (env.datadogPullEnabled) {
     try {
-      ddLive = await extractDatadogAlertingMonitors();
+      ddLive = await extractDatadogAlertingMonitors(input.tenantId);
     } catch {
       ddLive = null;
     }
@@ -64,7 +64,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let sentryLive: Awaited<ReturnType<typeof extractSentryUnresolvedIssues>> | null = null;
   if (env.sentryPullEnabled) {
     try {
-      sentryLive = await extractSentryUnresolvedIssues();
+      sentryLive = await extractSentryUnresolvedIssues(input.tenantId);
     } catch {
       sentryLive = null;
     }
@@ -74,7 +74,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let dynatraceLive: Awaited<ReturnType<typeof extractDynatraceProblems>> | null = null;
   if (env.dynatracePullEnabled) {
     try {
-      dynatraceLive = await extractDynatraceProblems();
+      dynatraceLive = await extractDynatraceProblems(input.tenantId);
     } catch {
       dynatraceLive = null;
     }
@@ -84,7 +84,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let newRelicLive: Awaited<ReturnType<typeof extractNewRelicIssues>> | null = null;
   if (env.newRelicPullEnabled) {
     try {
-      newRelicLive = await extractNewRelicIssues();
+      newRelicLive = await extractNewRelicIssues(input.tenantId);
     } catch {
       newRelicLive = null;
     }
@@ -94,7 +94,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let azureMonitorLive: Awaited<ReturnType<typeof extractAzureMonitorAlerts>> | null = null;
   if (env.azureInventoryExtractEnabled) {
     try {
-      azureMonitorLive = await extractAzureMonitorAlerts();
+      azureMonitorLive = await extractAzureMonitorAlerts(input.tenantId);
     } catch {
       azureMonitorLive = null;
     }
@@ -104,7 +104,7 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   let gcpMonitoringLive: Awaited<ReturnType<typeof extractGcpCloudMonitoringIncidents>> | null = null;
   if (env.gcpInventoryExtractEnabled) {
     try {
-      gcpMonitoringLive = await extractGcpCloudMonitoringIncidents();
+      gcpMonitoringLive = await extractGcpCloudMonitoringIncidents(input.tenantId);
     } catch {
       gcpMonitoringLive = null;
     }
@@ -141,10 +141,10 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
   ];
 
   // ---------------------------------------------------------------------------
-  // Drain the inbound webhook queue into the per-provider postures.
+  // Read only this workspace’s inbound webhook evidence.
   // ---------------------------------------------------------------------------
-  const inbound = readTelemetryQueue();
-  for (const sig of inbound) {
+  const inbound = await readInboundObservations(String(input.tenantId), "telemetry");
+  for (const sig of inbound.observations) {
     const target = providers.find((p) => p.provider === sig.sourceProvider);
     if (target) {
       target.signals.push(sig);
@@ -278,7 +278,8 @@ export async function buildTelemetryIngest(input: BuildTelemetryInput): Promise<
     overallSourceMode: liveCount > 0 ? (liveCount === providers.length ? "live" : "partial_live") : "preview",
     safetyContract: "telemetry_ingest_read_only",
     limitations: [
-      "Telemetry connectors are typed and ready. Per-provider SDK / webhook traversal lands in follow-up phases — until then, signal arrays stay empty (no fabricated alerts).",
+      ...(!inbound.available ? ["Inbound webhook evidence is unavailable."] : []),
+      "Inbound evidence is limited to the most recent 500 observations for this workspace. Provider delivery and source configuration determine coverage.",
       "The dispatcher (Phase 47 — closed-loop remediation) translates each TelemetrySignal into a canonical Risk Queue / Notification / Approval Packet entry.",
     ],
     safeNextAction: { label: "Open Risk Queue", href: "/dashboard/risks" },

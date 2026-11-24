@@ -3,7 +3,7 @@ import type { PrismaClient } from "@/lib/prismaClient";
 const mocks = vi.hoisted(() => ({ mail: vi.fn(), compare: vi.fn() }));
 vi.mock("../emailVerification", () => ({ sendGoogleLinkConfirmation: mocks.mail }));
 vi.mock("bcryptjs", () => ({ compare: mocks.compare }));
-import { qualifiedGoogleIdentity, GOOGLE_ISSUER } from "../googleIdentityClaims";
+import { qualifiedGoogleIdentity, GOOGLE_ISSUER, GITLAB_ISSUER } from "../googleIdentityClaims";
 import { activeGoogleLink, confirmGoogleLink, resolveGoogleIdentity, sendGoogleLinkCode, validGoogleLinkCsrf } from "../googleIdentity";
 import { googleLinkContext, googleLinkCsrf, hashGoogleLinkProof, googleLinkCookieValue } from "../googleLinkContext";
 const now = new Date("2026-11-15T18:00:00Z");
@@ -152,5 +152,42 @@ describe("purpose/browser-bound one-use Google recovery", () => {
     const { db, client } = fixture();
     expect(await confirmGoogleLink(client, intent({ candidateUserId: null, candidateUpdatedAt: null }), { code: "mail-code" }, () => now)).toBe("restart");
     expect(db.user.create).not.toHaveBeenCalled(); expect(db.oAuthIdentity.create).not.toHaveBeenCalled();
+  });
+});
+
+describe("GitLab.com account confirmation", () => {
+  const gitlab = { ...claims, iss: GITLAB_ISSUER, sub: "801", email: "owner@gmail.com" };
+  const input = { profile: gitlab, providerAccountId: gitlab.sub, email: gitlab.email };
+  const gitlabIntent = () => intent({ issuer: GITLAB_ISSUER, subject: gitlab.sub });
+
+  it("binds only the exact verified issuer and subject and always requires independent mailbox proof for a new user", async () => {
+    expect(qualifiedGoogleIdentity(gitlab, gitlab.sub, gitlab.email, now, "gitlab")).toMatchObject({ authoritativeEmail: false });
+    expect(qualifiedGoogleIdentity(gitlab, gitlab.sub, gitlab.email, now, "google")).toBeNull();
+    expect(qualifiedGoogleIdentity({ ...gitlab, email_verified: false }, gitlab.sub, gitlab.email, now, "gitlab")).toBeNull();
+    expect(qualifiedGoogleIdentity(gitlab, "802", gitlab.email, now, "gitlab")).toBeNull();
+    const { db, client } = fixture();
+    db.user.findUnique.mockResolvedValue(null);
+    const scope = { callbackPath: "/desktop/connect?challenge=original", pendingCookie: "" };
+    expect(await googleLinkContext.run(scope, () => resolveGoogleIdentity(client, input, now, "gitlab"))).toEqual({ kind: "recover" });
+    expect(db.pendingGoogleIdentityLink.create).toHaveBeenCalledWith({ data: expect.objectContaining({ issuer: GITLAB_ISSUER, subject: gitlab.sub, candidateUserId: null, callbackPath: scope.callbackPath }) });
+    expect(db.user.create).not.toHaveBeenCalled();
+    expect(db.oAuthIdentity.create).not.toHaveBeenCalled();
+  });
+
+  it("separates provider proof and confirms an existing account without replacing its identity", async () => {
+    const { db, client } = fixture();
+    db.pendingGoogleIdentityLink.findUnique.mockResolvedValue(gitlabIntent());
+    expect(await activeGoogleLink(client, nonce, now, "google")).toBeNull();
+    expect(await activeGoogleLink(client, nonce, now, "gitlab")).toMatchObject({ issuer: GITLAB_ISSUER });
+    expect(await sendGoogleLinkCode(client, gitlabIntent(), now, "google")).toBe("restart");
+    expect(await confirmGoogleLink(client, gitlabIntent(), { code: "mail-code" }, () => now, "google")).toBe("restart");
+    expect(mocks.mail).not.toHaveBeenCalled();
+    expect(db.oAuthIdentity.create).not.toHaveBeenCalled();
+
+    expect(await sendGoogleLinkCode(client, gitlabIntent(), now, "gitlab")).toBe("code_sent");
+    expect(mocks.mail).toHaveBeenCalledWith(expect.objectContaining({ provider: "gitlab", to: canonical.email }));
+    expect(await confirmGoogleLink(client, gitlabIntent(), { code: "mail-code" }, () => now, "gitlab")).toBe("linked");
+    expect(db.oAuthIdentity.create).toHaveBeenCalledWith({ data: { provider: "gitlab", issuer: GITLAB_ISSUER, subject: gitlab.sub, userId: canonical.id } });
+    expect(db.user.create).not.toHaveBeenCalled();
   });
 });

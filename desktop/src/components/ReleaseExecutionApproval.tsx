@@ -1,8 +1,10 @@
 import {useEffect,useRef,useState} from 'react';
+import type {SimulationApprovalHistory} from '../../../lib/tauri/releaseExecutionApprovalContract';
+import {RecordedReleaseEvents} from './RecordedReleaseEvents';
 import {desktopClient} from '../lib/desktopClient';
 import {isExecutionApprovalState,type ExecutionApprovalState} from '../lib/releaseExecutionApprovalContract';
 const recovery='Reload execution approval to confirm its outcome. If the plan changed, read and save a fresh plan.';
-export function ReleaseExecutionApproval({requestId,planId,planDigest}:{requestId:string;planId:string;planDigest:string}){
+export function ReleaseExecutionApproval({requestId,planId,planDigest,historyVersion}:{requestId:string;planId:string;planDigest:string;historyVersion?:number}){
  const config=useRef(desktopClient.config).current,revision=useRef(desktopClient.getContextRevision()).current;
  const mounted=useRef(true),flight=useRef<AbortController|null>(null);const[state,setState]=useState<ExecutionApprovalState>(),[busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false),[error,setError]=useState(false),[stale,setStale]=useState(false);
  useEffect(()=>{mounted.current=true;const unsubscribe=desktopClient.subscribeContext(()=>{flight.current?.abort();setState(undefined);setStale(true)});return()=>{mounted.current=false;flight.current?.abort();unsubscribe()}},[]);
@@ -19,7 +21,19 @@ export function ReleaseExecutionApproval({requestId,planId,planDigest}:{requestI
   <p className="text-xs leading-5 text-zinc-500">Separate from advisory review. The release requester is the designated executor. This approval covers simulation only. Provider merges and deployments require their separate exact-action approvals.</p>
   {stale?<p className="text-xs text-zinc-400">Workspace changed. Reopen this release.</p>:<><button type="button" className="btn-secondary" disabled={busy} onClick={()=>void run('read')}>Reload execution approval</button>
   {busy&&<p role="status" className="text-xs text-zinc-400">Confirming execution approval…</p>}{(error||uncertain)&&<p role="alert" className="text-xs text-zinc-300">{recovery}</p>}
-  {state&&<>{!state.enabled&&<p className="text-xs text-zinc-400">Execution approval is not enabled on this service.</p>}{state.approval?<><p className="text-xs text-zinc-300">{state.approval.status==='approved'?'Independently approved for simulation':state.approval.status==='consumed'?'Consumed by one simulation':state.approval.status==='revoked'?'Approval revoked':'Plan needs refreshing'}</p><p className="text-xs text-zinc-500">Expires {new Date(state.approval.expiresAt).toLocaleString()}</p>{state.approval.canRevoke&&state.approval.version===0&&<button type="button" className="btn-secondary" disabled={busy||uncertain} onClick={()=>void run('revoke')}>Revoke execution approval</button>}</>:<><p className="text-xs text-zinc-500">No execution approval recorded.</p>{state.enabled&&state.canApprove?<button type="button" className="btn-secondary" disabled={busy||uncertain} onClick={()=>void run('approve')}>Approve exact plan for simulation</button>:state.enabled&&<p className="text-xs text-zinc-400">A different eligible person must approve this exact plan.</p>}</>}</>}
+  {state&&<>{!state.enabled&&<p className="text-xs text-zinc-400">Execution approval is not enabled on this service.</p>}{state.approval?<><p className="text-xs text-zinc-300">{state.approval.status==='approved'?'Independently approved for simulation':state.approval.status==='consumed'?'Consumed by one simulation':state.approval.status==='revoked'?'Approval revoked':'Plan needs refreshing'}</p><p className="text-xs text-zinc-500">
+    Issued <time dateTime={state.approval.createdAt}>{new Date(state.approval.createdAt).toLocaleString()}</time>
+    {" · "}Scheduled expiry <time dateTime={state.approval.expiresAt}>{new Date(state.approval.expiresAt).toLocaleString()}</time>
+   </p>{state.approval.canRevoke&&state.approval.version===0&&<button type="button" className="btn-secondary" disabled={busy||uncertain} onClick={()=>void run('revoke')}>Revoke execution approval</button>}</>:<><p className="text-xs text-zinc-500">No execution approval recorded.</p>{state.enabled&&state.canApprove?<button type="button" className="btn-secondary" disabled={busy||uncertain} onClick={()=>void run('approve')}>Approve exact plan for simulation</button>:state.enabled&&<p className="text-xs text-zinc-400">A different eligible person must approve this exact plan.</p>}</>}</>}
   </>}
+  {historyVersion !== undefined && !stale && !busy && !uncertain && <RecordedReleaseEvents
+    subject="simulation approval" labels={simulationApprovalEventLabels} read={signal => desktopClient.simulationApprovalHistory(requestId, historyVersion, planId, planDigest, signal)} />}
+
  </section>;
 }
+
+export const simulationApprovalEventLabels: Record<SimulationApprovalHistory["events"][number]["type"], string> = {
+  approved: "Simulation approval recorded",
+  revoked: "Simulation approval revoked",
+  consumed: "Simulation approval consumed",
+};

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-const mock = vi.hoisted(() => ({ verify: vi.fn(), set: vi.fn(), read: vi.fn(), write: vi.fn(), clear: vi.fn() }));
-vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { verifyCredentialCandidate: mock.verify, setSession: mock.set } }));
+const mock = vi.hoisted(() => ({ verify: vi.fn(), set: vi.fn(), read: vi.fn(), write: vi.fn(), clear: vi.fn(), config: {} }));
+vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config() { return mock.config; }, verifyCredentialCandidate: mock.verify, setSession: mock.set } }));
 vi.mock("../../../desktop/src/lib/secureStorage", () => ({ readSecret: mock.read, writeSecret: mock.write, clearSecret: mock.clear }));
 import { hydrateDesktopCredential, signOutDesktopCredentials, verifyAndActivateApiKey, verifyAndActivatePairedSession } from "../../../desktop/src/lib/activeDesktopCredential";
 const selectionKey = "desktop.credential.selection.v1";
@@ -11,7 +11,7 @@ const session = { id: "new_session", deviceLabel: "Mac", expiresAt: "2099-01-01T
 const identity = { organizationId: "verified" };
 let vault: Map<string, unknown>;
 beforeEach(() => {
-  vi.resetAllMocks(); vault = new Map();
+  vi.resetAllMocks(); mock.config = {}; vault = new Map();
   mock.verify.mockResolvedValue({ ok: true, data: identity });
   mock.read.mockImplementation(async (key: string) => structuredClone(vault.get(key)));
   mock.write.mockImplementation(async (key: string, value: unknown) => { vault.set(key, structuredClone(value)); });
@@ -129,4 +129,62 @@ it("does not activate a late saved credential after startup recovery is canceled
 });
 it("does not reactivate a saved credential after a newer sign-out selection",async()=>{
  let finish!:(value:unknown)=>void;mock.read.mockReturnValueOnce(new Promise(resolve=>{finish=resolve;}));const hydration=hydrateDesktopCredential();await signOutDesktopCredentials();finish({version:1,active:"api_key",apiKey:oldKey});await hydration;expect(mock.set).not.toHaveBeenCalledWith(oldKey);
+});
+
+it("ignores browser approval verification superseded by sign-out", async () => {
+  let finish!: (value: unknown) => void;
+  mock.verify.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+  const approval = verifyAndActivatePairedSession(token, session);
+  const outcome = expect(approval).rejects.toMatchObject({ name: "AbortError" });
+  await signOutDesktopCredentials();
+  finish({ ok: true, data: identity });
+  await outcome;
+  expect(vault.get(selectionKey)).toEqual({ version: 1, active: "signed_out" });
+  expect(mock.set).not.toHaveBeenCalledWith(token);
+});
+
+it("saves sign-out after a credential write already in progress", async () => {
+  let begin!: () => void, finish!: () => void;
+  const writing = new Promise<void>(resolve => { begin = resolve; });
+  mock.write.mockImplementationOnce(async (key: string, value: unknown) => {
+    begin();
+    await new Promise<void>(resolve => { finish = resolve; });
+    vault.set(key, value);
+  });
+  const approval = verifyAndActivatePairedSession(token, session);
+  const outcome = expect(approval).rejects.toMatchObject({ name: "AbortError" });
+  await writing;
+  const signOut = signOutDesktopCredentials();
+  expect(mock.set).toHaveBeenLastCalledWith(undefined);
+  finish();
+  await Promise.all([outcome, signOut]);
+  expect(vault.get(selectionKey)).toEqual({ version: 1, active: "signed_out" });
+  await hydrateDesktopCredential();
+  expect(mock.set).not.toHaveBeenCalledWith(token);
+});
+
+it("waits for a pending sign-out write before reading the selected credential", async () => {
+  await verifyAndActivatePairedSession(token, session);
+  mock.set.mockClear();
+  let finish!: () => void, begin!: () => void;
+  const writing = new Promise<void>(resolve => { begin = resolve; });
+  mock.write.mockImplementationOnce(async (key: string, value: unknown) => {
+    begin();
+    await new Promise<void>(resolve => { finish = resolve; });
+    vault.set(key, value);
+  });
+  const signOut = signOutDesktopCredentials();
+  await writing;
+  const startup = hydrateDesktopCredential();
+  finish();
+  await Promise.all([signOut, startup]);
+  expect(mock.set.mock.calls).toEqual([[undefined], [undefined]]);
+  expect(vault.get(selectionKey)).toEqual({ version: 1, active: "signed_out" });
+});
+
+it("does not persist a verified browser credential for a replaced service configuration", async () => {
+  mock.read.mockImplementationOnce(async () => { mock.config = {}; return undefined; });
+  await expect(verifyAndActivatePairedSession(token, session)).rejects.toMatchObject({ name: "AbortError" });
+  expect(mock.write).not.toHaveBeenCalled();
+  expect(mock.set).not.toHaveBeenCalled();
 });

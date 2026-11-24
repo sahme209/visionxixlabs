@@ -11,7 +11,7 @@ const guards = new WeakMap<PricingPlan, Guard>();
 export const newTestPlanGuard = (plan: PricingPlan | undefined) => plan ? guards.get(plan) : undefined;
 export async function newTestPricingPlan(tx: Prisma.TransactionClient, verified: NonNullable<Awaited<ReturnType<typeof readVerifiedNewTestContract>>>): Promise<PricingPlan> {
   if (verified.allowance) return newTestAllocationPricingPlan(tx, verified.contract, verified, verified.allowance);
-  const clock = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now');
+  const clock = await tx.$queryRawUnsafe<Array<{ now: Date }>>("SELECT clock_timestamp() AT TIME ZONE 'UTC' AS now");
   if (!(clock[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable");
   const { contract, intent, coverage } = verified;
   const access = paidAccess(paidIdentity(contract, intent), contract.status, contract.eventToken, coverage?.observation ?? null, !!coverage, clock[0].now);

@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const io = vi.hoisted(() => ({ load: vi.fn(), run: vi.fn(), request: vi.fn(), connection: vi.fn() }));
+const io = vi.hoisted(() => ({ load: vi.fn(), run: vi.fn(), request: vi.fn(), connection: vi.fn(), tasks: vi.fn() }));
 vi.mock("../connection", () => ({ loadAirflowClient: io.load }));
-import { readReleaseBatchReadiness } from "../releaseBatchReadiness";
+import { readReleaseBatchDeclarations, readReleaseBatchReadiness, readReleaseBatchTasks } from "../releaseBatchReadiness";
 const updatedAt = new Date("2026-10-24T00:00:00.000Z");
 const dependency = { connectionId: "connection", connectionUpdatedAt: updatedAt.toISOString(), runs: [{ dagId: "daily", dagRunId: "selected", logicalDate: "2026-10-24T00:00:00.000001Z" }] };
 const row = { id: "release", organizationId: "tenant", version: 3, status: "submitted", intakeJson: { airflowDependency: dependency } };
@@ -9,7 +9,7 @@ const repo = { tauriDeploymentRequest: { findFirst: io.request }, tenantIntegrat
 const input = { organizationId: "tenant", requestId: "release", expectedVersion: 3 };
 beforeEach(() => {
   vi.clearAllMocks(); io.request.mockResolvedValue(row); io.connection.mockResolvedValue({ id: "connection" });
-  io.load.mockResolvedValue({ connectionId: "connection", connectionUpdatedAt: updatedAt, client: { getDagRun: io.run } });
+  io.load.mockResolvedValue({ connectionId: "connection", connectionUpdatedAt: updatedAt, client: { getDagRun: io.run, listTaskInstances: io.tasks } });
   io.run.mockResolvedValue({ ...dependency.runs[0], state: "success" });
 });
 it("fences the exact stored release and active tenant connection around exact batch reads", async () => {
@@ -21,6 +21,16 @@ it("fences the exact stored release and active tenant connection around exact ba
 it.each([null, { ...row, version: 4 }, { ...row, status: "draft" }, { ...row, intakeJson: {} }])("does not contact Airflow for missing or stale stored specifications", async stored => {
   io.request.mockResolvedValue(stored); expect((await readReleaseBatchReadiness(repo, input)).ready).toBe(false); expect(io.load).not.toHaveBeenCalled();
 });
+it.each([
+  {stored: {...row, version: 4}, reason: "changed"},
+  {stored: {...row, version: 4, id: "other"}, reason: "unavailable"},
+  {stored: {...row, version: 4, organizationId: "other"}, reason: "unavailable"},
+])("returns $reason for a version mismatch without contacting Airflow", async ({stored, reason}) => {
+  io.request.mockResolvedValue(stored);
+  expect(await readReleaseBatchReadiness(repo, {...input, includeRuns: true})).toEqual({ready: false, reason});
+  expect(io.load).not.toHaveBeenCalled();
+  expect(io.run).not.toHaveBeenCalled();
+});
 it("rejects a changed connection before reading any run", async () => {
   io.load.mockResolvedValue({ connectionId: "other", connectionUpdatedAt: updatedAt, client: { getDagRun: io.run } });
   expect((await readReleaseBatchReadiness(repo, input)).ready).toBe(false); expect(io.run).not.toHaveBeenCalled();
@@ -28,6 +38,24 @@ it("rejects a changed connection before reading any run", async () => {
 it.each(["release", "connection"])("refuses success after concurrent %s changes", async changed => {
   if (changed === "release") io.request.mockResolvedValueOnce(row).mockResolvedValue({ ...row, version: 4 }); else io.connection.mockResolvedValue(null);
   expect((await readReleaseBatchReadiness(repo, input)).ready).toBe(false);
+});
+it.each(["release", "connection"])("does not report waiting after the %s changes during observation", async changed => {
+  io.run.mockResolvedValue({...dependency.runs[0], state: "running"});
+  if (changed === "release") io.request.mockResolvedValueOnce(row).mockResolvedValue({...row, version: 4});
+  else io.connection.mockResolvedValue(null);
+  expect(await readReleaseBatchReadiness(repo, input)).toEqual({ready: false, reason: "changed"});
+});
+it("reports waiting for an exact run only after rechecking the release and connection", async () => {
+  io.run.mockResolvedValue({...dependency.runs[0], state: "queued"});
+  expect(await readReleaseBatchReadiness(repo, input)).toEqual({ready: false, reason: "waiting"});
+  expect(io.request).toHaveBeenCalledTimes(2);
+  expect(io.connection).toHaveBeenCalledTimes(1);
+});
+it.each(["failed", "unknown", "wrong_run", "provider_failure"])("keeps %s distinct from a confirmed wait", async outcome => {
+  if (outcome === "provider_failure") io.run.mockRejectedValue(new Error("private provider diagnostic"));
+  else if (outcome === "wrong_run") io.run.mockResolvedValue({...dependency.runs[0], dagRunId: "other", state: "running"});
+  else io.run.mockResolvedValue({...dependency.runs[0], state: outcome});
+  expect(await readReleaseBatchReadiness(repo, input)).toEqual({ready: false, reason: "unavailable"});
 });
 it("returns unavailable without exposing provider diagnostics", async () => {
   io.load.mockRejectedValue(new Error("private credential diagnostic")); expect(await readReleaseBatchReadiness(repo, input)).toEqual({ ready: false, reason: "unavailable" });
@@ -46,4 +74,78 @@ it("does not use an old connection revision or call a provider for a bad expecte
 
 it.each(['rejected','failed','completed','unknown_legacy'])('does not report release readiness for unsupported status %s',async status=>{
  io.request.mockResolvedValue({...row,status});expect((await readReleaseBatchReadiness(repo,input)).ready).toBe(false);expect(io.load).not.toHaveBeenCalled();
+});
+
+it("lists each exact declared run only for the explicit display read", async () => {
+  const [first] = dependency.runs;
+  const second = { ...first, dagRunId: "next-declared" };
+  io.request.mockResolvedValue({ ...row, intakeJson: { airflowDependency: { ...dependency, runs: [first, second] } } });
+  io.run.mockImplementation(async (_dag, run) => ({ ...(run === first.dagRunId ? first : second), state: run === first.dagRunId ? "running" : "success" }));
+  const result = await readReleaseBatchReadiness(repo, { ...input, includeRuns: true });
+  expect(result).toEqual({ ready: false, reason: "waiting", observations: {
+    requestId: "release", version: 3, runs: [
+      { dagId: "daily", dagRunId: first.dagRunId, state: "running" },
+      { dagId: "daily", dagRunId: second.dagRunId, state: "success" },
+    ],
+  } });
+  io.run.mockClear();
+  expect(await readReleaseBatchReadiness(repo, input)).toEqual({ ready: false, reason: "waiting" });
+  expect(io.run).toHaveBeenCalledTimes(1);
+});
+
+it("withholds a partially observed set when an exact run changes", async () => {
+  const [first] = dependency.runs;
+  io.request.mockResolvedValue({ ...row, intakeJson: { airflowDependency: { ...dependency, runs: [first, { ...first, dagRunId: "second" }] } } });
+  io.run.mockResolvedValue({ ...first, state: "success" });
+  expect(await readReleaseBatchReadiness(repo, { ...input, includeRuns: true })).toEqual({ ready: false, reason: "unavailable" });
+});
+
+it("retains the old observation shape and projects timing only for an exact opted-in provider read", async () => {
+  const startedAt = "2026-10-24T02:30:00+02:00";
+  const endedAt = "2026-10-24T01:00:00Z";
+  const run = { ...dependency.runs[0], state: "success", startedAt, endedAt };
+  io.run.mockResolvedValue(run);
+  const observation = { dagId: "daily", dagRunId: "selected", state: "success" };
+  const expected = (runs: unknown[]) => ({ ready: true, requestVersion: 3, observations: { requestId: "release", version: 3, runs } });
+  const include = { ...input, includeRuns: true, includeTiming: true };
+  expect(await readReleaseBatchReadiness(repo, { ...input, includeRuns: true })).toEqual(expected([observation]));
+  expect(await readReleaseBatchReadiness(repo, include)).toEqual(expected([{ ...observation, timing: { startedAt, endedAt } }]));
+  io.run.mockResolvedValue({ ...run, endedAt: "2026-10-24T00:00:00Z" });
+  expect(await readReleaseBatchReadiness(repo, include)).toEqual(expected([observation]));
+  io.run.mockResolvedValue({ ...run, endedAt: "provider text" });
+  expect(await readReleaseBatchReadiness(repo, include)).toEqual(expected([{ ...observation, timing: { startedAt, endedAt: null } }]));
+  io.connection.mockResolvedValue(null);
+  expect(await readReleaseBatchReadiness(repo, include)).toEqual({ ready: false, reason: "changed" });
+});
+
+it("reads a task page only for the declared run and verifies its logical date on both sides", async () => {
+  const selection = { ...input, dagId: "daily", dagRunId: "selected", offset: 0 };
+  const page = { tasks: [], totalEntries: 0, offset: 0 };
+  io.tasks.mockResolvedValue(page);
+  expect(await readReleaseBatchTasks(repo, { ...selection, dagRunId: "other" })).toBeUndefined();
+  expect(io.run).not.toHaveBeenCalled();
+  expect(io.tasks).not.toHaveBeenCalled();
+
+  expect(await readReleaseBatchTasks(repo, selection)).toEqual({ ...page, requestId: "release", version: 3, dagId: "daily", dagRunId: "selected" });
+  expect(io.run).toHaveBeenCalledTimes(2);
+  expect(io.tasks).toHaveBeenCalledExactlyOnceWith("daily", "selected", 0, undefined);
+
+  io.run.mockResolvedValueOnce({ ...dependency.runs[0], state: "success" })
+    .mockResolvedValueOnce({ ...dependency.runs[0], state: "success", logicalDate: "2026-10-25T00:00:00Z" });
+  expect(await readReleaseBatchTasks(repo, selection)).toBeUndefined();
+  io.connection.mockResolvedValue(null);
+  expect(await readReleaseBatchTasks(repo, selection)).toBeUndefined();
+});
+
+it("returns only saved identities without loading an Airflow credential or reading a provider", async () => {
+  expect(await readReleaseBatchDeclarations(repo, input)).toEqual({
+    requestId:"release",version:3,runs:[{dagId:"daily",dagRunId:"selected"}],
+  });
+  expect(io.request).toHaveBeenCalledExactlyOnceWith({where:{id:"release",organizationId:"tenant"}});
+  expect(io.load).not.toHaveBeenCalled();
+  expect(io.run).not.toHaveBeenCalled();
+  for (const invalid of [{...row, version:4}, {...row, organizationId:"foreign"}, {...row, status:"draft"}]) {
+    io.request.mockResolvedValue(invalid);
+    expect(await readReleaseBatchDeclarations(repo, input)).toBeUndefined();
+  }
 });

@@ -144,9 +144,9 @@ export class AirflowClient {
   }
 
   /** Observation only: never returns XCom, rendered templates, logs or credentials. */
-  async listTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<AirflowTaskPage> {
+  async listTaskInstances(dagId: string, dagRunId: string, offset = 0, signal?: AbortSignal): Promise<AirflowTaskPage> {
     if ([dagId, dagRunId].some((id) => !id.trim() || id === "~") || !Number.isSafeInteger(offset) || offset < 0) throw new Error("airflow_task_selection_invalid");
-    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}/taskInstances?limit=100&offset=${offset}`);
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}/taskInstances?limit=100&offset=${offset}`, {signal});
     if (!isRecord(body) || !Array.isArray(body.task_instances) || body.task_instances.length > 100 || !Number.isSafeInteger(body.total_entries) || (body.total_entries as number) < 0 || (body.task_instances.length > 0 && (body.total_entries as number) < offset + body.task_instances.length)) throw new Error("airflow_task_response_invalid");
     const identities = new Set<string>();
     const tasks = body.task_instances.map((task: unknown): AirflowTaskInstance => {

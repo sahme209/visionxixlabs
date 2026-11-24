@@ -47,11 +47,13 @@ it.each([true, false])("retains Windows caveat, manifest facts and readiness rou
   expect(card.textContent).toContain("SmartScreen warnings may appear");
   expect(card.textContent).toContain("does not establish Windows trust or reputation");
   expect(card.textContent).toContain("Follow your organization’s software policy");
-  for (const link of screen.getAllByRole("link", { name: "Download for Windows" })) {
+  const action = ready ? "Download for Windows" : "Check Windows availability";
+  expect(screen.queryByRole("link", { name: ready ? "Check Windows availability" : "Download for Windows" })).toBeNull();
+  for (const link of screen.getAllByRole("link", { name: action })) {
     expect(link.getAttribute("href")).toBe(ready ? windowsAsset.downloadUrl : "/api/desktop/download?platform=windows");
     expect(link.getAttribute("download")).toBe(ready ? windowsAsset.fileName : null);
   }
-  expect(screen.getByRole("link", { name: "Download for Linux" }).getAttribute("href")).toBe("/api/desktop/download?platform=linux");
+  expect(screen.getByRole("link", { name: "Check Linux availability" }).getAttribute("href")).toBe("/api/desktop/download?platform=linux");
   expect(fetchMock.mock.calls).toEqual([["/api/desktop/release-manifest"]]);
 });
 

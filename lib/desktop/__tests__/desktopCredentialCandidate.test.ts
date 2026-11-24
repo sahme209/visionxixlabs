@@ -3,12 +3,12 @@ import { DesktopClient } from "../../../desktop/src/lib/desktopClient";
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 describe("non-mutating recovery credential verification", () => {
   it("sends only the candidate bearer and preserves the active configuration", async () => {
-    const client = new DesktopClient({ apiBase: "https://service.example.test", sessionToken: "axm.desk.previous" });
+    const client = new DesktopClient({ apiBase: "https://service.example.test/", sessionToken: "axm.desk.previous" });
     const config = client.config;
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: false, error: "revoked" }), { status: 401 }));
     vi.stubGlobal("fetch", fetchMock);
     expect(await client.verifyCredentialCandidate("vxlk_candidate")).toMatchObject({ ok: false });
-    expect(fetchMock).toHaveBeenCalledWith("https://service.example.test/api/desktop/access", expect.objectContaining({ headers: expect.objectContaining({ Authorization: "Bearer vxlk_candidate" }) }));
+    expect(fetchMock).toHaveBeenCalledWith("https://service.example.test/api/desktop/access", expect.objectContaining({ headers: expect.objectContaining({ Authorization: "Bearer vxlk_candidate" }), credentials: "omit", redirect: "error", cache: "no-store" }));
     expect(client.config).toBe(config);
     expect(client.config.sessionToken).toBe("axm.desk.previous");
   });
@@ -85,4 +85,20 @@ it("cleans up the deadline and caller listener after verified success", async ()
   }}))));
   expect(await new DesktopClient().verifyCredentialCandidate("axm.desk.fixture", controller.signal)).toMatchObject({ok: true});
   expect(vi.getTimerCount()).toBe(0); expect(remove).toHaveBeenCalledWith("abort", expect.any(Function));
+});
+
+it("cancels an old service response immediately when the desktop service changes", async () => {
+  const client = new DesktopClient({ apiBase: "https://old.example.test" });
+  let respond!: (response: unknown) => void;
+  const request = new Promise(resolve => { respond = resolve; });
+  const fetchMock = vi.fn(() => request);
+  vi.stubGlobal("fetch", fetchMock);
+  const pending = client.verifyCredentialCandidate("axm.desk.fixture");
+  client.setApiBase("https://new.example.test");
+  expect(await pending).toMatchObject({ ok: false, failureKind: "canceled" });
+  const json = vi.fn();
+  respond({ ok: true, json });
+  await Promise.resolve();
+  expect(json).not.toHaveBeenCalled();
+  expect(fetchMock).toHaveBeenCalledOnce();
 });

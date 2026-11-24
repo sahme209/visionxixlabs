@@ -118,7 +118,7 @@ export default async function TeamPage({
   if (navigation && !parseBrowserNavigationIntent(navigation, Date.now())) return blocked;
   const canManage = !membersUnavailable && isAdminRole(currentRole);
   // Ask Axiom access requests (last 30 days). Requests are notifications; admins change roles below.
-  const accessRequests = canManage ? await Promise.resolve().then(() => prisma.auditEvent.findMany({ where: { organizationId: String(ctx.organizationId), kind: "access.requested", createdAt: { gte: new Date(Date.now() - 30 * 86_400_000) } }, orderBy: { createdAt: "desc" }, take: 20, select: { id: true, summary: true, detailJson: true, createdAt: true } })).catch(() => []) : [];
+  const accessRequests = canManage ? await Promise.resolve().then(() => prisma.auditEvent.findMany({ where: { organizationId: String(ctx.organizationId), kind: "access.requested", createdAt: { gte: new Date(Date.now() - 30 * 86_400_000) } }, orderBy: { createdAt: "desc" }, take: 20, select: { id: true, summary: true, detailJson: true, createdAt: true, correlationId: true } })).catch(() => []) : [];
 
   return (
     <div className="w-full min-w-0">
@@ -130,7 +130,7 @@ export default async function TeamPage({
           <p className="mt-1 text-xs text-zinc-400">Members asked through Ask V19. Nothing has changed; adjust a role below if you agree.</p>
           <ul className="mt-3 space-y-2">{accessRequests.map((r) => {
             const reason = (r.detailJson as { reason?: unknown } | null)?.reason;
-            return <li key={r.id} className="text-sm text-zinc-300">{r.summary} <span className="text-xs text-zinc-500">· {r.createdAt.toISOString().slice(0, 10)}</span>{typeof reason === "string" && <p className="text-xs text-zinc-500">“{reason}”</p>}</li>;
+            return <li key={r.id} className="text-sm text-zinc-300">{r.summary} <span className="text-xs text-zinc-500">· {r.createdAt.toISOString().slice(0, 10)}</span>{typeof reason === "string" && <p className="text-xs text-zinc-500">“{reason}”</p>}{r.correlationId?.startsWith("access_") && <p className="break-words text-xs text-zinc-400">Reference {r.correlationId}</p>}</li>;
           })}</ul>
         </section>
       )}

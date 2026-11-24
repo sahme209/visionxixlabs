@@ -4,7 +4,7 @@
  * Given a plan's base entitlements + the list of active AddOnPurchase
  * rows for the current period, produce the *effective* entitlements:
  *
- *   - AI credit pool = base + sum(deliveredAICreditsCents) for "paid"
+ *   - AI credit pool = base + sum(deliveredAICreditsCents) for verified
  *     ai_credits purchases in this period.
  *   - Seats         = base + sum(deliveredSeats) for "paid" purchases.
  *     Permanent skus carry forward; current_month skus would be a
@@ -21,12 +21,14 @@
  * reads the rows from DB and calls this.
  */
 
+import { hasAppliedCreditPayment } from "./creditPaymentEvidence";
 import type { PricingPlan } from "./planRegistry";
 
 export interface AddOnPurchaseRow {
   sku: string;
   status: string;
   deliveredAICreditsCents: number;
+  appliedAt: Date | null;
   reversedAICreditsCents?: number;
   deliveredSeats: number;
   deliveredConnectors: number;
@@ -56,10 +58,12 @@ export function applyAddOnsToEntitlements(
 
   for (const p of purchases) {
     if (p.status !== "paid" && p.status !== "partially_refunded") continue;
-    appliedAICreditsCents += Math.max(
-      0,
-      p.deliveredAICreditsCents - Math.max(0, p.reversedAICreditsCents ?? 0),
-    );
+    if (hasAppliedCreditPayment(p)) {
+      appliedAICreditsCents += Math.max(
+        0,
+        p.deliveredAICreditsCents - Math.max(0, p.reversedAICreditsCents ?? 0),
+      );
+    }
     appliedSeats          += Math.max(0, p.deliveredSeats);
     appliedConnectors     += Math.max(0, p.deliveredConnectors);
   }

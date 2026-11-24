@@ -18,7 +18,7 @@ function fixture(purchased = false) {
   let a = createReservationAttributionV2(freeBasis, result.window, admitted, purchased ? [{ source: "purchase", purchaseId: "p", maxCents: 100 }] : [{ source: "included", bucketId: result.window.bucketId, maxCents: 100 }]);
   const hold: HoldV2 = { id: "h", organizationId: "o", reservedCents: 100, status: "dispatch_unknown", createdAt: admitted, usageEventId: null, settledCents: null, expiresAt: new Date(admitted.getTime() + 300000), attribution: a };
   const usages: Array<UsageV2 & Record<string, unknown>> = [];
-  const purchases = [{ id: "p", organizationId: "o", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, validFor: "permanent", periodMonth: "2026-10", status: "paid", refundedAt: null, createdAt: admitted }];
+  const purchases = [{ id: "p", organizationId: "o", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, validFor: "permanent", periodMonth: "2026-10", status: "paid", refundedAt: null, appliedAt: new Date("2026-10-01T00:00:00Z"), createdAt: admitted }];
   const state: VerifiedEnrollmentV2 = { enrollment, freeBasis, paidBasis: null, revision: 1 };
   let paid: { intent: Intent; contract: Contract; observation: CoverageObservation; original: ReturnType<typeof collectedEvidenceV2> } | null = null;
   function activatePaid() {

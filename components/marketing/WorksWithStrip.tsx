@@ -9,7 +9,7 @@ export function WorksWithStrip() {
   return (
     <section aria-labelledby="works-with" className="border-y border-white/6 px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-[1200px]">
-        <p id="works-with" className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Works with the tools you already use</p>
+        <p id="works-with" className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400">Works with the tools you already use</p>
         <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
           {items.map((i) => (
             <li key={i.id} className="flex h-8 items-center" title={`${i.name} · ${i.status}`}>
@@ -19,7 +19,7 @@ export function WorksWithStrip() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-center text-[11px] text-zinc-600">Integrations available or in preview in V19. Logos are trademarks of their owners and do not imply endorsement. <a href="/integrations" className="underline underline-offset-2 hover:text-zinc-400">See each status</a></p>
+        <p className="mt-6 text-center text-[11px] text-zinc-400">Integrations available or in preview in V19. Logos are trademarks of their owners and do not imply endorsement. <a href="/integrations" className="underline underline-offset-2 hover:text-zinc-400">See each status</a></p>
       </div>
     </section>
   );

@@ -65,9 +65,20 @@ export async function POST(request: NextRequest) {
     if (!session || statusFor(session) !== "active") {
       return NextResponse.json({ error: "The approved desktop session is no longer active." }, { status: 410 });
     }
+    const claimedAt = new Date(Date.now());
+    if (record.expiresAt <= claimedAt) {
+      return NextResponse.json({ error: "Pairing request expired. Start again from the desktop app." }, { status: 410 });
+    }
     const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
-      where: { id: challenge, consumedAt: null },
-      data: { consumedAt: new Date(), status: "consumed" },
+      where: {
+        id: challenge,
+        deviceFingerprint,
+        status: "approved",
+        sessionId: record.sessionId,
+        consumedAt: null,
+        expiresAt: { gt: claimedAt },
+      },
+      data: { consumedAt: claimedAt, status: "consumed" },
     });
     if (claimed.count !== 1) {
       return NextResponse.json({ error: "Pairing request was already used. Start a new sign-in." }, { status: 409 });

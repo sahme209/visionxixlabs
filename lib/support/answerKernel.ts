@@ -8,6 +8,7 @@
  * are routed to the signed-in app instead of being "answered".
  */
 import type { KnowledgeEntry } from "./knowledgeBase";
+import { containsSupportSecret, SUPPORT_SECRET_NOTICE } from "./secretQuestion";
 
 const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some someone there until get say says tell about".split(" "));
 const SYNONYMS: Record<string, string> = {
@@ -47,12 +48,32 @@ export function buildIndex(entries: readonly KnowledgeEntry[]): AnswerIndex {
 }
 
 export type GuardResult = { kind: "secret_pasted" } | { kind: "workspace_specific" } | { kind: "action_request" } | null;
-const SECRET_PATTERNS = [/\bvxlk_(live|test)_[A-Za-z0-9]{8,}/, /\bAKIA[0-9A-Z]{16}\b/, /\bgh[pousr]_[A-Za-z0-9]{20,}/, /\bsk-[A-Za-z0-9-_]{20,}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/, /\bxox[baprs]-[A-Za-z0-9-]{10,}/, /\b(password|passwd|pwd)\s*[:=]\s*\S{4,}/i];
+
+const WORKSPACE_LOOKUP = /\b(status|why|show|check|what happened|failed|balance|how much|where is|where are)\b/i;
+const PRIVATE_AUDIT_RECORD = /\b(?:my|our)\s+(?:(?:production|staging|current|latest|pending)\s+)?audit\s+(?:logs?|trail|records?|history)\b/i;
+const PRIVATE_BATCH_RECORD = /\b(?:my|our)\s+(?:(?:production|staging|current|latest|pending)\s+)?(?:(?:airflow|batch)\s+(?:dags?|jobs?|runs?|workflows?)|dags?)\b/i;
+const PRIVATE_MEMBERSHIP_QUERY = /\b(?:who|show|list|check|identify|name)\b.*\b(?:my|our)\s+(?:current\s+)?(?:workspace|org(?:anization)?)\s+(?:owners?|members?|admins?)\b|\bwho\s+owns\s+(?:my|our)\s+(?:workspace|org(?:anization)?)\b/i;
+const REQUEST_PREFIX = /^\s*(?:please[\s,]+)?(?:(?:can|could|would|will)\s+you\s+(?:please[\s,]+)?)?/i;
+const WORKSPACE_ACTION = /^(?:deploy|delete|merge|rollback|roll back|restart|approve|reject|revoke|refund|cancel|run|trigger)\b/i;
+const BATCH_ACTION = /^(?:start|retry|schedule)\s+(?:(?:a|an|the|my|our|this|that|failed|current|latest|pending|staging|production|airflow|batch)\s+){0,5}(?:dags?|jobs?|runs?|workflows?|batches?)\b/i;
+const PRIVATE_WORKSPACE_RECORD = /\b(?:my|our)\s+(?:(?:production|staging|current|latest|pending)\s+)?(?:workspace|account|invoice|bill|deployment|release|runs?|pipeline|approval|repository|org|organization|subscription|credits?|balance)\b/i;
+
+export function isPrivateAuditEvidenceQuestion(question: string): boolean {
+  return PRIVATE_AUDIT_RECORD.test(question) && WORKSPACE_LOOKUP.test(question);
+}
+
+export function isPrivateBatchEvidenceQuestion(question: string): boolean {
+  return PRIVATE_BATCH_RECORD.test(question) && WORKSPACE_LOOKUP.test(question);
+}
 
 export function guard(question: string): GuardResult {
-  if (SECRET_PATTERNS.some((p) => p.test(question))) return { kind: "secret_pasted" };
-  if (/\b(my|our)\s+(workspace|account|invoice|bill|deployment|run|pipeline|org|organization|subscription|credits?|balance)\b/i.test(question) && /\b(status|why|show|check|what happened|failed|balance|how much)\b/i.test(question)) return { kind: "workspace_specific" };
-  if (/^\s*(please\s+)?(deploy|delete|merge|rollback|roll back|restart|approve|reject|revoke|refund|cancel|run|trigger)\b/i.test(question)) return { kind: "action_request" };
+  if (containsSupportSecret(question)) return { kind: "secret_pasted" };
+  const request = question.replace(REQUEST_PREFIX, "");
+  if (WORKSPACE_ACTION.test(request) || BATCH_ACTION.test(request)) return { kind: "action_request" };
+  if (PRIVATE_MEMBERSHIP_QUERY.test(question)) return { kind: "workspace_specific" };
+  if (WORKSPACE_LOOKUP.test(question) && (PRIVATE_AUDIT_RECORD.test(question) || PRIVATE_BATCH_RECORD.test(question) || PRIVATE_WORKSPACE_RECORD.test(question))) {
+    return { kind: "workspace_specific" };
+  }
   return null;
 }
 
@@ -65,7 +86,7 @@ export interface Answer {
 }
 
 const GUARD_TEXT: Record<NonNullable<GuardResult>["kind"], string> = {
-  secret_pasted: "That message looks like it contains a password, key or token. Don't share secrets in chat. If it's real, rotate it now. I didn't store it, and I won't use it.",
+  secret_pasted: SUPPORT_SECRET_NOTICE,
   workspace_specific: "I can't see your workspace from the public site. Sign in to V19 (or open the desktop app) to see your own deployments, approvals, credits and audit history.",
   action_request: "I can't take actions from the public site. Changes in V19 go through the signed-in app, where they are proposed, checked and approved by an authorized person.",
 };
@@ -79,6 +100,33 @@ const GUARD_SOURCES: Record<NonNullable<GuardResult>["kind"], { title: string; h
 export function answerQuestion(index: AnswerIndex, question: string, opts: { k1?: number; b?: number } = {}): Answer {
   const q = question.slice(0, 1000);
   const g = guard(q);
+  if (g?.kind === "workspace_specific" && isPrivateAuditEvidenceQuestion(q)) {
+    return {
+      status: "guarded",
+      guard: g.kind,
+      answer: "The public assistant cannot see your audit records. Sign in, select the workspace in your browser, and open Audit & Security. An authorized workspace owner or administrator can review the records there.",
+      sources: [{ title: "Find the audit log", href: "/docs/audit-logs#desktop-settings", kind: "guide" }],
+      confidence: 1,
+    };
+  }
+  if (g?.kind === "workspace_specific" && isPrivateBatchEvidenceQuestion(q)) {
+    return {
+      status: "guarded",
+      guard: g.kind,
+      answer: "I can't look up a specific run here. In V19 Batches, select the correct workspace and connection, then verify the workflow and run before relying on its status.",
+      sources: [{ title: "Find the Batches workflow", href: "/docs/surfaces#workflow-map", kind: "guide" }],
+      confidence: 1,
+    };
+  }
+  if (g?.kind === "workspace_specific" && PRIVATE_MEMBERSHIP_QUERY.test(q)) {
+    return {
+      status: "guarded",
+      guard: g.kind,
+      answer: "I can't look up the people in your workspace from public support. In the paired app, select the intended workspace and open Settings → General. Check Owner and Access & roles, then choose View permissions for the member view.",
+      sources: [{ title: "Workspace access in desktop Settings", href: "/docs/settings#desktop-workspace-access", kind: "guide" }],
+      confidence: 1,
+    };
+  }
   if (g) return { status: "guarded", guard: g.kind, answer: GUARD_TEXT[g.kind], sources: [{ ...GUARD_SOURCES[g.kind], kind: "fact" }], confidence: 1 };
   const terms = [...new Set(tokenize(q))];
   if (terms.length === 0) return { status: "suggestions", answer: "Ask about setup, pricing, security, approvals, integrations or agents.", sources: [], confidence: 0 };

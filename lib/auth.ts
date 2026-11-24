@@ -19,6 +19,7 @@ import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "./billing
 import { attestCanonicalIdentity, canonicalIdentity } from "./auth/canonicalIdentity";
 import { googleLinkContext } from "./auth/googleLinkContext";
 import { resolveGoogleIdentity } from "./auth/googleIdentity";
+import { GITLAB_ISSUER } from "./auth/googleIdentityClaims";
 
 const log = createLogger("auth.membershipBootstrap");
 
@@ -94,6 +95,22 @@ function buildProviders(): NextAuthOptions["providers"] {
       })
     );
   }
+  if (process.env.GITLAB_SIGN_IN_CLIENT_ID && process.env.GITLAB_SIGN_IN_CLIENT_SECRET) {
+    providers.push({
+      id: "gitlab",
+      name: "GitLab",
+      type: "oauth",
+      wellKnown: `${GITLAB_ISSUER}/.well-known/openid-configuration`,
+      authorization: { params: { scope: "openid email" } },
+      clientId: process.env.GITLAB_SIGN_IN_CLIENT_ID,
+      clientSecret: process.env.GITLAB_SIGN_IN_CLIENT_SECRET,
+      idToken: true,
+      checks: ["pkce", "state", "nonce"],
+      profile(profile) {
+        return { id: profile.sub, email: profile.email ?? null };
+      },
+    });
+  }
   // Enterprise identity, phase 2's first real IdP — see
   // docs/ENTERPRISE_IDENTITY_DESIGN.md. This is a single, fixed Cognito
   // user pool today (one "Sign in with Cognito" button), not yet the
@@ -119,6 +136,7 @@ function buildProviders(): NextAuthOptions["providers"] {
  *  sign-in page can disable buttons cleanly rather than fail mid-redirect. */
 export const enabledOAuthProviders = {
   google: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+  gitlab: Boolean(process.env.GITLAB_SIGN_IN_CLIENT_ID && process.env.GITLAB_SIGN_IN_CLIENT_SECRET),
   github: Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
   cognito: Boolean(process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER),
 };
@@ -165,17 +183,19 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: "/auth/signin", error: "/auth/error" },
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
+      if (account?.provider === "google" || account?.provider === "gitlab") {
+        const provider = account.provider;
+        const recoveryPath = provider === "google" ? "/auth/link-google" : "/auth/link-gitlab";
         const scope = googleLinkContext.getStore();
-        if (scope) scope.pendingCookie = ""; // A new attempt cannot reuse a prior Google-link intent.
+        if (scope) scope.pendingCookie = ""; // A new attempt cannot reuse a prior OAuth-link intent.
         try {
-          const result = await resolveGoogleIdentity(prisma, { profile, providerAccountId: account.providerAccountId, email: user.email });
-          if (result.kind === "recover") return "/auth/link-google";
-          attestCanonicalIdentity(user, result.user, "google", result.subject);
+          const result = await resolveGoogleIdentity(prisma, { profile, providerAccountId: account.providerAccountId, email: user.email }, new Date(), provider);
+          if (result.kind === "recover") return recoveryPath;
+          attestCanonicalIdentity(user, result.user, provider, result.subject);
           try { await ensurePersonalWorkspaceMembership({ userId: result.user.id, email: result.user.email }); }
-          catch { console.error("[NextAuth Google] membership_bootstrap_unavailable"); }
+          catch { console.error("[NextAuth OIDC] membership_bootstrap_unavailable"); }
           return true;
-        } catch { console.error("[NextAuth Google] identity_unavailable"); return "/auth/link-google?reason=unavailable"; }
+        } catch { console.error("[NextAuth OIDC] identity_unavailable"); return `${recoveryPath}?reason=unavailable`; }
       }
       // Google is qualified and subject-bound above. For GitHub/Cognito, ensure a User row
       // exists. Credentials provider handled inside its own authorize().
@@ -309,8 +329,11 @@ export const authOptions: NextAuthOptions = {
             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
           });
         }
+        return true;
       }
-      return true;
+      return account?.provider === "credentials"
+        && account.type === "credentials"
+        && canonicalIdentity(user, "credentials") !== null;
     },
     async jwt({ token, user, account }) {
       if (user) {

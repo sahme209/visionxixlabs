@@ -7,13 +7,19 @@ const free = createAllowanceBasisV2({ ...scope, version: 2, policy: ANNIVERSARY_
 const paid = createAllowanceBasisV2({ ...scope, version: 2, policy: ANNIVERSARY_POLICY_V2, kind: "paid", enrollmentDigest, anchor: "2026-10-18T12:00:00.000Z", terms: { catalogVersion: "axiom_public_test_v1", planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "p", unitAmountCents: 2900, monthlyAICreditsCents: 3000, monthlyDeployments: 100 }, origin: { intentId: "i", sessionId: "s", customerId: "c", subscriptionId: "sub", createProofDigest: "a".repeat(64), firstCollectionDigest: "b".repeat(64) } });
 const before = new Date("2026-10-18T11:00:00Z"), after = new Date("2026-10-18T13:00:00Z");
 function window(basis: AllowanceBasisV2 = free, now = before) { const result = resolveAllowanceWindowV2(basis, basis.kind === "paid" ? { version: 2, policy: ANNIVERSARY_POLICY_V2, kind: "collected", status: "active", basisDigest: basis.digest, evidenceDigest: "c".repeat(64), serviceStart: paid.anchor, serviceEnd: "2026-11-18T12:00:00.000Z", collectedAt: paid.anchor } : null, now); if (result.kind !== "available") throw new Error("fixture"); return result.window; }
-const purchase = (): PurchaseV2 => ({ id: "p1", organizationId: "o", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, status: "paid", validFor: "permanent", periodMonth: "2026-10", refundedAt: null, createdAt: before });
+const purchase = (): PurchaseV2 => ({ id: "p1", organizationId: "o", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, status: "paid", validFor: "permanent", periodMonth: "2026-10", refundedAt: null, appliedAt: new Date("2026-10-01T00:00:00Z"), createdAt: before });
 const facts = (): AllocationFactsV2 => ({ bases: [free, paid], holds: [], usage: [], purchases: [purchase()] });
 function hold(allocation: CeilingV2[] = [{ source: "included" as const, bucketId: window().bucketId, maxCents: 100 }]): HoldV2 { return { id: "h", organizationId: "o", reservedCents: 100, settledCents: null, status: "dispatch_unknown", createdAt: before, expiresAt: before, usageEventId: null, attribution: createReservationAttributionV2(free, window(), before, allocation) }; }
 describe("V2 allocation uses existing ledger rows across immutable buckets", () => {
   it("spends included first, then the existing purchase source", () => {
     const f = facts(), result = resolveAllocationV2(free, window(), f, before, 250);
     expect(result.remainingCents).toBe(700); expect(result.allocation).toEqual([{ source: "included", bucketId: window().bucketId, maxCents: 200 }, { source: "purchase", purchaseId: "p1", maxCents: 50 }]);
+  });
+  it("excludes partially refunded rows without checkout application evidence", () => {
+    const f = facts();
+    f.purchases[0] = { ...purchase(), status: "partially_refunded", appliedAt: null, reversedAICreditsCents: 100 };
+    expect(resolveAllocationV2(free, window(), f, before)).toMatchObject({addOnCents:0,remainingCents:200});
+    expect(() => resolveAllocationV2(free, window(), f, before, 201)).toThrow();
   });
   it("late Free cost remains Free and full paid pool is independent", () => {
     const f = facts(), h = hold(); h.status = "settled"; h.settledCents = 80; h.usageEventId = "u"; f.holds.push(h); f.usage.push({ id: "u", organizationId: "o", billingStatus: "settled", billedCents: 80, metadata: { costSource: "synthetic", axiomTestAllocationV2: usageAttributionV2("h", h.attribution!, 80) } });

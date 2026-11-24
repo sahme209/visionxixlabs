@@ -8,6 +8,7 @@ vi.mock('framer-motion',()=>({
  motion:new Proxy({}, {get:(_target,tag:string)=>({children,initial,animate,exit,transition,...props}:any)=>createElement(tag,props,children)}),
 }));
 import {ContactClient} from '../ContactClient';
+import ContactPage from '../page';
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
 function fill(){
  render(createElement(ContactClient));
@@ -35,7 +36,30 @@ it.each(['sent','failed','not_configured'])('shows the saved reference separatel
  expect(status.textContent).toContain('synthetic-reference');
  expect(status.textContent).toContain(delivery.replace('_',' '));
  expect(status.textContent).toContain('No response-time or support entitlement is implied.');
+ expect(document.activeElement).toBe(screen.getByRole('heading',{name:'Your message was durably accepted.'}));
  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it('selects Security when opening the security review link',async()=>{
+ render(await ContactPage({searchParams:Promise.resolve({topic:'security'})}));
+ expect(screen.getByRole('button',{name:'Security'}).getAttribute('aria-pressed')).toBe('true');
+});
+
+it('allows one pending submission and permits a manual retry after refusal',async()=>{
+ let refuse: (response: {ok: boolean; json: () => Promise<object>}) => void = () => {};
+ const pending = new Promise<{ok: boolean; json: () => Promise<object>}>((resolve)=>{refuse=resolve;});
+ const fetch=vi.fn().mockReturnValueOnce(pending).mockResolvedValue({ok:false,json:async()=>({error:'Retry also refused'})});
+ vi.stubGlobal('fetch',fetch);
+ fill();
+ const submit=screen.getByRole('button',{name:'Sending…'});
+ fireEvent.submit(submit.closest('form')!);
+ expect(fetch).toHaveBeenCalledTimes(1);
+ refuse({ok:false,json:async()=>({error:'First request refused'})});
+ await screen.findByText('First request refused');
+ expect((screen.getByLabelText('What went wrong?') as HTMLTextAreaElement).readOnly).toBe(false);
+ fireEvent.submit(screen.getByRole('button',{name:'Send →'}).closest('form')!);
+ await screen.findByText('Retry also refused');
+ expect(fetch).toHaveBeenCalledTimes(2);
 });
 it('preserves the message on an error response without automatically resubmitting',async()=>{
  const fetch=vi.fn(async()=>({ok:false,json:async()=>({error:'Synthetic server refusal'})}));vi.stubGlobal('fetch',fetch);fill();

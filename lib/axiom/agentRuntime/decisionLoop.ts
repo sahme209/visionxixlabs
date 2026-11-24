@@ -222,6 +222,8 @@ export async function runDecisionLoop(input: {
   /** Server-read historical outcomes only; never UI selection or permission. */
   executionHistoryContext?: string;
   skillContext?: string;
+  /** Optional server-selected ceiling from a reviewed, explicitly invoked skill. */
+  inspectionToolNames?: readonly string[];
   preferredProvider?: string;
   preferredModel?: string;
   streaming?: AgentMessageExecutionStream;
@@ -248,7 +250,11 @@ export async function runDecisionLoop(input: {
     return { kind: "error", error: "workspace_agent_policy_unavailable" };
   }
   if (!identity?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
-  const scopedToolNames = profileToolNames(profile, identity.allowedTools);
+  const inspectionTools = input.inspectionToolNames;
+  const profileTools = profileToolNames(profile, identity.allowedTools);
+  const scopedToolNames = inspectionTools
+    ? profileTools.filter(name => inspectionTools.includes(name) && findTool(name)?.riskLevel === "low")
+    : profileTools;
   const allowedTools = new Set(scopedToolNames);
 
   input.streaming?.abortSignal.throwIfAborted();

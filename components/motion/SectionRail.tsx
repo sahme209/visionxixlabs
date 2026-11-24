@@ -14,7 +14,7 @@
  * Hidden under lg (mobile) where there isn't room.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface SectionRailItem {
   /** DOM id to anchor to. Section should set `id={item.id}`. */
@@ -27,59 +27,37 @@ export interface SectionRailItem {
 
 export function SectionRail({ items }: { items: readonly SectionRailItem[] }) {
   const [activeId, setActiveId] = useState<string>(items[0]?.id ?? "");
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || items.length === 0) return;
+    const sections = items.flatMap(({ id }) => {
+      const section = document.getElementById(id);
+      return section ? [section] : [];
+    });
+    if (!sections.length) return;
 
-    // Track which section is most prominently in the viewport.
-    const visibleSections = new Map<string, number>();
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            visibleSections.set(entry.target.id, entry.intersectionRatio);
-          } else {
-            visibleSections.delete(entry.target.id);
-          }
-        }
-        // Pick the section with the highest intersection ratio.
-        let bestId = activeId;
-        let bestRatio = 0;
-        for (const [id, ratio] of visibleSections) {
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            bestId = id;
-          }
-        }
-        if (bestId && bestId !== activeId) setActiveId(bestId);
-      },
-      {
-        // Sections become "active" once their top crosses 40% of viewport.
-        rootMargin: "-40% 0px -55% 0px",
-        threshold: [0, 0.1, 0.5, 1],
-      },
-    );
-
-    for (const item of items) {
-      const el = document.getElementById(item.id);
-      if (el) observerRef.current.observe(el);
-    }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const readingLine = window.innerHeight * 0.4;
+      let current = sections[0].id;
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= readingLine) current = section.id;
+      }
+      setActiveId(current);
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
 
     return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.length]);
-
-  const onClick = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 100;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
+  }, [items]);
 
   return (
     <nav
@@ -89,16 +67,16 @@ export function SectionRail({ items }: { items: readonly SectionRailItem[] }) {
       {items.map((item) => {
         const active = item.id === activeId;
         return (
-          <button
+          <a
             key={item.id}
-            type="button"
-            onClick={() => onClick(item.id)}
+            href={`#${item.id}`}
+            aria-current={active ? "location" : undefined}
             className="group relative flex items-center gap-2 cursor-pointer"
             aria-label={`Jump to ${item.label}`}
           >
-            {/* Hover-revealed label (right-aligned, so it doesn't shift the dot) */}
+            {/* Revealed on hover or keyboard focus without shifting the dot. */}
             <span
-              className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 mono-label text-[9.5px] ${
+              className={`opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 mono-label text-[9.5px] ${
                 active ? "text-brand-coral/95" : "text-zinc-400"
               } whitespace-nowrap`}
             >
@@ -113,7 +91,7 @@ export function SectionRail({ items }: { items: readonly SectionRailItem[] }) {
                   : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-brand-coral/75"
               }`}
             />
-          </button>
+          </a>
         );
       })}
     </nav>

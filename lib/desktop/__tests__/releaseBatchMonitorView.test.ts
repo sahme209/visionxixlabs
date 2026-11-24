@@ -36,3 +36,32 @@ it("does not issue a follow-on request under a changed connection after starting
  io.config = {}; view.rerender(createElement(ReleaseBatchMonitor, { requestId: "release", version: 3 }));
  await act(async () => resolve({ ok: true, data: wait })); expect(io.read).toHaveBeenCalledTimes(1); expect(screen.queryByText("Batch monitor saved. Refresh for current status.")).toBeNull();
 });
+
+it("keeps read-only focus while loading and shows only the returned monitor timing", async () => {
+ let resolve!: (value: unknown) => void;
+ io.read.mockReturnValueOnce(new Promise(done => { resolve = done; }));
+ render(createElement(ReleaseBatchMonitor, { requestId: "release", version: 3, readOnly: true }));
+ const monitor = screen.getByRole("button", {name: "View monitor status"});
+ monitor.focus();
+ fireEvent.click(monitor);
+ fireEvent.click(monitor);
+ expect(document.activeElement).toBe(monitor);
+ expect(monitor.getAttribute("aria-disabled")).toBe("true");
+ expect(io.read).toHaveBeenCalledExactlyOnceWith("release", 3);
+ const deadline = "2026-11-20T11:00:00.000Z";
+ const next = "2026-11-20T10:30:00.000Z";
+ await act(async () => resolve({ok:true, data:{...enabled, canStart:false, canCancel:true,
+   wait:{...wait, deadlineAt:Date.parse(deadline), nextObservationAt:next}}}));
+ const dates = screen.getByRole("region", {name: "Batch monitor"}).querySelectorAll("time");
+ expect(Array.from(dates, time => time.dateTime)).toEqual([deadline, next]);
+ expect(document.activeElement).toBe(monitor);
+ expect(screen.queryByRole("button", {name: /watching/})).toBeNull();
+ io.read.mockReturnValueOnce(new Promise(done => {resolve = done;}));
+ fireEvent.click(monitor);
+ expect(screen.queryByText("Recorded deadline")).toBeNull();
+ expect(screen.queryByText(/Recorded monitor status/)).toBeNull();
+ expect(document.activeElement).toBe(monitor);
+ await act(async () => resolve({ok:false}));
+ expect(screen.getByRole("alert").textContent).toContain("Monitor status is unavailable");
+ expect(screen.getByRole("region", {name: "Batch monitor"}).querySelector("time")).toBeNull();
+});

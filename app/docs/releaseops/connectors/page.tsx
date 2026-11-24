@@ -64,13 +64,13 @@ export default function ReleaseOpsConnectorsPage() {
               </ul>
             </div>
             <div className="rounded-xl bg-white/2 border border-white/6 p-4">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">What V19 does NOT read</p>
+              <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">What V19 does NOT read</p>
               <ul className="text-xs text-zinc-400 space-y-1">
                 {c.notReads.map((r) => <li key={r}>· {r}</li>)}
               </ul>
             </div>
           </div>
-          <p className="text-xs text-zinc-500 italic mt-3">{c.notes}</p>
+          <p className="text-xs text-zinc-400 italic mt-3">{c.notes}</p>
         </DocSection>
       ))}
 

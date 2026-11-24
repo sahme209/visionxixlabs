@@ -30,9 +30,15 @@ export async function rehearseLocalDesktopPairingHttp({ appOrigin, webRequest, c
   const approve = await webRequest("/api/desktop/pair/approve", { method: "POST", headers: { "content-type": "application/json", origin: origin.origin }, body: JSON.stringify({ challenge }) });
   assert.equal(approve.status, 200, "authenticated_pairing_approval_failed");
   assert.equal((await approve.json()).status, "approved", "pairing_approval_not_confirmed");
-  const consumed = await poll({ challenge, deviceFingerprint });
-  assert.equal(consumed.status, 200, "approved_pairing_consume_failed");
-  const paired = await consumed.json();
+  const claim = { challenge, deviceFingerprint };
+  const responses = await Promise.all([poll(claim), poll(claim)]);
+  const winners = responses.filter(response => response.status === 200);
+  assert.equal(winners.length, 1, "pairing_concurrent_claim_one_winner_required");
+  const rejected = responses.find(response => response !== winners[0]);
+  assert.equal(rejected?.status, 409, "pairing_concurrent_claim_conflict_required");
+  const conflict = await rejected.json();
+  assert.ok(!("token" in conflict) && !("session" in conflict), "pairing_conflict_must_not_disclose_credentials");
+  const paired = await winners[0].json();
   assert.equal(paired.status, "approved", "approved_pairing_status_required");
   assert.ok(typeof paired.token === "string" && paired.token.startsWith("axm.desk.") && paired.session?.id && paired.session.status === "active", "active_pairing_bearer_required");
   assert.equal((await poll({ challenge, deviceFingerprint })).status, 409, "pairing_replay_must_fail");
@@ -52,7 +58,7 @@ export async function rehearseLocalDesktopPairingHttp({ appOrigin, webRequest, c
   const revoke = await webRequest(`/api/desktop/session?id=${encodeURIComponent(paired.session.id)}`, { method: "DELETE", headers: { origin: origin.origin } });
   assert.equal(revoke.status, 200, "owner_pairing_revocation_failed");
   assert.equal((await deviceRequest("/api/desktop/access", { token: paired.token })).status, 401, "revoked_pairing_must_fail");
-  return { ...(cloudLifecycle ? { cloudLifecycle } : {}), verified: ["authenticated_consent_metadata", "device_bound_pending_poll", "wrong_device_denied", "legacy_unbound_poll_denied", "web_session_pairing_approval", "cookie_free_pairing_consume", "single_use_pairing_replay_denied", "paired_identity_current_workspace_membership", "owner_pairing_listing", "owner_revocation_invalidates_bearer"],
+  return { ...(cloudLifecycle ? { cloudLifecycle } : {}), verified: ["authenticated_consent_metadata", "device_bound_pending_poll", "wrong_device_denied", "legacy_unbound_poll_denied", "web_session_pairing_approval", "cookie_free_pairing_consume", "concurrent_pairing_claim_has_one_winner", "single_use_pairing_replay_denied", "paired_identity_current_workspace_membership", "owner_pairing_listing", "owner_revocation_invalidates_bearer"],
     commercialAccessObservation: { allowed: access.access.allowed, code: access.access.code, billingStatus: access.access.billingStatus, enforcement: "not_verified_policy_decision_required" },
     notVerified: ["native_browser_or_vault", "production_pairing", "billing_enforcement", "cloud_or_deployment_authority", "provider_execution"] };
 }

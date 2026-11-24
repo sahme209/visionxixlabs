@@ -6,7 +6,7 @@ import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
 import { findAddOn, isOfferedAddOn } from "@/lib/billing/addOnCatalog";
 import { isAllowedTopUpCents } from "@/lib/billing/aiRateCard";
-import { createAddOnCheckoutSession } from "@/lib/billing/stripeHelper";
+import { createAddOnCheckoutSession, recoverAddOnCheckoutSession } from "@/lib/billing/stripeHelper";
 import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 import { resolveCorrelationId } from "@/lib/api";
 
@@ -87,21 +87,42 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "purchase_already_finalized", purchaseStatus: purchase.status }, { status: 409 });
   }
 
-  // Stripe may prune idempotency keys after at least 24 hours. Never create
-  // another session for an older or unbound uncertain intent. The existing
-  // row does not snapshot email/URLs/displayName, so even a recent retry cannot
-  // prove exact original request compatibility: reconciliation is required.
+  const reconciliationRequired = () => NextResponse.json(
+    { ok: false, error: "checkout_reconciliation_required", purchaseId: purchase.id }, { status: 409 },
+  );
+  if (purchase.pricePaidCents !== addOn.priceCents || purchase.deliveredAICreditsCents !== addOn.deliveredAICreditsCents || purchase.validFor !== addOn.validFor) {
+    return reconciliationRequired();
+  }
+
+  const pendingUnpaid = { id: purchase.id, organizationId: context.organizationId, status: "pending", stripePaymentIntentId: null };
+  if (!newlyCreated) {
+    // Retrying can read a known original session. An unbound intent has no
+    // persisted exact Stripe request and remains held for reconciliation.
+    if (!purchase.stripeCheckoutSessionId || purchase.purchasedBy !== context.userId || purchase.stripePaymentIntentId) {
+      return reconciliationRequired();
+    }
+    const sessionId = purchase.stripeCheckoutSessionId;
+    const url = await recoverAddOnCheckoutSession({
+      sessionId, organizationId: context.organizationId, purchaseId: purchase.id, sku: purchase.sku,
+      priceCents: purchase.pricePaidCents,
+    });
+    if (!url) return reconciliationRequired();
+    try {
+      const stillPending = await prisma.addOnPurchase.findFirst({
+        where: { ...pendingUnpaid, purchasedBy: context.userId, stripeCheckoutSessionId: sessionId },
+        select: { id: true },
+      });
+      if (!stillPending) return reconciliationRequired();
+    } catch {
+      return NextResponse.json({ ok: false, error: "billing_storage_unavailable", purchaseId: purchase.id }, { status: 503 });
+    }
+    return NextResponse.json({ ok: true, url });
+  }
+
+  // A new outbound create must stay inside the original idempotency window.
   const createdAt = purchase.createdAt instanceof Date ? purchase.createdAt.getTime() : NaN;
   const age = Date.now() - createdAt;
-  if (!Number.isFinite(age) || age < 0 || age >= 23 * 60 * 60 * 1000) {
-    return NextResponse.json({ ok: false, error: "checkout_reconciliation_required" }, { status: 409 });
-  }
-  if (!newlyCreated) {
-    return NextResponse.json({ ok: false, error: "checkout_reconciliation_required" }, { status: 409 });
-  }
-  if (purchase.pricePaidCents !== addOn.priceCents || purchase.deliveredAICreditsCents !== addOn.deliveredAICreditsCents || purchase.validFor !== addOn.validFor) {
-    return NextResponse.json({ ok: false, error: "checkout_reconciliation_required" }, { status: 409 });
-  }
+  if (!Number.isFinite(age) || age < 0 || age >= 23 * 60 * 60 * 1000) return reconciliationRequired();
 
   const origin = process.env.NEXT_PUBLIC_APP_URL?.trim() || request.nextUrl.origin;
   const checkout = await createAddOnCheckoutSession({
@@ -125,19 +146,20 @@ export async function POST(request: NextRequest) {
     // A timeout/invalid provider response can conceal a real Checkout session.
     // Preserve pending intent so a later verified paid webhook can fulfill it.
     return NextResponse.json(
-      { ok: false, error: "stripe_checkout_unavailable", message: !checkout.ok && checkout.outcome === "not_dispatched"
+      { ok: false, error: "stripe_checkout_unavailable", purchaseId: purchase.id, message: !checkout.ok && checkout.outcome === "not_dispatched"
         ? "Checkout was not started. Check this purchase before starting another."
         : "Checkout outcome is uncertain. Keep this purchase reference and contact support; do not start another purchase." },
       { status: 503 },
     );
   }
   try {
-    await prisma.addOnPurchase.update({
-      where: { id: purchase.id },
+    const bound = await prisma.addOnPurchase.updateMany({
+      where: { ...pendingUnpaid, OR: [{ stripeCheckoutSessionId: null }, { stripeCheckoutSessionId: checkout.sessionId }] },
       data: { stripeCheckoutSessionId: checkout.sessionId },
     });
+    if (bound.count !== 1) return reconciliationRequired();
   } catch {
-    return NextResponse.json({ ok: false, error: "billing_storage_unavailable" }, { status: 503 });
+    return NextResponse.json({ ok: false, error: "billing_storage_unavailable", purchaseId: purchase.id }, { status: 503 });
   }
   return NextResponse.json({ ok: true, url: checkout.url });
 }

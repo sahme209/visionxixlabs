@@ -38,7 +38,7 @@ export default function ProductPage() {
               <Link href="/download" className="orbit-primary">Download V19</Link>
               <Link href="/docs/approval-workflow" className="orbit-secondary">Read the workflow guide <span aria-hidden="true">↗</span></Link>
             </>} />
-            <div aria-labelledby="workflow-overview">
+            <div role="group" aria-labelledby="workflow-overview">
               <h2 id="workflow-overview" className="sr-only">Conceptual release workflow</h2>
               <WorkflowEvidenceMap />
             </div>

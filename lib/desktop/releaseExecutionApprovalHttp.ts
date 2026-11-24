@@ -7,6 +7,7 @@ import {hasDesktopCapability,type DesktopWorkspaceRole} from './desktopAuthoriza
 import {consumeToken} from '@/lib/api/rateLimiter';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {parseReleaseOperationPlanInput,RELEASE_OPERATION_PLAN_KIND} from '@/lib/tauri/releaseOperationPlanContract';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createReleaseExecutionApprovalStore} from '@/lib/tauri/releaseExecutionApprovalStore';
 import {listReleaseOperationPlans,type ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 const enabled=()=>process.env.AXIOM_RELEASE_EXECUTION_APPROVALS_ENABLED==='true';
@@ -15,10 +16,16 @@ const issueSchema=z.object({expectedPlanVersion:z.literal(1),clientRequestId:z.s
 const revokeSchema=z.object({id:z.string().regex(/^release_approval_[a-f0-9]{64}$/),expectedVersion:z.literal(0),clientRequestId:z.string().uuid()}).strict();
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
 async function body(request:NextRequest,signal:AbortSignal){if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json'||!request.body)throw new Refusal('invalid_execution_approval',400);const reader=request.body.getReader();let size=0;const chunks:Uint8Array[]=[];try{while(true){const part=await withGithubAbort(reader.read(),signal);if(part.done)break;size+=part.value.byteLength;if(size>2048)throw new Refusal('invalid_execution_approval',400);chunks.push(part.value)}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)))}finally{void reader.cancel().catch(()=>{});reader.releaseLock()}}
-async function principal(request:NextRequest,manage:boolean){const p=await resolveRequestDesktopSession(request,{requiredScope:manage?'pipeline:trigger':'pipeline:read',requiredCapability:manage?'deploy:execute':'github:read',requireWorkspaceMembership:true,allowApiKey:false,route:`${request.method} /api/desktop/deployments/:id/operation-plans/:planId/execution-approval`});if(!p||p.credentialKind!=='desktop_session')throw new Refusal('desktop_session_required',401);if(!p.capabilities.includes('github:read'))throw new Refusal('execution_approval_permission_required',403);return p}
+async function principal(request:NextRequest,manage:boolean){const p=await resolveRequestDesktopSession(request,{requiredScope:manage?'pipeline:trigger':'pipeline:read',requiredCapability:manage?'deploy:execute':'github:read',requireWorkspaceMembership:!request.nextUrl.searchParams.has('historyVersion'),allowApiKey:false,...(request.nextUrl.searchParams.has('historyVersion')?{recordHeartbeat:false}:{}),route:`${request.method} /api/desktop/deployments/:id/operation-plans/:planId/execution-approval`});if(!p||p.credentialKind!=='desktop_session')throw new Refusal('desktop_session_required',401);if(!p.capabilities.includes('github:read'))throw new Refusal('execution_approval_permission_required',403);return p}
 export async function handleReleaseExecutionApproval(request:NextRequest,requestId:string,planId:string){try{
  if(!['GET','POST','DELETE'].includes(request.method))throw new Refusal('method_not_allowed',405);
- if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.nextUrl.searchParams.size||request.url.length>2048)throw new Refusal('invalid_execution_approval',400);
+ if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.url.length>2048)throw new Refusal('invalid_execution_approval',400);
+ const params = [...request.nextUrl.searchParams.entries()];
+ const historyVersion = params[0]?.[1];
+ if (params.length && (request.method !== 'GET' || params.length !== 1 || params[0][0] !== 'historyVersion'
+   || !historyVersion || !/^[1-9][0-9]{0,9}$/.test(historyVersion) || Number(historyVersion) > 2147483647)) {
+  throw new Refusal('invalid_execution_approval', 400);
+ }
  const manage=request.method!=='GET',actor=await principal(request,manage),signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
  if(!consumeToken(`release-execution-approval:${actor.organizationId}:${actor.userId}`,{capacity:10,tokensPerSecond:0.2}).allowed)throw new Refusal('execution_approval_rate_limited',429);
  const mutation=request.method==='POST'?issueSchema.parse(await body(request,signal)):request.method==='DELETE'?revokeSchema.parse(await body(request,signal)):null;
@@ -31,6 +38,17 @@ export async function handleReleaseExecutionApproval(request:NextRequest,request
  const assertAuthority:NonNullable<import('@/lib/tauri/releaseExecutionApprovalStore').ReleaseExecutionApprovalDependencies['assertCurrent']>=async(tx,input)=>{await assertCaller();const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;role:string;acceptedAt:Date|null}>>`SELECT "organizationId","userId","role","acceptedAt" FROM "OrgMembership" WHERE "organizationId"=${org} AND "userId"=${input.actorUserId} FOR SHARE`;const member=rows[0];if(rows.length!==1||!member||member.organizationId!==org||member.userId!==input.actorUserId||!member.acceptedAt||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(member.role)||!hasDesktopCapability(member.role as DesktopWorkspaceRole,'github:read')||input.role!=='reader'&&!hasDesktopCapability(member.role as DesktopWorkspaceRole,'deploy:execute'))throw new Refusal('execution_approval_permission_required',403);await assertCaller()};
  const store=createReleaseExecutionApprovalStore(prisma as unknown as ReleaseOperationPlanRepo,{assertCurrent:assertAuthority});
  const scope={organizationId:org,actorUserId:String(actor.userId),sessionId:String(actor.id)};
+ if (historyVersion) {
+  const requestVersion = Number(historyVersion);
+  if (binding.id !== planId || binding.organizationId !== org || binding.workflowKind !== RELEASE_OPERATION_PLAN_KIND
+    || stored.planDigest !== sha256ContentHash(stored.plan) || stored.plan.requestVersion !== requestVersion
+    || release.version !== requestVersion) throw new Refusal('execution_approval_refresh_required', 409);
+  const data = await withGithubAbort(store.getHistory(scope, {
+   requestId, requestVersion, planId, planDigest: stored.planDigest, executorUserId: release.requesterUserId,
+  }), signal);
+  await assertCaller();
+  return reply({ok: true, data});
+ }
  let approval;
  if(request.method==='POST'){const input=issueSchema.parse(mutation);approval=await withGithubAbort(store.issue(scope,{planId,...input,executorUserId:release.requesterUserId}),signal)}
  else if(request.method==='DELETE'){const input=revokeSchema.parse(mutation);const expected=await withGithubAbort(prisma.durableAgentWorkflow.findFirst({where:{id:input.id,organizationId:org,workflowKind:'release_execution_approval_v1'}}),signal);if(!expected||!expected.inputJson||typeof expected.inputJson!=='object'||!('planId' in expected.inputJson)||expected.inputJson.planId!==planId)throw new Refusal('execution_approval_refresh_required',409);approval=await withGithubAbort(store.revoke(scope,input),signal)}

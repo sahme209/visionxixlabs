@@ -7,7 +7,7 @@
  *   1. Active provider + model summary
  *   2. Configured providers (sorted by priority) — each shows env
  *      readiness, default model, recommended model list
- *   3. Health check + ad-hoc generation tester
+ *   3. Configuration check + ad-hoc generation tester
  *
  * Service-managed providers only. Workspace policies decide which configured
  * routes may be used; credentials and provider billing details never render.
@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AIProviderName } from "@/lib/ai/AIProvider";
 import {
-  SparklesIcon, ArrowPathIcon, CheckCircleIcon, XCircleIcon,
+  SparklesIcon, ArrowPathIcon,
   BoltIcon, PlayIcon,
 } from "@heroicons/react/24/outline";
 
@@ -36,10 +36,11 @@ interface StatusResp {
   policyEnabled: boolean; activeProvider: ProviderName | null; activeModel: string | null;
   providers: ProviderRow[];
 }
-interface HealthRow {
-  ok: boolean; provider: ProviderName; model: string; latencyMs: number; reason?: string;
+interface HealthResp {
+  rows: { provider: ProviderName; model: string | null }[];
+  policyEnabled: boolean;
+  health: "not_measured";
 }
-interface HealthResp { rows: HealthRow[]; generatedAt: string }
 interface GenerateResp {
   text: string; provider: ProviderName; model: string;
   latencyMs: number; finishReason: string;
@@ -61,6 +62,7 @@ export default function AISettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
   const [loadingHealth, setLoadingHealth] = useState(false);
+  const [healthUnavailable, setHealthUnavailable] = useState(false);
   const [tryPrompt, setTryPrompt] = useState("Say hello in one short sentence.");
   const [tryResp, setTryResp] = useState<GenerateResp | null>(null);
   const [tryError, setTryError] = useState<string | null>(null);
@@ -172,11 +174,16 @@ export default function AISettingsPage() {
 
   const runHealth = useCallback(() => {
     setLoadingHealth(true);
+    setHealth(null);
+    setHealthUnavailable(false);
     fetch("/api/ai/health", { method: "POST", credentials: "include" })
-      .then((r) => r.json())
-      .then((j: { ok?: boolean; data?: HealthResp }) => {
-        if (j.ok && j.data) setHealth(j.data);
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Provider configuration unavailable");
+        const reply: { ok?: boolean; data?: HealthResp } = await response.json();
+        if (!reply.ok || reply.data?.health !== "not_measured") throw new Error("Provider configuration unavailable");
+        setHealth(reply.data);
       })
+      .catch(() => setHealthUnavailable(true))
       .finally(() => setLoadingHealth(false));
   }, []);
 
@@ -347,30 +354,32 @@ export default function AISettingsPage() {
           <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <div className="flex items-center gap-2 mb-3">
               <BoltIcon className="h-3.5 w-3.5 text-zinc-300" />
-              <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Provider health</h2>
+              <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Provider configuration</h2>
               <button
                 onClick={runHealth}
                 disabled={loadingHealth}
                 className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
               >
                 <ArrowPathIcon className={`h-3 w-3 ${loadingHealth ? "animate-spin" : ""}`} />
-                Run health check
+                Check configuration
               </button>
             </div>
-            {health ? (
-              <ul className="space-y-1.5 text-[12px]">
-                {health.rows.map((r) => (
-                  <li key={r.provider} className="flex items-center gap-2">
-                    {r.ok ? <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-300" /> : <XCircleIcon className="h-3.5 w-3.5 text-rose-300" />}
-                    <span className="font-mono text-zinc-300 w-40 truncate">{r.provider}</span>
-                    <span className="font-mono text-zinc-400 truncate">{r.model}</span>
-                    <span className="font-mono text-zinc-500 ml-auto">{r.latencyMs}ms</span>
-                    {!r.ok && <span className="text-[10px] font-mono text-rose-300">{r.reason ?? "fail"}</span>}
+            <p className="text-[12px] text-zinc-400" role="status">
+              {loadingHealth ? "Checking workspace policy and configuration…"
+                : healthUnavailable ? "Provider configuration is unavailable. Try again."
+                : health?.policyEnabled === false ? "AI is disabled for this workspace."
+                : health?.rows.length === 0 ? "This workspace has no approved, configured providers."
+                : health ? "Configuration checked. Live provider health is unverified."
+                : "Check which providers are approved and configured for this workspace."}
+            </p>
+            {!!health?.rows.length && (
+              <ul className="mt-2 space-y-1.5 text-[12px]">
+                {health.rows.map(({ provider, model }) => (
+                  <li key={provider} className="break-words font-mono text-zinc-300">
+                    {LABEL[provider]} · {model ?? "No selected model"}
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="text-[12px] text-zinc-500">Click run health check to ping each provider approved for this workspace.</p>
             )}
           </div>
 

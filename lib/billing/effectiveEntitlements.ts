@@ -46,6 +46,7 @@ export async function effectiveEntitlements(
         sku: true,
         status: true,
         deliveredAICreditsCents: true,
+        appliedAt: true,
         reversedAICreditsCents: true,
         deliveredSeats: true,
         deliveredConnectors: true,

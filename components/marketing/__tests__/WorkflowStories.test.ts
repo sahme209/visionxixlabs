@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
-import {createElement} from "react";
-import {act,cleanup,fireEvent,render,screen} from "@testing-library/react";
+import {createElement, type ComponentProps} from "react";
+import {act,cleanup,fireEvent,render,screen,within} from "@testing-library/react";
 import {afterEach,beforeEach,expect,it,vi} from "vitest";
 import {CinematicAxiomDemo} from "../CinematicAxiomDemo";
 import ApprovalWorkflowPage from "@/app/docs/approval-workflow/page";
@@ -29,6 +29,18 @@ it("links every story to working approval documentation without promising a reti
     expect(screen.getByRole("link", { name: "Read approval workflow" }).getAttribute("href")).toBe("/docs/approval-workflow");
     expect(screen.queryByRole("link", { name: "Read the full walkthrough" })).toBeNull();
     expect(screen.getAllByRole("link").some(link => link.getAttribute("href")?.startsWith("/demo/"))).toBe(false);
+  }
+});
+
+it("links the expanded public tour’s selected story to its exact guide section", () => {
+  render(createElement<NonNullable<ComponentProps<typeof CinematicAxiomDemo>>>(CinematicAxiomDemo, {showStoryPreviews: true, showDemoLink: false}));
+  for (const [name, label, href] of [
+    ["Code & review", "Read the local repository guide", "/docs/source-modes#local-files"],
+    ["Agent & approval", "Read the approval decision guide", "/docs/approval-workflow#decision"],
+    ["Terraform & cloud", "Read Terraform availability", "/docs/releaseops#availability"],
+  ]) {
+    fireEvent.click(screen.getByRole("button", {name: new RegExp(name)}));
+    expect(screen.getByRole("link", {name: label}).getAttribute("href")).toBe(href);
   }
 });
 
@@ -97,7 +109,7 @@ it("grounds the scripted frame in customer navigation without exposing operation
   fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
   expect(screen.getByText("V19 · Agent")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "Terraform & cloud" }));
-  expect(screen.getByText("V19 · Releases")).toBeDefined();
+  expect(screen.getByText("V19 · Deployments")).toBeDefined();
   expect(screen.getByText("Scripted preview")).toBeDefined();
 });
 
@@ -141,4 +153,67 @@ for (const width of [360, 1135]) it(`keeps response focus while scrolling the co
  expect(scroll).toHaveBeenCalledWith({block:'nearest',inline:'nearest'});
  expect(scroll.mock.instances.at(-1)).toBe(width>=1024?screen.getByRole('heading',{name:'Make a small, reviewable edit.'}):response);
  }finally{HTMLElement.prototype.scrollIntoView=previous;Object.defineProperty(window,'innerWidth',{configurable:true,value:originalWidth});}
+});
+
+it("moves focus from the focused button and retains a decision when the selected step stays in place", () => {
+  mount();
+  const second = screen.getByRole("button", {name: /Step 2:/});
+  const third = screen.getByRole("button", {name: /Step 3:/});
+  second.focus();
+  fireEvent.keyDown(second, {key: "ArrowDown"});
+  expect(document.activeElement).toBe(third);
+  expect(third.getAttribute("aria-current")).toBe("step");
+  const last = screen.getByRole("button", {name: /Step 5:/});
+  fireEvent.keyDown(third, {key: "End"});
+  expect(document.activeElement).toBe(last);
+  fireEvent.click(screen.getByRole("button", {name: "Simulate approval"}));
+  fireEvent.keyDown(last, {key: "End"});
+  expect(screen.getByText("Sample decision recorded")).toBeTruthy();
+  fireEvent.keyDown(last, {key: "Home"});
+  expect(screen.queryByText("Sample decision recorded")).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole("button", {name: /Step 1:/}));
+});
+
+type CinematicAxiomDemoProps = NonNullable<Parameters<typeof CinematicAxiomDemo>[0]>;
+
+it("moves between the current step and its response without clearing a sample decision", () => {
+  render(createElement<CinematicAxiomDemoProps>(CinematicAxiomDemo, {showStoryPreviews: true}));
+  const steps = within(screen.getByRole("group", {name: "Story steps"}));
+  const last = steps.getByRole("button", {name: /Step 5:/});
+  fireEvent.click(last);
+  fireEvent.click(screen.getByRole("button", {name: "Simulate approval"}));
+  fireEvent.click(screen.getByRole("button", {name: "View sample response"}));
+  expect(document.activeElement).toBe(screen.getByRole("region", {name: "Sample workflow response"}));
+  fireEvent.click(screen.getByRole("button", {name: "Back to selected step"}));
+  expect(document.activeElement).toBe(last);
+  expect(last.getAttribute("aria-current")).toBe("step");
+  expect(screen.getByText("Sample decision recorded")).toBeTruthy();
+});
+
+it("allows the demo landing page to focus the tour without a link to itself",()=>{
+ render(createElement<CinematicAxiomDemoProps>(CinematicAxiomDemo,{showDemoLink:false}));
+ const tour=screen.getByRole("region",{name:"V19 interactive workflow stories"});
+ expect(tour.id).toBe("product-tour");
+ expect(tour.tabIndex).toBe(-1);
+ expect(screen.queryByRole("link",{name:"Explore every safe demo"})).toBeNull();
+});
+
+it("uses source-bound stills as part of the Demo story controls only", () => {
+  const view = render(createElement(CinematicAxiomDemo));
+  const choices = () => within(screen.getByRole("group", {name: "Choose a workflow story"}));
+  expect(choices().getByRole("button", {name: "Code & review"}).querySelector("img")).toBeNull();
+
+  view.rerender(createElement<CinematicAxiomDemoProps>(CinematicAxiomDemo, {showStoryPreviews: true, showDemoLink: false}));
+  for (const [id, name] of [
+    ["workspace", /Code & review/],
+    ["agent", /Agent & approval/],
+    ["cloud", /Terraform & cloud/],
+  ] as const) {
+    const choice = choices().getByRole("button", {name});
+    expect(choice.querySelector("img")?.getAttribute("src")).toBe(`/media/workflow-stories/${id}.webp`);
+    expect(choice.querySelector("img")?.getAttribute("alt")).toBe("");
+    fireEvent.click(choice);
+    expect(choice.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("status", {name: "Current story step"}).textContent).toContain("Step 1 of");
+  }
 });

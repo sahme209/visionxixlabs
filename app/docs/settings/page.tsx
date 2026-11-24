@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
-export const metadata: Metadata = { title: "Settings and sessions — V19 Documentation", description: "Change your display name and review or revoke your paired desktop sessions.", alternates: { canonical: "/docs/settings" } };
+export const metadata: Metadata = { title: "Settings and sessions — V19 Documentation", description: "Review workspace access in desktop Settings, change your display name, and manage paired devices.", alternates: { canonical: "/docs/settings" } };
 export default function SettingsGuide() {
  return <>
   <DocHeader kicker="Account · Settings and sessions" title="Keep your profile and devices under control." summary="Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct." />
@@ -18,6 +18,12 @@ export default function SettingsGuide() {
   </DocSection>
   <DocSection id="desktop" kicker="04" title="Desktop settings have a different scope">
    <p>This guide describes browser account settings. The desktop Agent has its own settings and saved session. Use the <a href="/docs/desktop-install">desktop installation guide</a> for installation and pairing, and confirm the active account and workspace in the app before acting.</p>
+   <p>For the desktop Settings shortcut and browser workspace scope, see <a href="/docs/audit-logs#desktop-settings">View the audit log from desktop Settings</a>.</p>
+  </DocSection>
+  <DocSection id="desktop-workspace-access" kicker="05" title="Find the workspace owner and members in desktop Settings">
+   <p>In paired versions that show the owner, open <strong>Settings → General</strong> and look below the workspace ID and device time zone. The <em>Owner</em> row uses accepted owner records from that workspace. <em>Access &amp; roles</em> previews up to three accepted members. Choose <em>View permissions</em> to open the member and role view.</p>
+   <p>If workspace members are unavailable, use <em>Refresh members</em>. An unavailable read does not establish that the workspace has no owner or members. Check that the app is paired to the intended workspace before relying on the result.</p>
+   <p><em>Invite member</em>, when available, opens <a href="/docs/members#invite">Control → Members</a> in the browser. The desktop rechecks your permission and the browser requires the same account and workspace with a current membership. If the browser asks you to return to desktop Permissions, verify the browser account and workspace, then re-open the shortcut from desktop.</p>
   </DocSection>
   <DocFooterNav prev={{href:"/docs/usage-billing",label:"Usage and billing"}} next={{href:"/docs/troubleshooting",label:"Troubleshooting"}} />
  </>;

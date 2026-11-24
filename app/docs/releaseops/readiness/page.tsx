@@ -41,7 +41,7 @@ export default function ReadinessScoringPage() {
                 </div>
             </DocSection>
 
-            <DocSection id="states" title="Required signal states" kicker="02">
+            <DocSection id="states" title="Readiness check states" kicker="02">
                 <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
                     <li><strong>Verified</strong> — supported by a current persisted record or actual integration response.</li>
                     <li><strong>Human confirmed</strong> — explicitly attested by an authorized user with time and identity recorded.</li>
@@ -56,12 +56,15 @@ export default function ReadinessScoringPage() {
                     <li>Blocking requirements stop progression and identify the owner or dependency needed to continue.</li>
                     <li>Rejected and expired approvals remain recorded and do not count as authorization.</li>
                     <li>Retries preserve prior attempts and their evidence.</li>
-                    <li>Deferred validation records an owner, due time, expected check, and follow-up state.</li>
                     <li>Closure is unavailable until required evidence and validation are present.</li>
                 </ul>
             </DocSection>
 
-            <DocSection id="trust" title="Trust questions" kicker="04">
+            <DocSection id="deferred-validation" title="What deferred validation records" kicker="04">
+                <p>When policy allows deferred validation, record an owner, due time, expected check, and follow-up state. Closure stays unavailable while required validation or evidence is missing.</p>
+            </DocSection>
+
+            <DocSection id="trust" title="Trust questions" kicker="05">
                 <TrustGrid
                     items={[
                         { question: "What is readiness?", answer: "A set of policy checks and evidence used to decide whether a specific deployment can proceed." },

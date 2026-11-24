@@ -9,7 +9,7 @@ import type { HoldV2, ReservationAttributionV2, PurchaseV2 } from "../newTestSub
 function fixture() {
   const scope = { runtimeId: "r", accountId: "a", organizationId: "o" }, enrollment = createEnrollmentV2(scope), freeBasis = createAllowanceBasisV2({ ...scope, version: 2, policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest, kind: "free" });
   const state = { enrollment, freeBasis, paidBasis: null, revision: 1 }; let now = new Date("2026-10-31T23:59:59Z");
-  const purchases: PurchaseV2[] = [{ id: "purchase", organizationId: "o", status: "paid", validFor: "current_month", periodMonth: "2026-10", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, refundedAt: null, createdAt: now }];
+  const purchases: PurchaseV2[] = [{ id: "purchase", organizationId: "o", status: "paid", validFor: "current_month", periodMonth: "2026-10", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, refundedAt: null, appliedAt: new Date("2026-10-01T00:00:00Z"), createdAt: now }];
   let memberRole = "owner"; let accepted = true; let onLock = () => {}; let onAuthority = () => {}; let denyInsert = false;
   const usage: unknown[] = [], holds: HoldV2[] = [];
   const execute = vi.fn(async (_sql: string, id: string, _org: string, _digest: string, body: string) => { const h = holds.find(h => h.id === id); if (h) h.attribution = JSON.parse(body) as ReservationAttributionV2; return 1; });

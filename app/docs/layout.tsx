@@ -12,7 +12,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
         <div className="public-doc-layout max-w-[1200px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8">
           <DocsContents />
 
-          <main className="min-w-0">{children}</main>
+          <main id="docs-article" tabIndex={-1} className="min-w-0 wrap-anywhere">{children}</main>
         </div>
       </div>
 

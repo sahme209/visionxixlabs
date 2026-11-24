@@ -9,24 +9,8 @@ import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbac
 
 export const dynamic = "force-dynamic";
 
-const CLOUD_PROVIDERS = ["aws", "azure", "gcp"] as const;
 const COLLABORATION_PROVIDERS = ["slack", "teams", "linear"] as const;
 const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
-
-interface ConnectorSessionRow {
-    provider: string;
-    status: string;
-    lastTransitionAt: Date;
-}
-
-interface ConnectorSessionRepo {
-    connectorSetupSession: {
-        findMany(args: {
-            where: { organizationId: string; provider: { in: string[] } };
-            select: { provider: true; status: true; lastTransitionAt: true };
-        }): Promise<ConnectorSessionRow[]>;
-    };
-}
 
 interface GitHubInstallationRow {
     status: string;
@@ -76,14 +60,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
         }
 
-        const rows = await (prisma as unknown as ConnectorSessionRepo).connectorSetupSession.findMany({
-            where: {
-                organizationId: String(session.organizationId),
-                provider: { in: [...CLOUD_PROVIDERS] },
-            },
-            select: { provider: true, status: true, lastTransitionAt: true },
-        });
-        const byProvider = new Map(rows.map((row) => [row.provider, row]));
         // Enrollment is the Azure source of truth. A legacy setup session
         // neither proves a scoped credential nor enables scans or deployment.
         let awsSummary = {provider: "aws", status: "unavailable", lastTransitionAt: null as string | null};
@@ -118,7 +94,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             } catch { /* No legacy success fallback. */ }
         }
         let collaboration: Array<{ provider: "slack" | "teams" | "linear"; status: string; lastValidatedAt: string | null; recoveryReceipt?: string }> =
-            COLLABORATION_PROVIDERS.map((provider) => ({ provider, status: "not_connected", lastValidatedAt: null }));
+            COLLABORATION_PROVIDERS.map((provider) => ({ provider, status: "unavailable", lastValidatedAt: null }));
         try {
             const connections = await (prisma as unknown as TenantIntegrationConnectionRepo).tenantIntegrationConnection.findMany({
                 where: {
@@ -148,9 +124,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             // The migration may not yet be deployed. Do not infer a connection
             // from webhook configuration or browser UI presence.
         }
-        let github: { status: string; repositorySelection: string } = {
-            status: "not_connected",
+        let github: { status: string; repositorySelection: string; lastSeenAt: string | null } = {
+            status: "unavailable",
             repositorySelection: "unknown",
+            lastSeenAt: null,
         };
         try {
             const installation = await (prisma as unknown as GitHubInstallationRepo).gitHubInstallation.findFirst({
@@ -162,20 +139,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 select: { status: true, repositorySelection: true, lastSeenAt: true },
             });
             if (installation) {
-                // A callback proves that GitHub accepted the installation, but
-                // not yet that Axiom can mint an installation token and perform
-                // a scoped read. Keep that distinction explicit until the live
-                // read-only validation lifecycle exists.
+                // Only a valid observation on an active installation can be surfaced.
+                const seenAt = installation.lastSeenAt;
+                const age = seenAt ? Date.now() - seenAt.getTime() : NaN;
+                const hasObservation = installation.status === "active" && Number.isFinite(age) && age >= 0;
                 github = {
                     status: installation.status === "active"
-                        ? (!installation.lastSeenAt
+                        ? (!hasObservation
                             ? "installation_recorded"
-                            : Date.now() - installation.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS
+                            : age <= GITHUB_VALIDATION_FRESH_FOR_MS
                                 ? "validated_read_only"
                                 : "validation_overdue")
                         : installation.status,
                     repositorySelection: installation.repositorySelection,
+                    lastSeenAt: hasObservation && seenAt ? seenAt.toISOString() : null,
                 };
+            } else {
+                github.status = "not_connected";
             }
         } catch {
             // GitHub App installation is optional and may not be migrated yet.
@@ -198,17 +178,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     teams: isCollaborationOAuthConfigured("teams"),
                     linear: isCollaborationOAuthConfigured("linear"),
                 },
-                cloud: CLOUD_PROVIDERS.map((provider) => {
-                    if (provider === "aws") return awsSummary;
-                    if (provider === "azure") return azureSummary;
-                    if (provider === "gcp") return gcpSummary;
-                    const row = byProvider.get(provider);
-                    return {
-                        provider,
-                        status: row?.status ?? "not_connected",
-                        lastTransitionAt: row?.lastTransitionAt.toISOString() ?? null,
-                    };
-                }),
+                cloud: [awsSummary, azureSummary, gcpSummary],
                 github,
                 collaboration,
             },

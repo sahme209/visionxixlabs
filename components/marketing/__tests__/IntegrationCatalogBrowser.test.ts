@@ -6,12 +6,11 @@ import { IntegrationCatalogBrowser } from "../IntegrationCatalogBrowser";
 import { publicCatalogEntries } from "@/lib/integrations/publicIntegrationCatalog";
 vi.mock("next/link", () => ({ default: ({ children, href, prefetch: _prefetch, ...props }: {children: React.ReactNode;href:string;prefetch?:boolean}) => createElement("a", { ...props, href }, children) }));
 afterEach(cleanup);
-it("starts with planned entries visible and never offers a public connection action", () => {
+it("shows gated GitLab documentation without offering a public connection action", () => {
  render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
  const gitlab=screen.getByRole("article",{name:"GitLab integration"});
- expect(within(gitlab).getByText("Planned")).toBeDefined();
- expect(within(gitlab).queryByRole("link")).toBeNull();
- expect(within(gitlab).getByText("No setup available yet")).toBeDefined();
+ expect(within(gitlab).getByText("Implementation review")).toBeDefined();
+ expect(within(gitlab).getByRole("link", {name: "Read implementation notes for GitLab"}).getAttribute("href")).toBe("/docs/integration-setup#gitlab");
  for(const link of screen.getAllByRole("link"))expect(link.getAttribute("href")).not.toMatch(/^\/(?:api\/|account\/integrations)|^https?:/i);
  expect(screen.getByText(/not your account’s connection or permission status/i)).toBeDefined();
 });
@@ -40,7 +39,7 @@ it("searches names, explains empty intersections and resets all filters",()=>{
 it("keeps setup links as ordinary documentation navigation",()=>{
  render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
  const aws=screen.getByRole("article",{name:"AWS integration"});
- expect(within(aws).getByRole("link",{name:"Read setup guide"}).getAttribute("href")).toBe("/docs/aws-setup");
+ expect(within(aws).getByRole("link",{name:"Read setup guide for AWS"}).getAttribute("href")).toBe("/docs/aws-setup");
 });
 it("shows each card's typed operation models separately from availability",()=>{
  const entries=publicCatalogEntries();
@@ -55,14 +54,20 @@ it("shows each card's typed operation models separately from availability",()=>{
  expect(within(models).queryByText(/connected|available|enabled/i)).toBeNull();
  expect(screen.getByText(/not your account’s connection or permission status/i)).toBeDefined();
 });
-it("keeps planned operation models descriptive without setup authority",()=>{
+it("lists GitLab under reviewed reads and excludes it from workflow changes",()=>{
  render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
  const gitlab=screen.getByRole("article",{name:"GitLab integration"});
- expect(within(gitlab).getByRole("group",{name:"Operation models"}).textContent).toContain("Change workflows");
- expect(within(gitlab).getByText("Planned")).toBeDefined();
- expect(within(gitlab).getByText("No setup available yet")).toBeDefined();
- expect(within(gitlab).queryByRole("link")).toBeNull();
+ const models=within(gitlab).getByRole("group",{name:"Operation models"});
+ expect(within(models).getByText("Read context")).toBeDefined();
+ expect(within(models).queryByText("Change workflows")).toBeNull();
+ expect(within(gitlab).getByText("Implementation review")).toBeDefined();
+ expect(within(gitlab).getByRole("link", {name: "Read implementation notes for GitLab"}).getAttribute("href")).toBe("/docs/integration-setup#gitlab");
  expect(within(gitlab).queryByRole("button")).toBeNull();
+ fireEvent.change(screen.getByLabelText("Search connectors"),{target:{value:"GitLab"}});
+ fireEvent.change(screen.getByLabelText("Operation model"),{target:{value:"change"}});
+ expect(screen.queryByRole("article",{name:"GitLab integration"})).toBeNull();
+ fireEvent.change(screen.getByLabelText("Operation model"),{target:{value:"read"}});
+ expect(screen.getByRole("article",{name:"GitLab integration"})).toBeDefined();
 });
 it.each(['GitLab','no connector has this name'])('returns deliberate clear focus to search after filtering %s',query=>{
  render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
@@ -94,4 +99,17 @@ it('shows real catalog marks and keeps detailed limitations available through na
   fireEvent.click(within(card).getByText('Connection details'));expect(disclosure?.open).toBe(true);
   if(!entry.availability.enabled)expect(within(card).queryByRole('link')).toBeNull();
  }
+});
+
+it.each([
+ ["GitHub", "Read setup guide", "/docs/integration-setup#github"],
+ ["Apache Airflow", "Read setup guide", "/docs/integration-setup#airflow"],
+ ["Azure", "Read preview scope", "/docs/azure-setup"],
+ ["GCP", "Read preview scope", "/docs/gcp-setup"],
+ ["Slack", "Read implementation notes", "/docs/integration-setup#slack"],
+])("routes %s to the relevant guide without starting a connection", (provider, label, href) => {
+ render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
+ const card = within(screen.getByRole("article",{name:`${provider} integration`}));
+ expect(card.getByRole("link",{name:`${label} for ${provider}`}).getAttribute("href")).toBe(href);
+ expect(card.getByText("Connection details").getAttribute("aria-label")).toBe(`Connection details for ${provider}`);
 });

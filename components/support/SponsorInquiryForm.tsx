@@ -32,14 +32,14 @@ export function SponsorInquiryForm() {
         <label className="text-sm text-zinc-400">Business email<input name="email" required type="email" autoComplete="email" className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="text-sm text-zinc-400">Organization <span className="text-zinc-600">(optional)</span><input name="organization" maxLength={160} autoComplete="organization" className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
+        <label className="text-sm text-zinc-400">Organization <span className="text-zinc-400">(optional)</span><input name="organization" maxLength={160} autoComplete="organization" className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
         <label className="text-sm text-zinc-400">Potential commitment<select name="range" required defaultValue="" className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#171715] px-4 text-zinc-100 outline-hidden focus:border-orange-300/50"><option value="" disabled>Select a range</option><option>$5,000–$24,999</option><option>$25,000–$99,999</option><option>$100,000+</option><option>Prefer to discuss</option></select></label>
       </div>
       <label className="text-sm text-zinc-400">What would you like to advance?<textarea name="message" required minLength={20} maxLength={5000} rows={5} className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
       <button disabled={state === "sending"} className="min-h-12 rounded-full bg-orange-400 px-6 text-sm font-semibold text-[#241006] transition hover:bg-orange-300 disabled:opacity-50">{state === "sending" ? "Recording inquiry…" : "Start a sponsorship conversation"}</button>
-      <p className="text-xs leading-5 text-zinc-600">An inquiry creates no obligation and offers no equity, financial return, charitable deduction, or guaranteed commercial benefit. No payment is collected through this form.</p>
+      <p className="text-xs leading-5 text-zinc-400">An inquiry creates no obligation and offers no equity, financial return, charitable deduction, or guaranteed commercial benefit. No payment is collected through this form.</p>
     </form>
   );
 }

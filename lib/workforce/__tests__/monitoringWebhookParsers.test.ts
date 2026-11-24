@@ -260,3 +260,20 @@ describe("parseWebhookPayload :: generic + edges", () => {
     expect(parseWebhookPayload("generic", { title: "t", severity: "emergency" }).severity).toBe("critical");
   });
 });
+
+it.each(["prometheus_alertmanager", "grafana"] as const)(
+  "normalizes the signed %s fingerprint and lifecycle timestamps to stable UTC values",
+  provider => {
+    const fingerprint = "F404ECABC8DD5CD7";
+    const parse = (status: string, startsAt: string, endsAt: string) =>
+      parseWebhookPayload(provider, {alerts: [{fingerprint, status, startsAt, endsAt}]});
+    const firing = parse("firing", "2026-11-22T11:00:00.123456+01:00", "0001-01-01T00:00:00Z");
+    const resolved = parse("resolved", "2026-11-22T10:00:00.123Z", "2026-11-22T10:25:00Z");
+    expect(firing.alertId).toBe("fingerprint_" + fingerprint.toLowerCase());
+    expect(resolved.alertId).toBe(firing.alertId);
+    expect(firing.sourceOrder).toEqual({startedAt: "2026-11-22T10:00:00.123Z", resolvedAt: null});
+    expect(resolved.sourceOrder).toEqual({startedAt: "2026-11-22T10:00:00.123Z", resolvedAt: "2026-11-22T10:25:00.000Z"});
+    expect(parse("resolved", "2026-11-22T10:00:00Z", "0001-01-01T00:00:00Z").sourceOrder).toBeNull();
+    expect(parse("firing", "2026-02-30T10:00:00Z", "").sourceOrder).toBeNull();
+  },
+);

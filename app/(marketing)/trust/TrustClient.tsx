@@ -63,7 +63,7 @@ export function TrustClient() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.2 } }}
-              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
+              className="public-trust-reveal surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
             >
               <div className="text-2xl text-emerald-300 mb-2 font-mono">{c.symbol}</div>
               <p className="text-[14px] font-semibold text-white">{c.title}</p>
@@ -78,7 +78,7 @@ export function TrustClient() {
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          className="text-2xl md:text-3xl font-bold tracking-[-0.02em]"
+          className="public-trust-reveal text-2xl md:text-3xl font-bold tracking-[-0.02em]"
         >
           Control and assurance status
         </motion.h2>
@@ -124,7 +124,7 @@ export function TrustClient() {
           </Link>
           <Link
             href="/docs/audit-logs"
-            className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(52,211,153,0.45)] hover:bg-emerald-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-zinc-950 shadow-[0_0_24px_rgba(52,211,153,0.45)] hover:bg-emerald-400 transition"
           >
             Read audit documentation →
           </Link>

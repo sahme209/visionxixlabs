@@ -2,9 +2,9 @@
  * Public status report builder.
  *
  * Produces a tenant-agnostic snapshot suitable for an unauthenticated
- * /status page. Components map to durable Prisma-row signals (writes
- * within the last 24h ⇒ "operational") + an in-memory cron health
- * snapshot + the AGI self-diagnostic.
+ * /status page. Components summarize durable records, in-memory cron
+ * health and the AGI self-diagnostic. Decision records do not establish
+ * whether the autonomy scheduler ticked.
  *
  * Hard rules:
  *   - Pure aggregation; no secrets in the response.
@@ -58,27 +58,18 @@ export async function buildPublicStatus(): Promise<PublicStatusReport> {
 }
 
 async function checkAutonomyLoop(): Promise<StatusComponent> {
+  const component = { id: "autonomy_loop", label: "Autonomy decision records" };
   try {
     const since = new Date(Date.now() - DAY_MS);
-    const recent = await prisma.autonomyDecisionRationale.count({
+    const decision = await prisma.autonomyDecisionRationale.findFirst({
       where: { createdAt: { gte: since } },
+      select: { id: true },
     });
-    if (recent === 0) {
-      return {
-        id: "autonomy_loop",
-        label: "Autonomy loop",
-        verdict: "degraded",
-        detail: "No rationale rows in the last 24h. Either the scheduler is off or no candidates surfaced.",
-      };
-    }
-    return {
-      id: "autonomy_loop",
-      label: "Autonomy loop",
-      verdict: "operational",
-      detail: `${recent} candidate decision(s) recorded in the last 24h.`,
-    };
+    return decision
+      ? { ...component, verdict: "operational", detail: "A decision was recorded in the last 24 hours." }
+      : { ...component, verdict: "unknown", detail: "No decision was recorded in the last 24 hours. Scheduler health is unverified." };
   } catch {
-    return { id: "autonomy_loop", label: "Autonomy loop", verdict: "unknown", detail: "Could not query rationale store." };
+    return { ...component, verdict: "unknown", detail: "Could not query rationale store." };
   }
 }
 

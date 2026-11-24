@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { desktopClient } from "../lib/desktopClient";
 import type { ReleaseBatchWaitState } from "../lib/releaseBatchWaitContract";
 
-export function ReleaseBatchMonitor({ requestId, version }: { requestId: string; version: number }) {
+export function ReleaseBatchMonitor({ requestId, version, readOnly = false }: { requestId: string; version: number; readOnly?: boolean }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
   const key = JSON.stringify([requestId, version, revision]);
   const owner = useRef<string | null>(key); owner.current = key;
@@ -14,6 +14,7 @@ export function ReleaseBatchMonitor({ requestId, version }: { requestId: string;
   const current = entry?.key === key && entry.config === desktopClient.config ? entry : undefined;
   async function perform(mode: "read" | "start" | "cancel") {
     const config = desktopClient.config, selected = key, data = current?.data;
+    if (readOnly && mode !== "read") return;
     if (flight.current?.key === selected && flight.current.config === config) return;
     if (mode === "start" && (!data?.canStart || !data.monitoringEnabled)) return;
     if (mode === "cancel" && (!data?.canCancel || !data.wait)) return;
@@ -34,7 +35,10 @@ export function ReleaseBatchMonitor({ requestId, version }: { requestId: string;
       if (owned()) setEntry({ key: selected, config, busy: false, error: "Monitor status is unavailable. Refresh before trying again." });
     } finally { if (flight.current === operation) flight.current = null; }
   }
-  const data = current?.data, wait = data?.wait;
+  const data = readOnly && current?.busy ? undefined : current?.data;
+  const wait = data?.wait;
+  const deadline = wait?.deadlineAt == null ? undefined : new Date(wait.deadlineAt);
+  const nextObservation = wait?.nextObservationAt ? new Date(wait.nextObservationAt) : undefined;
   let message = "";
   if (data) {
     if (wait?.status === "cancelled") message = "Batch monitoring stopped.";
@@ -43,13 +47,22 @@ export function ReleaseBatchMonitor({ requestId, version }: { requestId: string;
     else if (wait?.status === "failed") message = "Batch monitoring stopped. Check batches manually.";
     else if (!data.monitoringEnabled) message = wait ? "Background monitoring is paused by the workspace." : "Background checks are unavailable. You can still check batches manually.";
     else if (wait) message = "Batch monitor saved. Refresh for current status.";
+    else if (readOnly) message = "No monitoring record is saved for this release version.";
     else if (!data.canStart) message = "A deployment operator can start background checks.";
   }
-  return <section aria-label="Batch monitor" className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-    <button type="button" className="btn-secondary" disabled={current?.busy} onClick={() => void perform("read")}>{current?.busy ? "Loading monitor…" : current ? "Refresh monitor" : "Monitor batches"}</button>
+  return <section aria-label="Batch monitor" className={readOnly ? "studio-batches-monitor-content" : "mt-2 flex flex-wrap items-center gap-2 text-xs"}>
+    <button type="button" className="btn-secondary" disabled={!readOnly && current?.busy} aria-disabled={readOnly && current?.busy}
+      onClick={() => { if (!current?.busy) void perform("read"); }}>{current?.busy ? "Loading monitor…" : current ? "Refresh monitor" : readOnly ? "View monitor status" : "Monitor batches"}</button>
+    {readOnly && wait && <p className="studio-batches-monitor-state">Recorded monitor status · {wait.status.replaceAll("_", " ")}</p>}
     {message && <p role="status" className="text-zinc-400">{message}</p>}
+    {readOnly && wait && <dl className="studio-batches-monitor-timing">
+      <div><dt>Recorded deadline</dt><dd>{deadline && Number.isFinite(deadline.getTime())
+        ? <time dateTime={deadline.toISOString()}>{deadline.toLocaleString()}</time> : "Unavailable"}</dd></div>
+      <div><dt>Recorded next observation</dt><dd>{nextObservation && Number.isFinite(nextObservation.getTime())
+        ? <time dateTime={nextObservation.toISOString()}>{nextObservation.toLocaleString()}</time> : "Unavailable"}</dd></div>
+    </dl>}
     {current?.error && <p role="alert" className="text-amber-300">{current.error}</p>}
-    {data?.canStart && data.monitoringEnabled && <><label className="text-zinc-400">Watch for <select aria-label="Watch duration" value={minutes} disabled={current?.busy} onChange={event => setMinutes(Number(event.target.value))} className="ml-1 rounded-sm border border-white/10 bg-zinc-900 px-2 py-1"><option value={15}>15 minutes</option><option value={60}>1 hour</option><option value={240}>4 hours</option><option value={1440}>24 hours</option></select></label><button type="button" className="btn-secondary" disabled={current?.busy} onClick={() => void perform("start")}>Start watching</button></>}
-    {data?.canCancel && wait && <button type="button" className="btn-secondary" disabled={current?.busy} onClick={() => void perform("cancel")}>Stop watching</button>}
+    {!readOnly && data?.canStart && data.monitoringEnabled && <><label className="text-zinc-400">Watch for <select aria-label="Watch duration" value={minutes} disabled={current?.busy} onChange={event => setMinutes(Number(event.target.value))} className="ml-1 rounded-sm border border-white/10 bg-zinc-900 px-2 py-1"><option value={15}>15 minutes</option><option value={60}>1 hour</option><option value={240}>4 hours</option><option value={1440}>24 hours</option></select></label><button type="button" className="btn-secondary" disabled={current?.busy} onClick={() => void perform("start")}>Start watching</button></>}
+    {!readOnly && data?.canCancel && wait && <button type="button" className="btn-secondary" disabled={current?.busy} onClick={() => void perform("cancel")}>Stop watching</button>}
   </section>;
 }

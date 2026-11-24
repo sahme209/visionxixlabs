@@ -1,10 +1,11 @@
+import { hasAppliedCreditPayment } from "../creditPaymentEvidence";
 import { createHash } from "node:crypto";
 import { ANNIVERSARY_POLICY_V2, createAllowanceBasisV2, validateAllowanceWindowV2, type AllowanceBasisV2, type AllowanceWindowV2 } from "./anniversaryWindow";
 export type CeilingV2 = { source: "included"; bucketId: string; maxCents: number } | { source: "purchase"; purchaseId: string; maxCents: number };
 export type SpendV2 = { source: "included"; bucketId: string; cents: number } | { source: "purchase"; purchaseId: string; cents: number };
 export type ReservationAttributionV2 = { version: 2; policy: "axiom_test_anniversary_v2"; runtimeId: string; accountId: string; organizationId: string; enrollmentDigest: string; basisDigest: string; bucketId: string; kind: "free" | "paid"; windowStart: string; windowEnd: string; admittedAt: string; allocation: CeilingV2[]; digest: string };
 export type UsageAttributionV2 = Omit<ReservationAttributionV2, "policy" | "runtimeId" | "accountId" | "organizationId" | "digest" | "allocation"> & { reservationId: string; attributionDigest: string } & ({ state: "pending"; allocation?: never } | { state: "settled"; allocation: SpendV2[] });
-export type PurchaseV2 = { id: string; organizationId: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; validFor: string; periodMonth: string; refundedAt: Date | null; createdAt: Date };
+export type PurchaseV2 = { id: string; organizationId: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; validFor: string; periodMonth: string; refundedAt: Date | null; appliedAt: Date | null; createdAt: Date };
 export type HoldV2 = { codingHold?: boolean; id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: ReservationAttributionV2 | null };
 export type UsageV2 = { id: string; organizationId: string; billedCents: number; billingStatus: string; metadata: unknown };
 export type AllocationFactsV2 = { bases: AllowanceBasisV2[]; holds: HoldV2[]; usage: UsageV2[]; purchases: PurchaseV2[] };
@@ -47,7 +48,7 @@ export function usageAttributionV2(id: string, a: ReservationAttributionV2, actu
   return { ...common, state: "settled", allocation };
 }
 export function eligiblePurchaseV2(p: PurchaseV2, now: Date): boolean {
-  return ["paid", "partially_refunded"].includes(p.status) && (p.validFor === "current_month" ? p.periodMonth === now.toISOString().slice(0, 7) : p.validFor === "permanent" && p.refundedAt === null);
+  return hasAppliedCreditPayment(p) && ["paid", "partially_refunded"].includes(p.status) && (p.validFor === "current_month" ? p.periodMonth === now.toISOString().slice(0, 7) : p.validFor === "permanent" && p.refundedAt === null);
 }
 /** Full bounded fact sets, not aggregates. Every AI row must have original
  * attribution. The return is a projection/funding candidate, never a balance. */

@@ -36,15 +36,16 @@ export async function sendEmailVerification(input: { to: string; token: string; 
   return !result.error;
 }
 
-/** Explicit Google-link recovery; plaintext proof goes only to the existing mail transport. */
-export async function sendGoogleLinkConfirmation(input: { to: string; code: string }): Promise<boolean> {
+/** Explicit OIDC account-link recovery; plaintext proof goes only to the existing mail transport. */
+export async function sendGoogleLinkConfirmation(input: { to: string; code: string; provider?: "gitlab" }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key?.startsWith("re_")) return false;
+  const providerName = input.provider === "gitlab" ? "GitLab" : "Google";
   const result = await new Resend(key).emails.send({
     from: process.env.RESEND_FROM_EMAIL || "V19 <onboarding@resend.dev>",
     to: input.to,
-    subject: "Confirm your Google sign-in to V19",
-    text: `To confirm and link Google, paste this one-use code into the original V19 sign-in window:\n\n${input.code}\n\nIt expires within 10 minutes. If you did not request this, ignore this email.`,
+    subject: `Confirm your ${providerName} sign-in to V19`,
+    text: `To confirm and link ${providerName}, paste this one-use code into the original V19 sign-in window:\n\n${input.code}\n\nIt expires within 10 minutes. If you did not request this, ignore this email.`,
   });
   return !result.error;
 }

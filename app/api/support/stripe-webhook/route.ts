@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { Prisma } from "@/lib/prismaClient";
+import type { Prisma } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { createBadgeToken } from "@/lib/supporters/core";
 import { sendSupporterConfirmation } from "@/lib/supporters/email";
@@ -17,65 +17,100 @@ function paymentIntentId(value: string | Stripe.PaymentIntent | null): string | 
   return typeof value === "string" ? value : value?.id ?? null;
 }
 
-async function markPaid(event: Stripe.Event, session: Stripe.Checkout.Session) {
-  if (session.metadata?.purpose !== "axiom_founding_supporter" || session.payment_status !== "paid") return null;
-  const purchaseId = session.metadata.supporterPurchaseId;
-  if (!purchaseId) return null;
-  return prisma.$transaction(async (tx) => {
-    await tx.supporterStripeEvent.create({ data: { id: event.id, type: event.type } });
-    return tx.foundingSupporterPurchase.update({
-      where: { id: purchaseId },
+const supporterPurpose = "axiom_founding_supporter";
+
+function checkoutPurchaseId(session: Stripe.Checkout.Session) {
+  const purchaseId = session.metadata?.supporterPurchaseId;
+  return session.id && purchaseId && session.metadata?.purpose === supporterPurpose
+    && session.client_reference_id === purchaseId ? purchaseId : null;
+}
+
+async function recordPayment(tx: Prisma.TransactionClient, session: Stripe.Checkout.Session, replay: boolean) {
+  const purchaseId = checkoutPurchaseId(session);
+  const intentId = paymentIntentId(session.payment_intent);
+  if (!purchaseId || !intentId || session.payment_status !== "paid" || !session.currency || !session.amount_total) return null;
+
+  const identity = { id: purchaseId, currency: session.currency, amountCents: { lte: session.amount_total } };
+  if (!replay) {
+    const now = new Date();
+    await tx.foundingSupporterPurchase.updateMany({
+      where: {
+        ...identity,
+        status: { in: ["pending", "failed", "expired"] },
+        refundedAmountCents: 0,
+        AND: [
+          { OR: [{ stripeCheckoutSessionId: session.id }, { stripeCheckoutSessionId: null }] },
+          { OR: [{ stripePaymentIntentId: intentId }, { stripePaymentIntentId: null }] },
+        ],
+      },
       data: {
         status: "paid",
-        paidAt: new Date(),
-        badgeIssuedAt: new Date(),
+        paidAt: now,
+        badgeIssuedAt: now,
         stripeCheckoutSessionId: session.id,
-        stripePaymentIntentId: paymentIntentId(session.payment_intent),
+        stripePaymentIntentId: intentId,
       },
     });
+  }
+  return tx.foundingSupporterPurchase.findFirst({
+    where: {
+      ...identity,
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: intentId,
+      status: "paid",
+      refundedAmountCents: 0,
+      confirmationEmailSentAt: null,
+    },
   });
 }
 
-async function recordNonPaymentEvent(event: Stripe.Event) {
-  return prisma.$transaction(async (tx) => {
-    await tx.supporterStripeEvent.create({ data: { id: event.id, type: event.type } });
-    if (event.type === "checkout.session.expired" || event.type === "checkout.session.async_payment_failed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      if (session.metadata?.purpose === "axiom_founding_supporter" && session.metadata.supporterPurchaseId) {
-        await tx.foundingSupporterPurchase.update({
-          where: { id: session.metadata.supporterPurchaseId },
-          data: { status: event.type === "checkout.session.expired" ? "expired" : "failed" },
-        });
-      }
-    }
-    if (event.type === "charge.refunded") {
-      const charge = event.data.object as Stripe.Charge;
-      const intentId = paymentIntentId(charge.payment_intent);
-      if (intentId) {
-        // The separate supporter ledger is the authority here. Looking up the
-        // PaymentIntent avoids depending on Charge metadata propagation.
-        const purchase = await tx.foundingSupporterPurchase.findUnique({ where: { stripePaymentIntentId: intentId } });
-        if (purchase) {
-          const fullyRefunded = charge.amount_refunded >= purchase.amountCents;
-          await tx.foundingSupporterPurchase.update({
-            where: { id: purchase.id },
-            data: {
-              refundedAmountCents: Math.min(charge.amount_refunded, purchase.amountCents),
-              status: fullyRefunded ? "refunded" : "partially_refunded",
-              refundedAt: fullyRefunded ? new Date() : null,
-            },
-          });
-        }
-      }
-    }
+async function recordCheckoutFailure(tx: Prisma.TransactionClient, session: Stripe.Checkout.Session, expired: boolean) {
+  const purchaseId = checkoutPurchaseId(session);
+  if (!purchaseId) return;
+  await tx.foundingSupporterPurchase.updateMany({
+    where: {
+      id: purchaseId,
+      status: "pending",
+      refundedAmountCents: 0,
+      OR: [{ stripeCheckoutSessionId: session.id }, { stripeCheckoutSessionId: null }],
+    },
+    data: { status: expired ? "expired" : "failed", stripeCheckoutSessionId: session.id },
   });
 }
 
-function isReplay(error: unknown): boolean {
-  return (
-    error instanceof Prisma.PrismaClientKnownRequestError
-    || (typeof error === "object" && error !== null && "code" in error)
-  ) && (error as { code?: string }).code === "P2002";
+async function recordRefund(tx: Prisma.TransactionClient, charge: Stripe.Charge) {
+  const intentId = paymentIntentId(charge.payment_intent);
+  if (!intentId || !Number.isSafeInteger(charge.amount_refunded) || charge.amount_refunded <= 0) return;
+  const findByIntent = () => tx.foundingSupporterPurchase.findUnique({ where: { stripePaymentIntentId: intentId } });
+  let purchase = await findByIntent();
+  const purchaseId = charge.metadata?.supporterPurchaseId;
+  if (!purchase && purchaseId && charge.metadata?.purpose === supporterPurpose) {
+    // Roll back the event receipt when the refund arrives before Checkout
+    // binds its PaymentIntent. Stripe can then retry the same event.
+    const awaitingBinding = await tx.foundingSupporterPurchase.findFirst({
+      where: { id: purchaseId, stripePaymentIntentId: null, currency: charge.currency },
+      select: { id: true },
+    });
+    if (awaitingBinding) throw new Error("Supporter refund is awaiting PaymentIntent binding.");
+    purchase = await findByIntent();
+  }
+  if (!purchase || charge.currency !== purchase.currency) return;
+
+  const refundedAmountCents = Math.min(charge.amount_refunded, purchase.amountCents);
+  const fullyRefunded = refundedAmountCents === purchase.amountCents;
+  await tx.foundingSupporterPurchase.updateMany({
+    where: {
+      id: purchase.id,
+      stripePaymentIntentId: intentId,
+      status: { in: ["paid", "partially_refunded"] },
+      refundedAmountCents: { lt: refundedAmountCents },
+    },
+    data: {
+      refundedAmountCents,
+      status: fullyRefunded ? "refunded" : "partially_refunded",
+      refundedAt: fullyRefunded ? new Date() : null,
+    },
+  });
 }
 
 async function deliverConfirmation(
@@ -121,37 +156,37 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
+  const supportedTypes = [
+    "checkout.session.completed", "checkout.session.async_payment_succeeded",
+    "checkout.session.expired", "checkout.session.async_payment_failed", "charge.refunded",
+  ];
+  if (!supportedTypes.includes(event.type)) return NextResponse.json({ received: true, ignored: true });
+
   try {
-    let paidPurchase = null;
-    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-      paidPurchase = await markPaid(event, event.data.object as Stripe.Checkout.Session);
-    } else if (["checkout.session.expired", "checkout.session.async_payment_failed", "charge.refunded"].includes(event.type)) {
-      await recordNonPaymentEvent(event);
-    } else {
-      return NextResponse.json({ received: true, ignored: true });
-    }
+    const { replay, paidPurchase } = await prisma.$transaction(async (tx) => {
+      const { count } = await tx.supporterStripeEvent.createMany({
+        data: [{ id: event.id, type: event.type }],
+        skipDuplicates: true,
+      });
+      const replay = count === 0;
+      switch (event.type) {
+        case "checkout.session.completed":
+        case "checkout.session.async_payment_succeeded":
+          return { replay, paidPurchase: await recordPayment(tx, event.data.object, replay) };
+        case "checkout.session.expired":
+        case "checkout.session.async_payment_failed":
+          if (!replay) await recordCheckoutFailure(tx, event.data.object, event.type === "checkout.session.expired");
+          break;
+        case "charge.refunded":
+          if (!replay) await recordRefund(tx, event.data.object);
+          break;
+      }
+      return { replay, paidPurchase: null };
+    });
 
     if (paidPurchase) await deliverConfirmation(paidPurchase, process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin);
-    return NextResponse.json({ received: true });
+    return NextResponse.json(replay ? { received: true, replay: true } : { received: true });
   } catch (error) {
-    if (isReplay(error)) {
-      if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const purchaseId = session.metadata?.supporterPurchaseId;
-        if (purchaseId) {
-          const purchase = await prisma.foundingSupporterPurchase.findUnique({ where: { id: purchaseId } });
-          if (purchase) {
-            try {
-              await deliverConfirmation(purchase, process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin);
-            } catch (deliveryError) {
-              console.error("[Supporter webhook] Confirmation retry failed:", deliveryError);
-              return NextResponse.json({ error: "Confirmation delivery failed." }, { status: 500 });
-            }
-          }
-        }
-      }
-      return NextResponse.json({ received: true, replay: true });
-    }
     console.error("[Supporter webhook] Processing failed:", error);
     return NextResponse.json({ error: "Webhook processing failed." }, { status: 500 });
   }

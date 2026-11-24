@@ -36,7 +36,7 @@ export function ReleaseMergeReview({requestId,version}:{requestId:string;version
   finally{if(flight.current===operation)flight.current=null}
  }
  const targets=current?.targets,plan=current?.plan?.plan;
- return <section aria-label="Merge review" className="mt-3 rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
+ return <section data-release-detail="review" tabIndex={-1} aria-label="Merge review" className="mt-3 rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
   <div className="flex items-center justify-between gap-3"><p className="font-medium text-zinc-100">Merge review</p><button type="button" disabled={current?.busy} onClick={()=>void perform('targets')} className="rounded-sm border border-white/15 px-3 py-1.5 disabled:opacity-50">{current?.busy?'Reading…':targets?'Refresh merge targets':'Review merge'}</button></div>
   <p className="mt-1 text-zinc-500">Review only. No merge will run.</p>
   {current?.error&&<p role="alert" className="mt-2 text-amber-200">{current.error}</p>}

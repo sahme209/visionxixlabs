@@ -1,3 +1,4 @@
+import { deploymentRequestSummarySchema, savedReleaseLocatorSchema, type DeploymentRequestSummary } from "../../../lib/tauri/deploymentRequestSummary";
 import {createPlatformTemplateClient,createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformReviewClient,createPlatformExecutionClient,createPlatformPreparationClient} from './platformReview';
 import {releaseDeploymentApprovalPreviewSchema,type ReleaseDeploymentApprovalPreview} from '../../../lib/tauri/releaseDeploymentApprovalContract';
 import {readAgentActionEligibility,mutateAgentActionExecution,type AgentActionMutation} from './agentActionExecutionControls';
@@ -15,14 +16,16 @@ import {connectedActionsRequest,type ConnectedActionLookup,type ConnectedActions
 import {connectedActionsRequestSchema,type ConnectedActionsRequest} from '../../../lib/desktop/connectedActionsContract';
 import {readSlackChannels,type SlackChannelsResult} from "./slackChannelsTransport";
 import {githubReconnectChallengeSchema,githubReconnectConfirmationSchema,type GithubReconnectChallenge,type GithubReconnectConfirmation} from "../../../lib/desktop/githubInstallationReconnectContract";
-import {deploymentPlanSchema,deploymentApprovalSchema,type DeploymentPlan,type DeploymentApproval,parseDeploymentExecutionState,type DeploymentExecutionState} from "../../../lib/tauri/releaseDeploymentExecutionContract";
+import {deploymentPlanSchema,deploymentApprovalSchema,type DeploymentPlan,type DeploymentApproval,parseDeploymentExecutionState,deploymentExecutionHistorySchema,type DeploymentExecutionHistory,type DeploymentExecutionState} from "../../../lib/tauri/releaseDeploymentExecutionContract";
 import {parseProviderMergeExecutionState,type ProviderMergeExecutionState} from "../../../lib/tauri/releaseProviderMergeExecutionContract";
 import {isReleaseWorkflowEvidenceResponse,type ReleaseWorkflowEvidenceResponse} from './releaseWorkflowEvidenceContract';
-import {parseReleaseProviderMergeOperationResponse,type ProviderMergeOperationResponse} from '../../../lib/tauri/releaseProviderMergeContract';
+import {parseReleaseProviderMergeOperationResponse,providerMergeHistorySchema,type ProviderMergeHistory,type ProviderMergeOperationResponse} from '../../../lib/tauri/releaseProviderMergeContract';
 import {isProviderMergeApprovalState,type ProviderMergeApprovalState} from './releaseProviderMergeApprovalContract';
 import {isServiceNowTicketLifecycleState,isServiceNowMetadata,isServiceNowCloseOptions,type ServiceNowTicketLifecycleState,type ServiceNowMetadata,type ServiceNowCloseOptions} from './serviceNowTicketLifecycle';
+import {recordedServiceNowChangeSchema,type RecordedServiceNowChange} from '../../../lib/releaseops/serviceNowTicketLifecycleContract';
 import {isJiraTicketLifecycleState,isJiraCloseOptions,type JiraCloseOptions,type JiraTicketLifecycleState} from './jiraTicketLifecycle';
 import type {JiraCreatePreviewInput} from './jiraTicketDiscovery';
+import {exactApprovalHistorySchema, type ExactApprovalHistory, simulationApprovalHistorySchema, type SimulationApprovalHistory} from '../../../lib/tauri/releaseExecutionApprovalContract';
 import {isExecutionApprovalState,type ExecutionApprovalState} from './releaseExecutionApprovalContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
 import {isOperationPlanList,isOperationPlanMutation,isOperationPlanPreview,type OperationPlanList,type OperationPlanMutation,type OperationPlanPreview} from './releaseOperationPlanContract';
@@ -37,6 +40,7 @@ import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskH
 import { isCloudOnboardingReadiness, type CloudOnboardingReadiness } from '../../../lib/cloud/onboardingReadinessContract';
 import {isReleaseMergeTargets,isReleaseMergePlanEvidence,type ReleaseMergeTargets,type ReleaseMergePlanEvidence,type ReleaseMergeMethod} from "./releaseMergeContract";
 import { isReleaseBatchWait, isReleaseBatchWaitState, type ReleaseBatchWait, type ReleaseBatchWaitState } from "./releaseBatchWaitContract";
+import { isReleaseBatchDeclarations, isReleaseBatchReadiness, isReleaseBatchTaskPage, type ReleaseBatchDeclarations, type ReleaseBatchReadiness, type ReleaseBatchTaskPage } from "../../../lib/desktop/releaseBatchReadinessContract";
 import type { WorkflowDispatchInput } from "../../../lib/connectors/github/workflowDispatchInputDto";
 import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
@@ -110,6 +114,22 @@ export interface WorkspaceMember {
   acceptedAt: string | null;
   updatedAt: string;
 }
+
+export type DesktopIntegrationStatus = {
+  configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
+  cloud: Array<{
+    provider: "aws" | "azure" | "gcp";
+    status: string;
+    lastTransitionAt: string | null;
+  }>;
+  github: { status: string; repositorySelection: string; lastSeenAt?: string | null };
+  collaboration: Array<{
+    provider: "slack" | "teams" | "linear";
+    status: string;
+    lastValidatedAt: string | null;
+    recoveryReceipt?: string;
+  }>;
+};
 
 export interface AgentSkillCatalogItem {
   id: string;
@@ -587,7 +607,8 @@ export class DesktopClient {
   }
   savedBotTaskHistory(id:string,beforeVersion?:number,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskHistoryDto>> {
     if(!isSavedBotTaskId(id)||beforeVersion!==undefined&&(!Number.isInteger(beforeVersion)||beforeVersion<0||beforeVersion>2147483647))return Promise.resolve({ok:false,error:"Invalid saved-task history.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
-    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/${id}/history${beforeVersion===undefined?"":`?beforeVersion=${beforeVersion}`}`,undefined,(value):value is SavedBotTaskHistoryDto=>isSavedBotTaskHistory(value)&&value.taskId===id,signal);
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/${id}/history${beforeVersion===undefined?"":`?beforeVersion=${beforeVersion}`}`,undefined,(value):value is SavedBotTaskHistoryDto=>
+      isSavedBotTaskHistory(value)&&value.taskId===id&&(beforeVersion===undefined||value.events.every(event=>event.version<beforeVersion)),signal);
   }
 
   listDeploymentTerraformPlans(id: string): Promise<ApiResult<TerraformPlanReadData>> {
@@ -648,31 +669,37 @@ export class DesktopClient {
         : "The saved sign-in could not be verified. Sign in again." });
     if (signal?.aborted) return failure("canceled");
     if (!token || (!token.startsWith("vxlk_") && !token.startsWith("axm.desk."))) return failure("invalid");
+    const config = this.config;
     const controller = new AbortController();
     let settleBoundary: (result: CredentialVerificationResult) => void = () => {};
     const boundary = new Promise<CredentialVerificationResult>(resolve => {settleBoundary = resolve;});
     const onAbort = () => {controller.abort(); settleBoundary(failure("canceled"));};
     signal?.addEventListener("abort", onAbort, {once: true});
+    const unsubscribe = this.subscribeContext(onAbort);
     const timer = setTimeout(() => {controller.abort(); settleBoundary(failure(signal?.aborted ? "canceled" : "unavailable"));}, 15000);
     try {
       const operation = async (): Promise<CredentialVerificationResult> => {
         try {
-          const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
-            headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal: controller.signal,
+          const response = await fetch(`${config.apiBase.replace(/\/+$/, "")}/api/desktop/access`, {
+            headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+            credentials: "omit", redirect: "error", cache: "no-store", signal: controller.signal,
           });
+          if (this.config !== config) return failure("canceled");
           if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
           if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
             : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
           const body = await response.json().catch(() => null);
+          if (this.config !== config) return failure("canceled");
           if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
           const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
           const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
           return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
-        } catch {return failure(signal?.aborted ? "canceled" : "unavailable");}
+        } catch {return failure(signal?.aborted || this.config !== config ? "canceled" : "unavailable");}
       };
       return await Promise.race([operation(), boundary]);
     } finally {
       clearTimeout(timer);
+      unsubscribe();
       signal?.removeEventListener("abort", onAbort);
       controller.abort();
     }
@@ -1147,23 +1174,9 @@ export class DesktopClient {
     const r=await releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/integrations/github/reconnect',{action:'confirm',challengeId,expectedVersion:0},(v):v is GithubReconnectConfirmation=>githubReconnectConfirmationSchema.safeParse(v).success,signal);
     if(r.ok&&this.config===config&&this.contextRevision===revision)this.githubReconnectHold=undefined;return r;
   }
-  async integrationStatus(): Promise<ApiResult<{
-    configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
-    cloud: Array<{
-      provider: "aws" | "azure" | "gcp";
-      status: string;
-      lastTransitionAt: string | null;
-    }>;
-    github: { status: string; repositorySelection: string };
-    collaboration: Array<{
-      provider: "slack" | "teams" | "linear";
-      status: string;
-      lastValidatedAt: string | null;
-      recoveryReceipt?: string;
-    }>;
-  }>> {
+  async integrationStatus(): Promise<ApiResult<DesktopIntegrationStatus>> {
     const config=this.config,base=config.apiBase,token=config.sessionToken,revision=this.contextRevision,generation=++this.integrationStatusGeneration;
-    const result=await this.get<{configuration?:Record<"github"|"slack"|"teams"|"linear",boolean>;cloud:Array<{provider:"aws"|"azure"|"gcp";status:string;lastTransitionAt:string|null}>;github:{status:string;repositorySelection:string};collaboration:Array<{provider:"slack"|"teams"|"linear";status:string;lastValidatedAt:string|null;recoveryReceipt?:string}>}>("/api/desktop/integrations");
+    const result=await this.get<DesktopIntegrationStatus>("/api/desktop/integrations");
     if(result.ok&&this.config===config&&this.config.apiBase===base&&this.config.sessionToken===token&&this.contextRevision===revision&&generation===this.integrationStatusGeneration&&Array.isArray(result.data.collaboration)){
       let changed=false;
       for(const provider of ['slack','teams'] as const){const rows=result.data.collaboration.filter(r=>r&&r.provider===provider);if(rows.length!==1)continue;const row=rows[0];if(typeof row.recoveryReceipt!=='string'||!/^[a-f0-9]{64}$/.test(row.recoveryReceipt))continue;
@@ -1208,7 +1221,7 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/linear/validate", {});
   }
 
-  airflowConnection(): Promise<ApiResult<{ connected: boolean; status: string; connectionId?: string; connectionUpdatedAt?: string; baseUrl?: string; version?: string | null; dagCount?: number | null; authMode?: string; lastValidatedAt?: string }>> {
+  airflowConnection(): Promise<ApiResult<{ connected: boolean; status: string; connectionId?: string; connectionUpdatedAt?: string; baseUrl?: string; version?: string | null; dagCount?: number | null; authMode?: string; lastValidatedAt?: string | null }>> {
     return this.get("/api/desktop/airflow/connection");
   }
 
@@ -1441,7 +1454,7 @@ export class DesktopClient {
     return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/reject`, {});
   }
 
-  listRepositories(): Promise<ApiResult<{ generatedAt: string; repositories: Array<{ id: string; provider: "github" | "gitlab" | "azuredevops" | "other"; displayName: string; remoteUrl: string; defaultBranch: string; protectionStrength: "strong" | "weak" | "none"; flavorBadge: string | null; openPrCount: number; recentTagCount: number; lastWorkflow: { name: string; state: "queued" | "in_progress" | "completed"; conclusion: string | null; startedAtIso: string | null } | null }>; summary: { total: number; byProvider: Record<string, number>; weakProtection: number } }>> {
+  listRepositories(): Promise<ApiResult<{ generatedAt: string; repositories: Array<{ id: string; provider: "github" | "gitlab" | "azuredevops" | "other"; displayName: string; remoteUrl: string; defaultBranch: string; protectionStrength: "strong" | "weak" | "none"; flavorBadge: string | null; openPrCount: number; recentTagCount: number; lastWorkflow: { name: string; state: "queued" | "in_progress" | "completed"; conclusion: string | null; startedAtIso: string | null; commitSha?: string | null; syncedAtIso?: string | null } | null }>; summary: { total: number; byProvider: Record<string, number>; weakProtection: number } }>> {
     return this.get("/api/desktop/repositories");
   }
 
@@ -1510,40 +1523,40 @@ export class DesktopClient {
     return this.get("/api/desktop/integration-health");
   }
 
-  deploymentRequests(): Promise<ApiResult<Array<{
-    id: string;
-    title: string;
-    status: string;
-    version: number;
-    correlationId: string;
-    submittedAt: string | null;
-    closedAt: string | null;
-    updatedAt: string;
-    releaseContext: {
-      window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
-      scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
-      approval: { prStatus: string; noPrRequired: boolean };
-      readiness: {
-        developmentReady: boolean;
-        productionReady: boolean;
-        validationStepCount: number;
-        deferredValidation: boolean;
-        approvalDecision: "ready_for_human_approval" | "needs_attention";
-        blockers: string[];
-      };
-      recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
-      observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
-      batches?: { selectedRunCount: number };
-    };
-    latestPlaybook: {
-      id: string;
-      version: number;
-      status: string;
-      contentHash: string;
-      createdAt: string;
-    } | null;
-  }>>> {
-    return this.get("/api/desktop/deployments");
+  deploymentRequests(includeRequester = false): Promise<ApiResult<DeploymentRequestSummary[]>> {
+    return this.get(includeRequester ? "/api/desktop/deployments?includeRequester=1" : "/api/desktop/deployments");
+  }
+
+  async currentLinkedRelease(releaseId: string): Promise<ApiResult<{id: string; version: number} | null>> {
+    const identifier = savedReleaseLocatorSchema.shape.id.safeParse(releaseId);
+    if (!identifier.success) return { ok: false, error: "invalid_linked_release" };
+    const query = new URLSearchParams({ linkedReleaseId: identifier.data });
+    const result = await this.get<unknown>(`/api/desktop/deployments?${query}`);
+    if (!result.ok) return result;
+    if (result.data === null) return { ok: true, data: null };
+    const locator = savedReleaseLocatorSchema.strict().safeParse(result.data);
+    if (locator.success && locator.data.id === identifier.data) return { ok: true, data: locator.data };
+    return { ok: false, error: "invalid_linked_release_summary" };
+  }
+
+  async savedDeploymentRequest(release: {id: string; version: number}, includeRequester = false): Promise<ApiResult<DeploymentRequestSummary | null>> {
+    const exact = savedReleaseLocatorSchema.safeParse(release);
+    if (!exact.success) return { ok: false, error: "invalid_saved_release" };
+    const {id, version} = exact.data;
+    const query = new URLSearchParams({ savedReleaseId: id, savedReleaseVersion: String(version) });
+    if (includeRequester) query.set("includeRequester", "1");
+    const result = await this.get<unknown>(`/api/desktop/deployments?${query}`);
+    if (!result.ok) return result;
+    if (Array.isArray(result.data)) {
+      if (result.data.length === 0) return { ok: true, data: null };
+      if (result.data.length === 1) {
+        const summary = deploymentRequestSummarySchema.safeParse(result.data[0]);
+        if (summary.success && summary.data.id === id && summary.data.version === version) {
+          return { ok: true, data: summary.data };
+        }
+      }
+    }
+    return { ok: false, error: "invalid_saved_release_summary" };
   }
 
   createReleaseResolutionDraft(draft: Record<string, unknown>, idempotencyId: string): Promise<ApiResult<{
@@ -1573,6 +1586,13 @@ export class DesktopClient {
 
   serviceNowTicketRecovery(requestId:string,actionId:string,input:{expectedVersion:number;clientRequestId:string;issue?:{sysId:string;number:string}},mode:'propose'|'approve'|'verify'|'cancel',signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>>{
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/servicenow-actions/${actionId}/recovery${mode==='propose'?'':mode==='approve'?'/approval':'/'+mode}`,input,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].id===actionId&&v.actions[0].status==='unknown'&&v.actions[0].version>input.expectedVersion&&v.actions[0].recovery?.status===(mode==='propose'?'requested':mode==='approve'?'approved':mode==='verify'?'verified':'cancelled'),signal);
+  }
+  recordedServiceNowChange(requestId:string,requestVersion:number,signal?:AbortSignal):Promise<ReleasePlanResult<RecordedServiceNowChange>> {
+    if(!validOperationRelease(requestId,requestVersion)||requestId.length>160)return Promise.resolve({ok:false,error:'Reload the exact release before reading its change.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${encodeURIComponent(requestId)}/servicenow-actions?recordedReleaseVersion=${requestVersion}`,undefined,(value):value is RecordedServiceNowChange=>{
+      const parsed=recordedServiceNowChangeSchema.safeParse(value);
+      return parsed.success&&parsed.data.releaseId===requestId&&parsed.data.releaseVersion===requestVersion;
+    },signal);
   }
   serviceNowTicketActions(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/servicenow-actions`,undefined,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId),signal);
@@ -1775,6 +1795,19 @@ export class DesktopClient {
     },signal);
   }
   deploymentExecution(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {return this.deploymentExecutionRequest(requestId,planId,undefined,signal)}
+  deploymentExecutionHistory(requestId: string, requestVersion: number, planId: string, digest: string, signal?: AbortSignal): Promise<ReleasePlanResult<DeploymentExecutionHistory>> {
+    if (!validOperationRelease(requestId, requestVersion) || requestId.length > 160
+      || !/^release_plan_[a-f0-9]{64}$/.test(planId) || !/^[a-f0-9]{64}$/.test(digest)) {
+      return Promise.resolve({ok: false, error: "Reload the release before reading deployment execution history.", outcomeUnconfirmed: false});
+    }
+    return releaseOperationPlanRequest(this.savedTaskContext(), "GET",
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/deployment-execution?historyVersion=${requestVersion}`,
+      undefined, (value): value is DeploymentExecutionHistory => {
+        const result = deploymentExecutionHistorySchema.safeParse(value);
+        return result.success && result.data.requestId === requestId && result.data.requestVersion === requestVersion
+          && result.data.planId === planId && result.data.planDigest === digest;
+      }, signal);
+  }
   mutateDeploymentExecution(requestId:string,planId:string,input:{action:'prepare'|'execute'|'cancel'|'recover';expectedVersion:0|1|2;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {
     if(!['prepare','execute','cancel','recover'].includes(input.action)||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['action','expectedVersion','clientRequestId'].includes(k))||(input.action==='recover'?![1,2].includes(input.expectedVersion):input.expectedVersion!==0))return Promise.resolve({ok:false,error:'Load deployment execution before another action.',outcomeUnconfirmed:false});
     return this.deploymentExecutionRequest(requestId,planId,input,signal);
@@ -1797,6 +1830,19 @@ export class DesktopClient {
   providerMergeOperation(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeOperationResponse>> {
     return this.providerMergeOperationRequest(requestId,planId,undefined,signal);
   }
+  providerMergeHistory(requestId: string, requestVersion: number, planId: string, digest: string, signal?: AbortSignal): Promise<ReleasePlanResult<ProviderMergeHistory>> {
+    if (!validOperationRelease(requestId, requestVersion) || requestId.length > 160
+      || !/^release_plan_[a-f0-9]{64}$/.test(planId) || !/^[a-f0-9]{64}$/.test(digest)) {
+      return Promise.resolve({ok: false, error: "Reload the release before reading provider merge history.", outcomeUnconfirmed: false});
+    }
+    return releaseOperationPlanRequest(this.savedTaskContext(), "GET",
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/provider-operation?historyVersion=${requestVersion}`,
+      undefined, (value): value is ProviderMergeHistory => {
+        const result = providerMergeHistorySchema.safeParse(value);
+        return result.success && result.data.requestId === requestId && result.data.requestVersion === requestVersion
+          && result.data.planId === planId && result.data.planDigest === digest;
+      }, signal);
+  }
   recoverProviderMergeOperation(requestId:string,planId:string,expectedVersion:number,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeOperationResponse>> {
     if(!Number.isInteger(expectedVersion)||expectedVersion<0||expectedVersion>2)return Promise.resolve({ok:false,error:'Reload merge outcome.',outcomeUnconfirmed:false});
     return this.providerMergeOperationRequest(requestId,planId,{action:'recover',expectedVersion},signal);
@@ -1807,6 +1853,19 @@ export class DesktopClient {
   }
   providerMergeApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
     return this.providerMergeApprovalRequest('GET',requestId,planId,digest,undefined,signal);
+  }
+  providerApprovalHistory(requestId: string, requestVersion: number, planId: string, digest: string, signal?: AbortSignal): Promise<ReleasePlanResult<ExactApprovalHistory>> {
+    if (!validOperationRelease(requestId, requestVersion) || requestId.length > 160
+      || !/^release_plan_[a-f0-9]{64}$/.test(planId) || !/^[a-f0-9]{64}$/.test(digest)) {
+      return Promise.resolve({ok: false, error: "Reload the release before reading provider approval history.", outcomeUnconfirmed: false});
+    }
+    return releaseOperationPlanRequest(this.savedTaskContext(), "GET",
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/provider-approval?historyVersion=${requestVersion}`,
+      undefined, (value): value is ExactApprovalHistory => {
+        const result = exactApprovalHistorySchema.safeParse(value);
+        return result.success && result.data.requestId === requestId && result.data.requestVersion === requestVersion
+          && result.data.planId === planId && result.data.planDigest === digest;
+      }, signal);
   }
   approveProviderMerge(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string;sourcePolicy:'expected_head_observed_base';governanceBaselineDigest?:string},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
     if(input.governanceBaselineDigest!==undefined&&!/^[a-f0-9]{64}$/.test(input.governanceBaselineDigest)||input.expectedPlanVersion!==1||input.sourcePolicy!=='expected_head_observed_base'||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId','sourcePolicy','governanceBaselineDigest'].includes(k)))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
@@ -1822,6 +1881,19 @@ export class DesktopClient {
   }
   releaseExecutionApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
     return this.executionApprovalRequest('GET',requestId,planId,digest,undefined,signal);
+  }
+  simulationApprovalHistory(requestId: string, requestVersion: number, planId: string, digest: string, signal?: AbortSignal): Promise<ReleasePlanResult<SimulationApprovalHistory>> {
+    if (!validOperationRelease(requestId, requestVersion) || requestId.length > 160
+      || !/^release_plan_[a-f0-9]{64}$/.test(planId) || !/^[a-f0-9]{64}$/.test(digest)) {
+      return Promise.resolve({ok: false, error: "Reload the release before reading simulation approval history.", outcomeUnconfirmed: false});
+    }
+    return releaseOperationPlanRequest(this.savedTaskContext(), "GET",
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/execution-approval?historyVersion=${requestVersion}`,
+      undefined, (value): value is SimulationApprovalHistory => {
+        const result = simulationApprovalHistorySchema.safeParse(value);
+        return result.success && result.data.requestId === requestId && result.data.requestVersion === requestVersion
+          && result.data.planId === planId && result.data.planDigest === digest;
+      }, signal);
   }
   approveReleaseExecution(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
     if(input.expectedPlanVersion!==1||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Reload execution approval.',outcomeUnconfirmed:false});
@@ -1894,8 +1966,20 @@ export class DesktopClient {
     finally { if (timer !== undefined) clearTimeout(timer); controller.abort(); }
   }
 
-  releaseBatchReadiness(requestId: string, version: number): Promise<ApiResult<{ ready: true; requestVersion: number } | { ready: false; reason: "unavailable" | "changed" | "waiting" }>> {
-    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-readiness?expectedVersion=${version}`);
+  releaseBatchDeclarations(requestId: string, version: number): Promise<ApiResult<ReleaseBatchDeclarations>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-declarations?expectedVersion=${version}`, undefined,
+      (value): value is ReleaseBatchDeclarations => isReleaseBatchDeclarations(value, requestId, version), "Saved batch declarations");
+  }
+
+  releaseBatchReadiness(requestId: string, version: number, includeSavedRuns = false): Promise<ApiResult<ReleaseBatchReadiness>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-readiness?expectedVersion=${version}&includeTiming=1${includeSavedRuns ? "&includeSavedRuns=1" : ""}`, undefined,
+      (value): value is ReleaseBatchReadiness => isReleaseBatchReadiness(value, version, requestId) && (includeSavedRuns || value.declarations === undefined), "Batch readiness");
+  }
+
+  releaseBatchTasks(requestId: string, version: number, dagId: string, dagRunId: string, offset: number): Promise<ApiResult<ReleaseBatchTaskPage>> {
+    const query = new URLSearchParams({ expectedVersion: String(version), dagId, dagRunId, offset: String(offset) });
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-tasks?${query}`, undefined,
+      (value): value is ReleaseBatchTaskPage => isReleaseBatchTaskPage(value, { requestId, version, dagId, dagRunId, offset }), "Batch task evidence");
   }
 
   deploymentRequestForRevision(requestId: string): Promise<ApiResult<{
@@ -1956,8 +2040,10 @@ export class DesktopClient {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/operations`);
   }
 
-  collectGitHubReleaseEvidence(requestId: string): Promise<ApiResult<{
+  collectGitHubReleaseEvidence(requestId: string, version: number): Promise<ApiResult<{
     mode: "read_only_evidence";
+    requestId: string;
+    requestVersion: number;
     repositories: Array<{
       repository: string;
       state: "observed" | "unavailable";
@@ -1974,7 +2060,7 @@ export class DesktopClient {
       checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
     }>;
   }>> {
-    return this.post(`/api/desktop/deployments/${encodeURIComponent(requestId)}/github-evidence`, {});
+    return this.post(`/api/desktop/deployments/${encodeURIComponent(requestId)}/github-evidence?expectedVersion=${version}`, {});
   }
 
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{

@@ -113,7 +113,7 @@ export async function activateFixturePaidBasis(tx: Prisma.TransactionClient, con
   const state = await readFixtureEnrollment(tx, contract, true); if (!state || state.enrollment.digest !== intent.allowanceV2.enrollmentDigest) deny();
   if (state.paidBasis) { if (state.paidBasis.origin.intentId !== intent.id || state.paidBasis.origin.createProofDigest !== originalCreateProofDigest(intent)) deny(); return; }
   if (observation.collection.kind !== "collected") deny();
-  const nowRows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now');
+  const nowRows = await tx.$queryRawUnsafe<Array<{ now: Date }>>("SELECT clock_timestamp() AT TIME ZONE 'UTC' AS now");
   const now = nowRows[0]?.now; if (!(now instanceof Date)) deny();
   const freeWindow = resolveAllowanceWindowV2(state.freeBasis, null, now);
   if (freeWindow.kind !== "available") deny();

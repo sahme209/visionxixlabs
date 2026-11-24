@@ -8,15 +8,24 @@ describe("Ask Axiom account intents", () => {
     ["what approvals are pending", "pending_approvals"],
     ["what's waiting for me", "pending_approvals"],
     ["is our audit log intact", "audit_integrity"],
+    ["Why can't I access our audit log?", "access_request"],
     ["which integrations are connected", "connections"],
     ["what happened recently", "recent_activity"],
     ["I need admin access", "access_request"],
     ["run a health check on our workspace", "diagnostic"],
     ["something is broken, what's wrong", "diagnostic"],
     ["why can't I approve this deployment", "access_request"],
+    ["Why can't I access my Airflow DAG?", "access_request"],
   ])("classifies %s", (q, intent) => expect(classifyAccountIntent(q)).toBe(intent));
 
   it("returns null for non-account questions so the docs answer stands", () => {
+    expect(classifyAccountIntent("How do I view the audit log from desktop Settings?")).toBeNull();
+    expect(classifyAccountIntent("Show our latest audit log entries")).toBeNull();
+    expect(classifyAccountIntent("What happened in my audit trail?")).toBeNull();
+    expect(classifyAccountIntent("What happened to my Airflow DAG?")).toBeNull();
+    expect(classifyAccountIntent("Show the status of our latest batch run")).toBeNull();
+    expect(classifyAccountIntent("Diagnose why my Airflow run failed")).toBeNull();
+    expect(classifyAccountIntent("is my integration intact")).toBe("connections");
     expect(classifyAccountIntent("how does pricing work")).toBeNull();
   });
 

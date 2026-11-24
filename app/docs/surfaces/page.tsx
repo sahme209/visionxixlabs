@@ -11,7 +11,7 @@ const DESTINATIONS=[
  {name:'Repositories',purpose:'Select and inspect repository context and use the available local or connected repository controls.',next:'Check the repository, branch and file before editing or proposing a write. Viewing code does not grant commit, push or merge authority.'},
  {name:'Batches',purpose:'Inspect supported Airflow workflows, runs and their available automation controls.',next:'Check the configured connection and source run first. The Batches label does not imply that other orchestration services are connected or supported.'},
  {name:'Apps & skills',purpose:'Browse connected-app entries and reusable skills, and open the relevant setup or workflow.',next:'Separate a catalogue entry from a validated connection. A skill is reusable guidance, not a permission grant. Setup may require a workspace administrator.'},
- {name:'Documentation',purpose:'Open operating guidance in your browser from the desktop documentation index.',next:'Choose the guide for your installed version and task. Reading documentation does not change a workspace or run an operation.'},
+ {name:'Documentation',purpose:'Read operating guides and explore the workflow map in the desktop Documentation view.',next:'Choose the guide for your installed version and task. Reading documentation does not change a workspace or run an operation.'},
  {name:'Settings',purpose:'Manage the settings and connection controls available to your current account.',next:'Read the exact scope and required permission before changing a setting or starting provider consent. Ask the authorized administrator when setup is blocked.'},
 ] as const;
 
@@ -27,6 +27,27 @@ export default function SurfacesPage(){return <>
    <p>{item.purpose}</p><p><strong>Next:</strong> {item.next}</p>
   </section>)}</div>
  </DocSection>
+ <DocSection id="workflow-map" title="Follow a desktop workflow">
+  <p>In desktop versions that include it, open <strong>Documentation</strong> in the sidebar and select <strong>Workflow map</strong>. Choose Release, Tickets and recovery, or Batches.</p>
+  <ol className="list-decimal space-y-3 pl-5">
+   <li>Select <strong>Fit overview</strong> to see the workflow at a glance. Choose a responsibility group to jump to it. Drag an empty part of the canvas to pan when the map extends beyond its viewport.</li>
+   <li>Select a step to open its details and <Link href="#workflow-map-next-steps">follow a conditional next step</Link>. Select <strong>Read the guide</strong> for the relevant instructions. If the canvas is hard to read at your current window size, use <strong>Step list</strong> to browse the same steps by group.</li>
+   <li>Use <strong>Close details</strong> to return focus to the step you opened, or <strong>Back to guides</strong> to return to the guide reader.</li>
+  </ol>
+  <p>The map explains which evidence and approvals a workflow requires. Use the original workspace record to confirm the current version, result and available actions.</p>
+ </DocSection>
+ <DocSection id="workflow-map-next-steps" title="Follow conditional next steps in the workflow map">
+  <p>In desktop versions that include the workflow map, open a step and read the condition below each option in <strong>Next steps</strong>. Matching a condition is a navigation choice. Use the original release, ticket or batch record to verify which condition applies.</p>
+  <p>On the Release map, <strong>Review current authority</strong> shows <strong>Run the supported operation</strong> for <strong>Current approval and authority</strong>. If approval was rejected or expired, or the saved release changed, choose <strong>Hold for review</strong> under <strong>Rejected, expired or changed</strong>. Once the missing evidence or permission is resolved, use <strong>Return to review</strong> and verify the current saved version.</p>
+  <p>On the Batches map, choose <strong>Inspect the run’s tasks</strong> for <strong>Run failed or task details needed</strong>. Follow the <Link href="#batch-failed-run">failed-run guide</Link> from that step for the exact task read.</p>
+  <p>Selecting a branch opens the destination step’s details and moves focus to its heading. <strong>Close details</strong> returns keyboard focus to the step that opened the details. <strong>Read the guide</strong> opens the selected step’s documentation. The map is read-only. Use the separate <Link href="/docs/approval-workflow">approval and execution workflow</Link> for any action.</p>
+ </DocSection>
+ <DocSection id="batch-failed-run" title="Inspect a failed Airflow run in Batches release dependencies">
+  <p>In desktop versions with <strong>Inspect failed run</strong>, open <strong>Batches</strong>, choose <strong>Release dependencies</strong>, select the exact submitted release version and select <strong>Check batches</strong>. The check requires pipeline read access and uses the Airflow runs declared on that version.</p>
+  <p>If a run failed, select <strong>Inspect failed run</strong> to open the first recorded failed run’s tasks. V19 moves focus to that run’s task control. To choose another observed run, select <strong>Inspect tasks</strong> below its workflow and run.</p>
+  <p>Waiting or unverified results leave readiness unresolved. The failed-run shortcut only appears after a recorded failure. If the release version changed, reopen the current release and check its declared runs again.</p>
+  <p>Use <strong>Retry tasks</strong> to repeat an unavailable task read. This read shows the observed task state and attempt number. It grants no permission to retry an Airflow run or execute a deployment. For a completed check, return to the <Link href="/docs/approval-workflow">release approval workflow</Link>.</p>
+ </DocSection>
  <DocSection id="website" title="Use the website for guidance" kicker="02">
   <ul className="list-disc space-y-3 pl-5">
    <li><Link href="/download">Download the desktop app</Link> — inspect the current manifest-backed installer and platform-specific verification information.</li>
@@ -35,6 +56,10 @@ export default function SurfacesPage(){return <>
    <li><Link href="/account/help">Account help (sign-in required)</Link> — use the authenticated help surface when available; this public guide grants no account access.</li>
   </ul>
   <p>Browser sign-in and provider-consent pages support specific authentication or connection steps. Returning from a browser does not by itself prove that desktop pairing, connection validation or an operation succeeded.</p>
+ </DocSection>
+ <DocSection id="recordings" title="Watch a V19 desktop recording or scripted tour">
+  <p>The <Link href="/demo">public demo</Link> is a scripted tour with sample data. An authentic desktop recording is currently unavailable. The tour explains the workflow without running a provider action.</p>
+  <p>When a reviewed recording is available on the homepage, its player shows the exact V19 version, platform and build source, with a still preview, captions and a transcript. Playback starts when you choose Play.</p>
  </DocSection>
  <DocSection id="next-owner" title="Know who acts next" kicker="03">
   <p>The person preparing work checks its exact source, target and content. An authorized independent reviewer makes the required decision personally. Who executes next, and whether execution is a separate control, depends on the supported workflow and installed version. See <Link href="/docs/approval-workflow">Review and execution guidance</Link>.</p>

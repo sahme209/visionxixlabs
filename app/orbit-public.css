@@ -13,7 +13,7 @@ body:has(.site-navigation) :is(.axiom-canvas,.axiom-product-canvas) {
   background:var(--public-canvas);
   background-image:none;
 }
-body:has(.site-navigation) .site-footer { background:var(--public-canvas); }
+.site-footer { background: #0c0c0c; }
 body:has(.site-navigation) main :is(h1,h2) { font-weight:500; letter-spacing:-.045em; text-wrap:balance; }
 body:has(.site-navigation) main p { text-wrap:pretty; }
 body:has(.site-navigation) :is(a,button,input,textarea,select):focus-visible { outline:2px solid #bfbdb6; outline-offset:4px; }
@@ -23,12 +23,6 @@ body:has(.site-navigation) :is(a,button,input,textarea,select):focus-visible { o
 .site-navigation a { letter-spacing:-.015em; }
 .site-navigation a[aria-current="page"] { color:#ffffff; }
 .site-navigation [role="dialog"],.site-navigation #more-navigation { background:#0a0908; }
-.site-footer > div { max-width:1128px; }
-.site-footer section { gap:2rem; }
-.site-footer :is(h2,h3) { font-weight:500; }
-.site-footer section h2 { font-size:clamp(1.8rem,3.2vw,2.8rem); line-height:1.13; letter-spacing:-.045em; }
-.site-footer section a { min-height:44px; display:inline-flex; align-items:center; border-radius:7px; }
-.site-footer section a[href="/support"] { color:#bfbdb6; border-color:#ffffff26; }
 .public-page-hero { padding-block:1rem 3.5rem; gap:2rem; }
 .public-page-hero h1 { color:#ffffff; line-height:1.08; }
 .public-page-hero h1 span { color:#bfbdb6; }
@@ -172,6 +166,15 @@ body:has(.site-navigation) .public-support-page > section:has(> div.mx-auto) { p
 .public-status-links { display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; padding-top:24px; border-top:1px solid #ffffff12; color:#bfbdb6; font-size:13px; }
 .public-status-links a { display:inline-flex; min-height:44px; align-items:center; }
 .public-detail-page > :is(section,details) { max-width:1128px; margin-inline:auto; padding-inline:24px; }
+@media (prefers-reduced-motion: reduce) {
+  /* The server renders reveal styles inline before the browser can read the preference. */
+  .public-trust-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 .public-detail-page > .public-detail-header { padding-top:64px; padding-bottom:32px; }
 .public-detail-page .surface-glass { background:var(--public-surface); border:1px solid #ffffff0d; border-radius:12px; backdrop-filter:none; }
 .public-detail-page :is(h2,h3) { font-family:inherit; font-weight:500; }
@@ -234,6 +237,13 @@ body:has(.site-navigation) main :is(h1,h2) { font-weight:400; }
 .public-home-actions .orbit-primary { padding:9px 12px; border-radius:8px; }
 .public-home-product { max-width:1080px; margin:80px auto 0; }
 .public-home-painting { height:608px; padding:48px 13.15% 0; overflow:hidden; border-radius:12px; background:#171615 url('/images/marketing/axiom-painted-basin-v1.webp') center/cover; }
+/* Use one desktop artwork request for the painting and feature panels. */
+.public-home-painting,.public-feature-art {
+  background-image:image-set(
+    url("/images/marketing/axiom-painted-basin-v1.avif") type("image/avif"),
+    url("/images/marketing/axiom-painted-basin-v1.webp") type("image/webp")
+  );
+}
 .public-home-painting .desktop-demo-frame { min-height:540px; border-radius:8px 8px 0 0; background:#0a0908; box-shadow:0 16px 48px #0a090855; }
 .public-home-workspace { min-height:500px; display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); color:#bfbdb6; background:#0a0908; text-align:left; }
 .public-home-editor { min-width:0; }
@@ -261,6 +271,7 @@ body:has(.site-navigation) main :is(h1,h2) { font-weight:400; }
   .public-home-actions { gap:20px; }
   .public-home-actions :is(a) { font-size:14px; }
   .public-home-painting { height:300px; padding:24px 18px 0; }
+  .public-home-painting,.public-feature-art { background-image:url("/images/marketing/axiom-painted-basin-compact-v1.webp"); }
   .public-home-painting .desktop-demo-frame { min-height:0; }
   .public-home-workspace { grid-template-columns:minmax(0,1fr); min-height:260px; }
   .public-home-editor pre { padding:20px 12px; font-size:10px; }

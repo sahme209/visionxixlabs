@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { changeDraftSourceSchema } from "./ticketDirectoryContract";
 import { sha256ContentHash } from "./contentHash";
 import type { DeploymentRequestRepo, DeploymentRequestRow } from "./deploymentRequestRepo";
 
@@ -11,6 +12,7 @@ const schema = z.object({
   title: z.string().trim().min(1).max(200),
   applications: z.array(z.string().trim().min(1).max(120)).min(1).max(20),
   requestDetails: z.string().trim().min(1).max(10_000),
+  sourceTicket: changeDraftSourceSchema.optional(),
   applicationContact: z.string().trim().min(1).max(200).optional(),
   ticketUrl: z.string().max(2048).url().refine(value => {
     try { const url = new URL(value); return url.protocol === "https:" && !url.username && !url.password; } catch { return false; }
@@ -37,6 +39,9 @@ export async function createReleaseResolutionDraft(repo: DeploymentRequestRepo, 
   return repo.$transaction(async tx => {
     const existing = await tx.tauriDeploymentRequest.findFirst({ where: { organizationId: input.organizationId, correlationId: input.correlationId } });
     if (existing) {
+      if (draft.sourceTicket && existing.requesterUserId !== input.requesterUserId) {
+        return { ok: false, reason: "correlation_conflict" };
+      }
       const stored = parseReleaseResolutionDraft(existing.intakeJson);
       if (!stored.ok) return { ok: false, reason: "correlation_conflict" };
       const { id: _oldId, ...oldContent } = stored.draft;

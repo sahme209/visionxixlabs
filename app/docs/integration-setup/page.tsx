@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Callout, CodeBlock, DocFeedback, DocFooterNav, DocHeader, DocSection, Step } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Release integration setup — V19 Documentation",
-  description: "Securely activate GitHub, Slack, Microsoft Teams, and Linear for the V19 desktop application.",
+  description: "Review GitHub App and Airflow setup, connection states, and the implementation limits for Slack, Teams and Linear.",
 };
 
 const ORIGIN = "https://visionxixlabs.com";
@@ -14,15 +15,15 @@ export default function IntegrationSetupPage() {
       <DocHeader
         kicker="Connections"
         title="Operator integration configuration"
-        summary="V19 opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app."
+        summary="Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps."
       />
 
       <Callout variant="safe" title="Two separate responsibilities">
-        The <strong>service operator</strong> registers the OAuth application, exact callback URL, and server-side secret once. A <strong>workspace owner or admin</strong> then clicks Connect, reviews the provider consent screen, selects the intended workspace, and returns to V19 for live validation.
+        For supported OAuth connections, the <strong>service operator</strong> registers the application, callback URL and server-side secret. A <strong>workspace owner or admin</strong> uses the available Connect control, reviews provider consent and returns to V19 for validation.
       </Callout>
 
       <Callout>
-        These callback addresses are for the service operator to register with each provider, not links to start a connection. Opening a callback directly will be rejected because there is no active authorization state. Workspace users should start from Connect in Integrations and let the provider return them automatically. Never share a callback containing authorization codes or state.
+        These callback addresses are for the service operator to register with each provider, not links to start a connection. Opening a callback directly will be rejected because there is no active authorization state. When your version offers the connection, start from its Connect control in the desktop app. Never share a callback containing authorization codes or state.
       </Callout>
       <DocSection id="shared" title="Before connecting a provider" kicker="Service operator checklist">
         <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-300">
@@ -35,6 +36,7 @@ export default function IntegrationSetupPage() {
       </DocSection>
 
       <DocSection id="github" title="GitHub App" kicker="Repository-scoped code and release evidence">
+        <p>Use this setup to grant the app access to selected repositories. <Link href="/docs/oauth-setup#github" className="underline underline-offset-4">GitHub account sign-in</Link> uses a separate OAuth flow.</p>
         <Step number={1} title="Register the installation callback">
           <CodeBlock language="text">{`${ORIGIN}/api/integrations/github/install-callback`}</CodeBlock>
         </Step>
@@ -46,7 +48,34 @@ export default function IntegrationSetupPage() {
         </Step>
       </DocSection>
 
+      <DocSection id="gitlab" title="GitLab repository connection and account sign-in" kicker="Limited availability">
+        <p>Read-only GitLab repository setup is available only where the workspace feature is enabled. If you see <strong>Manage GitLab</strong> in <Link href="/control/integrations">Control → Integrations</Link>, open it as a workspace owner or admin and select a tracked GitLab repository. If the option is absent, setup is unavailable in that workspace.</p>
+        <p>Use <strong>Register project credential</strong> to save the exact project ID, expiry date and approved read-only project credential. Pending registration alone does not enable sync. Use <strong>Verify read access</strong> with the separate verifier in the setup form. Keep tokens out of chat and support requests.</p>
+        <p>Once the status is <strong>Read access validated</strong>, the bound repository can sync merge requests, releases and existing pipeline evidence. The connection cannot run GitLab CI or modify a repository. If setup is bound to another repository, select that repository to manage the existing binding.</p>
+        <p><strong>Revoke in V19</strong> removes the stored credential and stops V19 sync for that project. Manage the original token separately in GitLab.</p>
+        <p>GitLab account sign-in and linking are separate from repository consent. If your sign-in page offers GitLab, using it identifies your account. It does not connect repositories, grant GitLab CI access or authorize actions in a workspace.</p>
+      </DocSection>
+
+      <DocSection id="gitlab-status-recovery" title="GitLab setup status and recovery" kicker="Connection readback">
+        <p>If GitLab setup says <strong>V19 could not confirm the update</strong>, first check the current connection for the same repository. Use <strong>Refresh status</strong> when the connection panel is visible, or <strong>Refresh GitLab status</strong> if the setup status is unavailable.</p>
+        <p>After saving, <strong>Awaiting validation</strong> means you can validate the pending project credential. <strong>Read access validated</strong> means the current repository binding has a valid read check. <strong>Revoked in V19</strong> means V19 stopped using the stored credential. A refresh reads the current status without resending your update. If the status remains unavailable, wait for a fresh result before deciding whether to retry.</p>
+      </DocSection>
+
+      <DocSection id="airflow" title="Apache Airflow" kicker="DAGs and run evidence">
+        <Step number={1} title="Open the Airflow connection">
+          <p>In the desktop app, a workspace administrator opens <strong>Batches → Connection</strong> and uses the secure Airflow connection form.</p>
+        </Step>
+        <Step number={2} title="Validate the endpoint">
+          <p>Use the HTTPS base address of your Airflow 3 deployment and choose username and password or an existing bearer token. Enter credentials only in the connection form. Select <strong>Validate &amp; connect</strong> and wait for V19 to confirm the connection.</p>
+        </Step>
+        <Step number={3} title="Read the DAG and its run history">
+          <p>Choose a DAG to inspect available runs. If validation fails or status is unavailable, check the endpoint and credentials and refresh before relying on the evidence. A validated connection gives no automatic permission to start, retry or schedule a run.</p>
+        </Step>
+        <p>For Prefect, Dagster and Argo Workflows, see <Link href="/docs/batch-providers" className="underline underline-offset-4">the read-only batch provider guide</Link>.</p>
+      </DocSection>
+
       <DocSection id="slack" title="Slack" kicker="Governed release notifications">
+        <p>Implementation review. Customer OAuth and message delivery are not release-verified. The settings below describe operator configuration.</p>
         <Step number={1} title="Register the callback">
           <CodeBlock language="text">{`${ORIGIN}/api/integrations/slack/callback`}</CodeBlock>
         </Step>
@@ -60,6 +89,7 @@ SLACK_CLIENT_SECRET=<secret manager reference>`}</CodeBlock>
       </DocSection>
 
       <DocSection id="teams" title="Microsoft tenant / Teams" kicker="Identity validation before messaging">
+        <p>The current scope verifies tenant identity. Check your installed version and workspace state before starting consent.</p>
         <Step number={1} title="Register the callback">
           <CodeBlock language="text">{`${ORIGIN}/api/integrations/teams/callback`}</CodeBlock>
         </Step>
@@ -74,6 +104,7 @@ MICROSOFT_TENANT_ID=<approved tenant ID>`}</CodeBlock>
       </DocSection>
 
       <DocSection id="linear" title="Linear" kicker="Issue context and governed follow-up">
+        <p>Planned. There is no verified customer activation path. The settings below describe operator configuration.</p>
         <Step number={1} title="Register the callback">
           <CodeBlock language="text">{`${ORIGIN}/api/integrations/linear/callback`}</CodeBlock>
         </Step>

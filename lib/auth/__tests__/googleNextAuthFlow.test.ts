@@ -29,7 +29,7 @@ async function runInstalled(qualified: ReturnType<typeof wire>) {
   const chunk = vi.fn().mockReturnValue([{ name: "synthetic-session-cookie", value: "opaque" }]);
   try {
     const result = await installedCallback({ options: {
-      ...authOptions, provider: { type: "oauth", id: "google" }, adapter: undefined,
+      ...authOptions, provider: { type: "oauth", id: qualified.account.provider }, adapter: undefined,
       url: "https://canonical.invalid/api/auth", callbackUrl: "/desktop/connect?challenge=original",
       jwt: { encode }, logger: { debug() {}, error() {} },
     }, query: {}, body: {}, method: "GET", headers: {}, cookies: {}, sessionStore: { value: undefined, chunk } });
@@ -46,6 +46,25 @@ describe("actual installed NextAuth callback identity propagation (synthetic qua
     expect(mocks.userFind).not.toHaveBeenCalled(); expect(chunk).toHaveBeenCalledTimes(1);
     expect(mocks.audit).toHaveBeenCalledWith(expect.objectContaining({ actorUserId: canonical.id, action: "auth.signin", entityRef: `user:${canonical.email}` }));
   });
+  it("returns a bound GitLab identity to the exact pending pairing challenge using the canonical account", async () => {
+    const qualified = wire("1584");
+    qualified.account.provider = "gitlab";
+    qualified.OAuthProfile.iss = "https://gitlab.com";
+    const { result, encode } = await runInstalled(qualified);
+    expect(result.redirect).toBe("/desktop/connect?challenge=original");
+    expect(encode.mock.calls[0][0].token).toMatchObject({ id: canonical.id, sub: canonical.id });
+    expect(mocks.bound).toHaveBeenCalledWith(expect.objectContaining({
+      where: { provider_issuer_subject: { provider: "gitlab", issuer: "https://gitlab.com", subject: "1584" } },
+    }));
+  });
+  it("refuses an issuer mismatch without a GitLab session", async () => {
+    const qualified = wire("1584");
+    qualified.account.provider = "gitlab";
+    const { result, encode, chunk } = await runInstalled(qualified);
+    expect(result.redirect).toBe("/auth/link-gitlab?reason=unavailable");
+    expect(encode).not.toHaveBeenCalled();
+    expect(chunk).not.toHaveBeenCalled();
+  });
   it("membership failure cannot deny a qualified bound identity", async () => {
     mocks.membership.mockRejectedValue(new Error("synthetic failure"));
     expect((await runInstalled(wire())).result.redirect).toContain("challenge=original");
@@ -58,6 +77,17 @@ describe("actual installed NextAuth callback identity propagation (synthetic qua
     }
     mocks.bound.mockRejectedValue(new Error("synthetic private native error"));
     expect((await runInstalled(wire())).encode).not.toHaveBeenCalled();
+  });
+  it("denies an unsupported OAuth provider before issuing a session or recording success", async () => {
+    const qualified = wire();
+    qualified.account.provider = "unregistered-v19-test-provider";
+    const { result, encode, chunk } = await runInstalled(qualified);
+    expect(result.redirect).toContain("AccessDenied");
+    expect(encode).not.toHaveBeenCalled();
+    expect(chunk).not.toHaveBeenCalled();
+    expect(mocks.bound).not.toHaveBeenCalled();
+    expect(mocks.membership).not.toHaveBeenCalled();
+    expect(mocks.audit).not.toHaveBeenCalled();
   });
   it("does not accept cloned or invented canonical objects or ID-less legacy tokens", async () => {
     const user = { id: "provider-sub", email: "provider@gmail.com" }; attestCanonicalIdentity(user, canonical, "google", "google-sub");
@@ -80,6 +110,9 @@ describe("actual installed NextAuth callback identity propagation (synthetic qua
     const provider = authOptions.providers.find(p => p.id === "credentials")!;
     const authorize = (provider.options as { authorize: (body: object) => Promise<object> }).authorize;
     const user = await authorize({ email: canonical.email, password: "verified" });
-    expect(await authOptions.callbacks!.jwt!({ token: {}, user, account: { provider: "credentials", providerAccountId: canonical.id } } as never)).toMatchObject({ id: canonical.id, identityVersion: 1 });
+    const account = { type: "credentials", provider: "credentials", providerAccountId: canonical.id };
+    expect(await authOptions.callbacks!.signIn!({ user, account } as never)).toBe(true);
+    expect(await authOptions.callbacks!.signIn!({ user: { ...user }, account } as never)).toBe(false);
+    expect(await authOptions.callbacks!.jwt!({ token: {}, user, account } as never)).toMatchObject({ id: canonical.id, identityVersion: 1 });
   });
 });

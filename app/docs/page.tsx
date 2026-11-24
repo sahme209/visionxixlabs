@@ -50,7 +50,7 @@ export default function DocsIndexPage() {
           <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">{group.description}</p>
         </div>
         <ul className="min-w-0 space-y-1">{group.items.map(([href,label,description])=><li key={href}>
-          <Link href={href} className="group flex items-start justify-between gap-4 rounded-lg px-3 py-3 -mx-3 transition-colors hover:bg-white/4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-coral focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+          <Link href={href} prefetch={false} className="group flex items-start justify-between gap-4 rounded-lg px-3 py-3 -mx-3 transition-colors hover:bg-white/4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-coral focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
             <span><span className="block text-sm font-medium text-zinc-200 group-hover:text-white">{label}</span><span className="mt-1 block text-sm leading-6 text-zinc-400">{description}</span></span>
             <ArrowRightIcon aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-zinc-500 group-hover:text-brand-coral" />
           </Link>

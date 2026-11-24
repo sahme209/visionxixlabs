@@ -84,7 +84,7 @@ export default function ManifestoPage() {
 
         <div className="space-y-28">
           {TENETS.map((tenet) => (
-            <article key={tenet.num} id={`tenet-${tenet.num}`} className="relative scroll-mt-24">
+            <article key={tenet.num} id={`tenet-${tenet.num}`} tabIndex={-1} className="relative scroll-mt-6">
               {/* A quiet divider separates each tenet. */}
               <div className="mb-10 h-px bg-white/[0.08]" />
               <p className="mono-label mb-6 inline-flex items-center gap-3">
@@ -122,11 +122,11 @@ export default function ManifestoPage() {
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
 
-          <div className="mt-10 flex items-center justify-center gap-6 text-[12px] font-mono uppercase tracking-[0.22em] text-zinc-500">
-            <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
-            <span className="text-zinc-700">·</span>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] sm:gap-6 font-mono uppercase tracking-[0.22em] text-zinc-500">
+            <Link href="/docs/desktop-install#updates" className="hover:text-white transition-colors">Desktop updates</Link>
+            <span aria-hidden="true" className="hidden text-zinc-700 sm:inline">·</span>
             <Link href="/trust" className="hover:text-white transition-colors">Trust</Link>
-            <span className="text-zinc-700">·</span>
+            <span aria-hidden="true" className="hidden text-zinc-700 sm:inline">·</span>
             <Link href="/security" className="hover:text-white transition-colors">Security</Link>
           </div>
         </div>

@@ -7,6 +7,7 @@ export interface WorkflowStory {
   label: string;
   eyebrow: string;
   limitation: string;
+  guide: {href: string; label: string};
   source: { scenario: DemoScenarioId; step: string };
   steps: readonly StoryStep[];
 }
@@ -17,6 +18,7 @@ export const WORKFLOW_STORIES: readonly WorkflowStory[] = [
   {
     id: "workspace", label: "Code & review", eyebrow: "A small change. A clear review.",
     limitation: "Implementation preview: repository editing and approved project checks. Native behavior is unverified; a general terminal and autonomous local Agent execution are not available.",
+    guide: {href: "/docs/source-modes#local-files", label: "Read the local repository guide"},
     source: { scenario: "devops_pipeline", step: "4" },
     steps: [
       { title: "Choose the working context.", caption: "Select a sample repository and working branch. Keep the target visible throughout the change.", scene: "context" },
@@ -29,6 +31,7 @@ export const WORKFLOW_STORIES: readonly WorkflowStory[] = [
   {
     id: "agent", label: "Agent & approval", eyebrow: "Context first. Permission before change.",
     limitation: "Implementation preview: governed GitHub proposals. This sample uses no model or repository. Installed-app and cloud end-to-end acceptance remain in progress.",
+    guide: {href: "/docs/approval-workflow#decision", label: "Read the approval decision guide"},
     source: { scenario: "devops_pipeline", step: "5" },
     steps: [
       { title: "Attach context to the request.", caption: "The Agent carries the selected repository, branch and environment into a governed conversation.", scene: "context" },
@@ -40,6 +43,7 @@ export const WORKFLOW_STORIES: readonly WorkflowStory[] = [
   {
     id: "cloud", label: "Terraform & cloud", eyebrow: "Know what is ready. See what is missing.",
     limitation: "Terraform configuration previews are separate from execution. The trusted customer plan producer, current target authority and apply approval remain unavailable.",
+    guide: {href: "/docs/releaseops#availability", label: "Read Terraform availability"},
     source: { scenario: "cloud_operations", step: "4" },
     steps: [
       { title: "Start with a configuration preview.", caption: "Read an illustrative Terraform change as a proposal for manual review. A configuration draft is not a trusted saved plan.", scene: "terraform" },

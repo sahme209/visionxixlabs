@@ -6,7 +6,8 @@ afterEach(async () => { for (const server of servers.splice(0)) { server.closeAl
 const challenge = `pair_${"a".repeat(43)}`;
 const identity = { kind: "desktop_session", organizationId: `ws_${"b".repeat(16)}`, email: "fixture-customer@example.test", role: "owner" };
 async function fixture(mode = "normal") {
-  let approved = false, consumed = false, revoked = false;
+  let approved = false, revoked = false;
+  let approvedPolls = 0;
   const requests: Array<{ path: string; cookie?: string; authorization?: string }> = [];
   const token = "axm.desk.synthetic-session.synthetic-signature";
   const server = createServer(async (req, res) => {
@@ -19,8 +20,11 @@ async function fixture(mode = "normal") {
       if (!body.deviceFingerprint) return reply(426);
       if (body.deviceFingerprint !== "isolated-http-fixture") return reply(403);
       if (!approved) return reply(202);
-      if (consumed && mode !== "replay") return reply(409);
-      consumed = true; return reply(200, { status: "approved", token, session: { id: "synthetic-session", status: "active" } });
+      approvedPolls++;
+      if (approvedPolls > 1 && mode !== "double-claim" && !(mode === "replay" && approvedPolls === 3)) {
+        return reply(409, mode === "conflict-leak" ? { token } : {});
+      }
+      return reply(200, { status: "approved", token, session: { id: "synthetic-session", status: "active" } });
     }
     if (url.pathname === "/api/desktop/pair/approve") {
       if (req.headers.cookie !== "fixture-web-session=accepted") return reply(401);
@@ -48,6 +52,7 @@ describe("local pairing HTTP harness protocol and safety", () => {
   it("uses real loopback HTTP with separate web-cookie and bearer channels and reports observations honestly", async () => {
     const { input, requests, token } = await fixture();
     const result = await rehearseLocalDesktopPairingHttp(input);
+    expect(result.verified).toContain("concurrent_pairing_claim_has_one_winner");
     expect(result.verified).toContain("owner_revocation_invalidates_bearer");
     expect(result.commercialAccessObservation).toEqual({ allowed: true, code: "active", billingStatus: "no_plan", enforcement: "not_verified_policy_decision_required" });
     expect(result.notVerified).toContain("billing_enforcement");
@@ -55,7 +60,7 @@ describe("local pairing HTTP harness protocol and safety", () => {
     expect(requests.some(entry => entry.path.includes("cloud") || entry.path.includes("deploy"))).toBe(false);
     expect(JSON.stringify(result)).not.toContain(token); expect(JSON.stringify(result)).not.toContain(challenge); expect(JSON.stringify(result)).not.toContain("synthetic-session");
   });
-  it.each([["workspace", "paired_workspace_mismatch"], ["replay", "pairing_replay_must_fail"], ["revoked", "revoked_pairing_must_fail"]])("detects protocol failure %s rather than reporting acceptance", async (mode, label) => {
+  it.each([["workspace", "paired_workspace_mismatch"], ["double-claim", "pairing_concurrent_claim_one_winner_required"], ["conflict-leak", "pairing_conflict_must_not_disclose_credentials"], ["replay", "pairing_replay_must_fail"], ["revoked", "revoked_pairing_must_fail"]])("detects protocol failure %s rather than reporting acceptance", async (mode, label) => {
     const { input } = await fixture(mode); await expect(rehearseLocalDesktopPairingHttp(input)).rejects.toThrow(label);
   });
   it.each(["https://production.invalid", "http://localhost:3000", "http://127.0.0.1:3000/path", "http://user:password@127.0.0.1:3000"])("refuses non-isolated origin %s before requests", async appOrigin => {

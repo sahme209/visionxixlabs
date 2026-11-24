@@ -5,4 +5,13 @@ it('roundtrips one exact bounded credential frame without exposing a key',()=>{c
 it('rejects a foreign generation, trailing bytes, incomplete frame and wrong token actor',()=>{const bytes=encodeFixtureAuthorizationFrame(fixture());const wrong=bytes.slice();wrong[8]=120;expect(()=>decodeFixtureAuthorizationFrame(wrong)).toThrow();expect(()=>decodeFixtureAuthorizationFrame(Uint8Array.from([...bytes,0]))).toThrow();expect(()=>decodeFixtureAuthorizationFrame(bytes.slice(0,-1))).toThrow();const bad=fixture();bad.requesterToken=bad.reviewerToken;expect(()=>encodeFixtureAuthorizationFrame(bad)).toThrow()});
 it('rejects duplicate decoded JSON fields, malformed utf8 and oversized length before parsing',()=>{const payload=new TextEncoder().encode('{"tenant":"qualification_workspace","ten\\u0061nt":"qualification_workspace"}');const base=encodeFixtureAuthorizationFrame(fixture()).slice(0,44),bytes=Uint8Array.from([...base,...payload]);new DataView(bytes.buffer).setUint32(40,payload.length);expect(()=>decodeFixtureAuthorizationFrame(bytes)).toThrow();const utf8=Uint8Array.from([...base,0xff]);new DataView(utf8.buffer).setUint32(40,1);expect(()=>decodeFixtureAuthorizationFrame(utf8)).toThrow();new DataView(base.buffer).setUint32(40,65537);expect(()=>decodeFixtureAuthorizationFrame(base)).toThrow()});
 it('rejects actor/transport/authority fields, unsupported cases, duplicates or reordered source schedule',()=>{expect(()=>encodeFixtureAuthorizationFrame({...fixture(),signingKey:'never'})).toThrow();const data=fixture();data.scenarios.push({...data.scenarios[0]});expect(()=>encodeFixtureAuthorizationFrame(data)).toThrow();expect(()=>encodeFixtureAuthorizationFrame({...fixture(),scenarios:[{...fixture().scenarios[0],caseId:'arbitrary_sql'}]})).toThrow();expect(()=>encodeFixtureAuthorizationFrame({...fixture(),scenarios:[{...fixture().scenarios[0],caseId:'execute_enrolled'},fixture().scenarios[0]]})).toThrow()});
-it('exports only synthetic cross-language fixture bytes for the native pure parser',async()=>{const{mkdirSync,writeFileSync}=await import('node:fs');mkdirSync('work/joined-fixture-driver',{recursive:true});writeFileSync('work/joined-fixture-driver/ts-frame.bin',encodeFixtureAuthorizationFrame(fixture()),{mode:0o600});});
+// The native parser fixture is an explicit artifact export. Ordinary tests leave the checkout clean.
+it.skipIf(process.env.V19_EXPORT_SYNTHETIC_AUTHORIZATION_FRAME !== "1")(
+  "exports synthetic cross-language fixture bytes for the native pure parser",
+  async () => {
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const output = "work/joined-fixture-driver";
+    mkdirSync(output, { recursive: true });
+    writeFileSync(`${output}/ts-frame.bin`, encodeFixtureAuthorizationFrame(fixture()), { mode: 0o600 });
+  },
+);

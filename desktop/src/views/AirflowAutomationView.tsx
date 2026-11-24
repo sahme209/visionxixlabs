@@ -45,12 +45,17 @@ const recoveryNotices: Record<string, string> = {
   airflow_approval_authority_unavailable: "Approval permissions could not be confirmed. No action was started.",
 };
 
-export function AirflowAutomationView({onInspect}: {onInspect?: (dagId: string, runId?: string) => void} = {}) {
-  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision);
-  return <AirflowWorkspaceView key={revision} onInspect={onInspect} />;
+interface AirflowViewProps {
+  onInspect?: (dagId: string, runId?: string) => void;
+  active?: boolean;
 }
 
-function AirflowWorkspaceView({onInspect}: {onInspect?: (dagId: string, runId?: string) => void}) {
+export function AirflowAutomationView({onInspect, active = true}: AirflowViewProps = {}) {
+  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision);
+  return <AirflowWorkspaceView key={revision} onInspect={onInspect} active={active} />;
+}
+
+function AirflowWorkspaceView({onInspect, active}: AirflowViewProps & {active: boolean}) {
   const [contextRevision] = useState(desktopClient.getContextRevision);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -154,10 +159,10 @@ function AirflowWorkspaceView({onInspect}: {onInspect?: (dagId: string, runId?: 
   }, [refreshRuns, historyRevision]);
 
   useEffect(() => {
-    if (!watchRuns || tab !== "dags" || !selectedDagId || connectionState !== "ready" || !connection?.connected || historyState === "loading") return;
+    if (!active || !watchRuns || tab !== "dags" || !selectedDagId || connectionState !== "ready" || !connection?.connected || historyState === "loading") return;
     const timer = window.setInterval(() => { if (document.visibilityState === "visible") void refreshRuns(); }, 15_000);
     return () => window.clearInterval(timer);
-  }, [watchRuns, tab, selectedDagId, connectionState, connection?.connected, historyState, refreshRuns]);
+  }, [active, watchRuns, tab, selectedDagId, connectionState, connection?.connected, historyState, refreshRuns]);
 
   async function act(work: () => Promise<{ ok: boolean; error?: string }>, success: string) {
     if (!mounted.current || contextRevision !== desktopClient.getContextRevision() || actionInFlight.current) return;
@@ -190,7 +195,7 @@ function AirflowWorkspaceView({onInspect}: {onInspect?: (dagId: string, runId?: 
     {tab === "connection" && connectionState !== "unavailable" && connection !== null && <ConnectionPanel connection={connection} busy={busy} onRun={act} />}
     {tab === "connection" && <BatchProviderConnections />}
     {tab === "dags" && connectionState === "ready" && connection?.connected && <section className="mt-8 grid gap-5 lg:grid-cols-[340px_1fr]"><div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-center gap-2 text-sm"><Workflow className="h-4 w-4"/>DAG</div><select className={`${input} mt-4`} value={selectedDagId} onChange={(event) => setDagId(event.target.value)}><option value="" disabled>Select an available DAG</option>{dags.map((dag) => <option key={dag.dagId} value={dag.dagId}>{dag.displayName}{dag.paused ? " · paused" : ""}</option>)}</select><p className="mt-3 text-xs leading-5 text-zinc-500">{dags.find((dag) => dag.dagId === dagId)?.description ?? "No DAG description provided."}</p><button disabled={busy || !selectedDag || selectedDag.paused} onClick={() => selectedDag && !selectedDag.paused && setRunReview(selectedDag.dagId)} className="btn-primary mt-5 w-full"><Play className="mr-2 inline h-3.5 w-3.5"/>Run now</button>{onInspect && <button type="button" disabled={!selectedDag || dagState !== "ready"} onClick={() => selectedDag && onInspect(selectedDag.dagId)} className={`${button} mt-2 w-full`}>Investigate with Agent</button>}</div><RunHistory key={selectedDagId} watchRuns={watchRuns} onWatchChange={setWatchRuns} runs={runs} onInspect={onInspect ? runId => onInspect(selectedDagId, runId) : undefined} state={selectedDagId ? historyState : "ready"} onRefresh={() => void refreshRuns()}/></section>}
-    {hasDagCatalog && <div hidden={tab !== "automations"} style={{display:tab === "automations" ? "block" : "none"}}><AutomationPanel active={tab === "automations"} verified={connectionState === "ready" && Boolean(connection?.connected) && dagState === "ready" && automationState === "ready"} dags={dags} repositories={repositories} environments={environments} automations={automations} busy={busy} onRun={act} /></div>}
+    {hasDagCatalog && <div hidden={tab !== "automations"} style={{display:tab === "automations" ? "block" : "none"}}><AutomationPanel active={active && tab === "automations"} verified={connectionState === "ready" && Boolean(connection?.connected) && dagState === "ready" && automationState === "ready"} dags={dags} repositories={repositories} environments={environments} automations={automations} busy={busy} onRun={act} /></div>}
     {tab === "approvals" && automationState === "loading" && <p role="status" className="mt-6 text-xs text-zinc-400">Loading automation history…</p>}
     {tab === "approvals" && automationState === "ready" && <ExecutionPanel executions={executions} automations={automations} busy={busy} onRun={act} />}
     {runReview && <DesktopDialog label="Run Airflow DAG" busy={busy} onClose={() => setRunReview(null)}><h2 className="text-sm font-semibold">Run this DAG?</h2><p className="mt-3 break-all text-xs text-zinc-300">{runReview}</p><p className="mt-2 text-xs leading-5 text-zinc-500">Starts one real run at the connected Airflow endpoint using the DAG’s default configuration. Its tasks may change external systems. V19’s service verifies execution permission.</p><div className="mt-5 flex justify-end gap-2"><button type="button" className={button} onClick={() => setRunReview(null)}>Cancel</button><button type="button" className="btn-primary" disabled={busy || dagState !== "ready" || selectedDag?.dagId !== runReview || selectedDag.paused} onClick={() => { const reviewed=runReview; setRunReview(null); if (dagState === "ready" && selectedDag?.dagId === reviewed && !selectedDag.paused) void act(() => desktopClient.triggerAirflowDag(reviewed), "DAG run queued in Airflow."); }}>Confirm DAG run</button></div></DesktopDialog>}

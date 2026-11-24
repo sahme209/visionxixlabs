@@ -66,10 +66,20 @@ export interface AppEnv {
   awsCfnTemplateS3Url?: string;
   /** Azure Cost Management extractor opt-in. */
   azureCostMgmtEnabled: boolean;
-  /** Telemetry webhook shared secret — required for inbound /api/webhooks/telemetry. */
+  /** Inbound telemetry settings bind one dedicated signing secret to a workspace and provider. */
   telemetryWebhookSecret?: string;
-  /** Incident webhook shared secret — required for inbound /api/webhooks/incident. */
+  telemetryWebhookTenantId?: string;
+  telemetryWebhookProvider?: string;
+  telemetrySentryInstallationId?: string;
+  telemetryPrometheusBearerDigest?: string;
+  /** Workspace that owns the process-wide credentials used by telemetry pulls. */
+  telemetryPullTenantId?: string;
+  /** Workspace that owns the process-wide PagerDuty incident pull credentials. */
+  incidentPullTenantId?: string;
+  /** Inbound incident settings bind one dedicated signing secret to a workspace and provider. */
   incidentWebhookSecret?: string;
+  incidentWebhookTenantId?: string;
+  incidentWebhookProvider?: string;
   /** Autonomy scheduler opt-in — required before cron will run a cycle. */
   autonomySchedulerEnabled: boolean;
   /** AWS ECS extractor opt-in. */
@@ -229,7 +239,15 @@ export function loadAppEnv(): AppEnv {
     awsCfnTemplateS3Url:      env.AWS_CFN_TEMPLATE_S3_URL?.trim() || undefined,
     azureCostMgmtEnabled:     bool(env.AZURE_COST_MGMT_ENABLED, false),
     telemetryWebhookSecret:   env.TELEMETRY_WEBHOOK_SECRET?.trim() || undefined,
+    telemetryWebhookTenantId: env.TELEMETRY_WEBHOOK_TENANT_ID?.trim() || undefined,
+    telemetryWebhookProvider: env.TELEMETRY_WEBHOOK_PROVIDER?.trim() || undefined,
+    telemetrySentryInstallationId: env.TELEMETRY_SENTRY_INSTALLATION_ID?.trim().toLowerCase() || undefined,
+    telemetryPrometheusBearerDigest: env.TELEMETRY_PROMETHEUS_BEARER_SHA256?.trim() || undefined,
+    telemetryPullTenantId:    env.TELEMETRY_PULL_TENANT_ID?.trim() || undefined,
+    incidentPullTenantId:     env.INCIDENT_PULL_TENANT_ID?.trim() || undefined,
     incidentWebhookSecret:    env.INCIDENT_WEBHOOK_SECRET?.trim() || undefined,
+    incidentWebhookTenantId:  env.INCIDENT_WEBHOOK_TENANT_ID?.trim() || undefined,
+    incidentWebhookProvider:  env.INCIDENT_WEBHOOK_PROVIDER?.trim() || undefined,
     autonomySchedulerEnabled: bool(env.AUTONOMY_SCHEDULER_ENABLED, false),
     cronSecret:               env.CRON_SECRET?.trim() || undefined,
     awsEcsExtractEnabled:     bool(env.AWS_ECS_EXTRACT_ENABLED, false),

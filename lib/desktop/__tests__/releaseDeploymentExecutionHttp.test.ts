@@ -1,13 +1,15 @@
 import {beforeEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({auth:vi.fn(),find:vi.fn(),get:vi.fn(),prepare:vi.fn(),run:vi.fn(),cancel:vi.fn(),recover:vi.fn(),fence:vi.fn(),claim:vi.fn(),exerciseFence:false}));
-vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.find}}}));vi.mock('../resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));
+const m=vi.hoisted(()=>({auth:vi.fn(),find:vi.fn(),get:vi.fn(),getHistory:vi.fn(),release:vi.fn(),prepare:vi.fn(),run:vi.fn(),cancel:vi.fn(),recover:vi.fn(),fence:vi.fn(),claim:vi.fn(),exerciseFence:false}));
+vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.find},tauriDeploymentRequest:{findFirst:m.release}}}));vi.mock('../resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));
 vi.mock('@/lib/governance/intelligence/uncoveredExecution',()=>({assertNoUncoveredGovernanceExecution:m.fence}));
-vi.mock('@/lib/tauri/releaseDeploymentExecutionStore',()=>({createReleaseDeploymentExecutionStore:(_repo:unknown,deps:any)=>Object.fromEntries(['get','prepare','cancel','recover','claim'].map(key=>[key,async(...args:any[])=>{await deps.assertCurrent({},args[0]);return (m as any)[key](...args)}]))}));
+vi.mock('@/lib/tauri/releaseDeploymentExecutionStore',()=>({createReleaseDeploymentExecutionStore:(_repo:unknown,deps:any)=>Object.fromEntries(['get','getHistory','prepare','cancel','recover','claim'].map(key=>[key,async(...args:any[])=>{await deps.assertCurrent({},args[0]);return (m as any)[key](...args)}]))}));
 vi.mock('@/lib/tauri/releaseDeploymentExecutionExecutor',()=>({createReleaseDeploymentExecutor:(store:any)=>({run:async(...args:any[])=>{if(m.exerciseFence)await store.claim(...args);return m.run(...args)}})}));
 import {handleReleaseDeploymentExecution as handle} from '../releaseDeploymentExecutionHttp';import {sha256ContentHash} from '@/lib/tauri/contentHash';
-const planId='release_plan_'+'a'.repeat(64),actor={id:'session',userId:'user',organizationId:'org',credentialKind:'desktop_session',capabilities:['github:read','deploy:execute']};
-const plan={kind:'merge_pull_request',organizationId:'org',requestId:'release',requestVersion:3,intakeDigest:'d'.repeat(64),connectionId:'connection',connectionRevision:'2030-01-01T00:00:00Z',window:{startUtc:'2030-01-02T00:00:00Z',endUtc:'2030-01-03T00:00:00Z'},method:'squash',pullRequest:{repositoryFullName:'team/service',number:42,url:'https://github.com/team/service/pull/42',headRef:'feature',headSha:'a'.repeat(40),baseRef:'main',baseSha:'b'.repeat(40)}};
-const input={format:1,plan,planDigest:sha256ContentHash(plan),releaseRequesterUserId:'requester',createdAt:'2030-01-01T00:00:00Z',deadlineAt:plan.window.endUtc};
+const actor={id:'session',userId:'user',organizationId:'org',credentialKind:'desktop_session',capabilities:['github:read','deploy:execute']};
+const fixtureIntake = {title:'Fixture deployment'};
+const plan={kind:'merge_pull_request',organizationId:'org',requestId:'release',requestVersion:3,intakeDigest:sha256ContentHash({requestVersion:3,intake:fixtureIntake}),connectionId:'connection',connectionRevision:'2030-01-01T00:00:00Z',window:{startUtc:'2030-01-02T00:00:00Z',endUtc:'2030-01-03T00:00:00Z'},method:'squash',pullRequest:{repositoryFullName:'team/service',number:42,url:'https://github.com/team/service/pull/42',headRef:'feature',headSha:'a'.repeat(40),baseRef:'main',baseSha:'b'.repeat(40)}};
+const input={format:1,plan,planDigest:sha256ContentHash(plan),releaseRequesterUserId:'user',createdAt:'2030-01-01T00:00:00Z',deadlineAt:plan.window.endUtc};
+const planId='release_plan_'+sha256ContentHash(['org','release',3,input.planDigest]);
 const req=(method='GET',body?:unknown,query='')=>new NextRequest('https://owned.test/api/desktop/deployments/release/operation-plans/'+planId+'/deployment-execution'+query,{method,...(body?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});
 
 
@@ -17,7 +19,7 @@ const actionProjection=Object.fromEntries(['repositoryFullName','workflowPath','
 const operation={id:operationId,state:'prepared',version:0,attemptCount:0,action:{...actionProjection,planDigest:sha256ContentHash(deploymentPlan)},deploymentSucceeded:false,artifactVerified:false,applicationHealthVerified:false,executionAvailable:false};
 const action=(action:string,expectedVersion=0)=>({action,expectedVersion,clientRequestId:'11111111-1111-4111-8111-111111111111'});
 const ports=()=>({enabled:()=>true,readPlan:vi.fn(async()=>deploymentPlan),dependencies:{assertCurrent:vi.fn(async()=>{}),readCurrentPlan:vi.fn(),verifySupportedSourcePolicy:vi.fn(),readIndependentApproval:vi.fn(),consumeIndependentApproval:vi.fn()},transport:{kind:'release_deployment_transport_v1' as const,execute:vi.fn()}});
-beforeEach(()=>{vi.clearAllMocks();m.exerciseFence=false;m.fence.mockResolvedValue(undefined);m.claim.mockResolvedValue({claimed:true});m.auth.mockResolvedValue(actor);m.find.mockImplementation(async({where}:any)=>where.workflowKind==='release_operation_plan_v1'?{inputJson:input}:{inputJson:{plan:deploymentPlan}});m.get.mockResolvedValue(operation);m.prepare.mockResolvedValue(operation);m.cancel.mockResolvedValue({...operation,state:'cancelled',version:1});m.recover.mockResolvedValue({...operation,state:'unknown',version:2,attemptCount:1});m.run.mockResolvedValue({...operation,state:'unknown',version:2,attemptCount:1})});
+beforeEach(()=>{vi.clearAllMocks();m.exerciseFence=false;m.fence.mockResolvedValue(undefined);m.claim.mockResolvedValue({claimed:true});m.auth.mockResolvedValue(actor);m.find.mockImplementation(async({where}:any)=>where.workflowKind==='release_operation_plan_v1'?{id:planId,organizationId:'org',requestedByUserId:'creator',workflowKind:'release_operation_plan_v1',inputJson:input}:{inputJson:{plan:deploymentPlan}});m.get.mockResolvedValue(operation);m.prepare.mockResolvedValue(operation);m.cancel.mockResolvedValue({...operation,state:'cancelled',version:1});m.recover.mockResolvedValue({...operation,state:'unknown',version:2,attemptCount:1});m.run.mockResolvedValue({...operation,state:'unknown',version:2,attemptCount:1})});
 it('default service reads history without dispatch or false readiness',async()=>{const r=await handle(req(),'release',planId);expect(r.status).toBe(200);expect((await r.json()).data.available).toBe(false);expect(m.run).not.toHaveBeenCalled();expect(m.prepare).not.toHaveBeenCalled()});
 it('default composition refuses execute even for an owned prepared record',async()=>{expect((await handle(req('POST',action('execute')),'release',planId)).status).toBe(503);expect(m.run).not.toHaveBeenCalled()});
 it('synthetic installed composition runs only the exact derived operation',async()=>{const r=await handle(req('POST',action('execute')),'release',planId,ports());expect(r.status).toBe(200);expect(m.run).toHaveBeenCalledExactlyOnceWith({organizationId:'org',actorUserId:'user',sessionId:'session'},operationId)});
@@ -43,3 +45,20 @@ it('retains read-only deployment recovery without evaluating uncovered-execution
 it('selects the request-bound governance coordinator at actual execute instead of the legacy executor',async()=>{const p=ports(),run=vi.fn(async()=>({...operation,state:'unknown',version:2,attemptCount:1})),prepare=vi.fn();const r=await handle(req('POST',action('execute')),'release',planId,{...p,governance:{run,prepare}} as any);expect(r.status).toBe(200);expect(run).toHaveBeenCalledWith(expect.anything(),operationId,expect.any(AbortSignal));expect(m.run).not.toHaveBeenCalled();});
 it('selects trusted governance preparation only after the actual stored-parent plan binding',async()=>{m.find.mockImplementation(async({where}:any)=>where.workflowKind==='release_operation_plan_v1'?{inputJson:input}:null);const p=ports(),prepare=vi.fn(async()=>operation),run=vi.fn();const r=await handle(req('POST',action('prepare')),'release',planId,{...p,governance:{run,prepare}} as any);expect(r.status).toBe(200);expect(prepare).toHaveBeenCalledWith(expect.anything(),deploymentPlan,expect.any(AbortSignal));expect(m.prepare).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();});
 it('never falls back to legacy execution after governance refusal',async()=>{const p=ports(),run=vi.fn(async()=>{throw Error('revoked')}),prepare=vi.fn();const r=await handle(req('POST',action('execute')),'release',planId,{...p,governance:{run,prepare}} as any);expect(r.status).toBe(409);expect(run).toHaveBeenCalledOnce();expect(m.run).not.toHaveBeenCalled();expect(m.claim).not.toHaveBeenCalled();});
+
+it('returns only dated exact deployment events without initializing or running provider ports', async () => {
+ const events = [{type:'prepared',at:'2030-01-02T00:00:00Z'},{type:'dispatching',at:'2030-01-02T00:01:00Z'},{type:'accepted',at:'2030-01-02T00:02:00Z'}];
+ m.getHistory.mockResolvedValue(events);
+ m.release.mockResolvedValue({id:'release',organizationId:'org',version:3,requesterUserId:'user',intakeJson:fixtureIntake});
+ const factory = vi.fn();
+ const response = await handle(req('GET',undefined,'?historyVersion=3'),'release',planId,factory);
+ expect(response.status).toBe(200);
+ expect(await response.json()).toEqual({ok:true,data:{requestId:'release',requestVersion:3,planId,planDigest:input.planDigest,events}});
+ expect(m.getHistory).toHaveBeenCalledWith({organizationId:'org',actorUserId:'user',sessionId:'session'},operationId,expect.any(Function));
+ expect(factory).not.toHaveBeenCalled();
+ expect(m.run).not.toHaveBeenCalled();
+ expect(m.recover).not.toHaveBeenCalled();
+ m.release.mockResolvedValueOnce({id:'release',organizationId:'org',version:4});
+ expect((await handle(req('GET',undefined,'?historyVersion=3'),'release',planId,factory)).status).toBe(409);
+ expect((await handle(req('POST',action('prepare'),'?historyVersion=3'),'release',planId,factory)).status).toBe(400);
+});

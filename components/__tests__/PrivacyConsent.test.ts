@@ -76,11 +76,15 @@ describe("website privacy choices", () => {
     expect(send(event)).toBeNull();
   });
 
-  it("preserves the existing control for reopening privacy choices", async () => {
+  it("moves focus into reopened choices and returns it after saving", async () => {
     window.localStorage.setItem(key, "essential");
     render(createElement(PrivacyConsent));
-    fireEvent.click(await screen.findByRole("button", { name: "Privacy choices" }));
-    expect(screen.getByRole("dialog", { name: "Your privacy choices" })).not.toBeNull();
+    const trigger = await screen.findByRole("button", { name: "Privacy choices" });
+    trigger.focus();
+    fireEvent.click(trigger);
+    expect(document.activeElement).toBe(screen.getByText("Your privacy choices"));
+    fireEvent.click(screen.getByRole("button", { name: "Essential only" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Privacy choices" }));
   });
 
   it("honors an essential-only cookie when an older storage grant remains", async () => {
@@ -116,6 +120,7 @@ describe("website privacy choices", () => {
     expect(screen.getByTestId("measurement-active")).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Continue in this tab" }));
     expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Privacy choices" }));
     cleanup();
     render(createElement(PrivacyConsent));
     await screen.findByRole("dialog", { name: "Your privacy choices" });

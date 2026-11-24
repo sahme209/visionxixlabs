@@ -68,13 +68,13 @@ export function SupporterCheckout({ enabled, unavailableReason }: { enabled: boo
         <span className="mt-2 flex min-h-12 items-center rounded-xl border border-white/10 bg-black/20 px-4 focus-within:border-orange-300/50">
           <span className="text-zinc-500">$</span>
           <input required min="1" step="0.01" inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-zinc-100 outline-hidden" aria-label="Custom support amount in US dollars" />
-          <span className="text-xs text-zinc-600">USD</span>
+          <span className="text-xs text-zinc-400">USD</span>
         </span>
       </label>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="text-sm text-zinc-400">Email for receipt<input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
-        <label className="text-sm text-zinc-400">Name for your badge <span className="text-zinc-600">(optional)</span><input autoComplete="name" maxLength={120} value={displayName} onChange={(event) => setDisplayName(event.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
+        <label className="text-sm text-zinc-400">Name for your badge <span className="text-zinc-400">(optional)</span><input autoComplete="name" maxLength={120} value={displayName} onChange={(event) => setDisplayName(event.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 text-zinc-100 outline-hidden focus:border-orange-300/50" /></label>
       </div>
 
       <div className="mt-5 space-y-3 rounded-2xl border border-white/8 bg-black/15 p-4 text-sm text-zinc-400">
@@ -90,8 +90,8 @@ export function SupporterCheckout({ enabled, unavailableReason }: { enabled: boo
       <button disabled={!enabled || pending || amountCents < 100} className="mt-5 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500">
         {pending ? "Opening secure checkout…" : "Continue to secure checkout"}<ArrowRightIcon className="h-4 w-4" />
       </button>
-      <p id="supporter-terms" className="mt-4 text-xs leading-5 text-zinc-600">Payment is completed on Stripe’s hosted checkout. Vision XIX Labs never receives or stores your card number. See our <Link href="/privacy" className="text-zinc-400 underline underline-offset-2">privacy policy</Link> and <Link href="/terms" className="text-zinc-400 underline underline-offset-2">terms</Link>. Refund requests are reviewed at support@visionxixlabs.com; approved refunds return to the original payment method.</p>
-      <div className="mt-4 flex items-center gap-2 text-xs text-zinc-500"><CheckBadgeIcon className="h-4 w-4 text-orange-300" /> Includes a downloadable digital badge after verified payment.</div>
+      <p id="supporter-terms" className="mt-4 text-xs leading-5 text-zinc-400">Payment is completed on Stripe’s hosted checkout. Vision XIX Labs never receives or stores your card number. See our <Link href="/privacy" className="text-zinc-400 underline underline-offset-2">privacy policy</Link> and <Link href="/terms" className="text-zinc-400 underline underline-offset-2">terms</Link>. Refund requests are reviewed at support@visionxixlabs.com; approved refunds return to the original payment method.</p>
+      <div className="mt-4 flex items-center gap-2 text-xs text-zinc-400"><CheckBadgeIcon className="h-4 w-4 text-orange-300" /> Includes a downloadable digital badge after verified payment.</div>
     </form>
   );
 }

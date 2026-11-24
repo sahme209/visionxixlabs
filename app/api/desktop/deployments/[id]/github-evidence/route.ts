@@ -152,9 +152,16 @@ export async function POST(
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
 
   const { id } = await params;
+  const version = request.nextUrl.searchParams.get("expectedVersion");
+  if (version !== null && !/^[1-9]\d{0,8}$/.test(version)) {
+    return NextResponse.json({ ok: false, error: "invalid_release_version" }, { status: 400 });
+  }
   const repo = prisma as unknown as DeploymentRequestRepo & InstallationRepo & AuditEventRepo;
   const deployment = await getDeploymentRequest(repo, String(session.organizationId), id);
   if (!deployment) return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+  if (version !== null && deployment.version !== Number(version)) {
+    return NextResponse.json({ ok: false, error: "deployment_request_version_changed" }, { status: 409 });
+  }
 
   const parsed = parseDeploymentIntake(deployment.intakeJson);
   if (!parsed.ok) return NextResponse.json({ ok: false, error: "deployment_request_context_unavailable" }, { status: 422 });
@@ -239,6 +246,13 @@ export async function POST(
     };
   }));
 
+  if (version !== null) {
+    const latest = await getDeploymentRequest(repo, String(session.organizationId), id);
+    if (latest?.version !== deployment.version) {
+      return NextResponse.json({ ok: false, error: "deployment_request_version_changed" }, { status: 409 });
+    }
+  }
+
   const availableRepositories = repositoryEvidence.filter((entry) => entry.state === "observed").length;
   const availablePullRequests = pullRequestEvidence.filter((entry) => entry.state === "observed").length;
   await appendAuditEvent(repo, {
@@ -253,6 +267,7 @@ export async function POST(
     actorUserId: String(session.userId),
     correlationId: request.headers.get("x-correlation-id"),
     detailJson: {
+      requestVersion: deployment.version,
       repositoryCount: repositories.length,
       repositoriesObserved: availableRepositories,
       pullRequestsObserved: availablePullRequests,
@@ -263,6 +278,8 @@ export async function POST(
     ok: true,
     data: {
       mode: "read_only_evidence",
+      requestId: deployment.id,
+      requestVersion: deployment.version,
       repositories: repositoryEvidence,
       pullRequests: pullRequestEvidence,
     },

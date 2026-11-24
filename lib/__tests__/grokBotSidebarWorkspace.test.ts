@@ -19,17 +19,17 @@ vi.mock('../../desktop/src/views/DesktopSignInView',()=>({DesktopSignInView:()=>
 vi.mock('../../desktop/src/views/DesktopAccessRequiredView',()=>({DesktopAccessRequiredView:()=>null}));
 import App from '../../desktop/src/App';
 afterEach(cleanup);
-it('opens the distinct sidebar workspace between Agent and Releases and retains both local drafts without reinitializing Chat',async()=>{
- render(createElement(App));fireEvent.click(await screen.findByRole('button',{name:/Open Agent/}));await screen.findByLabelText('Chat draft');fireEvent.change(screen.getByLabelText('Chat draft'),{target:{value:'Retained Agent draft'}});
- const agent=screen.getByRole('button',{name:'Agent'}),bot=screen.getByRole('button',{name:'V19 Bot'}),releases=screen.getByRole('button',{name:'Releases'});
- expect(agent.compareDocumentPosition(bot)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(bot.compareDocumentPosition(releases)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
- fireEvent.click(bot);await screen.findByLabelText('Bot task title');expect(screen.getByTestId('chat-active').textContent).toBe('false');expect(screen.queryByRole('textbox',{name:'Chat draft'})).toBeNull();
- fireEvent.change(screen.getByLabelText('Bot task title'),{target:{value:'Retained Bot draft'}});fireEvent.click(agent);expect(screen.getByTestId('chat-active').textContent).toBe('true');expect((screen.getByLabelText('Chat draft') as HTMLInputElement).value).toBe('Retained Agent draft');
- fireEvent.click(bot);expect((screen.getByLabelText('Bot task title') as HTMLInputElement).value).toBe('Retained Bot draft');expect(screen.queryByRole('navigation',{name:'Agent capability'})).toBeNull();
+it('opens Saved Tasks next to Agent and retains both local drafts without reinitializing Chat',async()=>{
+ render(createElement(App));fireEvent.click(await screen.findByRole('button',{name:'Agent'}));await screen.findByLabelText('Chat draft');fireEvent.change(screen.getByLabelText('Chat draft'),{target:{value:'Retained Agent draft'}});
+ const agent=screen.getByRole('button',{name:'Agent'}),bot=screen.getByRole('button',{name:'Saved Tasks'});
+ expect(agent.compareDocumentPosition(bot)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ fireEvent.click(bot);await screen.findByLabelText('What should V19 Bot help with?');expect(screen.getByTestId('chat-active').textContent).toBe('false');expect(screen.queryByRole('textbox',{name:'Chat draft'})).toBeNull();
+ fireEvent.change(screen.getByLabelText('What should V19 Bot help with?'),{target:{value:'Retained task draft'}});fireEvent.click(agent);expect(screen.getByTestId('chat-active').textContent).toBe('true');expect((screen.getByLabelText('Chat draft') as HTMLInputElement).value).toBe('Retained Agent draft');
+ fireEvent.click(bot);expect((screen.getByLabelText('What should V19 Bot help with?') as HTMLTextAreaElement).value).toBe('Retained task draft');expect(screen.queryByRole('navigation',{name:'Agent capability'})).toBeNull();
 });
 
 it('opens connection management from the catalogue and returns to the same workspace',async()=>{
- render(createElement(App));await screen.findByRole('button',{name:/Open Agent/});fireEvent.click(screen.getByRole('button',{name:'Apps & skills'}));
+ render(createElement(App));await screen.findByRole('button',{name:'Home'});fireEvent.click(screen.getByRole('button',{name:'Apps & Skills'}));
  fireEvent.click(await screen.findByRole('button',{name:'Connection settings'}));expect(screen.getByTestId('settings-section').textContent).toBe('integrations');
  fireEvent.click(screen.getByRole('button',{name:'Return from settings'}));expect(screen.getByRole('button',{name:'Connection settings'})).toBeTruthy();expect(screen.queryByTestId('settings-section')).toBeNull();
 });

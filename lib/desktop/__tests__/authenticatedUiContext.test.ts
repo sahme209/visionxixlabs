@@ -73,15 +73,53 @@ it('manual cleanup retry is single-flight and refuses a retained stale button be
  act(()=>{for(const f of [...m.listeners])f()});await screen.findByText('Verified identity A');expect(screen.queryByRole('button',{name:'Retry saved credential cleanup'})).toBeNull();
 });
 it('explicit cleanup retry retains missing transport, refuses burst duplicates and clears failure on success',async()=>{
- await start();m.write.mockRejectedValueOnce(new Error('Synthetic vault failure'));fireEvent.click(screen.getByText('Open settings fixture'));fireEvent.click(screen.getByText('Sign out fixture'));const retry=await screen.findByRole('button',{name:'Retry saved credential cleanup'});const pending=deferred();m.write.mockReturnValueOnce(pending.promise);
- act(()=>{fireEvent.click(retry);fireEvent.click(retry)});expect(m.write).toHaveBeenCalledTimes(2);expect(m.config.sessionToken).toBeUndefined();expect(screen.queryByText('Sign-in surface')).toBeNull();await act(async()=>pending.resolve(undefined));await screen.findByText('Sign-in surface');expect(screen.queryByRole('button',{name:'Retry saved credential cleanup'})).toBeNull();expect(screen.queryByText(/saved sign-in details may remain on this device/)).toBeNull();expect(m.clear).toHaveBeenCalledTimes(3);
+ await start();
+ m.write.mockRejectedValueOnce(new Error('Synthetic vault failure'));
+ fireEvent.click(screen.getByText('Open settings fixture'));
+ fireEvent.click(screen.getByText('Sign out fixture'));
+ const retry=await screen.findByRole('button',{name:'Retry saved credential cleanup'});
+ const pending=deferred();
+ m.write.mockReturnValueOnce(pending.promise);
+ try {
+  act(()=>{fireEvent.click(retry);fireEvent.click(retry)});
+  // Secure-storage mutations start on the serialized vault queue.
+  await waitFor(()=>expect(m.write).toHaveBeenCalledTimes(2));
+  expect(m.config.sessionToken).toBeUndefined();
+  expect(screen.queryByText('Sign-in surface')).toBeNull();
+ } finally {
+  // Do not leave the module's vault queue blocked if an assertion fails.
+  await act(async()=>pending.resolve(undefined));
+ }
+ await screen.findByText('Sign-in surface');
+ expect(screen.queryByRole('button',{name:'Retry saved credential cleanup'})).toBeNull();
+ expect(screen.queryByText(/saved sign-in details may remain on this device/)).toBeNull();
+ expect(m.write).toHaveBeenCalledTimes(2);
+ expect(m.clear).toHaveBeenCalledTimes(3);
 });
 
 it('refuses retained old workspace signout before replacement context notification',async()=>{
  await start();fireEvent.click(screen.getByText('Open settings fixture'));const stale=screen.getByText('Sign out fixture');m.config={...m.config,sessionToken:'synthetic-B'};fireEvent.click(stale);expect(m.config.sessionToken).toBe('synthetic-B');expect(m.write).not.toHaveBeenCalled();expect(m.clear).not.toHaveBeenCalled();act(()=>{for(const f of [...m.listeners])f()});
 });
 it('unmounts all normal signin during failed cleanup and pending retry, restoring it only after cleanup succeeds',async()=>{
- await start();m.write.mockRejectedValueOnce(new Error('Synthetic vault failure'));fireEvent.click(screen.getByText('Open settings fixture'));fireEvent.click(screen.getByText('Sign out fixture'));
- const retry=await screen.findByRole('button',{name:'Retry saved credential cleanup'});expect(screen.queryByText('Sign-in surface')).toBeNull();expect(screen.queryByRole('button',{name:'Accept verified recovery fixture'})).toBeNull();expect(screen.getByText(/saved sign-in details may remain on this device/)).toBeTruthy();
- const held=deferred();m.write.mockReturnValueOnce(held.promise);fireEvent.click(retry);expect(screen.queryByText('Sign-in surface')).toBeNull();expect(screen.queryByRole('button',{name:'Accept verified recovery fixture'})).toBeNull();await act(async()=>held.resolve(undefined));await screen.findByText('Sign-in surface');expect(screen.getByRole('button',{name:'Accept verified recovery fixture'})).toBeTruthy();expect(screen.queryByRole('button',{name:'Retry saved credential cleanup'})).toBeNull();
+ await start();
+ m.write.mockRejectedValueOnce(new Error('Synthetic vault failure'));
+ fireEvent.click(screen.getByText('Open settings fixture'));
+ fireEvent.click(screen.getByText('Sign out fixture'));
+ const retry=await screen.findByRole('button',{name:'Retry saved credential cleanup'});
+ expect(screen.queryByText('Sign-in surface')).toBeNull();
+ expect(screen.queryByRole('button',{name:'Accept verified recovery fixture'})).toBeNull();
+ expect(screen.getByText(/saved sign-in details may remain on this device/)).toBeTruthy();
+ const held=deferred();
+ m.write.mockReturnValueOnce(held.promise);
+ try {
+  fireEvent.click(retry);
+  await waitFor(()=>expect(m.write).toHaveBeenCalledTimes(2));
+  expect(screen.queryByText('Sign-in surface')).toBeNull();
+  expect(screen.queryByRole('button',{name:'Accept verified recovery fixture'})).toBeNull();
+ } finally {
+  await act(async()=>held.resolve(undefined));
+ }
+ await screen.findByText('Sign-in surface');
+ expect(screen.getByRole('button',{name:'Accept verified recovery fixture'})).toBeTruthy();
+ expect(screen.queryByRole('button',{name:'Retry saved credential cleanup'})).toBeNull();
 });

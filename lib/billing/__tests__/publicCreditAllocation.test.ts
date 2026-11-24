@@ -12,7 +12,7 @@ function hold(value: number, extra: Partial<PublicCreditHold> = {}): PublicCredi
   const a = extra.attribution ?? makePublicCreditAttribution("hold", window(), [{ source: "included", bucketId: window().bucketId, maxCents: value }], now);
   return { id: "hold", organizationId: "org", reservedCents: value, settledCents: null, status: "reserved", createdAt: now, expiresAt: new Date(now.getTime()+300000), usageEventId: null, attribution: a, linkedUsageId: null, usageOrg: null, usageBilledCents: null, usageBillingStatus: null, ...extra };
 }
-const purchase = (): PublicCreditPurchase => ({ id: "topup", organizationId: "org", deliveredAICreditsCents: 1000, reversedAICreditsCents: 0, status: "paid", validFor: "permanent", periodMonth: "2026-10", refundedAt: null, createdAt: now });
+const purchase = (): PublicCreditPurchase => ({ id: "topup", organizationId: "org", deliveredAICreditsCents: 1000, reversedAICreditsCents: 0, status: "paid", validFor: "permanent", periodMonth: "2026-10", refundedAt: null, appliedAt: new Date("2026-10-01T00:00:00Z"), createdAt: now });
 
 describe("public credit allocation", () => {
   it("preserves Free usage from before enrollment and reserves only the remainder", () => {
@@ -42,6 +42,11 @@ describe("public credit allocation", () => {
     const free=hold(100,{status:"settled",settledCents:100,usageEventId:"u",linkedUsageId:"u",usageOrg:"org",usageBilledCents:100,usageBillingStatus:"settled"});
     const paid={...window(),planId:"pro" as const,includedCents:2000,seats:2,monthlyDeployments:100,bucketId:"b".repeat(64)};
     expect(allocatePublicCredits(enrollment,paid,[free],[],now)).toMatchObject({baseCents:2000,remainingCents:2000,usedCents:0});
+  });
+  it("does not reserve against an older partially refunded row without checkout application evidence", () => {
+    const unverified = { ...purchase(), status: "partially_refunded", appliedAt: null, reversedAICreditsCents: 250 };
+    expect(allocatePublicCredits(enrollment, window(), [], [unverified], now)).toMatchObject({addOnCents:0,remainingCents:150});
+    expect(() => allocatePublicCredits(enrollment, window(), [], [unverified], now, 151)).toThrow("ai_credit_pool_exhausted");
   });
   it("refunds reduce purchased availability without rewriting previous attribution", () => {
     const p=purchase();p.reversedAICreditsCents=400;p.status="partially_refunded";

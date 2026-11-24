@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated) throw AxiomErrors.validation("auth.required", "Sign in required.");
-    const result = await extractDynatraceProblems();
+    if (!ctx.isAuthenticated || !ctx.organizationId) throw AxiomErrors.validation("auth.required", "Sign in required.");
+    const result = await extractDynatraceProblems(ctx.organizationId);
     return apiOk(result, {
       correlationId,
       safetyContract: "telemetry_ingest_read_only",

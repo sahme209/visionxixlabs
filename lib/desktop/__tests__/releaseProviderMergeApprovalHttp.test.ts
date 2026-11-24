@@ -1,8 +1,9 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({auth:vi.fn(),plan:vi.fn(),release:vi.fn(),issue:vi.fn(),get:vi.fn(),revoke:vi.fn(),roles:vi.fn(),list:vi.fn(),checkSession:false,governanceFactory:vi.fn()}));
-vi.mock('@/lib/agent/workflows/releaseOperationPlanStore',()=>({listReleaseOperationPlans:m.list}));
-vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.plan},tauriDeploymentRequest:{findFirst:m.release}}}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));vi.mock('@/lib/tauri/releaseProviderMergeApprovalStore',()=>({createReleaseProviderMergeApprovalStore:(_db:unknown,deps:any)=>({issue:async(...args:any[])=>{await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:args[1].executorUserId,role:'executor',purpose:'provider_merge',sourcePolicy:'expected_head_observed_base'});return m.issue(...args)},get:async(...args:any[])=>{if(m.checkSession)await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:'approver',role:'approver',purpose:'provider_merge',sourcePolicy:'expected_head_observed_base',approverSessionId:'session'});return m.get(...args)},revoke:m.revoke})}));
+const m=vi.hoisted(()=>({auth:vi.fn(),plan:vi.fn(),release:vi.fn(),issue:vi.fn(),get:vi.fn(),history:vi.fn(),revoke:vi.fn(),roles:vi.fn(),list:vi.fn(),checkSession:false,governanceFactory:vi.fn()}));
+vi.mock('@/lib/agent/workflows/releaseOperationPlanStore',async orig=>({...await orig<typeof import('@/lib/agent/workflows/releaseOperationPlanStore')>(),listReleaseOperationPlans:m.list}));
+vi.mock('@/lib/db',()=>({prisma:{durableAgentWorkflow:{findFirst:m.plan},tauriDeploymentRequest:{findFirst:m.release}}}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));vi.mock('@/lib/tauri/releaseProviderMergeApprovalStore',()=>({createReleaseProviderMergeApprovalStore:(_db:unknown,deps:any)=>({issue:async(...args:any[])=>{await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:args[1].executorUserId,role:'executor',purpose:'provider_merge',sourcePolicy:'expected_head_observed_base'});return m.issue(...args)},get:async(...args:any[])=>{if(m.checkSession)await deps.assertCurrent({$queryRaw:m.roles},{scope:args[0],actorUserId:'approver',role:'approver',purpose:'provider_merge',sourcePolicy:'expected_head_observed_base',approverSessionId:'session'});return m.get(...args)},getHistory:m.history,revoke:m.revoke})}));
 vi.mock('@/lib/governance/intelligence/mergeApprovalHttpComposition',()=>({createGovernanceMergeApprovalHttpPorts:m.governanceFactory}));
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {handleReleaseProviderMergeApproval} from '../releaseProviderMergeApprovalHttp';
 const planId='release_plan_'+'a'.repeat(64),uuid='11111111-1111-4111-8111-111111111111';const actor={id:'session',organizationId:'org',userId:'approver',credentialKind:'desktop_session',capabilities:['github:read','agent:approve']};
 const req=(method='GET',body?:unknown)=>new NextRequest('https://app.test/api/desktop/deployments/release/operation-plans/'+planId+'/provider-approval',{method,...(body?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});
@@ -39,3 +40,26 @@ it('refuses a legacy decision missing the newly required baseline',async()=>{con
 it('does not bypass an enrolled scope when the Governance feature flag is disabled',async()=>{const readBaseline=vi.fn(async()=>{throw Error('governance_intelligence_unavailable')});m.governanceFactory.mockReturnValue({readBaseline,assertBaseline:vi.fn()});vi.stubEnv('AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED','false');const response=await handleReleaseProviderMergeApproval(req('POST',{expectedPlanVersion:1,clientRequestId:uuid,sourcePolicy:'expected_head_observed_base'}),'release',planId);expect(response.status).toBe(409);expect(readBaseline).toHaveBeenCalledOnce();expect(m.issue).not.toHaveBeenCalled()});
 
 it('preserves deliberate revocation without warming Governance even when configuration is off',async()=>{m.revoke.mockResolvedValue({status:'revoked'});const id='release_provider_approval_'+'c'.repeat(64);m.plan.mockResolvedValueOnce({organizationId:'org',inputJson:(await m.plan()).inputJson}).mockResolvedValueOnce({inputJson:{planId}});const r=await handleReleaseProviderMergeApproval(req('DELETE',{id,expectedVersion:0,clientRequestId:uuid}),'release',planId);expect(r.status).toBe(200);expect(m.governanceFactory).not.toHaveBeenCalled();expect(m.revoke).toHaveBeenCalledOnce()});
+
+it('reads dated provider approval history without composing live Governance or calling approval mutations',async()=>{
+ const original=await m.plan(),intakeJson={title:'Fixture'};
+ const plan={...original.inputJson.plan,intakeDigest:sha256ContentHash({requestVersion:3,intake:intakeJson})};
+ const planDigest=sha256ContentHash(plan),id='release_plan_'+sha256ContentHash(['org','release',3,planDigest]);
+ m.plan.mockResolvedValue({id,organizationId:'org',workflowKind:'release_operation_plan_v1',inputJson:{...original.inputJson,plan,planDigest}});
+ m.release.mockResolvedValue({id:'release',organizationId:'org',version:3,requesterUserId:'requester',intakeJson});
+ const data={requestId:'release',requestVersion:3,planId:id,planDigest,events:[{type:'approved',at:'2030-01-01T00:00:00Z'}]};
+ m.history.mockResolvedValue(data);
+ const readBaseline=vi.fn(async()=>undefined),assertBaseline=vi.fn(async()=>{});
+ const historyRequest=new NextRequest(req().url.replace(planId,id)+'?historyVersion=3');
+ const response=await handleReleaseProviderMergeApproval(historyRequest,'release',id,{governance:{readBaseline,assertBaseline}});
+ expect(response.status).toBe(200);
+ expect(await response.json()).toEqual({ok:true,data});
+ expect(readBaseline).not.toHaveBeenCalled();
+ expect(assertBaseline).not.toHaveBeenCalled();
+ expect(m.governanceFactory).not.toHaveBeenCalled();
+ expect(m.history).toHaveBeenCalledWith({organizationId:'org',actorUserId:'approver',sessionId:'session'},
+  {requestId:'release',requestVersion:3,planId:id,planDigest,intakeDigest:plan.intakeDigest,executorUserId:'requester'});
+ expect(m.issue).not.toHaveBeenCalled();
+ expect(m.revoke).not.toHaveBeenCalled();
+ expect(m.list).not.toHaveBeenCalled();
+});

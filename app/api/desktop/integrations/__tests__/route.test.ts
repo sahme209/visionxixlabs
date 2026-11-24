@@ -66,6 +66,53 @@ describe("GET /api/desktop/integrations", () => {
       { provider: "linear", status: "not_connected", lastValidatedAt: null },
     ]);
   });
+  it("keeps an outage separate from a verified missing connection", async () => {
+    mocks.connectorFindMany.mockRejectedValue(new Error("legacy_storage_unavailable"));
+    mocks.connectionFindMany.mockRejectedValueOnce(new Error("private_collaboration_storage_failure"));
+    const {GET} = await import("../route");
+    const request = () => new NextRequest("https://visionxixlabs.com/api/desktop/integrations");
+    const first = await GET(request());
+    expect(first.status).toBe(200);
+    const firstBody = await first.json();
+    expect(firstBody.data.github.status).toBe("not_connected");
+    expect(firstBody.data.collaboration).toEqual(["slack", "teams", "linear"].map(provider => ({
+      provider, status: "unavailable", lastValidatedAt: null,
+    })));
+    expect(mocks.connectorFindMany).not.toHaveBeenCalled();
+
+    mocks.installationFindFirst.mockRejectedValueOnce(new Error("private_github_storage_failure"));
+    const second = await GET(request());
+    expect(second.status).toBe(200);
+    const secondBody = await second.json();
+    expect(secondBody.data.github).toEqual({status:"unavailable", repositorySelection:"unknown", lastSeenAt:null});
+    expect(secondBody.data.collaboration.every((row: {status: string}) => row.status === "not_connected")).toBe(true);
+    expect(JSON.stringify([firstBody,secondBody])).not.toContain("storage_failure");
+  });
+
+  it.each([
+    ["active", 1, "validated_read_only", true],
+    ["active", 25, "validation_overdue", true],
+    ["active", -1, "installation_recorded", false],
+    ["active", NaN, "installation_recorded", false],
+    ["revoked", 1, "revoked", false],
+    ["suspended", 1, "suspended", false],
+  ])("returns only eligible recorded GitHub checks for %s at age %s hours", async (status, hours, expectedStatus, exposesCheck) => {
+    const lastSeenAt = new Date(Date.now() - hours * 60 * 60 * 1000);
+    mocks.installationFindFirst.mockResolvedValue({status, repositorySelection: "selected", lastSeenAt, accountLogin: "private-login"});
+    const { GET } = await import("../route");
+    const response = await GET(new NextRequest("https://visionxixlabs.com/api/desktop/integrations"));
+    expect(response.status).toBe(200);
+    expect((await response.json()).data.github).toEqual({
+      status: expectedStatus,
+      repositorySelection: "selected",
+      lastSeenAt: exposesCheck ? lastSeenAt.toISOString() : null,
+    });
+    expect(mocks.installationFindFirst).toHaveBeenCalledWith(expect.objectContaining({
+      where: {organizationId: "org-1", status: {in: ["active", "suspended", "revoked"]}},
+      select: {status: true, repositorySelection: true, lastSeenAt: true},
+    }));
+  });
+
 });
 
 it('returns only opaque session-bound consent receipts and refuses late identity changes',async()=>{

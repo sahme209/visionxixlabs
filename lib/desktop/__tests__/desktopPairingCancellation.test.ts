@@ -99,3 +99,58 @@ describe("trusted browser pairing origin and challenge boundary", () => {
     const outcome = expect(signInWithBrowser("sign_in", vi.fn())).rejects.toThrow("service changed"); await vi.advanceTimersByTimeAsync(2000); await outcome; expect(mocks.save).not.toHaveBeenCalled();
   });
 });
+
+describe("desktop pairing expiration", () => {
+  const verificationUrl = "https://visionxixlabs.com/desktop/connect?challenge=challenge&intent=sign_in";
+
+  it("does not open a link whose service lifetime elapsed before the start response arrived", async () => {
+    const fetch = vi.fn().mockImplementationOnce(async () => {
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      return response({challenge: "challenge", verificationUrl, expiresInSeconds: 1}, 201);
+    });
+    vi.stubGlobal("fetch", fetch);
+    const waiting = vi.fn();
+    const outcome = expect(signInWithBrowser("sign_in", waiting)).rejects.toThrow("Sign-in expired");
+
+    await vi.advanceTimersByTimeAsync(1200);
+    await outcome;
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(mocks.open).not.toHaveBeenCalled();
+    expect(waiting).not.toHaveBeenCalled();
+  });
+
+  it("does not poll at or after the deadline and permits a fresh attempt", async () => {
+    const fetch = vi.fn()
+      .mockResolvedValueOnce(response({challenge: "challenge", verificationUrl, expiresInSeconds: 3}, 201))
+      .mockResolvedValueOnce(response({status: "pending"}, 202))
+      .mockResolvedValueOnce(response({challenge: "challenge", verificationUrl, expiresInSeconds: 6}, 201))
+      .mockResolvedValueOnce(response({status: "approved", token: "axm.desk.session.signature", session}));
+    vi.stubGlobal("fetch", fetch);
+
+    const outcome = expect(signInWithBrowser("sign_in", vi.fn())).rejects.toThrow("Sign-in expired");
+    await vi.advanceTimersByTimeAsync(3000);
+    await outcome;
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(mocks.save).not.toHaveBeenCalled();
+
+    const retry = signInWithBrowser("sign_in", vi.fn());
+    await vi.advanceTimersByTimeAsync(2000);
+    await expect(retry).resolves.toEqual({organizationId: "verified"});
+    expect(mocks.save).toHaveBeenCalledOnce();
+  });
+
+  it("validates a session returned by a poll that began before expiration", async () => {
+    const fetch = vi.fn()
+      .mockResolvedValueOnce(response({challenge: "challenge", verificationUrl, expiresInSeconds: 3}, 201))
+      .mockImplementationOnce(async () => {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return response({status: "approved", token: "axm.desk.session.signature", session});
+      });
+    vi.stubGlobal("fetch", fetch);
+    const attempt = signInWithBrowser("sign_in", vi.fn());
+
+    await vi.advanceTimersByTimeAsync(3500);
+    await expect(attempt).resolves.toEqual({organizationId: "verified"});
+    expect(mocks.save).toHaveBeenCalledOnce();
+  });
+});

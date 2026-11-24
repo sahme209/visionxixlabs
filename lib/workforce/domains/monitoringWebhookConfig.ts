@@ -68,8 +68,8 @@ export const PROVIDER_LABEL: Record<WebhookProvider, { label: string; signatureH
   },
   grafana: {
     label: "Grafana",
-    signatureHeader: "X-Webhook-Signature",
-    sampleNote: "Create a Webhook contact point and set the secret header",
+    signatureHeader: "X-Grafana-Alerting-Signature",
+    sampleNote: "Set the HMAC secret in the Webhook contact point. For timestamped signing, use X-Grafana-Alerting-Timestamp.",
   },
   opsgenie: {
     label: "Opsgenie",
@@ -94,9 +94,10 @@ export function generateWebhookSecret(): string {
 
 export async function readMonitoringWebhookConfig(
   organizationId: string,
+  repo: Pick<typeof prisma, "aiRationaleEnrichment"> = prisma,
 ): Promise<MonitoringWebhookConfig | null> {
   try {
-    const row = await prisma.aiRationaleEnrichment.findUnique({
+    const row = await repo.aiRationaleEnrichment.findUnique({
       where: {
         organizationId_targetKind_targetId: {
           organizationId,
@@ -194,7 +195,7 @@ export async function deleteMonitoringWebhookConfig(organizationId: string): Pro
  * /api/webhooks/monitoring route for inbound auth.
  */
 export function verifyWebhookSignature(
-  rawBody: string,
+  rawBody: string | Buffer,
   providedSignature: string,
   secret: string,
 ): boolean {
@@ -221,20 +222,22 @@ export function verifyWebhookSignature(
  * produces a matching signature. O(N) over workspaces with active
  * webhook configs; acceptable until we have thousands.
  *
- * Returns the matched organizationId + config, or null when no
- * workspace's secret matches.
+ * A complete scan must identify exactly one canonical registration.
  */
 export async function findWorkspaceFromWebhookSignature(
-  rawBody: string,
+  rawBody: string | Buffer,
   providedSignature: string,
 ): Promise<{ organizationId: string; config: MonitoringWebhookConfig } | null> {
   try {
     const rows = await prisma.aiRationaleEnrichment.findMany({
       where: { targetKind: MONITORING_WEBHOOK_TARGET_KIND },
-      select: { organizationId: true, nextActionsJson: true },
-      take: 5000,
+      select: { organizationId: true, targetId: true, nextActionsJson: true },
+      take: 5001,
     });
+    if (rows.length > 5000) return null;
+    let match: { organizationId: string; config: MonitoringWebhookConfig } | null = null;
     for (const r of rows) {
+      if (r.targetId !== r.organizationId) continue;
       const tags = new Map<string, string>();
       if (Array.isArray(r.nextActionsJson)) {
         for (const e of r.nextActionsJson as unknown[]) {
@@ -247,12 +250,14 @@ export async function findWorkspaceFromWebhookSignature(
       const secret = tags.get("webhook_secret");
       if (!secret) continue;
       if (verifyWebhookSignature(rawBody, providedSignature, secret)) {
-        const providerRaw = tags.get("provider") ?? "generic";
-        return {
+        if (match) return null;
+        const provider = tags.get("provider") ?? "generic";
+        if (!isValidProvider(provider)) return null;
+        match = {
           organizationId: r.organizationId,
           config: {
             webhookSecret: secret,
-            provider: isValidProvider(providerRaw) ? providerRaw : "generic",
+            provider,
             enabled: tags.get("enabled") !== "false",
             autoAnalyze: tags.get("auto_analyze") === "true",
             dailyCostCapCents: Number(tags.get("daily_cost_cap_cents") ?? "0") || 0,
@@ -260,7 +265,7 @@ export async function findWorkspaceFromWebhookSignature(
         };
       }
     }
-    return null;
+    return match;
   } catch {
     return null;
   }

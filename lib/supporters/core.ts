@@ -98,3 +98,13 @@ export function verifyBadgeToken(purchaseId: string, token: string, secret: stri
     return false;
   }
 }
+
+export function recordedSupporterStatus(purchase: {
+  status: string;
+  amountCents: number;
+  refundedAmountCents: number;
+}) {
+  if (purchase.refundedAmountCents >= purchase.amountCents && purchase.amountCents > 0) return "refunded";
+  if (purchase.status === "paid" && purchase.refundedAmountCents > 0) return "partially_refunded";
+  return purchase.status;
+}

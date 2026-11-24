@@ -17,6 +17,7 @@
 import "server-only";
 
 import { loadAppEnv } from "@/lib/config/env";
+import type { OrganizationId } from "@/lib/domain/ids";
 import type {
   IncidentRecord,
   IncidentSeverity,
@@ -51,9 +52,12 @@ interface PdResponse {
   incidents?: PdIncident[];
 }
 
-export async function extractPagerDutyOpenIncidents(): Promise<PagerDutyPullExtraction> {
+export async function extractPagerDutyOpenIncidents(workspaceId: OrganizationId): Promise<PagerDutyPullExtraction> {
   const start = Date.now();
   const env = loadAppEnv();
+  if (!env.incidentPullTenantId || workspaceId !== env.incidentPullTenantId) {
+    return blocked(start, "No pull credentials are assigned to this workspace.");
+  }
 
   if (!env.pagerDutyPullEnabled) {
     return blocked(start, "PAGERDUTY_PULL_ENABLED is not set — extractor skipped.");

@@ -22,14 +22,12 @@
  * internal entitlement shapes only and are not advertised. Public pricing is
  * the single versioned `AI_RATE_CARD` (aiRateCard.ts, ai_rate_card_v1, 1.5x):
  * Axiom is free to explore, prepaid AI credits are the only paid part ($10
- * minimum, never expire). Counted deployments are 10 per organization per
- * month for every tier (deploymentAllowance.ts), plus a design-partner
- * override. The `metered_billing` overage policy below is never settled
+ * minimum, never expire). Customer-managed deployments carry no V19 monthly
+ * billing cap. The `metered_billing` overage policy below is never settled
  * while prepaid credits are enabled (prepaidMeteredExclusivity.ts).
  */
 
 export { AI_RATE_CARD as PREPAID_AI_RATE_CARD } from "./aiRateCard";
-export { FREE_MONTHLY_DEPLOYMENTS } from "./deploymentAllowance";
 
 export type PlanTier = "starter" | "growth" | "business" | "enterprise";
 

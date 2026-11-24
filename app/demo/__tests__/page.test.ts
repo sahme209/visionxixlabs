@@ -21,7 +21,7 @@ it('uses scoped guide cards rather than claiming verified released outcomes or a
  const text=document.body.textContent!;
  for(const misleading of ['released desktop and service behavior','Implemented workflows','recovery armed','no production action can run from this website'])expect(text).not.toContain(misleading);
  expect(screen.getByText(/Version-specific guide/)).toBeTruthy();
- expect(screen.getByText(/Implementation scope/)).toBeTruthy();
+ expect(screen.getByRole('link',{name:/Inspect an Airflow run/}).getAttribute('href')).toBe('/docs/integration-setup#airflow');
  expect(screen.getByText(/Provider-specific guide/)).toBeTruthy();
  expect(screen.getByRole('link',{name:/Check available downloads/}).getAttribute('href')).toBe('/download');
  expect(screen.getByRole('link',{name:/Read the approval guide/}).getAttribute('href')).toBe('/docs/approval-workflow');

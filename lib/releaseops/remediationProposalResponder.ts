@@ -87,6 +87,8 @@ export interface IncidentLookupRow {
   id: string;
   organizationId: string;
   status: string;
+  releaseId?: string;
+  updatedAt?: Date;
 }
 
 export interface RemediationRepo {
@@ -205,7 +207,7 @@ export interface GenerateInput {
   engineInputs: RemediationInputs;
 }
 
-export type GenerateError = "incident_not_found" | "cross_org_incident";
+export type GenerateError = "incident_not_found" | "cross_org_incident" | "stale_incident_source";
 
 export type GenerateBody =
   | {
@@ -235,6 +237,11 @@ export async function buildRemediationGenerateResponse(
       return { status: 403, body: { ok: false, error: "cross_org_incident" } };
     }
 
+    const binding = input.engineInputs.reviewBinding;
+    if (binding && (input.engineInputs.incident.id !== incident.id || input.engineInputs.release.id !== incident.releaseId ||
+        binding.incidentRevision !== incident.updatedAt?.toISOString())) {
+      return {status:409,body:{ok:false,error:"stale_incident_source"}};
+    }
     const output = generateRemediationProposals(input.engineInputs);
 
     // Supersede prior pending for the same incident.

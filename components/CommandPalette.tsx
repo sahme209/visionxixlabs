@@ -56,9 +56,8 @@ const COMMANDS: readonly CommandItem[] = [
   // Resources
   { id: "docs",       label: "Documentation",     href: "/docs",                   category: "Resources", icon: BookOpenIcon,      hint: "Self-serve guides for the platform" },
   { id: "blog",       label: "Blog",              href: "/blog",                   category: "Resources", icon: DocumentTextIcon,  hint: "Product notes + deep dives" },
-  { id: "changelog",  label: "Changelog",         href: "/changelog",              category: "Resources", icon: RocketLaunchIcon,  hint: "Phase-by-phase shipping log", keywords: ["releases", "updates"] },
+  { id: "desktop-updates", label: "Desktop updates", href: "/docs/desktop-install#updates", category: "Resources", icon: RocketLaunchIcon, hint: "Installer updates and public release notes", keywords: ["changelog", "releases", "updates"] },
   { id: "insights",   label: "Insights",          href: "/insights",               category: "Resources", icon: BookOpenIcon,      hint: "Field notes from production" },
-  { id: "casestudies", label: "Case studies",     href: "/case-studies",           category: "Resources", icon: DocumentTextIcon,  hint: "Representative engagements" },
   { id: "design",     label: "Design system",     href: "/design",                 category: "Resources", icon: SparklesIcon,      hint: "Tokens, materials, primitives" },
 
   // Company

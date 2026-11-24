@@ -3,7 +3,6 @@ import { publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
 import type { PublicSqlRepository } from "./publicBillingStore";
 import type { PublicPlanId } from "./publicPlanCatalog";
-import { monthlyDeploymentLimitFor, type DeploymentQuotaOverrides, DESIGN_PARTNER_DEPLOYMENT_OVERRIDES } from "./deploymentAllowance";
 
 export interface DeploymentQuotaRepo {
   tenantBillingPlan: {
@@ -24,7 +23,7 @@ export interface DeploymentQuotaRepo {
 
 export type DeploymentQuotaDecision =
   | { allowed: true; planId: PublicPlanId; used: number; limit: number | null; remaining: number | null }
-  | { allowed: false; planId: PublicPlanId | null; used: number | null; limit: number | null; remaining: 0; reason: "deployment_quota_exhausted" | "deployment_quota_unavailable" };
+  | { allowed: false; planId: PublicPlanId | null; used: number | null; limit: number | null; remaining: 0; reason: "deployment_quota_unavailable" };
 
 export function billingTierToPublicPlan(tier: string | undefined, status: string | undefined): PublicPlanId {
   if (status !== "active") return "free";
@@ -45,30 +44,20 @@ function currentMonthUtc(now: Date): { gte: Date; lt: Date } {
   };
 }
 
-/**
- * Authoritative pre-dispatch gate. A deployment is counted from its durable
- * DeploymentExecution row, which is only created after GitHub accepts the
- * workflow dispatch. Polling, retries inside that run, and rollback do not
- * create another row and therefore never consume another allowance.
- */
+/** Reports monthly deployment activity and workspace entitlement for Usage & Billing. */
 export async function checkDeploymentQuota(
   repo: DeploymentQuotaRepo,
   organizationId: string,
   now = new Date(),
-  overrides: DeploymentQuotaOverrides = DESIGN_PARTNER_DEPLOYMENT_OVERRIDES,
 ): Promise<DeploymentQuotaDecision> {
   try {
-    // Every organization: 10 counted deployments per month, or its
-    // design-partner override. Plans no longer change the number.
-    const limit = monthlyDeploymentLimitFor(organizationId, overrides);
     if (publicBillingPolicyEnabled()) {
       const publicPlan = await (repo as unknown as PublicSqlRepository).$transaction(async tx=>readPublicEntitlementSnapshot(tx,organizationId,configuredPublicBillingIdentity(),await publicDatabaseNow(tx)),{isolationLevel:"RepeatableRead"});
       if(publicPlan){
         if(!publicPlan.usable)return {allowed:false,reason:"deployment_quota_unavailable",planId:publicPlan.planId,used:null,limit:null,remaining:0};
         const used=await repo.deploymentExecution.count({where:{organizationId,createdAt:currentMonthUtc(now)}});
         if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
-        if(used>=limit)return {allowed:false,reason:"deployment_quota_exhausted",planId:publicPlan.planId,used,limit,remaining:0};
-        return {allowed:true,planId:publicPlan.planId,used,limit,remaining:limit-used};
+        return {allowed:true,planId:publicPlan.planId,used,limit:null,remaining:null};
       }
     }
     const billing = await repo.tenantBillingPlan.findUnique({ where: { organizationId } });
@@ -78,11 +67,7 @@ export async function checkDeploymentQuota(
       where: { organizationId, createdAt: currentMonthUtc(now) },
     });
     if (!Number.isSafeInteger(used) || used < 0) throw Error("deployment_count_unavailable");
-    if (used >= limit) {
-      return { allowed: false, planId, used, limit, remaining: 0, reason: "deployment_quota_exhausted" };
-    }
-
-    return { allowed: true, planId, used, limit, remaining: Math.max(0, limit - used) };
+    return { allowed: true, planId, used, limit: null, remaining: null };
   } catch {
     return { allowed: false, planId: null, used: null, limit: null, remaining: 0, reason: "deployment_quota_unavailable" };
   }

@@ -96,6 +96,12 @@ export interface IncidentTriageOutput {
    Pure engine.
    ────────────────────────────────────────────────────────────── */
 
+const RESPONSE_MINUTES: Record<TriagePriority, number> = {P0:15,P1:60,P2:240,P3:1440};
+
+export function triageResponseDeadline(priority:TriagePriority, generatedAt:Date) {
+  return new Date(generatedAt.getTime() + RESPONSE_MINUTES[priority] * 60_000).toISOString();
+}
+
 const PRIORITY_RANK: Record<TriagePriority, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
 function severityToBasePriority(severity: string): TriagePriority {
@@ -192,8 +198,7 @@ export function triageDeploymentIncident(input: IncidentTriageInputs): IncidentT
   confidence = Math.min(95, confidence);
 
   // ── Response deadline by priority ──────────────────────────────
-  const deadlineMinutes = priority === "P0" ? 15 : priority === "P1" ? 60 : priority === "P2" ? 240 : 1440;
-  const responseDeadlineIso = new Date(input.now.getTime() + deadlineMinutes * 60_000).toISOString();
+  const responseDeadlineIso = triageResponseDeadline(priority,input.now);
 
   return {
     engineVersion: INCIDENT_TRIAGE_ENGINE_VERSION,

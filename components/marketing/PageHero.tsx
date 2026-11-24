@@ -15,7 +15,7 @@ export function PageHero({ eyebrow, title, muted, lead, note, actions, children 
       <div className="lg:pb-2">
         <p className="text-base leading-7 text-zinc-300 sm:text-[17px]">{lead}</p>
         {actions ? <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">{actions}</div> : null}
-        {note ? <p className="mt-5 text-[13px] leading-6 text-zinc-500">{note}</p> : null}
+        {note ? <p className="mt-5 text-[13px] leading-6 text-zinc-400">{note}</p> : null}
         {children}
       </div>
     </header>

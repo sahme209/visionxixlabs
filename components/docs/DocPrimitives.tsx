@@ -67,13 +67,13 @@ export function DocSection({ id, title, kicker, children }: { id?: string; title
 }
 
 /** A step number + title + body, for procedural docs. */
-export function Step({ number, title, children }: { number: number; title: string; children: ReactNode }) {
+export function Step({ id, number, title, children }: { id?: string; number: number; title: string; children: ReactNode }) {
   return (
     <div className="relative pl-12 mb-6">
       <div className="absolute left-0 top-0 w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center font-mono font-bold text-sm text-orange-400">
         {number}
       </div>
-      <h3 className="text-base font-bold text-white mb-2 mt-0.5">{title}</h3>
+      <h3 id={id} className={`text-base font-bold text-white mb-2 mt-0.5${id ? " scroll-mt-24" : ""}`}>{title}</h3>
       <div className="text-sm text-zinc-400 leading-relaxed space-y-3 [&_p]:leading-relaxed">{children}</div>
     </div>
   );
@@ -84,11 +84,11 @@ export function CodeBlock({ language, children }: { language?: string; children:
   return (
     <pre className="rounded-lg bg-black/40 border border-white/6 p-4 overflow-x-auto text-[12px] leading-relaxed text-zinc-200 my-4">
       {language && (
-        <span className="block text-[9px] text-zinc-600 uppercase tracking-widest mb-2 font-sans not-italic">
+        <span className="block text-[9px] text-zinc-400 uppercase tracking-widest mb-2 font-sans not-italic">
           {language}
         </span>
       )}
-      <code className="font-mono whitespace-pre">{children}</code>
+      <code className="font-mono whitespace-pre-wrap wrap-anywhere">{children}</code>
     </pre>
   );
 }
@@ -162,7 +162,7 @@ export function DocFooterNav({
           href={prev.href}
           className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all group"
         >
-          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5">
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5">
             <ArrowLeftIcon className="h-3 w-3" /> Previous
           </p>
           <p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
@@ -175,7 +175,7 @@ export function DocFooterNav({
           href={next.href}
           className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all group text-right sm:text-right"
         >
-          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5 justify-end w-full">
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5 justify-end w-full">
             Next <ArrowRightIcon className="h-3 w-3" />
           </p>
           <p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
@@ -193,7 +193,7 @@ export function DocFeedback() {
     <div className="mt-8 rounded-xl border border-white/6 bg-white/2 p-4 flex items-center justify-between flex-wrap gap-3">
       <div>
         <p className="text-sm font-semibold text-white mb-0.5">Still blocked?</p>
-        <p className="text-xs text-zinc-500">Include the failed step and error. Never send a password, token, or cloud secret.</p>
+        <p className="text-xs text-zinc-400">Include the failed step and error. Never send a password, token, or cloud secret.</p>
       </div>
       <Link
         href="/contact"

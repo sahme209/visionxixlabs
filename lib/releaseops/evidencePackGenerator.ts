@@ -355,6 +355,7 @@ export function sha256OfCanonicalJson(content: unknown): string {
 }
 
 function canonicalize(v: unknown): string {
+  if (v instanceof Date) return JSON.stringify(v);
   if (v === null || typeof v !== "object") return JSON.stringify(v);
   if (Array.isArray(v)) return `[${v.map(canonicalize).join(",")}]`;
   const obj = v as Record<string, unknown>;

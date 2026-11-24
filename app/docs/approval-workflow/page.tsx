@@ -44,6 +44,12 @@ export default function ApprovalWorkflowPage() {
         <p>The proposal shows the requested tool, arguments, risk, workspace, and status. Approval and rejection use separate authenticated endpoints. The Agent cannot approve its own request.</p>
       </DocSection>
 
+      <DocSection id="desktop-release-review" title="Execution requirements and View release review in desktop Deployments">
+        <p>In desktop versions with this Overview, open <strong>Deployments</strong> and select the exact submitted release version. Below <strong>Readiness</strong>, the <strong>Execution requirements</strong> panel explains that exact approvals and verified evidence are required before execution.</p>
+        <p>When <strong>View release review</strong> is available, it opens the merge review for that same release version. Find the button below the scrolling evidence in the wide inspector, or in the toolbar beneath the section tabs in a compact window. Use Tab to reach the button after the section tabs. Opening review records no approval and runs no operation.</p>
+        <p>If <strong>View release review</strong> is unavailable while the release is refreshing or its version cannot be verified, wait for the refresh or use <strong>Refresh</strong> before opening review. A draft, closed release or release with no pull request required does not offer this merge review shortcut. A recorded readiness decision of <strong>Ready for human review</strong> means a reviewer can inspect the request. It does not establish approval, execution or application health.</p>
+      </DocSection>
+
       <DocSection id="execution" title="Execution and recovery" kicker="03">
         <p>In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.</p>
       </DocSection>

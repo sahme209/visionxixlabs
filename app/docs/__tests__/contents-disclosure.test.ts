@@ -1,9 +1,13 @@
 // @vitest-environment jsdom
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen} from '@testing-library/react';
-import {createElement} from 'react';
+import {createElement,type ReactNode} from 'react';
 const route=vi.hoisted(()=>({path:'/docs/source-modes'}));
 vi.mock('next/navigation',()=>({usePathname:()=>route.path}));
+vi.mock('next/link',()=>({
+ default:({href,children,onNavigate,...props}:{href:string;children:ReactNode;onNavigate?:()=>void})=>
+  createElement('a',{...props,href,onClick:event=>{event.preventDefault();onNavigate?.();}},children),
+}));
 vi.mock('@/components/Navigation',()=>({Navigation:()=>null}));
 vi.mock('@/components/Footer',()=>({Footer:()=>null}));
 import Layout from '../layout';
@@ -37,4 +41,17 @@ it('desktop client navigation never sends focus to the narrow-only disclosure bu
 
 it('Escape on the disclosure button also closes expanded contents',()=>{
  render(page());const button=screen.getByRole('button',{name:'Documentation contents'});button.focus();fireEvent.click(button);fireEvent.keyDown(button,{key:'Escape'});expect(button.getAttribute('aria-expanded')).toBe('false');expect(document.activeElement).toBe(button);
+});
+
+it('moves focus to the article after opening a guide from compact contents', () => {
+ const view = render(page());
+ const toggle = screen.getByRole('button', {name: 'Documentation contents'});
+ fireEvent.click(toggle);
+ const guide = screen.getByRole('link', {name: 'Getting started'});
+ guide.focus();
+ fireEvent.click(guide);
+ route.path = '/docs/getting-started';
+ view.rerender(page());
+ expect(toggle.getAttribute('aria-expanded')).toBe('false');
+ expect(document.activeElement).toBe(screen.getByRole('main'));
 });

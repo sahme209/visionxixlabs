@@ -104,84 +104,89 @@ export async function runSchedulerTick(input: RunSchedulerTickInput): Promise<Sc
   const cycles: AutonomyCycleReport[] = [];
   const skipped: { tenantId: string; reason: string }[] = [];
 
-  for (const tenantId of input.tenantIds) {
-    // Phase 146 — tier cap gate (consumes one cycle credit on allow).
-    const gate = await gateAndConsume({
-      organizationId: String(tenantId),
-      capName: "autonomyCyclesPerDay",
-    });
-    if (!gate.allowed) {
-      skipped.push({ tenantId: String(tenantId), reason: gate.reason });
-      continue;
-    }
-
-    // Per-tenant override > caller override > global observer default.
-    const tenantRow = await readTenantCharter(String(tenantId)).catch(() => null);
-    const mode: AutonomyMode = input.modeOverride ?? tenantRow?.mode ?? "observer";
-    try {
-      const baseCharter = tenantRow?.resolved ?? charterForMode(mode);
-      const charter = input.modeOverride ? charterForMode(input.modeOverride) : baseCharter;
-      // Hard cap per-cycle actions when running unattended.
-      const capped = {
-        ...charter,
-        perCycleActionLimit: Math.min(charter.perCycleActionLimit, UNATTENDED_HARD_CAP),
-        rationale: `${charter.rationale} (unattended cap: ${UNATTENDED_HARD_CAP}/cycle)`,
-      };
-      const report = await runAutonomousLoopCycle({
-        tenantId,
-        charter: capped,
-      });
-      cycles.push(report);
-      HISTORY.push(report);
-      if (HISTORY.length > MAX_HISTORY) HISTORY.shift();
-
-      // Best-effort durable rationale persistence — never blocks the cycle.
-      void recordCycleRationale({
+  const rationaleWrites: Array<Promise<unknown>> = [];
+  try {
+    for (const tenantId of input.tenantIds) {
+      // Phase 146 — tier cap gate (consumes one cycle credit on allow).
+      const gate = await gateAndConsume({
         organizationId: String(tenantId),
-        report,
+        capName: "autonomyCyclesPerDay",
       });
+      if (!gate.allowed) {
+        skipped.push({ tenantId: String(tenantId), reason: gate.reason });
+        continue;
+      }
 
-      // Fire outbound notifications for any candidate that halted at
-      // needs_human or approval_packet_prepared. Each notification is
-      // deduped by candidate id so re-firing across cycles is a no-op.
-      for (const c of report.candidates) {
-        if (c.outcome === "approval_packet_prepared") {
-          await sendOutboundNotification({
-            dedupeKey: `autonomy:approval:${c.id}`,
-            kind: "approval_packet_ready",
-            severity: "high",
-            tenantId: String(tenantId),
-            headline: `Approval packet ready: ${c.title}`,
-            body: `*Proposed intent:* ${c.proposedIntent}\n\n*Boundary class:* ${c.boundaryClass}\n*Charter mode:* ${charter.mode}\n\nLast stage transcript reached \`approve\` then halted at \`needs_human\`. Open the cockpit to decide.`,
-            safeNextAction: { label: "Open Approval Packets", href: "/dashboard/approval-packets" },
-            evidenceRefs: c.evidenceRefs,
-          });
-        } else if (c.outcome === "halted_at_gate") {
-          const halted = c.stages.find((s) => s.status.startsWith("halted"));
-          if (halted) {
+      // Per-tenant override > caller override > global observer default.
+      const tenantRow = await readTenantCharter(String(tenantId)).catch(() => null);
+      const mode: AutonomyMode = input.modeOverride ?? tenantRow?.mode ?? "observer";
+      try {
+        const baseCharter = tenantRow?.resolved ?? charterForMode(mode);
+        const charter = input.modeOverride ? charterForMode(input.modeOverride) : baseCharter;
+        // Hard cap per-cycle actions when running unattended.
+        const capped = {
+          ...charter,
+          perCycleActionLimit: Math.min(charter.perCycleActionLimit, UNATTENDED_HARD_CAP),
+          rationale: `${charter.rationale} (unattended cap: ${UNATTENDED_HARD_CAP}/cycle)`,
+        };
+        const report = await runAutonomousLoopCycle({
+          tenantId,
+          charter: capped,
+        });
+        cycles.push(report);
+        HISTORY.push(report);
+        if (HISTORY.length > MAX_HISTORY) HISTORY.shift();
+
+        rationaleWrites.push(recordCycleRationale({
+          organizationId: String(tenantId),
+          report,
+        }).catch(() => undefined));
+
+        // Fire outbound notifications for any candidate that halted at
+        // needs_human or approval_packet_prepared. Each notification is
+        // deduped by candidate id so re-firing across cycles is a no-op.
+        for (const c of report.candidates) {
+          if (c.outcome === "approval_packet_prepared") {
             await sendOutboundNotification({
-              dedupeKey: `autonomy:halt:${c.id}:${halted.stage}`,
-              kind: halted.status === "halted_unsafe"
-                ? "autonomy_halt_unsafe"
-                : halted.status === "halted_policy"
-                  ? "autonomy_halt_policy"
-                  : "autonomy_halt_needs_human",
-              severity: halted.status === "halted_unsafe" ? "critical" : "high",
+              dedupeKey: `autonomy:approval:${c.id}`,
+              kind: "approval_packet_ready",
+              severity: "high",
               tenantId: String(tenantId),
-              headline: `Autonomy loop halted at ${halted.stage}: ${c.title}`,
-              body: `*Reason:* ${halted.reason ?? halted.summary}\n\n*Evidence:* \`${halted.evidenceRef}\``,
-              safeNextAction: { label: "Open Autonomy Cockpit", href: "/dashboard/autonomy" },
-              evidenceRefs: [halted.evidenceRef, ...c.evidenceRefs],
+              headline: `Approval packet ready: ${c.title}`,
+              body: `*Proposed intent:* ${c.proposedIntent}\n\n*Boundary class:* ${c.boundaryClass}\n*Charter mode:* ${charter.mode}\n\nLast stage transcript reached \`approve\` then halted at \`needs_human\`. Open the cockpit to decide.`,
+              safeNextAction: { label: "Open Approval Packets", href: "/dashboard/approval-packets" },
+              evidenceRefs: c.evidenceRefs,
             });
+          } else if (c.outcome === "halted_at_gate") {
+            const halted = c.stages.find((s) => s.status.startsWith("halted"));
+            if (halted) {
+              await sendOutboundNotification({
+                dedupeKey: `autonomy:halt:${c.id}:${halted.stage}`,
+                kind: halted.status === "halted_unsafe"
+                  ? "autonomy_halt_unsafe"
+                  : halted.status === "halted_policy"
+                    ? "autonomy_halt_policy"
+                    : "autonomy_halt_needs_human",
+                severity: halted.status === "halted_unsafe" ? "critical" : "high",
+                tenantId: String(tenantId),
+                headline: `Autonomy loop halted at ${halted.stage}: ${c.title}`,
+                body: `*Reason:* ${halted.reason ?? halted.summary}\n\n*Evidence:* \`${halted.evidenceRef}\``,
+                safeNextAction: { label: "Open Autonomy Cockpit", href: "/dashboard/autonomy" },
+                evidenceRefs: [halted.evidenceRef, ...c.evidenceRefs],
+              });
+            }
           }
         }
+      } catch (err) {
+        skipped.push({
+          tenantId: String(tenantId),
+          reason: err instanceof Error ? err.message.slice(0, 200) : "unknown_error",
+        });
       }
-    } catch (err) {
-      skipped.push({
-        tenantId: String(tenantId),
-        reason: err instanceof Error ? err.message.slice(0, 200) : "unknown_error",
-      });
     }
+  } finally {
+    // Keep writes concurrent with the tick, then drain them before response teardown.
+    await Promise.all(rationaleWrites);
   }
 
   const passedCount = cycles.reduce((s, c) => s + c.summary.candidatesConsidered, 0);

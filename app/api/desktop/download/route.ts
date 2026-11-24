@@ -31,6 +31,11 @@ function wantsJson(request: NextRequest): boolean {
     return accept.includes("application/json") && !accept.includes("text/html");
 }
 
+function redirectWithinSite(location: string) {
+    // Preserve the browser's origin even when the server reconstructs a different host.
+    return new NextResponse(null, { status: 302, headers: { Location: location } });
+}
+
 export async function GET(request: NextRequest) {
     const platform = request.nextUrl.searchParams.get("platform");
     const json = wantsJson(request);
@@ -42,7 +47,7 @@ export async function GET(request: NextRequest) {
                 { status: 400 },
             );
         }
-        return NextResponse.redirect(new URL("/download", request.url), 302);
+        return redirectWithinSite("/download");
     }
 
     const [manifest, runtime] = await Promise.all([
@@ -61,7 +66,7 @@ export async function GET(request: NextRequest) {
                 { status: 503 },
             );
         }
-        return NextResponse.redirect(new URL(`/download/preview?platform=${platform}&reason=runtime`, request.url), 302);
+        return redirectWithinSite(`/download/preview?platform=${platform}&reason=runtime`);
     }
     const asset = manifest.assets[PLATFORM_MAP[platform]];
 
@@ -90,8 +95,5 @@ export async function GET(request: NextRequest) {
         );
     }
 
-    return NextResponse.redirect(
-        new URL(`/download/preview?platform=${platform}`, request.url),
-        302,
-    );
+    return redirectWithinSite(`/download/preview?platform=${platform}`);
 }
