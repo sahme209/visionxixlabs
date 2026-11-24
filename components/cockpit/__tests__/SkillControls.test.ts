@@ -65,7 +65,10 @@ it('distinguishes a confirmed state conflict and moves focus to catalog refresh'
  fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));
  fireEvent.click(screen.getByRole('button',{name:'Install skill'}));
  expect((await screen.findByRole('alert')).textContent).toContain('Skill state changed');
- expect(document.activeElement).toBe(screen.getByRole('button',{name:'Refresh catalog'}));
+ await waitFor(()=>{
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole('button',{name:'Refresh catalog'}));
+ });
  expect(screen.getByText('Unknown')).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));
  expect(io.fetch).toHaveBeenCalledTimes(1);

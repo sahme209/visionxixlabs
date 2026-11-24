@@ -12,7 +12,7 @@ export function Catalog({entries,unavailable,canManage=false,initialKind='Plugin
  const router=useRouter();const [kind,setKind]=useState<CatalogEntry['kind']>(initialKind);const [query,setQuery]=useState('');
  const refreshButton=useRef<HTMLButtonElement|null>(null);
  const [pending,setPending]=useState<{item:CatalogEntry;action:SkillAction}|null>(null);const [busy,setBusy]=useState(false);const [uncertain,setUncertain]=useState(false);const [notice,setNotice]=useState<string|null>(null);
- useEffect(()=>{if(uncertain)refreshButton.current?.focus();},[uncertain]);
+ useEffect(()=>{if(uncertain && !pending)refreshButton.current?.focus();},[uncertain,pending]);
  const [detail,setDetail]=useState<CatalogEntry|null>(null);
  const trigger=useRef<HTMLElement|null>(null);const search=useRef<HTMLInputElement|null>(null);const lock=useRef(false);
  const visible=entries.filter(item=>item.kind===kind && `${item.name} ${item.description} ${item.permissions.join(' ')}`.toLowerCase().includes(query.toLowerCase()));
