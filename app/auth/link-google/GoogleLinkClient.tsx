@@ -66,7 +66,7 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
   return <main className="isolate flex min-h-screen items-center justify-center bg-[#111111] before:fixed before:inset-0 before:-z-10 before:bg-[#111111] px-6 py-16 text-zinc-100">
     <section className="relative w-full max-w-[230px]">
       <Link href="/" aria-label="vxix home" className="mx-auto mb-[30px] flex w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-zinc-300"><Image src="/brand/vxix-mark.svg" alt="vxix" width={24} height={24} /></Link>
-      <h1 className="mb-[30px] text-center text-[20px] font-medium leading-6 tracking-[-0.02em]">Finish {providerName} sign-in</h1>
+      <h1 className="mb-[30px] text-center text-[20px] font-medium leading-6 tracking-[-0.02em]">{`Finish ${providerName} sign-in`}</h1>
       <p className="mb-5 text-xs leading-5 text-zinc-400">Confirm account ownership before {email ? <>the {providerName} account <strong className="break-words font-normal text-zinc-200">{email}</strong> is linked to V19.</> : `${providerName} is linked to V19.`}</p>
       {message && <p role="status" className="mb-5 text-xs leading-5">{message}</p>}
       {callbackUrl ? <button type="button" disabled={busy} ref={continueButton} className={control.replace("bg-[#202020]", "bg-white").replace("text-zinc-100", "text-zinc-950")} onClick={() => { if (inFlight.current) return; inFlight.current = true; setBusy(true); void signIn(provider, { callbackUrl }).catch(() => { setMessage(messages.google_link_unavailable); setBusy(false); inFlight.current = false; }); }}>Continue with {providerName}</button> : csrf && <>

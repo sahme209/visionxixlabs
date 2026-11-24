@@ -49,7 +49,6 @@ export function CinematicAxiomDemo({
   }, [stepIndex, viewResponse]);
   const reveal=usePreviewSequence(sceneRef,`${storyIndex}:${stepIndex}:${context.repository}:${context.branch}:${context.environment}`);
   function selectStory(index: number) {
-    if (index === storyIndex) return;
     setStoryIndex(index);
     setDecision(null);
     setStepIndex(0);

@@ -121,6 +121,9 @@
     "@aws-sdk/client-dynamodb": {
       "@aws-sdk/dynamodb-codec": "3.973.58",
       "@aws-sdk/middleware-endpoint-discovery": "3.972.39"
+    },
+    "@prisma/config": {
+      "effect": "3.22.1"
     }
   }
 }

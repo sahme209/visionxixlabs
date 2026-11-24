@@ -530,7 +530,8 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       const signIn = await http("/api/auth/callback/credentials", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", origin: base }, body: new URLSearchParams({ csrfToken: csrf.csrfToken, email, password, callbackUrl: `${base}/control/usage-billing`, json: "true" }) });
       expect(signIn.status).toBe(200);
       const session = await (await http("/api/auth/session")).json(); expect(session.user.email).toBe(email);
-      const page = await http("/control/usage-billing"); expect(page.status).toBe(200); const html = await page.text(); expect(html).toContain("$27.50"); expect(html).toContain("$30.00"); expect(html).not.toContain("$200.00"); expect(html).toContain("Deployment allowance is unsupported in this isolated TEST lane.");
+      const page = await http("/control/usage-billing"); expect(page.status).toBe(200); const html = await page.text(); expect(html).toContain("$27.50"); expect(html).toContain("$30.00"); expect(html).not.toContain("$200.00"); expect(html).toContain("Deployment activity is unavailable in this isolated test environment.");
+      expect(html).not.toContain("Deployment allowance");
       expect((await http("/api/cron/settle-ai-usage", { method: "POST" })).status).toBe(503);
       expect((await http("/api/axiom/chat", { method: "POST" })).status).toBe(503);
       expect((await http("/api/billing/checkout-session", { method: "POST" })).status).toBe(503);

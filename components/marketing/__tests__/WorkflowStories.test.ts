@@ -122,6 +122,8 @@ it("announces the current story step after deliberate navigation and story chang
   fireEvent.click(screen.getByRole("button", { name: /Step 2:/ }));
   expect(status.textContent).toContain("Step 2 of");
   expect(status.textContent).toContain("Make a small, reviewable edit.");
+  fireEvent.click(screen.getByRole("button", { name: "Code & review" }));
+  expect(status.textContent).toContain("Choose the working context.");
   fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
   expect(status.textContent).toContain("Step 1 of");
   expect(status.textContent).toContain(screen.getAllByRole("heading", { level: 2 })[0].textContent!);
