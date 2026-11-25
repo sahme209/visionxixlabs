@@ -3,7 +3,7 @@ import { listSavedTaskLastRuns, parseSavedTaskIds, SAVED_TASK_LAST_RUN_MAX_IDS }
 
 const id = (c: string) => "bot_" + c.repeat(64);
 const scope = { organizationId: "org", userId: "user" };
-const table = (rows: Array<{ taskId: string; status: string; updatedAt: Date }>) => ({ findMany: vi.fn().mockResolvedValue(rows) });
+const table = (rows: Array<{ taskId: string; taskVersion: number; status: string; updatedAt: Date }>) => ({ findMany: vi.fn().mockResolvedValue(rows) });
 
 describe("saved task last recorded run", () => {
   it("parses only a bounded list of unique saved task ids", () => {
@@ -14,14 +14,14 @@ describe("saved task last recorded run", () => {
 
   it("scopes every family to the workspace and actor and returns the latest recorded run per task", async () => {
     const repo = {
-      botAiTaskRun: table([{ taskId: id("a"), status: "completed", updatedAt: new Date("2026-11-25T10:00:00Z") }]),
-      botTaskRun: table([{ taskId: id("a"), status: "running", updatedAt: new Date("2026-11-25T11:00:00Z") }, { taskId: id("b"), status: "failed", updatedAt: new Date("2026-11-24T09:00:00Z") }]),
+      botAiTaskRun: table([{ taskId: id("a"), taskVersion: 1, status: "completed", updatedAt: new Date("2026-11-25T10:00:00Z") }]),
+      botTaskRun: table([{ taskId: id("a"), taskVersion: 2, status: "running", updatedAt: new Date("2026-11-25T11:00:00Z") }, { taskId: id("b"), taskVersion: 0, status: "failed", updatedAt: new Date("2026-11-24T09:00:00Z") }]),
       botPullRequestEvidenceRun: table([]),
     };
     const runs = await listSavedTaskLastRuns(repo, scope, [id("a"), id("b"), id("c")]);
     expect(runs).toEqual([
-      { taskId: id("a"), family: "readiness_run", status: "running", recordedAt: new Date("2026-11-25T11:00:00Z") },
-      { taskId: id("b"), family: "readiness_run", status: "failed", recordedAt: new Date("2026-11-24T09:00:00Z") },
+      { taskId: id("a"), taskVersion: 2, family: "readiness_run", status: "running", recordedAt: new Date("2026-11-25T11:00:00Z") },
+      { taskId: id("b"), taskVersion: 0, family: "readiness_run", status: "failed", recordedAt: new Date("2026-11-24T09:00:00Z") },
     ]);
     for (const t of Object.values(repo)) expect(t.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: { organizationId: "org", createdByUserId: "user", taskId: { in: [id("a"), id("b"), id("c")] } }, distinct: ["taskId"], take: 3,
@@ -30,8 +30,8 @@ describe("saved task last recorded run", () => {
 
   it("ignores rows for other tasks and malformed stored values instead of guessing", async () => {
     const repo = {
-      botAiTaskRun: table([{ taskId: id("z"), status: "completed", updatedAt: new Date() }, { taskId: id("a"), status: "Completed!", updatedAt: new Date() }]),
-      botTaskRun: table([{ taskId: id("a"), status: "queued", updatedAt: new Date("invalid") }]),
+      botAiTaskRun: table([{ taskId: id("z"), taskVersion: 0, status: "completed", updatedAt: new Date() }, { taskId: id("a"), taskVersion: 0, status: "Completed!", updatedAt: new Date() }, { taskId: id("a"), taskVersion: -1, status: "queued", updatedAt: new Date() }]),
+      botTaskRun: table([{ taskId: id("a"), taskVersion: 0, status: "queued", updatedAt: new Date("invalid") }]),
       botPullRequestEvidenceRun: table([]),
     };
     expect(await listSavedTaskLastRuns(repo, scope, [id("a")])).toEqual([]);

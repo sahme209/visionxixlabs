@@ -329,11 +329,11 @@ it("opens the editor, draft context and exact history without replacing or uploa
 });
 
 it("shows the last recorded run for each loaded task without blocking the list",async()=>{
- m.lastRuns.mockResolvedValueOnce({ok:true,data:{runs:[{taskId:id,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
+ m.lastRuns.mockResolvedValueOnce({ok:true,data:{runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
  render(createElement(Host));
  await screen.findByRole("button",{name:"Open saved task Saved example"});
  expect(m.lastRuns).toHaveBeenCalledWith([id],expect.any(AbortSignal));
- expect(await screen.findByText(/^Last run: Readiness run · completed · /)).toBeTruthy();
+ expect(await screen.findByText(/^Last run: Readiness run · completed · this version · /)).toBeTruthy();
 });
 it("says when a task has no recorded runs and stays silent when the read is unavailable",async()=>{
  m.lastRuns.mockResolvedValueOnce({ok:true,data:{runs:[]}});

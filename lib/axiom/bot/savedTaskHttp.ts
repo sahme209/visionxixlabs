@@ -87,6 +87,6 @@ export async function handleSavedBotTaskLastRuns(request:NextRequest):Promise<Ne
   const ids=parseSavedTaskIds(query(request,["ids"]).get("ids"));if(!ids)throw new Invalid();
   if(!allowed(scope,false))return fail("saved_task_rate_limited",429);
   const runs=await listSavedTaskLastRuns(prisma as unknown as SavedTaskLastRunRepo,scope,ids);
-  return reply({ok:true,data:{runs:runs.map(run=>({taskId:run.taskId,family:run.family,status:run.status,recordedAt:run.recordedAt.toISOString()}))}});
+  return reply({ok:true,data:{runs:runs.map(run=>({taskId:run.taskId,taskVersion:run.taskVersion,family:run.family,status:run.status,recordedAt:run.recordedAt.toISOString()}))}});
  }catch(error){return failure(error)}
 }

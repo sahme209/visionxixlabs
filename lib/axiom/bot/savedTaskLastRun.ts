@@ -4,16 +4,16 @@
  * and never infers success, health or an outcome that is not stored.
  */
 export type SavedTaskRunFamily = "ai_task" | "readiness_run" | "pull_request_evidence";
-export interface SavedTaskLastRun { taskId: string; family: SavedTaskRunFamily; status: string; recordedAt: Date }
+export interface SavedTaskLastRun { taskId: string; taskVersion: number; family: SavedTaskRunFamily; status: string; recordedAt: Date }
 export interface SavedTaskLastRunScope { organizationId: string; userId: string }
-interface RunRow { taskId: string; status: string; updatedAt: Date }
+interface RunRow { taskId: string; taskVersion: number; status: string; updatedAt: Date }
 interface RunTable {
   findMany(args: {
     where: { organizationId: string; createdByUserId: string; taskId: { in: string[] } };
     orderBy: Array<{ updatedAt: "desc" } | { id: "desc" }>;
     distinct: ["taskId"];
     take: number;
-    select: { taskId: true; status: true; updatedAt: true };
+    select: { taskId: true; taskVersion: true; status: true; updatedAt: true };
   }): Promise<RunRow[]>;
 }
 export interface SavedTaskLastRunRepo { botAiTaskRun: RunTable; botTaskRun: RunTable; botPullRequestEvidenceRun: RunTable }
@@ -36,7 +36,7 @@ export async function listSavedTaskLastRuns(repo: SavedTaskLastRunRepo, scope: S
     orderBy: [{ updatedAt: "desc" as const }, { id: "desc" as const }],
     distinct: ["taskId"] as ["taskId"],
     take: ids.length,
-    select: { taskId: true as const, status: true as const, updatedAt: true as const },
+    select: { taskId: true as const, taskVersion: true as const, status: true as const, updatedAt: true as const },
   };
   const families: Array<[SavedTaskRunFamily, RunTable]> = [
     ["ai_task", repo.botAiTaskRun], ["readiness_run", repo.botTaskRun], ["pull_request_evidence", repo.botPullRequestEvidenceRun],
@@ -44,9 +44,9 @@ export async function listSavedTaskLastRuns(repo: SavedTaskLastRunRepo, scope: S
   const results = await Promise.all(families.map(async ([family, table]) => (await table.findMany(args)).map(row => ({ ...row, family }))));
   const latest = new Map<string, SavedTaskLastRun>();
   for (const row of results.flat()) {
-    if (!ids.includes(row.taskId) || !statusPattern.test(row.status) || !(row.updatedAt instanceof Date) || Number.isNaN(row.updatedAt.getTime())) continue;
+    if (!ids.includes(row.taskId) || !Number.isInteger(row.taskVersion) || row.taskVersion < 0 || !statusPattern.test(row.status) || !(row.updatedAt instanceof Date) || Number.isNaN(row.updatedAt.getTime())) continue;
     const current = latest.get(row.taskId);
-    if (!current || row.updatedAt.getTime() > current.recordedAt.getTime()) latest.set(row.taskId, { taskId: row.taskId, family: row.family, status: row.status, recordedAt: row.updatedAt });
+    if (!current || row.updatedAt.getTime() > current.recordedAt.getTime()) latest.set(row.taskId, { taskId: row.taskId, taskVersion: row.taskVersion, family: row.family, status: row.status, recordedAt: row.updatedAt });
   }
   return ids.flatMap(id => latest.get(id) ?? []);
 }
