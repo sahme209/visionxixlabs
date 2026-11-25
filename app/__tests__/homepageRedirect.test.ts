@@ -1,26 +1,45 @@
-// @vitest-environment jsdom
+// @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const io=vi.hoisted(()=>({session:vi.fn(),redirect:vi.fn(),options:{marker:'existing-auth-options'}}));
-vi.mock('next-auth',()=>({getServerSession:io.session}));
-vi.mock('@/lib/auth',()=>({authOptions:io.options}));
-vi.mock('next/navigation',()=>({redirect:(target:string)=>{io.redirect(target);throw Error('NEXT_REDIRECT')}}));
-import Home, * as homepage from '../page';
-beforeEach(()=>{vi.clearAllMocks();io.session.mockResolvedValue(null)});
+import { NextRequest } from 'next/server';
+const io=vi.hoisted(()=>({token:vi.fn()}));
+vi.mock('next-auth/jwt',()=>({getToken:io.token}));
+import * as homepage from '../page';
+import { proxy } from '../../proxy';
+const root=(method='GET')=>new NextRequest('https://visionxixlabs.com/',{method});
+beforeEach(()=>{vi.clearAllMocks();io.token.mockResolvedValue(null)});
 describe('verified homepage return',()=>{
- it('uses the existing verified server-session contract and renders the public page when anonymous',async()=>{
-  expect(await Home()).toBeTruthy();expect(io.session).toHaveBeenCalledWith(io.options);expect(io.redirect).not.toHaveBeenCalled();
+ it('serves the public page as static content with no per-request session read',()=>{
+  expect(homepage).not.toHaveProperty('dynamic');
+  expect(typeof homepage.default).toBe('function');
  });
- it('redirects a canonical signed-in identity directly to control',async()=>{
-  io.session.mockResolvedValue({user:{id:'canonical-user',email:'person@example.invalid'}});
-  await expect(Home()).rejects.toThrow('NEXT_REDIRECT');expect(io.redirect).toHaveBeenCalledWith('/control');
+ it('lets an anonymous visitor through to the public page',async()=>{
+  const response=await proxy(root());
+  expect(response.headers.get('location')).toBeNull();
+  expect(io.token).toHaveBeenCalledTimes(1);
  });
- it.each([{user:{}},{user:{email:'person@example.invalid'}},{user:{id:'canonical-user'}},{user:{id:' ',email:'person@example.invalid'}},{user:{id:'canonical-user',email:' '}},{user:{id:42,email:'person@example.invalid'}}])('does not redirect an incomplete identity %j',async session=>{
-  io.session.mockResolvedValue(session);expect(await Home()).toBeTruthy();expect(io.redirect).not.toHaveBeenCalled();
+ it.each(['GET','HEAD'])('redirects a canonical signed-in identity directly to control on %s, uncached',async method=>{
+  io.token.mockResolvedValue({identityVersion:1,id:'canonical-user',email:'person@example.invalid'});
+  const response=await proxy(root(method));
+  expect(response.status).toBe(307);
+  expect(response.headers.get('location')).toBe('https://visionxixlabs.com/control');
+  expect(response.headers.get('cache-control')).toBe('private, no-store');
+ });
+ it.each([{},{email:'person@example.invalid'},{identityVersion:1,id:'canonical-user'},{identityVersion:1,id:' ',email:'person@example.invalid'},{identityVersion:1,id:'canonical-user',email:' '},{identityVersion:1,id:42,email:'person@example.invalid'},{identityVersion:2,id:'canonical-user',email:'person@example.invalid'}])('does not redirect an incomplete identity %j',async token=>{
+  io.token.mockResolvedValue(token);
+  expect((await proxy(root())).headers.get('location')).toBeNull();
+ });
+ it('treats an unreadable token as signed out',async()=>{
+  io.token.mockRejectedValue(new Error('bad token'));
+  expect((await proxy(root())).headers.get('location')).toBeNull();
  });
  it('evaluates each request separately so one identity cannot cache a redirect for an anonymous visitor',async()=>{
-  expect(homepage).toHaveProperty('dynamic','force-dynamic');
-  io.session.mockResolvedValueOnce({user:{id:'canonical-user',email:'person@example.invalid'}}).mockResolvedValueOnce(null);
-  await expect(Home()).rejects.toThrow('NEXT_REDIRECT');io.redirect.mockClear();
-  expect(await Home()).toBeTruthy();expect(io.redirect).not.toHaveBeenCalled();expect(io.session).toHaveBeenCalledTimes(2);
+  io.token.mockResolvedValueOnce({identityVersion:1,id:'canonical-user',email:'person@example.invalid'}).mockResolvedValueOnce(null);
+  expect((await proxy(root())).headers.get('location')).toBe('https://visionxixlabs.com/control');
+  expect((await proxy(root())).headers.get('location')).toBeNull();
+  expect(io.token).toHaveBeenCalledTimes(2);
+ });
+ it('does not read a session for other public pages',async()=>{
+  await proxy(new NextRequest('https://visionxixlabs.com/docs'));
+  expect(io.token).not.toHaveBeenCalled();
  });
 });
