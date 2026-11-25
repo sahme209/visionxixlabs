@@ -690,6 +690,9 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 .bot-prompt-surface, .agent-prompt-row { background:rgb(var(--neutral-white) / 0.035); }
 .agent-prompt-row { border:1px solid rgb(var(--neutral-white) / 0.14); border-radius:18px; padding:6px; transition:border-color 120ms; }
 .agent-prompt-row:focus-within, .bot-prompt-surface:focus-within { border-color:rgb(var(--neutral-white) / 0.3); }
+/* Keyboard focus on the composers and the conversation picker uses the shared focus token, not only a border shift. */
+.agent-prompt-row:has(textarea:focus-visible), .bot-prompt-surface:has(textarea:focus-visible) { box-shadow:0 0 0 2px var(--app-focus); }
+.agent-conversation-select:focus-visible { outline:2px solid var(--app-focus); outline-offset:2px; }
 .agent-send-button { display:flex; align-items:center; justify-content:center; flex-shrink:0; min-width:88px; min-height:48px; margin:2px; padding:12px 18px; border-radius:12px; cursor:pointer; }
 .agent-send-button:disabled { cursor:not-allowed; }
 .bot-send-button { min-width:88px; min-height:44px; }
