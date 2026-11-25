@@ -1,6 +1,3 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
@@ -44,13 +41,8 @@ const pillars = [
   },
 ];
 
-// The root entry is identity-dependent. Never share its redirect across users.
-export const dynamic = "force-dynamic";
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-  const user = session?.user as { id?: unknown; email?: unknown } | undefined;
-  if (typeof user?.id === "string" && user.id.trim()
-    && typeof user.email === "string" && user.email.trim()) redirect("/control");
+// Public and static. Signed-in visitors are redirected to /control per request in proxy.ts.
+export default function Home() {
   return (
     <div className="axiom-canvas min-h-screen text-white">
       {/* Match the artwork breakpoint in orbit-public.css. */}

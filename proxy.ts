@@ -1,6 +1,8 @@
 import { automaticTopUpSetupPath, automaticTopUpSetupPublishableKey } from "./lib/billing/automaticTopUpSetupPage";
 import { isolatedHttpAllowed, isolatedRuntimeRequested } from "./lib/billing/isolatedApplication/runtime";
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { isSignedInHomeToken } from "./lib/auth/signedInHome";
 import type { NextRequest } from "next/server";
 
 const ALLOWED_DESKTOP_ORIGINS = new Set([
@@ -24,7 +26,27 @@ function applySecurityHeaders(response: NextResponse, stripeSetup = false): Next
   return response;
 }
 
-export function proxy(request: NextRequest) {
+async function rootEntry(request: NextRequest): Promise<NextResponse> {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET }).catch(() => null);
+  if (isSignedInHomeToken(token)) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/control";
+    destination.search = "";
+    const redirect = NextResponse.redirect(destination, 307);
+    redirect.headers.set("Cache-Control", "private, no-store");
+    return applySecurityHeaders(redirect);
+  }
+  return handle(request);
+}
+
+export function proxy(request: NextRequest): NextResponse | Promise<NextResponse> {
+  // The public home is static; a signed-in visitor is sent to the workspace here,
+  // per request, so the shared cached page never carries one user's redirect.
+  if (request.nextUrl.pathname === "/" && (request.method === "GET" || request.method === "HEAD") && !isolatedRuntimeRequested()) return rootEntry(request);
+  return handle(request);
+}
+
+function handle(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   if ((isolatedRuntimeRequested() && request.headers.has("next-action")) || !isolatedHttpAllowed(pathname, request.method)) return applySecurityHeaders(NextResponse.json({ ok: false, error: "isolated_entrypoint_unsupported" }, { status: 503 }));
   const origin = request.headers.get("origin");

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { NextRequest } from "next/server";
-import { proxy } from "../../../proxy";
+import { NextRequest, type NextResponse } from "next/server";
+import { proxy as routeProxy } from "../../../proxy";
+
+// Only the public root entry is asynchronous (it reads the session token); every other path returns synchronously.
+const proxy = (input: NextRequest) => routeProxy(input) as NextResponse;
 
 function request(path: string, init?: ConstructorParameters<typeof NextRequest>[1]) {
     return new NextRequest(new URL(path, "https://visionxixlabs.com"), init);
@@ -108,12 +111,12 @@ describe("website delivery boundary", () => {
         expect(response.headers.get("access-control-allow-methods")).toBeNull();
     });
 
-    it("applies security headers to normal, redirect, and preflight responses", () => {
-        const responses = [
-            proxy(request("/")),
+    it("applies security headers to normal, redirect, and preflight responses", async () => {
+        const responses = await Promise.all([
+            routeProxy(request("/")),
             proxy(request("/dashboard")),
             proxy(request("/api/desktop/session", { method: "OPTIONS" })),
-        ];
+        ]);
 
         for (const response of responses) {
             expect(response.headers.get("strict-transport-security")).toContain("includeSubDomains");
