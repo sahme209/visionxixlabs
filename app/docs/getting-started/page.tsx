@@ -115,7 +115,7 @@ export default function GettingStartedPage() {
                     This illustrative release intake excerpt records an application, environment, source branch, pending pull request approval, and rollback availability.
                     A complete release request also needs its scoped inputs and evidence. Review all required approvals before execution.
                 </p>
-                <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-sm leading-relaxed">
+                <pre tabIndex={0} role="region" aria-label="Example release intake metadata" className="overflow-x-auto rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-sm leading-relaxed focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-300">
                     <code>{releaseIntakeExample}</code>
                 </pre>
             </DocSection>

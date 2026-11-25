@@ -230,49 +230,49 @@
    "title": "Installer availability and download pauses",
    "text": "Check Windows availability and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file. Desktop downloads are temporarily paused means the required service storage checks are unavailable. Release status unavailable means the current installer status could not be verified. To recheck installer availability, choose Recheck release status on the download page . From the installer availability screen, choose Return to downloads . Check the release and platform details before installing.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#current-state",
    "title": "What the current desktop build delivers",
    "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#requirements",
    "title": "System requirements",
    "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Browser engine for Tailwind 4 source builds — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer. Network — HTTPS access to the configured V19 API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#install-macos",
    "title": "Install — macOS (Apple Silicon + Intel)",
    "text": "Visit /download . Choose Apple Silicon or Intel. A verified download link points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag V19 to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#install-windows",
    "title": "Install — Windows x64",
    "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch V19, and approve the desktop pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#install-linux",
    "title": "Install — Linux x64",
-   "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. Run the commands for the package you verified. These examples use v0.1.24. Substitute the exact filename for the version you downloaded. chmod +x ./V19_0.1.24_amd64.AppImage ./V19_0.1.24_amd64.AppImage sudo dpkg -i ./V19_0.1.24_amd64.deb sudo rpm -i ./V19-0.1.24-1.x86_64.rpm Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.",
+   "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. Run the commands for the package you verified. These examples use v0.1.25. Substitute the exact filename for the version you downloaded. chmod +x ./V19_0.1.25_amd64.AppImage ./V19_0.1.25_amd64.AppImage sudo dpkg -i ./V19_0.1.25_amd64.deb sudo rpm -i ./V19-0.1.25-1.x86_64.rpm Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/desktop-install#updates",
    "title": "Desktop installer updates, website deployments and release notes",
    "text": "A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer. In releases that include About this app , open Settings → General and check Installed version . This value comes from the installed app. Unavailable means it could not be read, not that a newer version is installed. Older releases may not have this section. Review releases opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer's verification details. The current desktop installer does not update automatically. Check the download page for a newer verified tag and install it manually. Review the public V19 release notes before upgrading.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
+   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
   },
   {
    "href": "/docs/execution-plans#read",
@@ -335,49 +335,49 @@
    "title": "Prerequisites",
    "text": "A supported macOS, Windows, or Linux system listed on the download page Permission to install software on the workstation HTTPS access to the configured V19 API and any integrations you enable An organization identity and connector accounts supplied by your administrator",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#install",
    "title": "Step 1 — Download and install",
    "text": "Open Download V19 . Choose the architecture that matches your device. When a verified installer is available, its download link opens the matching file. A check availability link asks the service to look up the current release for that platform. Confirm the displayed version and read the platform-specific signing or notarization status. Detached GPG signatures verify release origin, but they do not replace operating-system code signing. Follow your organization's software-installation policy. Follow the desktop installation guide for macOS, Windows, or Linux. If the release is marked unsigned, expect the operating system to warn you; do not bypass that warning where policy forbids unsigned software.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#authenticate",
    "title": "Step 2 — Authenticate the desktop",
    "text": "The app opens a short-lived pairing flow in your browser. Sign in with the organization identity your administrator configured, review the request, and approve it. V19 polls the pairing status and receives a scoped desktop session after approval. A failed, expired, or rejected request remains visible and must not be reported as connected.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#configure",
    "title": "Step 3 — Configure integrations",
    "text": "A fresh installation should show useful empty states. Add only the repositories, applications, environments, clients, and connectors required for the deployment workflow you intend to run. Begin with the GitHub App and select only the repositories required for your workflow. AWS ECS delivery additionally requires a configured environment target and OIDC role. Other integrations remain unavailable until their server registration and live validation succeed. First check whether desktop enrollment is enabled for that provider and workspace. If the app labels setup blocked, it will not request provider secrets; an administrator must complete the scoped connector-management setup. A successful status must come from a real configured integration response—sample connectors and the website sandbox are never presented as live.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#workflow",
    "title": "Step 4 — Complete a deployment workflow",
    "text": "{GOVERNED_JOURNEY.map((stage, index) => ( ))} In desktop builds containing this guide, Documentation provides buttons to open each of these screens. Missing credentials, policy approval or provider validation remain blockers. Capture deployment intake and required operational context. Resolve readiness checks, missing permissions, and dependencies. Generate or select the versioned playbook. Collect required approvals and separation-of-duties decisions. Follow guided execution; unavailable or failed adapters remain explicit. Run validation or schedule deferred validation with an owner. Collect evidence, review audit history, and close only when exit criteria pass. For the released AWS ECS path, approval dispatches the tenant-owned GitHub Actions workflow. Treat any unavailable adapter as a blocker rather than a synthetic success.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#example-plan-metadata",
    "title": "Example plan metadata",
    "text": "This illustrative release intake excerpt records an application, environment, source branch, pending pull request approval, and rollback availability. A complete release request also needs its scoped inputs and evidence. Review all required approvals before execution.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/getting-started#next",
    "title": "Next steps",
    "text": "→ Desktop installation details → AWS setup and permissions → Explore the isolated product sandbox",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf"
+   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
   },
   {
    "href": "/docs/governance-approvals#who",

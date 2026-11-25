@@ -89,7 +89,7 @@ export function Step({ id, number, title, children }: { id?: string; number: num
 /** Mono code block for shell snippets or config examples. */
 export function CodeBlock({ language, children }: { language?: string; children: string }) {
   return (
-    <pre className="rounded-lg bg-black/40 border border-white/6 p-4 overflow-x-auto text-[12px] leading-relaxed text-zinc-200 my-4">
+    <pre tabIndex={0} role="region" aria-label={language ? `${language} example` : "Code example"} className="rounded-lg bg-black/40 border border-white/6 p-4 overflow-x-auto text-[12px] leading-relaxed text-zinc-200 my-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-300">
       {language && (
         <span className="block text-[9px] text-zinc-400 uppercase tracking-widest mb-2 font-sans not-italic">
           {language}

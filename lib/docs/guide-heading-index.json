@@ -27,7 +27,7 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "138dc237ec570ba75982e3401645ec3fba49e613f4b72cdc1cea53117856afdf",
+      "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd",
       "fields": [
         "Getting started with V19 Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
@@ -213,7 +213,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0",
+      "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
