@@ -38,8 +38,8 @@ describe("owned new TEST Next child environment", () => {
     const require = createRequire(import.meta.url);
     const installed = realpathSync(resolve(dirname(require.resolve("vitest/package.json")), "suppress-warnings.cjs"));
     const read = vi.mocked(fs.readFileSync)
-      .mockReturnValueOnce(JSON.stringify({ version: changed === "installed_version" ? "0.0.0" : "5.1.0" }))
-      .mockReturnValueOnce(JSON.stringify({ packages: { "node_modules/vitest": { version: changed === "locked_version" ? "0.0.0" : "5.1.0" } } }))
+      .mockReturnValueOnce(JSON.stringify({ version: changed === "installed_version" ? "0.0.0" : "5.1.1" }))
+      .mockReturnValueOnce(JSON.stringify({ packages: { "node_modules/vitest": { version: changed === "locked_version" ? "0.0.0" : "5.1.1" } } }))
       .mockReturnValueOnce(Buffer.from("substituted preload"));
     try { expect(() => newTestChildEnvironment({}, ["--require", installed], fixture)).toThrow("owned_test_child_options_unsupported"); }
     finally { read.mockRestore(); }

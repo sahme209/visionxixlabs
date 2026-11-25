@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
-const base=resolve(dirname(fileURLToPath(import.meta.url)),'../..')+'/';assert.equal(JSON.parse(fs.readFileSync(base+'node_modules/@aws-sdk/client-ecs/package.json','utf8')).version,'3.1168.0','pinned_ecs_sdk_changed');let nodes=new Map(), constants=new Map();function collect(statements,prefix=''){
+const base=resolve(dirname(fileURLToPath(import.meta.url)),'../..')+'/';assert.equal(JSON.parse(fs.readFileSync(base+'node_modules/@aws-sdk/client-ecs/package.json','utf8')).version,'3.1175.0','pinned_ecs_sdk_changed');let nodes=new Map(), constants=new Map();function collect(statements,prefix=''){
  for(const n of statements){
   if(ts.isModuleDeclaration(n)){
    assert.ok(n.body&&ts.isModuleBlock(n.body),'unsupported_sdk_namespace');

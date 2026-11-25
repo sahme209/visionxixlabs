@@ -1028,7 +1028,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
   3. If any pinned file differs, it needs a human review of that diff.
   4. Leave historical `docs/recovery/**` records unchanged.
 - **Vitest pin:** `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts` requires exact installed/locked version and reviewed `suppress-warnings.cjs` bytes. The merged 5.1.0 hash is `3f415a8b…`; comparison against 4.1.12 shows only a lint-comment change. Keep substitution/extra-preload refusals. See `docs/recovery/2026-11-11/vitest5-upgrade/README.md`; this is not historical issuer qualification.
-- **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1166.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
+- **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1175.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
 - **Stripe:** `lib/billing/settleAIUsageToStripe.ts` pins API version `2026-01-28.clover`. Even stripe 20.4.1 moves it, so Stripe is fully held.
 - **ai SDK:** v7 moves the AI Gateway URL v3 → v4. PR #317 updated the installed-SDK composition tests to the reviewed v4 endpoint.
 - **Governed AI path:** `lib/axiom/agentRuntime/governedAiCall.ts` is the only place the Agent may call a model, and online calls remain Gateway-only. The accepted local offline-AI branch is mutually exclusive, token-admitted and has no fallback; live enablement remains gated (section10, offline ADR).
