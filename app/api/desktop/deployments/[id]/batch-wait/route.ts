@@ -27,9 +27,9 @@ function projection(row: { id: string; version: number; status: string; currentS
   return { id: row.id, version: row.version, status: row.status, phase: row.currentStep ?? null,
     nextObservationAt: row.nextAttemptAt?.toISOString() ?? null, deadlineAt: typeof value.deadlineAt === "number" ? value.deadlineAt : null };
 }
-async function current(organizationId: string, id: string, version: number) {
+async function exactRelease(organizationId: string, id: string, version: number) {
   const row = await prisma.tauriDeploymentRequest.findFirst({ where: { organizationId, id } });
-  return row?.id === id && row.organizationId === organizationId && row.version === version && row.status === "submitted" ? row : null;
+  return row?.id === id && row.organizationId === organizationId && row.version === version ? row : null;
 }
 /** Persist read-only waiting intent only. Does not invoke a worker, provider or deployment. */
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   let parsed: z.infer<typeof schema>;
   try { parsed = schema.parse(await body(request)); if (!validId(id)) throw new Error("invalid_id"); } catch { return reply({ ok: false, error: "invalid_batch_wait" }, 400); }
   try {
-    const organizationId = String(session.organizationId), row = await current(organizationId, id, parsed.expectedVersion);
-    if (!row) return reply({ ok: false, error: "release_changed" }, 409);
+    const organizationId = String(session.organizationId), row = await exactRelease(organizationId, id, parsed.expectedVersion);
+    if (row?.status !== "submitted") return reply({ ok: false, error: "release_changed" }, 409);
     const data = await ensureReleaseBatchObservation({ organizationId, requestId: id, expectedVersion: parsed.expectedVersion,
       expectedDigest: sha256ContentHash({ requestVersion: row.version, intake: row.intakeJson }), requestedByUserId: String(session.userId), deadlineAt: parsed.deadlineAt });
     return reply({ ok: true, data: projection(data) });
@@ -49,21 +49,42 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
 }
 /** Read a safe wait projection for the exact current release snapshot. */
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const session = await resolveRequestDesktopSession(request, { requiredScope: "pipeline:read", requiredCapability: "workspace:read", allowApiKey: false, route: "GET /api/desktop/deployments/:id/batch-wait" });
-  if (!session) return reply({ ok: false, error: "desktop_session_required" }, 401);
-  const { id } = await context.params; const value = request.nextUrl.searchParams.get("expectedVersion") ?? "";
-  if (!validId(id) || !/^[1-9]\d{0,8}$/.test(value)) return reply({ ok: false, error: "invalid_release_version" }, 400);
+  const authority = { requiredScope: "pipeline:read", requiredCapability: "workspace:read", allowApiKey: false,
+    route: "GET /api/desktop/deployments/:id/batch-wait" } as const;
+  const denied = () => reply({ ok: false, error: "desktop_session_required" }, 401);
+  const changed = () => reply({ ok: false, error: "release_changed" }, 409);
+  const session = await resolveRequestDesktopSession(request, authority);
+  if (!session) return denied();
+  const { id } = await context.params;
+  const versions = request.nextUrl.searchParams.getAll("expectedVersion");
+  if (!validId(id) || versions.length !== 1 || !/^[1-9]\d{0,8}$/.test(versions[0])) {
+    return reply({ ok: false, error: "invalid_release_version" }, 400);
+  }
   try {
-    const organizationId = String(session.organizationId), expectedVersion = Number(value), row = await current(organizationId, id, expectedVersion);
-    if (!row) return reply({ ok: false, error: "release_changed" }, 409);
-    const expectedDigest = sha256ContentHash({ requestVersion: row.version, intake: row.intakeJson });
-    const wait = await prisma.durableAgentWorkflow.findFirst({ where: { organizationId, workflowKind: RELEASE_BATCH_OBSERVATION_KIND,
-      id: "release_batch_" + sha256ContentHash({ organizationId, requestId: id, expectedVersion, expectedDigest }) } });
+    const organizationId = String(session.organizationId), expectedVersion = Number(versions[0]);
+    const row = await exactRelease(organizationId, id, expectedVersion);
+    if (row?.status !== "submitted" && row?.status !== "closed") return changed();
+    const digest = (intake: unknown) => sha256ContentHash({ requestVersion: expectedVersion, intake });
+    const expectedDigest = digest(row.intakeJson);
+    const wait = row.status === "submitted" ? await prisma.durableAgentWorkflow.findFirst({ where: {
+      organizationId, workflowKind: RELEASE_BATCH_OBSERVATION_KIND,
+      id: "release_batch_" + sha256ContentHash({ organizationId, requestId: id, expectedVersion, expectedDigest }),
+    } }) : null;
+    const currentSession = await resolveRequestDesktopSession(request, {...authority, recordHeartbeat: false});
+    if (!currentSession || currentSession.organizationId !== session.organizationId ||
+      currentSession.userId !== session.userId || currentSession.id !== session.id || request.signal.aborted) return denied();
+    const current = await exactRelease(organizationId, id, expectedVersion);
+    if (request.signal.aborted) return denied();
+    if (current?.status === "closed") return reply({ok:true,data:{
+      requestVersion: expectedVersion, closedRelease: {requestId: id, version: expectedVersion},
+      monitoringEnabled:false, canStart:false, canCancel:false, wait:null,
+    }});
+    if (current?.status !== "submitted" || row.status !== "submitted" || digest(current.intakeJson) !== expectedDigest) return changed();
     const monitoringEnabled = releaseBatchObservationsEnabled();
-    const authorized = session.capabilities.includes("deploy:execute");
+    const authorized = currentSession.capabilities.includes("deploy:execute");
     return reply({ ok: true, data: { requestVersion: expectedVersion, monitoringEnabled,
       canStart: monitoringEnabled && authorized && !wait,
-      canCancel: authorized && !!wait && wait.requestedByUserId === String(session.userId)
+      canCancel: authorized && !!wait && wait.requestedByUserId === String(currentSession.userId)
         && ["queued", "running", "retrying", "paused_for_input"].includes(wait.status),
       wait: wait ? projection(wait) : null } });
   } catch { return reply({ ok: false, error: "batch_wait_unavailable" }, 502); }

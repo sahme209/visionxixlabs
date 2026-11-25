@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       decisionId,
       decision,
       inputs,
-      fetcher: makeLiveRationaleFetcher({ engineName: "council_rationale", organizationId: ctx.organizationId }),
+      fetcher: makeLiveRationaleFetcher({ engineName: "council_rationale", organizationId: ctx.organizationId, actorUserId: ctx.userId }),
     },
   );
 

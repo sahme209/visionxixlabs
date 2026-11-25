@@ -61,10 +61,13 @@ it.each([false,true].flatMap(streaming=>[{mode:'inspect' as const,limit:2},{mode
  expect(m.extract).toHaveBeenCalledTimes(limit);expect(m.reserve).toHaveBeenCalledTimes(limit);expect(tool).toHaveBeenCalledTimes(limit/2);
 });
 
-it.each([false, true])('reports a credit admission refusal without inference, claim or JSON repair (streaming=%s)', async streaming => {
- m.reserve.mockResolvedValue({ok:false,error:'ai_credit_pool_exhausted'});
+it.each([false, true].flatMap(streaming => [
+ { streaming, reason: 'ai_credit_pool_exhausted', issue: 'workspace_ai_credit_pool_exhausted' },
+ { streaming, reason: 'ai_workspace_budget_exceeded', issue: 'workspace_ai_credit_budget_exceeded' },
+]))('reports $reason without inference, claim or JSON repair (streaming=$streaming)', async ({ streaming, reason, issue }) => {
+ m.reserve.mockResolvedValue({ok:false,error:reason});
  const {tool,promise}=run(streaming);
- await expect(promise).resolves.toMatchObject({kind:'error',error:'workspace_ai_credit_pool_exhausted'});
+ await expect(promise).resolves.toMatchObject({kind:'error',error:issue});
  expect(m.reserve).toHaveBeenCalledOnce(); expect(m.claim).not.toHaveBeenCalled();
  expect(m.extract).not.toHaveBeenCalled(); expect(m.stream).not.toHaveBeenCalled(); expect(tool).not.toHaveBeenCalled();
 });

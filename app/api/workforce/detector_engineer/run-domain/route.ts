@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let signalCount = 0;
   try {
-    const report = await runDetectorEngineer(org);
+    const report = await runDetectorEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     signalCount = report.signals.length;
     await persistDetectorReport(org, report);

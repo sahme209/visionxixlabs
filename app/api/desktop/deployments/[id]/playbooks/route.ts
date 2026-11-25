@@ -76,6 +76,14 @@ export async function POST(
         );
     }
 
+    const versions = request.nextUrl.searchParams.getAll("expectedVersion");
+    if (versions.length > 1 || (versions.length === 1 && !/^[1-9]\d{0,8}$/.test(versions[0]))) {
+        return NextResponse.json({ ok: false, error: "invalid_release_version" }, { status: 400 });
+    }
+    const attemptId = request.headers.get("x-playbook-attempt-id");
+    if (attemptId !== null && (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(attemptId) || versions.length !== 1)) {
+        return NextResponse.json({ ok: false, error: "invalid_playbook_attempt" }, { status: 400 });
+    }
     const { id } = await context.params;
     const correlationId = resolveCorrelationId(request.headers);
     try {
@@ -86,6 +94,8 @@ export async function POST(
                 deploymentRequestId: id,
                 actorUserId: String(session.userId),
                 actorRole: "requester",
+                expectedVersion: versions.length === 1 ? Number(versions[0]) : undefined,
+                attemptId: attemptId ?? undefined,
                 correlationId,
                 generatedAtUtc: new Date().toISOString(),
             },
@@ -97,7 +107,8 @@ export async function POST(
                 error: result.reason,
                 issues: result.issues,
             }, {
-                status: result.reason === "request_not_found" ? 404 : 422,
+                status: result.reason === "request_not_found" ? 404
+                    : result.reason === "version_conflict" || result.reason === "release_not_submitted" || result.reason === "playbook_attempt_conflict" ? 409 : 422,
                 headers: { "x-correlation-id": correlationId },
             });
         }
@@ -107,6 +118,8 @@ export async function POST(
             data: {
                 id: result.row.id,
                 requestId: result.row.deploymentRequestId,
+                requestVersion: result.requestVersion,
+                ...(attemptId ? {attemptId} : {}),
                 version: result.row.version,
                 status: result.row.status,
                 contentHash: result.row.contentHash,

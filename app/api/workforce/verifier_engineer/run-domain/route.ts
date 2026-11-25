@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   let findingCount = 0;
   let failureCalls = 0;
   try {
-    const report = await runVerifierEngineer(org);
+    const report = await runVerifierEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     findingCount = report.findings.length;
     failureCalls = report.failureCalls;

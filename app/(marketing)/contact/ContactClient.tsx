@@ -10,8 +10,9 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useCallback, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { PageHero } from "@/components/marketing/PageHero";
+import { takeSupportContactDraft } from "@/lib/support/contactDraft";
 
 type Topic = "product" | "download" | "security" | "support" | "press";
 
@@ -32,16 +33,14 @@ interface FormState {
 }
 
 type ContactIntent = "production-access" | "ask-axiom" | "security";
-function initialForm(intent?: ContactIntent, prefill?: string): FormState {
+function initialForm(intent?: ContactIntent): FormState {
   return {
     name: "",
     email: "",
-    topic: intent === "security" ? "security" : "product",
+    topic: intent === "security" ? "security" : intent === "ask-axiom" ? "support" : "product",
     message: intent === "production-access"
       ? "I need help with production access for our V19 workspace."
-      : intent === "ask-axiom" && prefill
-        ? `Ask V19 couldn't answer this:\n\n${prefill}\n\n`
-        : "",
+      : "",
     website: "",
   };
 }
@@ -52,10 +51,18 @@ type SubmitState =
   | { kind: "ok"; referenceId: string; delivery: "sent" | "failed" | "not_configured" }
   | { kind: "error"; message: string };
 
-export function ContactClient({ intent, prefill }: { intent?: ContactIntent; prefill?: string }) {
-  const [form, setForm] = useState<FormState>(() => initialForm(intent, prefill));
+export function ContactClient({ intent }: { intent?: ContactIntent }) {
+  const [form, setForm] = useState<FormState>(() => initialForm(intent));
   const [state, setState] = useState<SubmitState>({ kind: "idle" });
   const submitted = useRef(false);
+  const messageField = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (intent !== "ask-axiom") return;
+    const draft = takeSupportContactDraft();
+    if (!draft) return;
+    setForm(current => current.message ? current : {...current, message: `Ask V19 couldn't answer this:\n\n${draft}\n\n`});
+    messageField.current?.focus();
+  }, [intent]);
   const focusReceipt = useCallback((heading: HTMLHeadingElement | null) => {
     heading?.focus();
   }, []);
@@ -219,6 +226,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
 
               <Field label="What went wrong?" htmlFor="message">
                 <textarea
+                  ref={messageField}
                   id="message"
                   rows={4}
                   required

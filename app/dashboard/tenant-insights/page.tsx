@@ -8,7 +8,7 @@
  * deterministic template if AI is unavailable.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowPathIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 interface Seed {
@@ -30,30 +30,70 @@ interface Narrative {
   provider: string | null;
   model: string | null;
   latencyMs: number;
+  status: "metrics" | "generated" | "budget_exceeded" | "credits_exhausted" | "already_requested" | "unavailable";
 }
 interface InsightsResp { seed: Seed; narrative: Narrative }
 
 const DAY_OPTS = [7, 14, 30];
+const summaryStatus: Record<Narrative["status"], string> = {
+  metrics: "Summary from recorded counts",
+  generated: "AI summary",
+  budget_exceeded: "The workspace AI budget would be exceeded. Showing recorded counts.",
+  credits_exhausted: "There are insufficient available AI credits. Showing recorded counts.",
+  already_requested: "This AI summary request was already submitted. Showing recorded counts.",
+  unavailable: "An AI summary could not be confirmed. Showing recorded counts.",
+};
 
 export default function TenantInsightsPage() {
   const [days, setDays] = useState(7);
   const [data, setData] = useState<InsightsResp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const activeRequest = useRef<AbortController | null>(null);
+  const pendingSummary = useRef<{ days: number; key: string } | null>(null);
 
-  const load = useCallback((d: number) => {
-    setLoading(true); setError(null);
-    fetch(`/api/insights/tenant?days=${d}`, { credentials: "include" })
+  const load = useCallback((d: number, generate = false) => {
+    if (generate && activeRequest.current) return;
+    activeRequest.current?.abort();
+    const request = new AbortController();
+    activeRequest.current = request;
+    if (generate && pendingSummary.current?.days !== d) pendingSummary.current = { days: d, key: crypto.randomUUID() };
+    setLoading(!generate);
+    setGenerating(generate);
+    setError(null);
+    fetch(`/api/insights/tenant?days=${d}`, {
+      credentials: "include",
+      signal: request.signal,
+      ...(generate && pendingSummary.current ? { method: "POST", headers: { "Idempotency-Key": pendingSummary.current.key } } : {}),
+    })
       .then((r) => r.json())
       .then((j: { ok?: boolean; data?: InsightsResp; error?: { userMessage?: string } }) => {
-        if (j.ok && j.data) setData(j.data);
+        if (activeRequest.current !== request) return;
+        if (j.ok && j.data) {
+          if (generate) pendingSummary.current = null;
+          setData(j.data);
+        }
         else setError(j.error?.userMessage ?? "Insights unavailable.");
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Network error."))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (activeRequest.current === request) setError(generate ? "The AI summary request could not be confirmed." : "Insights unavailable.");
+      })
+      .finally(() => {
+        if (activeRequest.current !== request) return;
+        activeRequest.current = null;
+        setLoading(false);
+        setGenerating(false);
+      });
   }, []);
 
-  useEffect(() => { load(days); }, [days, load]);
+  useEffect(() => {
+    load(days);
+    return () => {
+      activeRequest.current?.abort();
+      activeRequest.current = null;
+    };
+  }, [days, load]);
 
   return (
     <div className="relative">
@@ -67,7 +107,7 @@ export default function TenantInsightsPage() {
           </span>
           <button
             onClick={() => load(days)}
-            disabled={loading}
+            disabled={loading || generating}
             className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
@@ -78,8 +118,7 @@ export default function TenantInsightsPage() {
           Your week, <span className="text-gradient">in one paragraph.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Aggregate counts only — no raw events, no prompts, no tenant content goes to the model. Falls back to
-          a deterministic template if AI is unavailable.
+          Review recorded activity or generate a summary using workspace AI credits. AI receives aggregate counts.
         </p>
 
         <div className="mt-5 flex items-center gap-1.5">
@@ -87,6 +126,7 @@ export default function TenantInsightsPage() {
             <button
               key={d}
               onClick={() => setDays(d)}
+              disabled={generating}
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 days === d
                   ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
@@ -105,16 +145,21 @@ export default function TenantInsightsPage() {
         </div>
       )}
 
-      {data && (
+      {data?.seed.windowDays === days && (
         <>
           <div className="rounded-2xl border border-zinc-500/18 bg-zinc-500/4 p-5 mb-6 max-w-3xl">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-2">Summary</p>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300">Summary</p>
+              <button type="button" onClick={() => load(days, true)} disabled={loading || generating}
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs text-zinc-200 hover:text-white disabled:opacity-50">
+                <SparklesIcon aria-hidden="true" className="h-3.5 w-3.5" />
+                {generating ? "Generating…" : "Generate AI summary"}
+              </button>
+            </div>
             <p className="text-[14px] text-zinc-100 leading-relaxed">{data.narrative.paragraph}</p>
-            <p className="mt-3 text-[10px] font-mono text-zinc-500">
-              provider: <span className="text-zinc-300">{data.narrative.provider ?? "(fallback)"}</span>
-              {data.narrative.model && <>  ·  model: <span className="text-zinc-300">{data.narrative.model}</span></>}
-              {" "}·{" "}
-              aiUsed: <span className={data.narrative.aiUsed ? "text-emerald-300" : "text-zinc-300"}>{String(data.narrative.aiUsed)}</span>
+            <p role="status" className="mt-3 text-xs text-zinc-400">
+              {summaryStatus[data.narrative.status]}
+              {data.narrative.model && ` · ${data.narrative.model}`}
             </p>
           </div>
 
@@ -126,7 +171,7 @@ export default function TenantInsightsPage() {
             <Card label="Autonomy cycles" value={data.seed.autonomyCycles} />
             <Card label="Outbound sends" value={data.seed.outboundSends} />
             <Card label="Outbound failures" value={data.seed.outboundFailures} tone="rose" />
-            <Card label="Dissent count" value={data.seed.dissentCount} />
+            <Card label="Council consensus records" value={data.seed.dissentCount} />
           </div>
         </>
       )}

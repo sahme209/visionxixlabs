@@ -71,6 +71,18 @@ async function request() {
 }
 
 describe("legacy public bot chat admission diagnostic — no live IO", () => {
+  it("refuses access to bot data and model dispatch under public prepaid billing", async () => {
+    process.env.AXIOM_PUBLIC_BILLING_POLICY = "axiom_public_anniversary_v1";
+    const { POST } = await import("../route");
+    const response = await POST(await request());
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ code: "ai.public_admission_unavailable" });
+    expect(m.bot).not.toHaveBeenCalled();
+    expect(m.sdk).not.toHaveBeenCalled();
+    expect(m.update).not.toHaveBeenCalled();
+    expect(m.wire).not.toHaveBeenCalled();
+  });
+
   it("characterizes actual route→orchestrator→legacy manager→Gateway→mocked SDK, without workspace attribution", async () => {
     const { AIProviderManager } = await import("@/lib/ai/AIProviderManager");
     const { VercelGatewayProvider } = await import("@/lib/ai/providers/VercelGatewayProvider");

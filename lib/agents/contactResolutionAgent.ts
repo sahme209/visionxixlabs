@@ -18,6 +18,7 @@ import {
 } from "./contactResolutionTools";
 import { logAudit } from "@/lib/security/auditLog";
 import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 
 export type ResolutionStatus = "RESOLVED" | "NEEDS_INFO" | "ESCALATED";
 
@@ -38,6 +39,15 @@ export type ContactResolutionOutput = {
   evidenceLinks?: string[];
   executionLogIds?: string[];
 };
+
+function contactReview(topic: unknown): ContactResolutionOutput {
+  const labels: Record<string, string> = {
+    product: "Product question", download: "Download help",
+    security: "Security", support: "Support", press: "Press or partners",
+  };
+  const label = typeof topic === "string" && Object.hasOwn(labels, topic) ? labels[topic] : "General inquiry";
+  return { status: "ESCALATED", actionsTaken: [`Flagged for human review: ${label}.`] };
+}
 
 const RESOLUTION_SCHEMA = `
 Output valid JSON only, no markdown. Schema:
@@ -60,8 +70,12 @@ export async function runContactResolutionAgent(input: ContactResolutionInput): 
   if (!lead) {
     return { status: "ESCALATED", actionsTaken: ["Lead not found"] };
   }
+  if (lead.source !== "contact") return { status: "ESCALATED", actionsTaken: ["Contact record unavailable"] };
 
   const payload = (lead.fullPayload as Record<string, unknown>) || {};
+  // An anonymous contact record and worker credentials identify a job, not
+  // a workspace member who can authorize an AI credit reservation.
+  if (publicBillingPolicyEnabled()) return contactReview(payload.topic);
   const connectorStatus = (payload.connectors as Record<string, { status?: string }>) || {};
   const awsLinked = connectorStatus.aws?.status === "linked";
   const selfServiceBillingEnabled = isSelfServiceBillingEnabled();

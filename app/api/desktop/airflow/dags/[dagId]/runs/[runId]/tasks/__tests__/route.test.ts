@@ -1,11 +1,17 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-const mock = vi.hoisted(() => ({ session: vi.fn(), load: vi.fn(), tasks: vi.fn() }));
+const mock = vi.hoisted(() => ({ session: vi.fn(), load: vi.fn(), tasks: vi.fn(), currentConnection: vi.fn() }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mock.session }));
 vi.mock("@/lib/integrations/airflow/connection", () => ({ loadAirflowClient: mock.load }));
 import { GET } from "../route";
 const context = { params: Promise.resolve({ dagId: "daily", runId: "run" }) };
-beforeEach(() => { vi.resetAllMocks(); mock.session.mockResolvedValue({ organizationId: "org-A" }); mock.load.mockResolvedValue({ client: { listTaskInstances: mock.tasks } }); mock.tasks.mockResolvedValue({ tasks: [], totalEntries: 0, offset: 0 }); });
+const session = {id: "session-A", credentialKind: "desktop_session", userId: "operator", organizationId: "org-A"};
+beforeEach(() => {
+  vi.resetAllMocks();
+  mock.session.mockResolvedValue(session);
+  mock.load.mockResolvedValue({client: {listTaskInstances: mock.tasks}, assertCurrentConnection: mock.currentConnection});
+  mock.tasks.mockResolvedValue({tasks: [], totalEntries: 0, offset: 0});
+});
 it("requires paired read authority before loading any credentials", async () => {
  mock.session.mockResolvedValue(null);
  expect((await GET(new NextRequest("https://fixture.test/tasks"), context)).status).toBe(401);
@@ -13,8 +19,15 @@ it("requires paired read authority before loading any credentials", async () => 
  expect(mock.session).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ requiredScope: "pipeline:read", requiredCapability: "workspace:read", allowApiKey: false }));
 });
 it("loads only the authenticated organization's connection", async () => {
- const result = await GET(new NextRequest("https://fixture.test/tasks?offset=100&organizationId=org-B"), context);
- expect(result.status).toBe(200); expect(mock.load).toHaveBeenCalledWith("org-A"); expect(mock.tasks).toHaveBeenCalledWith("daily", "run", 100);
+ const request = new NextRequest("https://fixture.test/tasks?offset=100&organizationId=org-B");
+ const result = await GET(request, context);
+ expect(result.status).toBe(200);
+ expect(result.headers.get("cache-control")).toBe("no-store");
+ expect(mock.load).toHaveBeenCalledWith("org-A");
+ expect(mock.tasks).toHaveBeenCalledWith("daily", "run", 100, request.signal);
+ expect(mock.currentConnection).toHaveBeenCalledWith(request.signal);
+ expect(mock.session).toHaveBeenLastCalledWith(request, expect.objectContaining({ requireWorkspaceMembership: true, recordHeartbeat: false }));
+
 });
 it.each(["-1", "NaN", "1.5", "9007199254740992"])("rejects invalid pagination %s before loading credentials", async (offset) => {
  expect((await GET(new NextRequest(`https://fixture.test/tasks?offset=${offset}`), context)).status).toBe(400); expect(mock.load).not.toHaveBeenCalled();
@@ -23,4 +36,22 @@ it("does not echo provider or credential errors", async () => {
  mock.load.mockRejectedValue(new Error("sensitive-provider-payload"));
  const response = await GET(new NextRequest("https://fixture.test/tasks"), context);
  expect(response.status).toBe(502); expect(await response.text()).not.toContain("sensitive");
+});
+
+it.each([null, {...session, id: "other-session"}, {...session, userId: "other-user"}, {...session, organizationId: "other-workspace"}])(
+  "withholds the task page if paired access changes to %j while it loads", async current => {
+    mock.session.mockResolvedValueOnce(session).mockResolvedValueOnce(current);
+    const response = await GET(new NextRequest("https://fixture.test/tasks"), context);
+    expect(mock.tasks).toHaveBeenCalledOnce();
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual({ok:false, error:"desktop_session_required"});
+  }
+);
+
+it("withholds old task rows when the Airflow credential changes during the read", async () => {
+  mock.currentConnection.mockRejectedValue(new Error("airflow_connection_changed"));
+  const response = await GET(new NextRequest("https://fixture.test/tasks"), context);
+  expect(mock.tasks).toHaveBeenCalledOnce();
+  expect(response.status).toBe(502);
+  expect(await response.json()).toEqual({ok:false, error:"airflow_tasks_unavailable"});
 });

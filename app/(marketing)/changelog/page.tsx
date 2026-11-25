@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function ChangelogPage() {
-  redirect("/product");
+  redirect("/docs/desktop-install#updates");
 }

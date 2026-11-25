@@ -1,57 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
+import { LeadEngineBusyError } from "@/lib/async/engineRunner";
 import { prisma } from "@/lib/db";
+import { leadFormSchema } from "@/lib/leads/leadSchema";
+import { runDetailedStarter, savedStarterPackage } from "@/lib/leads/runDetailedStarter";
 import { verifyStarterToken } from "@/lib/leads/starterToken";
-import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
-import type { LeadFormData } from "@/lib/leads/leadSchema";
+import { checkRateLimit } from "@/lib/rateLimit";
 
-/**
- * POST /api/leads/[id]/starter/generate
- * Runs AI generation if not already present. Requires token in query (token=) or body (token).
- * Deterministic on serverless: caller triggers when pending.
- */
+/** Generate a detailed starter package for the legacy signed website-request flow. */
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const token = req.nextUrl.searchParams.get("token");
-  const result = token ? verifyStarterToken(token) : { error: "invalid" as const };
+  const result = verifyStarterToken(req.nextUrl.searchParams.get("token") ?? "");
   if ("error" in result || result.leadId !== id) {
     return NextResponse.json({ error: "Invalid or missing token" }, { status: 401 });
+  }
+  if (!checkRateLimit(`lead-detailed-starter:${id}`)) {
+    return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
   }
 
   try {
     const lead = await prisma.lead.findUnique({ where: { id } });
-    if (!lead) {
+    if (!lead || lead.source !== "website-request") {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
-
-    const payload = lead.fullPayload as Record<string, unknown>;
-    if (payload?.aiStarterPackage && typeof payload.aiStarterPackage === "object") {
-      return NextResponse.json({
-        success: true,
-        alreadyPresent: true,
-        aiStarterPackage: payload.aiStarterPackage,
-      });
+    const payload = (lead.fullPayload as Record<string, unknown>) ?? {};
+    const existing = savedStarterPackage(payload);
+    if (existing) {
+      return NextResponse.json({ success: true, alreadyPresent: true, aiStarterPackage: existing });
+    }
+    if (!leadFormSchema.safeParse(payload).success) {
+      return NextResponse.json({ error: "This lead has no complete detailed website brief." }, { status: 422 });
     }
 
-    const data = payload as unknown as LeadFormData;
-    const pkg = await generateWebsiteStarter({ variant: "detailed", form: data }, "free");
-    const merged = { ...payload, aiStarterPackage: pkg, aiStarterError: false };
-    await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
-
-    return NextResponse.json({
-      success: true,
-      alreadyPresent: false,
-      aiStarterPackage: pkg,
-    });
+    const run = await runDetailedStarter(id);
+    return NextResponse.json({ success: true, alreadyPresent: run.reused, aiStarterPackage: run.generated });
   } catch (e) {
-    console.warn("[Starter Generate] AI failed:", e instanceof Error ? e.message : String(e));
-    const lead = await prisma.lead.findUnique({ where: { id } });
-    if (lead) {
-      const payload = (lead.fullPayload as Record<string, unknown>) ?? {};
-      const merged = { ...payload, aiStarterError: true };
-      await prisma.lead.update({ where: { id }, data: { fullPayload: merged as object } });
+    if (e instanceof LeadEngineBusyError) {
+      return NextResponse.json({ error: e.message }, { status: 409 });
     }
     return NextResponse.json(
       { error: true, message: "AI generation failed. Our team will follow up." },

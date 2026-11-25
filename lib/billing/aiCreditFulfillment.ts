@@ -2,6 +2,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { findAddOn } from "./addOnCatalog";
+import { aiCreditRefundAmount } from "./aiCreditRefundAmount";
 
 type CreditPurchaseMetadata = {
   purpose?: string;
@@ -144,10 +145,8 @@ export async function reverseAICreditRefund(event: CreditStripeEvent, charge: Re
       throw new Error("ai_credit_refund_invalid");
     }
     if (!purchase || !["pending", "paid", "partially_refunded", "refunded"].includes(purchase.status)) return null;
-    const refundedAmountCents = Math.min(refunded!, purchase.pricePaidCents);
-    const reversedAICreditsCents = Math.min(
-      purchase.deliveredAICreditsCents,
-      Math.ceil((purchase.deliveredAICreditsCents * refundedAmountCents) / purchase.pricePaidCents),
+    const { refundedAmountCents, reversedAICreditsCents } = aiCreditRefundAmount(
+      refunded!, purchase.pricePaidCents, purchase.deliveredAICreditsCents,
     );
     const fullyRefunded = refundedAmountCents >= purchase.pricePaidCents;
     // Stripe retries and delivers events out of order. A lower cumulative

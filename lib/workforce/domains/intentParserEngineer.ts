@@ -166,7 +166,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runIntentParserEngineer(organizationId: string, raw: IntentInput): Promise<IntentWorkflow> {
+export async function runIntentParserEngineer(organizationId: string, raw: IntentInput, actorUserId?: string): Promise<IntentWorkflow> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const intentText = raw.intentText.trim().slice(0, MAX_BODY);
   if (!title || !intentText) {
@@ -199,6 +199,7 @@ export async function runIntentParserEngineer(organizationId: string, raw: Inten
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:intent_parser_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2500,
     });

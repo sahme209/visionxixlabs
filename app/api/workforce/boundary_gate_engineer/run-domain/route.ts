@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       actionDescription,
       systemTopology: s(f.get("systemTopology")) || undefined,
       existingContainment: s(f.get("existingContainment")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistBoundaryClassification(org, classification);
   } catch (err) {
     console.warn("[boundary_gate/run-domain] hard failure:", err instanceof Error ? err.message : err);

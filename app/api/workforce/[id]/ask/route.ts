@@ -46,7 +46,7 @@ export async function POST(
 
   const org = String(ctx.organizationId);
   const correlationId = `engineer_qa_${Date.now().toString(36)}` as CorrelationId;
-  const result = await askEngineer(engineer, org, question);
+  const result = await askEngineer(engineer, org, question, String(ctx.userId));
 
   void auditRecord({
     organizationId: ids.organization(org),

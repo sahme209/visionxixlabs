@@ -99,7 +99,7 @@ function parseAi(text: string): ParsedAi | null {
   } catch { return null; }
 }
 
-export async function runTestCoverageEngineer(organizationId: string, rawInput: TestCoverageInput): Promise<TestProposal> {
+export async function runTestCoverageEngineer(organizationId: string, rawInput: TestCoverageInput, actorUserId?: string): Promise<TestProposal> {
   const title = rawInput.title.trim().slice(0, MAX_TITLE);
   const sourceCode = rawInput.sourceCode.trim().slice(0, MAX_BODY);
   if (!title || !sourceCode) {
@@ -129,6 +129,7 @@ export async function runTestCoverageEngineer(organizationId: string, rawInput: 
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:test_coverage_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
     });
     const result = await fetcher(`${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(input)}`);

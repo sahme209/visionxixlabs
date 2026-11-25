@@ -64,15 +64,27 @@ function WorkflowSync({ workflow }: { workflow: Repository["lastWorkflow"] }) {
   return sync ? <time dateTime={sync}>{workflowSyncTime.format(new Date(sync))}</time> : <>Unavailable</>;
 }
 
-function RecordedWorkflow({workflow}: {workflow: Repository["lastWorkflow"]}) {
+function RecordedWorkflow({workflow, directory = false}: {workflow: Repository["lastWorkflow"]; directory?: boolean}) {
   if (!workflow) return <span>No workflow recorded</span>;
-  const indicator = workflow.state === "completed"
-    ? workflow.conclusion === "success" ? <CircleCheck size={13} aria-hidden="true"/>
-    : workflow.conclusion === "failure" ? <TriangleAlert size={13} aria-hidden="true"/> : null
-    : workflow.state === "in_progress" || workflow.state === "queued" ? <Clock size={13} aria-hidden="true"/> : null;
+  const passed = workflow.state === "completed" && workflow.conclusion === "success";
+  const failed = workflow.state === "completed" && workflow.conclusion === "failure";
+  const running = workflow.state === "in_progress";
+  const queued = workflow.state === "queued";
+  const indicator = passed ? <CircleCheck size={13} aria-hidden="true"/>
+    : failed ? <TriangleAlert size={13} aria-hidden="true"/>
+    : running || queued ? <Clock size={13} aria-hidden="true"/> : null;
+  const recorded = `${workflow.state.replaceAll("_", " ") || "State unavailable"} · ${workflow.conclusion?.replaceAll("_", " ") || "No conclusion recorded"}`;
+  const name = workflow.name || "Name unavailable";
+  if (directory) {
+    const outcome = passed ? "Passed" : failed ? "Failed" : running ? "In progress" : queued ? "Queued" : recorded;
+    return <div className="studio-repository-workflow">
+      <span className="studio-repository-workflow-outcome" data-outcome={passed ? "passed" : failed ? "failed" : undefined}>{indicator}{outcome}</span>
+      <small>{name}</small>
+    </div>;
+  }
   return <div className="studio-repository-workflow">
-    <span>{workflow.name || "Name unavailable"}</span>
-    <small>{indicator}<span>{workflow.state.replaceAll("_", " ") || "State unavailable"} · {workflow.conclusion?.replaceAll("_", " ") || "No conclusion recorded"}</span></small>
+    <span>{name}</span>
+    <small>{indicator}<span>{recorded}</span></small>
   </div>;
 }
 
@@ -80,7 +92,7 @@ const directoryColumns = [
   { id: "branch", title: "Default branch", cell: (row: Repository) => row.defaultBranch
     ? <code className="studio-repository-branch">{row.defaultBranch}</code> : "Unavailable" },
   { id: "commit", title: "Workflow commit", cell: (row: Repository) => <WorkflowCommit workflow={row.lastWorkflow}/> },
-  { id: "workflow", title: "Last recorded workflow", cell: (row: Repository) => <RecordedWorkflow workflow={row.lastWorkflow}/> },
+  { id: "workflow", title: "Last recorded workflow", cell: (row: Repository) => <RecordedWorkflow workflow={row.lastWorkflow} directory/> },
   { id: "provider", title: "Provider", cell: (row: Repository) => providers[row.provider] },
   { id: "protection", title: "Recorded protection", cell: (row: Repository) => row.protectionStrength },
   { id: "pull-requests", title: "Open PRs", cell: (row: Repository) => row.openPrCount },

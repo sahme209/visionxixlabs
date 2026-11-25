@@ -32,7 +32,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { makeInstrumentedFetcher, WORKSPACE_AI_ACTOR_REQUIRED } from "@/lib/releaseops/instrumentedAiFetcher";
 import type { AgentEngineer } from "./agentWorkforceRegistry";
 
 export interface EngineerAgiResult {
@@ -221,14 +221,17 @@ function fallback(engineer: AgentEngineer, ctx: WorkspaceContext): EngineerAgiRe
 export async function runEngineerAgi(
   engineer: AgentEngineer,
   organizationId: string,
+  actorUserId?: string,
 ): Promise<EngineerAgiResult> {
   const ctx = await loadWorkspaceContext(organizationId, engineer.id);
+  if (!actorUserId) return { ...fallback(engineer, ctx), errorMessage: WORKSPACE_AI_ACTOR_REQUIRED };
   const system = buildSystemPrompt(engineer);
   const user = buildUserPrompt(engineer, ctx);
 
   const fetcher = makeInstrumentedFetcher({
     engineName: `${ENGINE_NAME_PREFIX}:${engineer.id}`,
     organizationId,
+    actorUserId,
     timeoutMs: 30_000,
   });
 

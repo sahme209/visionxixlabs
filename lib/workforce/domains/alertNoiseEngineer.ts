@@ -14,7 +14,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const ALERT_NOISE_TARGET_KIND = "engineer_alert_noise_classification";
 
@@ -132,7 +132,7 @@ function fallbackCategorize(count: number): { category: NoiseCategory; reason: s
   return { category: "stale", reason: `Only ${count} occurrence${count === 1 ? "" : "s"} — likely cleared by the upstream fix.` };
 }
 
-export async function runAlertNoiseEngineer(organizationId: string): Promise<AlertNoiseReport> {
+export async function runAlertNoiseEngineer(organizationId: string, actorUserId?: string): Promise<AlertNoiseReport> {
   const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   let rows: Array<{ action: string; _count: { _all: number } }> = [];
   try {
@@ -173,6 +173,7 @@ export async function runAlertNoiseEngineer(organizationId: string): Promise<Ale
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:alert_noise_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
       // Phase 593: bulk-classification workload — route to OpenAI's
       // cheaper model when available.
@@ -192,7 +193,7 @@ export async function runAlertNoiseEngineer(organizationId: string): Promise<Ale
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const classifications: AlertClassification[] = candidates.map((c) => {

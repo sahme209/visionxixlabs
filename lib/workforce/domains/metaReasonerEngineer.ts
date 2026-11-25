@@ -13,7 +13,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const META_REASONER_TARGET_KIND = "engineer_meta_reasoner_resolution";
 
@@ -167,7 +167,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runMetaReasonerEngineer(organizationId: string): Promise<MetaReasonerReport> {
+export async function runMetaReasonerEngineer(organizationId: string, actorUserId?: string): Promise<MetaReasonerReport> {
   const since14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
   let rows: Array<{
     targetKind: string;
@@ -238,6 +238,7 @@ export async function runMetaReasonerEngineer(organizationId: string): Promise<M
       const fetcher = makeInstrumentedFetcher({
         engineName: "engineer_domain:meta_reasoner_engineer",
         organizationId,
+        actorUserId,
         timeoutMs: 60_000,
         maxTokens: 3000,
       });
@@ -261,7 +262,7 @@ export async function runMetaReasonerEngineer(organizationId: string): Promise<M
     } catch (err) {
       const msg = err instanceof Error ? err.message : "unknown";
       errorMessage = msg;
-      outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+      outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
     }
   }
 

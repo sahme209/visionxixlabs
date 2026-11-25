@@ -116,7 +116,7 @@ export async function POST(req: Request) {
   for (const runner of ranked) {
     if (Date.now() - startedAt > HARD_DEADLINE_MS) break;
     try {
-      const result = await runner.runAndPersist(org);
+      const result = await runner.runAndPersist(org, String(ctx.userId));
       stats[result.outcome] += 1;
       ranEngineerIds.push(runner.engineerId);
     } catch (err) {

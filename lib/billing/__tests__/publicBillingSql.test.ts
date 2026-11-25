@@ -203,6 +203,19 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     expect((await db.query('SELECT "reservedCents" FROM "AIUsageReservation"')).rows).toEqual(Array.from({ length: 5 }, () => ({ reservedCents: 36 })));
     expect(repo.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
   });
+  it("enforces the workspace budget independently of the enrolled prepaid pool", async () => {
+    vi.stubEnv("AXIOM_WORKSPACE_AI_USAGE_BUDGETS", "true");
+    await db.exec(readFileSync(new URL("../../../prisma/migrations/20261124110000_add_workspace_ai_usage_budget/migration.sql", import.meta.url), "utf8"));
+    await db.exec(`INSERT INTO "WorkspaceAIUsageBudget" ("organizationId","monthlyLimitCents","updatedAt") VALUES ('org',35,now())`);
+    const identity = {accountId:"acct_fixture",livemode:false};
+    await db.transaction(tx => enrollNewPublicWorkspace(adapter(tx), "org", identity));
+    const reserve = (idempotencyKey: string, reservedCents: number) => db.transaction(tx => reservePublicCredits(
+      adapter(tx), { organizationId:"org", idempotencyKey, reservedCents }, identity, new Date(),
+    ));
+    expect(await reserve("under_workspace_budget",35)).toMatchObject({ok:true,reused:false});
+    expect(await reserve("over_workspace_budget",1)).toEqual({ok:false,error:"ai_workspace_budget_exceeded"});
+    expect(await readPublicCreditAllowance(adapter(db),"org",identity,new Date())).toMatchObject({includedRemainingCents:165});
+  });
   it.each(["unenrolled", "paid", "forged"])("does not use the smaller policy for %s authority", async kind => {
     vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(smallSonnetPricingFixture()))));

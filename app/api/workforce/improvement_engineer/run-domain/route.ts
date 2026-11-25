@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let proposalCount = 0;
   try {
-    const report = await runImprovementEngineer(org);
+    const report = await runImprovementEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     proposalCount = report.proposals.length;
     await persistImprovementReport(org, report);

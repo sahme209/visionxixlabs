@@ -71,6 +71,15 @@ it.skipIf(!host)("records only an exact repository evidence collection and repla
     expect(replies.map(reply => reply.status)).toEqual([200,200]);
     const [first,replay] = await Promise.all(replies.map(reply => reply.json()));
     expect(first).toEqual(replay);
+    const readAttempt = (attemptId = command.attemptId) => GET(
+      new NextRequest(target + "?" + new URLSearchParams({incidentId,attemptId})),
+    );
+    expect(await (await readAttempt()).json()).toEqual(first);
+    expect(await (await readAttempt("7b1280e8-382a-4b7c-839b-839a7145c8bb")).json()).toEqual({ok:true,data:null});
+    expect((await readAttempt("invalid")).status).toBe(400);
+    ports.resolve.mockResolvedValue({...actor,userId:"unrelated-reader"});
+    expect(await (await readAttempt()).json()).toEqual({ok:true,data:null});
+    ports.resolve.mockResolvedValue(actor);
     expect((await read()).data.collectedAt).toBe(first.data.recordedAt);
     expect(await db.auditEvent.count({where:{organizationId,subjectId:incidentId,kind:"deployment_incident.evidence_collected"}})).toBe(1);
     expect((await submit({runId:"18"})).status).toBe(409);
@@ -78,9 +87,15 @@ it.skipIf(!host)("records only an exact repository evidence collection and repla
     expect((await read()).data.collectedAt).toBeNull();
     await db.release.update({where:{id:baseline.id},data:{commitSha:baseline.commitSha}});
     expect((await read()).data.collectedAt).toBe(first.data.recordedAt);
-    await db.release.update({where:{id:releaseId},data:{commitSha:"c".repeat(40)}});
+    // Move the saved release during the final session check, after the
+    // initial incident lookup. The returned checklist must use the new source.
+    ports.resolve.mockResolvedValueOnce(actor).mockImplementationOnce(async () => {
+      await db.release.update({where:{id:releaseId},data:{commitSha:"c".repeat(40)}});
+      return actor;
+    });
     expect((await read()).data.collectedAt).toBeNull();
     expect(await (await submit()).json()).toEqual(first);
+    expect(await (await readAttempt()).json()).toEqual(first);
     await db.orgMembership.update({where:{userId_organizationId:{userId:actor.userId,organizationId}},data:{role:"read_only"}});
     expect((await submit()).status).toBe(403);
     expect(await db.deploymentIncident.findUnique({where:{id:incidentId}})).toMatchObject({status:"open",updatedAt:incident.updatedAt});

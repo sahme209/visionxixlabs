@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   let candidateCount = 0;
   let monthlyHigh = 0;
   try {
-    const report = await runFinopsEngineer(org);
+    const report = await runFinopsEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     candidateCount = report.totals.candidateCount;
     monthlyHigh = report.totals.monthlyHighUsd;

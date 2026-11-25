@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({ usage: vi.fn(), portal: vi.fn(), preferences: 
 vi.mock("@tauri-apps/plugin-shell", () => ({ open: mocks.open }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: mocks.preferences, writeDesktopPreferences: vi.fn() }));
-vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config(){return mocks.context;},getContextRevision: () => 0, listWorkspaceMembers: async () => ({ok: false, error: "Synthetic member inventory unavailable"}),
+vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config(){return mocks.context;},getContextRevision: () => 0, subscribeContext: () => () => {}, listWorkspaceMembers: async () => ({ok: false, error: "Synthetic member inventory unavailable"}),
   usageSummary: mocks.usage, desktopBillingPortal: mocks.portal } }));
 import { SettingsView } from "../../../desktop/src/views/SettingsView";
 function identity(planTier: string, billingStatus: string, allowed = true): VerifiedDesktopIdentity {
@@ -74,6 +74,24 @@ it("does not publish an old account's delayed billing response after a credentia
 it("does not show cached subscription claims or a portal action while current billing is unverified",async()=>{
  mocks.usage.mockReturnValue(new Promise(()=>{}));render(createElement(SettingsView,{identity:identity("trial","active"),initialSection:"plan"}));
  expect(screen.getByText("Verifying…",{exact:true})).toBeTruthy();expect(screen.queryByText("trial",{exact:true})).toBeNull();expect(screen.queryByRole("button",{name:"Open billing"})).toBeNull();
+});
+it("expires a previously verified allowance and can refresh it explicitly", async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.usage.mockResolvedValueOnce(modern()).mockResolvedValue(modern("Free", 150));
+    render(createElement(SettingsView, { identity: identity("trial", "active"), initialSection: "plan" }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    expect(screen.getByText("$2.00", { exact: true })).toBeTruthy();
+    await act(async () => { await vi.advanceTimersByTimeAsync(5 * 60 * 1000); });
+    expect(screen.queryByText("$2.00", { exact: true })).toBeNull();
+    expect(screen.getByText("Billing verification unavailable")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh plan and usage" }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    expect(screen.getByText("$1.50", { exact: true })).toBeTruthy();
+    expect(mocks.usage).toHaveBeenCalledTimes(2);
+  } finally {
+    vi.useRealTimers();
+  }
 });
 it("fails closed on a malformed current snapshot",async()=>{
  const response=modern();response.data.billingSnapshot.version=2;mocks.usage.mockResolvedValue(response);render(createElement(SettingsView,{identity:identity("trial","active"),initialSection:"plan"}));

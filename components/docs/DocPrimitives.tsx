@@ -52,13 +52,20 @@ export function Callout({
 }
 
 /** Section block with anchored h2 heading. */
-export function DocSection({ id, title, kicker, children }: { id?: string; title: string; kicker?: string; children: ReactNode }) {
+export function DocSection({ id, title, kicker, children, focusHeading = false }: {
+  id?: string;
+  title: string;
+  kicker?: string;
+  children: ReactNode;
+  focusHeading?: boolean;
+}) {
   return (
-    <section id={id} className="mb-12 scroll-mt-24">
+    <section id={focusHeading ? undefined : id} className="mb-12 scroll-mt-24">
       {kicker && (
         <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2">{kicker}</p>
       )}
-      <h2 className="text-2xl md:text-3xl font-medium text-zinc-100 tracking-[-0.04em] mb-5">
+      <h2 id={focusHeading ? id : undefined} tabIndex={focusHeading ? -1 : undefined}
+        className="scroll-mt-24 text-2xl md:text-3xl font-medium text-zinc-100 tracking-[-0.04em] mb-5">
         {title}
       </h2>
       <div className="space-y-4 text-zinc-300 leading-relaxed">{children}</div>

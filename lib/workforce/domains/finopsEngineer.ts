@@ -11,7 +11,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const FINOPS_ENGINEER_TARGET_KIND = "engineer_finops_recommendations";
 
@@ -111,7 +111,7 @@ function fallbackPitch(c: FinopsCandidate): string {
   return `Apply ${c.title} — projected $${c.monthlyHighUsd}/mo savings if executed cleanly; disposition is ${c.disposition.replace(/_/g, " ")}.`;
 }
 
-export async function runFinopsEngineer(organizationId: string): Promise<FinopsEngineerReport> {
+export async function runFinopsEngineer(organizationId: string, actorUserId?: string): Promise<FinopsEngineerReport> {
   let recs: Array<{ id: string; title: string; disposition: string; monthlyLow: number; monthlyHigh: number; yearlyHigh: number; run: { cloudAccount: { provider: string } } }> = [];
   try {
     recs = await prisma.axiomRecommendation.findMany({
@@ -166,6 +166,7 @@ export async function runFinopsEngineer(organizationId: string): Promise<FinopsE
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:finops_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(candidates, totals)}`;
@@ -182,7 +183,7 @@ export async function runFinopsEngineer(organizationId: string): Promise<FinopsE
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const topCandidates = candidates.map((c) => ({

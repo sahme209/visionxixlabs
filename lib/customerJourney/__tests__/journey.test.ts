@@ -11,3 +11,65 @@ it('handles unsupported status and invalid expiry without inventing readiness',(
 it('never equates PR approval or a closed request with verified deployment or application health',()=>{for(const status of ['submitted','closed']){const j=releaseJourney({status,approvalDecision:'ready_for_human_approval',blockers:[],prStatus:'approved',noPrRequired:false,rollbackAvailability:'yes',stale:false});expect(j.steps.find(s=>s.id==='review')?.detail).toContain('separate');expect(j.steps.find(s=>s.id==='outcome')?.state).toBe('unverified');expect(j.recovery).toContain('not a verified rollback')}});
 it('directs draft and blocked release owners to their actual missing prerequisites',()=>{expect(releaseJourney({status:'draft',approvalDecision:'needs_attention',blockers:['Repository missing'],prStatus:'pending',noPrRequired:false,rollbackAvailability:'no',stale:false}).next.title).toBe('Complete release details');expect(releaseJourney({status:'submitted',approvalDecision:'needs_attention',blockers:['Repository missing'],prStatus:'pending',noPrRequired:false,rollbackAvailability:'no',stale:false}).steps[0].detail).toContain('Repository missing')});
 it('directs a closed release to history instead of disabled execution controls or readiness edits',()=>{for(const approvalDecision of ['ready_for_human_approval','needs_attention'])expect(releaseJourney({status:'closed',approvalDecision,blockers:['Missing old prerequisite'],prStatus:'approved',noPrRequired:false,rollbackAvailability:'yes',stale:false}).next.title).toBe('Review saved outcomes and history')});
+
+const readyRelease = {
+  status: 'submitted',
+  approvalDecision: 'ready_for_human_approval',
+  blockers: [],
+  prStatus: 'pending',
+  noPrRequired: false,
+  rollbackAvailability: 'yes',
+  stale: false,
+};
+
+it('routes a ready release to its required review before suggesting execution controls', () => {
+  for (const prStatus of ['pending', 'approved', 'unavailable']) {
+    expect(releaseJourney({...readyRelease, prStatus}).next).toMatchObject({
+      title: 'View release review',
+      owner: 'Requester and independent reviewer',
+    });
+  }
+  expect(releaseJourney({...readyRelease, prStatus: 'not_applicable'}).next.title).toBe('Review exact execution controls');
+});
+
+it('withholds previous readiness, review and recovery facts when the saved release is stale', () => {
+  const journey = releaseJourney({
+    ...readyRelease, status: 'closed', prStatus: 'approved', blockers: ['Old repository blocker'], stale: true,
+  });
+  expect(journey.next.title).toBe('Refresh saved status');
+  expect(journey.steps.map(step => step.state)).toEqual(Array(4).fill('unverified'));
+  expect(journey.steps.map(step => step.detail).join(' ')).not.toMatch(/old repository blocker|PR approval recorded|request is closed|rollback path is declared/i);
+});
+
+it.each(['dispatching', 'unknown'] as const)('prioritizes reconciliation for a saved %s dispatch', executionState => {
+  const journey = releaseJourney({...readyRelease, executionState});
+  expect(journey.next).toMatchObject({title:'Check the saved deployment outcome',section:'evidence'});
+  expect(journey.recovery).toContain('Do not send another deployment request');
+  expect(journey.steps.find(step => step.id === 'outcome')?.state).toBe('unverified');
+});
+
+it('distinguishes a failed workflow from a dispatch without acknowledgment', () => {
+  const journey = releaseJourney({...readyRelease, executionState: 'accepted', workflowState: 'failure'});
+  expect(journey.next).toMatchObject({title:'Inspect the recorded workflow',section:'logs'});
+  expect(journey.next.detail).toContain('failed');
+  expect(journey.recovery).toContain('Rollback requires separate review');
+  expect(journey.steps.find(step => step.id === 'outcome')?.state).toBe('unverified');
+});
+
+it('keeps a completed workflow separate from application verification and a refused dispatch separate from retry', () => {
+  const completed = releaseJourney({...readyRelease, workflowState: 'success'});
+  expect(completed.next).toMatchObject({title:'Check release verification',section:'logs'});
+  expect(completed.next.detail).toContain('verify application health and artifact delivery separately');
+  expect(completed.next.detail).toContain('Once verified externally');
+  expect(completed.steps.find(step => step.id === 'outcome')?.state).toBe('unverified');
+  const refused = releaseJourney({...readyRelease, executionState: 'refused'});
+  expect(refused.next).toMatchObject({title:'Review the recorded refusal',section:'evidence'});
+  expect(refused.recovery).toContain('Do not resend');
+});
+
+it('withholds exact execution observations during refresh', () => {
+  const journey = releaseJourney({...readyRelease, executionState: 'unknown', workflowState: 'failure', stale: true});
+  expect(journey.next.title).toBe('Refresh saved status');
+  expect(journey.recovery).not.toContain('Do not send another deployment request');
+  expect(journey.next.section).toBeUndefined();
+});

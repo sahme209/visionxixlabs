@@ -1,10 +1,12 @@
 import { DESKTOP_PRODUCT_NAME } from "./lib/desktopMetadata";
 import { agentDraftText, type AgentDraftRequest, type HomePlanningContext, type HomePlanningIntent } from "./lib/agentDraftRequest";
 import type { LocalEditRequest } from "./lib/localEditReview";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { DesktopDialog } from "./components/DesktopDialog";
 import { WorkspaceCommands } from "./components/WorkspaceCommands";
 import { Sidebar } from "./components/Sidebar";
+import { useDesktopUsage } from "./lib/useDesktopUsage";
+import { createReleaseClosureDrafts } from "./lib/releaseClosureDrafts";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
 import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest, type AgentAirflowRequest } from "./views/AgentChatView";
@@ -182,9 +184,18 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
   const releaseDialogReturn = useRef<"intake" | "workspace" | undefined>(undefined);
   const contextRevision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
   const identityKey=JSON.stringify(identity);
+  // Keep unconfirmed playbook identities while moving between views in this paired context.
+  const playbookAttempts = useMemo(() => new Map<string, string>(), [identityKey, verifiedConfig, contextRevision]);
+  const releaseClosureDrafts = useMemo(() => createReleaseClosureDrafts(verifiedConfig, contextRevision), [identityKey, verifiedConfig, contextRevision]);
+  const canReadUsage = identity.kind === "desktop_session" && identity.capabilities.includes("pipeline:read");
+  const desktopUsage = useDesktopUsage(identity.organizationId, verifiedConfig, contextRevision, canReadUsage);
   const [homeDrafts, setHomeDrafts] = useState<{ config: typeof desktopClient.config; revision: number; identityKey: string; drafts: Partial<Record<HomePlanningIntent, string>> }>();
   const [plannerRequest, setPlannerRequest] = useState<AgentDraftRequest>();
   const [ticketPlanReturn, setTicketPlanReturn] = useState<Pick<AgentDraftRequest, "context" | "revision" | "identityKey">>();
+  const [ticketDraftOwner, setTicketDraftOwner] = useState<Pick<AgentDraftRequest, "context" | "revision" | "identityKey">>();
+  const onParkedTicketDraftsChange = useCallback((hasDrafts: boolean) => {
+    setTicketDraftOwner(hasDrafts ? {context: verifiedConfig, revision: contextRevision, identityKey} : undefined);
+  }, [verifiedConfig, contextRevision, identityKey]);
   const [agentPlan, setAgentPlan] = useState<{
     release: SavedReleaseLink;
     config: typeof desktopClient.config;
@@ -204,8 +215,8 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
   const [releaseIntakeOpen, setReleaseIntakeOpen] = useState(false);
   const [releaseEntry, setReleaseEntry] = useState<{
     release?: SavedReleaseLink;
-    origin?: "home" | "agent" | "airflow-automation";
-    section?: "evidence" | "review";
+    origin?: "home" | "agent" | "airflow-automation" | "tickets";
+    section?: "evidence" | "logs" | "review";
     config: typeof desktopClient.config;
     revision: number;
     identityKey: string;
@@ -221,6 +232,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
     view: CustomerView;
     planner?: AgentDraftRequest;
     planRelease?: SavedReleaseLink;
+    usageOpener?: HTMLButtonElement;
     config: typeof desktopClient.config;
     revision: number;
     identityKey: string;
@@ -228,6 +240,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
   const [booted, setBooted] = useState(false);
   const settingsReturnView = useRef<CustomerView>("agent");
   const settingsReturnHome = useRef(false);
+  const settingsUsageOpener = useRef<{ button: HTMLButtonElement; context: typeof verifiedConfig; revision: number; identityKey: string } | null>(null);
   const [botVisited, setBotVisited] = useState(false);
   const [docsVisited, setDocsVisited] = useState(false);
   const [repositoryVisited, setRepositoryVisited] = useState(false);
@@ -242,8 +255,9 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
   const [requestedAirflow, setRequestedAirflow] = useState<AgentAirflowRequest>();
   const [requestedLocalCode, setRequestedLocalCode] = useState<AgentLocalCodeRequest>();
   const [editRequest, setEditRequest] = useState<LocalEditRequest>();
+  const [settingsUsageRequest, setSettingsUsageRequest] = useState(0);
   const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
-  const performNavigate = useCallback((view: CustomerView, planner?: AgentDraftRequest, planRelease?: SavedReleaseLink) => {
+  const performNavigate = useCallback((view: CustomerView, planner?: AgentDraftRequest, planRelease?: SavedReleaseLink, usageOpener?: HTMLButtonElement) => {
     if (planner) setPlannerRequest(planner);
     setTicketPlanReturn(undefined);
     if (planRelease) setAgentPlan({release: planRelease, config: verifiedConfig, revision: contextRevision, identityKey});
@@ -263,18 +277,20 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
     }
     if (view === "axiom-bot") setBotVisited(true);
     if (view === "docs") setDocsVisited(true);
-    setSettingsDestination(undefined);
+    settingsUsageOpener.current = usageOpener ? { button: usageOpener, context: verifiedConfig, revision: contextRevision, identityKey } : null;
+    if (usageOpener) setSettingsUsageRequest(value => value + 1);
+    setSettingsDestination(usageOpener ? "plan" : undefined);
     setActiveView(view);
   }, [activeView, welcomeVisible, verifiedConfig, contextRevision, identityKey]);
-  const navigate = useCallback((view: CustomerView, planner?: AgentDraftRequest, planRelease?: SavedReleaseLink) => {
+  const navigate = useCallback((view: CustomerView, planner?: AgentDraftRequest, planRelease?: SavedReleaseLink, usageOpener?: HTMLButtonElement) => {
     if (activeView === "deployment-requests" && releaseIntakeOpen && view !== activeView) {
       if (verifiedConfig !== desktopClient.config || contextRevision !== desktopClient.getContextRevision()) return;
-      setPendingReleaseNavigation(current => current ?? { view, planner, planRelease, config: verifiedConfig, revision: contextRevision, identityKey });
+      setPendingReleaseNavigation(current => current ?? { view, planner, planRelease, usageOpener, config: verifiedConfig, revision: contextRevision, identityKey });
       setCommandsOpen(false);
       return;
     }
     setPendingReleaseNavigation(null);
-    performNavigate(view, planner, planRelease);
+    performNavigate(view, planner, planRelease, usageOpener);
   }, [activeView, releaseIntakeOpen, verifiedConfig, contextRevision, identityKey, performNavigate]);
   const ownsReleaseNavigation = releaseIntakeOpen && activeView === "deployment-requests"
     && pendingReleaseNavigation?.config === desktopClient.config
@@ -287,6 +303,8 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
     && releaseEntry.revision === contextRevision && releaseEntry.identityKey === identityKey;
   const activeReleaseEntry = ownsReleaseEntry && !welcomeVisible ? releaseEntry : undefined;
   const ticketsActive = !welcomeVisible && activeView === "tickets";
+  const ownsParkedTicketDrafts = ticketDraftOwner?.context === verifiedConfig && verifiedConfig === desktopClient.config &&
+    ticketDraftOwner.revision === contextRevision && ticketDraftOwner.identityKey === identityKey;
   const ownsTicketPlanReturn = !welcomeVisible && activeView === "agent" && ticketPlanReturn?.context === desktopClient.config
     && ticketPlanReturn.revision === contextRevision && ticketPlanReturn.identityKey === identityKey;
   const batchesActive = !welcomeVisible && activeView === "airflow-automation";
@@ -296,6 +314,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
     && verifiedConfig === desktopClient.config && batchEntry.revision === contextRevision && batchEntry.identityKey === identityKey
     ? batchEntry.release : undefined;
   const keepBatchesForRelease = activeView === "deployment-requests" && activeReleaseEntry?.origin === "airflow-automation";
+  const keepTicketsForRelease = activeView === "deployment-requests" && activeReleaseEntry?.origin === "tickets";
   useEffect(() => {
     if (releaseEntry && (!ownsReleaseEntry || (!releaseEntry.release && !releaseIntakeOpen))) setReleaseEntry(undefined);
   }, [releaseEntry, ownsReleaseEntry, releaseIntakeOpen]);
@@ -327,7 +346,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
     if (text && welcomeVisible) offerAgentDraft(text);
   }
 
-  function selectSavedRelease(release: SavedReleaseLink, origin?: "home" | "agent" | "airflow-automation", section?: "evidence" | "review") {
+  function selectSavedRelease(release: SavedReleaseLink, origin?: "home" | "agent" | "airflow-automation" | "tickets", section?: "evidence" | "logs" | "review") {
     if (verifiedConfig !== desktopClient.config || contextRevision !== desktopClient.getContextRevision()) return;
     navigate("deployment-requests");
     setReleaseEntry({
@@ -409,7 +428,10 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
         event.preventDefault();
         content.current.focus();
       }}>Skip to workspace content</a>
-      <Sidebar identity={identity} compact={false} activeView={activeView} onNavigate={navigate} homeVisible={welcomeVisible} onOpenWelcome={() => {setReleaseEntry(undefined);setReturnActivity(undefined);setBotAppsReturn(null);setWelcomeVisible(true)}} />
+      <Sidebar identity={identity} usage={canReadUsage ? desktopUsage : undefined} onOpenUsage={button => {
+        if (!desktopUsage.loading && !desktopUsage.usage?.billingSnapshot?.allowance.available) desktopUsage.refresh();
+        navigate("settings", undefined, undefined, button);
+      }} compact={false} activeView={activeView} onNavigate={navigate} homeVisible={welcomeVisible} onOpenWelcome={() => {setReleaseEntry(undefined);setReturnActivity(undefined);setBotAppsReturn(null);setWelcomeVisible(true)}} />
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar onOpenHelp={() => navigate("docs")} welcome={welcomeVisible} splitActive={splitVisible} onToggleSplit={workspaceVisible ? () => {setRepositoryVisited(true); setLocalEditorVisited(true); setSplitWorkspace(value => !value);} : undefined} activeView={activeView} identity={identity} onOpenCommands={() => setCommandsOpen(true)} />
         <main id="studio-workspace-content" ref={content} tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 flex-col focus:outline-hidden">
@@ -420,7 +442,9 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
             {ownsTicketPlanReturn && <div className="shrink-0 px-4 py-2">
               <button type="button" className="btn-secondary" onClick={() => navigate("tickets")}>Return to Tickets</button>
             </div>}
-            {ownsAgentPlan && agentPlanActive && <header className="studio-agent-plan-heading"><h1>Agent</h1><p>A focused workspace for planning and reviewing changes.</p></header>}
+            {ownsAgentPlan && agentPlanActive
+              ? <header className="studio-agent-plan-heading"><h1>Agent</h1><p>A focused workspace for planning and reviewing changes.</p></header>
+              : activeView === "agent" && <h1 className="sr-only">Agent</h1>}
             <div className={`studio-agent-plan-layout${ownsAgentPlan && agentPlanActive ? " studio-agent-plan-layout-selected" : ""}`}>
               <div ref={agentConversation} className="studio-agent-plan-chat"><AgentChatView deferNewConversation={ownsAgentPlan} requestedDraft={plannerRequest} onDraftLoaded={loaded => setPlannerRequest(current => current === loaded ? undefined : current)} compact={splitVisible} requestedAirflow={requestedAirflow} onReviewLocalEdit={(edit, edits) => { openLocalEditor(); setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); navigate("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={!welcomeVisible && (splitVisible || activeView === "agent")} identity={identity} onOpenSettings={(destination) => { settingsReturnView.current = "agent"; settingsReturnHome.current = false; setSettingsDestination(destination); setActiveView("settings"); }} /></div>
               {ownsAgentPlan && agentPlan && <AgentPlanContextView key={JSON.stringify([agentPlan.release, contextRevision, identityKey])}
@@ -456,11 +480,12 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
             <DocsView active={docsActive} onNavigate={view => { if (view === "repository-workspace") openLocalEditor(); navigate(view); }} onAskAboutPage={offerAgentDraft} />
           </WorkspaceViewBoundary>
         </div>}
-        {(activeView === "tickets" || ownsTicketPlanReturn) && <div hidden={!ticketsActive} className={ticketsActive ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+        {(activeView === "tickets" || ownsTicketPlanReturn || ownsParkedTicketDrafts || keepTicketsForRelease) && <div hidden={!ticketsActive} className={ticketsActive ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
           <WorkspaceViewBoundary key={JSON.stringify([identityKey, contextRevision])} onReturnToAgent={() => navigate("agent")}>
             <TicketsDirectoryView active={ticketsActive} identity={identity} revision={contextRevision}
+              onParkedDraftsChange={onParkedTicketDraftsChange}
               onOpenReleases={() => navigate("deployment-requests")}
-              onOpenSavedDraft={release => {if (ticketsActive) selectSavedRelease(release);}}
+              onOpenSavedDraft={release => {if (ticketsActive) selectSavedRelease(release, "tickets");}}
               onPrepareRemediation={(incident, release) => {
                 if (!ticketsActive || desktopClient.config !== verifiedConfig || desktopClient.getContextRevision() !== contextRevision) return;
                 const text = [
@@ -486,15 +511,21 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
           </WorkspaceViewBoundary>
         </div>}
         {activeView !== "agent" && activeView !== "repository-workspace" && activeView !== "axiom-bot" && activeView !== "docs" && activeView !== "tickets" && activeView !== "airflow-automation" && <div hidden={welcomeVisible} style={{display: welcomeVisible ? "none" : "flex"}} className="flex min-h-0 flex-1 flex-col"><WorkspaceViewBoundary key={activeView} onReturnToAgent={() => navigate("agent")}>
-          {activeView === "deployment-requests" && <DeploymentRequestsView key={identityKey} active={!welcomeVisible && !ownsReleaseNavigation} onIntakeOpenChange={setReleaseIntakeOpen} onInspectReleaseBatches={canReadReleaseBatches ? inspectReleaseBatches : undefined} savedRelease={activeReleaseEntry?.release} savedReleaseSection={activeReleaseEntry?.section} onRecoverSavedRelease={activeReleaseEntry?.origin ? {
-            label: {home: "Return to Home activity", agent: "Return to Agent", "airflow-automation": "Return to Batches"}[activeReleaseEntry.origin],
+          {activeView === "deployment-requests" && <DeploymentRequestsView key={identityKey} pendingPlaybookAttempts={playbookAttempts} releaseClosureDrafts={releaseClosureDrafts} active={!welcomeVisible && !ownsReleaseNavigation} onIntakeOpenChange={setReleaseIntakeOpen} onInspectReleaseBatches={canReadReleaseBatches ? inspectReleaseBatches : undefined} savedRelease={activeReleaseEntry?.release} savedReleaseSection={activeReleaseEntry?.section} onRecoverSavedRelease={activeReleaseEntry?.origin ? {
+            label: {home: "Return to Home activity", agent: "Return to Agent", "airflow-automation": "Return to Batches", tickets: "Return to source ticket"}[activeReleaseEntry.origin],
             run: returnToReleaseOrigin,
             returnWhenAvailable: true,
           } : undefined} activityWorkspace={!welcomeVisible && verifiedConfig === desktopClient.config && canReadAgentPlans ? identity.organizationId : undefined} resumeIntake={Boolean(activeReleaseEntry && !activeReleaseEntry.release && releaseIntakeOpen)} onReviewAgentPlans={canReadAgentPlans ? release => {
             if (!welcomeVisible && activeView === "deployment-requests" && verifiedConfig === desktopClient.config && contextRevision === desktopClient.getContextRevision()) navigate("agent", undefined, release);
           } : undefined} />}
-          {activeView === "plugins-skills" && <PluginsSkillsView key={botAppsOwned?"bot-apps":"catalogue"} initialFilter={botAppsOwned?"plugins":"all"} onReturnToBot={botAppsOwned?()=>{if(botAppsReturn?.context===desktopClient.config&&botAppsReturn.revision===desktopClient.getContextRevision()&&botAppsReturn.identityKey===JSON.stringify(identity))navigate("axiom-bot")}:undefined} onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); navigate("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => { const origin=botAppsOwned?botAppsReturn:null; navigate("settings"); if(origin)setBotAppsReturn(origin); setSettingsDestination("integrations"); }} onOpenAirflow={() => navigate("airflow-automation")} />}
-          {activeView === "settings" && <SettingsView onSignOut={onSignOut} onOpenRepository={() => { openLocalEditor(); navigate("repository-workspace"); }} identity={identity} initialSection={settingsDestination} onClose={() => { setActiveView(settingsReturnView.current); setWelcomeVisible(settingsReturnHome.current); }} />}
+          {activeView === "plugins-skills" && <PluginsSkillsView key={botAppsOwned?"bot-apps":"catalogue"} initialFilter={botAppsOwned?"plugins":"all"} onReturnToBot={botAppsOwned?()=>{if(botAppsReturn?.context===desktopClient.config&&botAppsReturn.revision===desktopClient.getContextRevision()&&botAppsReturn.identityKey===JSON.stringify(identity))navigate("axiom-bot")}:undefined} onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); navigate("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} workspaceRole={identity.role} onOpenSettings={() => { const origin=botAppsOwned?botAppsReturn:null; navigate("settings"); if(origin)setBotAppsReturn(origin); setSettingsDestination("integrations"); }} onOpenAirflow={() => navigate("airflow-automation")} />}
+          {activeView === "settings" && <SettingsView onSignOut={onSignOut} onOpenRepository={() => { openLocalEditor(); navigate("repository-workspace"); }} identity={identity} initialSection={settingsDestination} usageRequest={settingsUsageRequest} desktopUsage={desktopUsage} onClose={() => {
+            setActiveView(settingsReturnView.current);
+            setWelcomeVisible(settingsReturnHome.current);
+            const opener = settingsUsageOpener.current;
+            settingsUsageOpener.current = null;
+            if (opener && opener.context === desktopClient.config && opener.revision === desktopClient.getContextRevision() && opener.identityKey === identityKey) opener.button.focus();
+          }} />}
         </WorkspaceViewBoundary></div>}
         </main>
       </div>
@@ -519,7 +550,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
               releaseDialogReturn.current = "workspace";
               setPendingReleaseNavigation(null);
               setReleaseIntakeOpen(false);
-              performNavigate(pendingReleaseNavigation.view, pendingReleaseNavigation.planner, pendingReleaseNavigation.planRelease);
+              performNavigate(pendingReleaseNavigation.view, pendingReleaseNavigation.planner, pendingReleaseNavigation.planRelease, pendingReleaseNavigation.usageOpener);
             }}>Leave without saving</button>
           </div>
         </DesktopDialog>

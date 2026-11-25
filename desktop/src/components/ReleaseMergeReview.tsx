@@ -3,7 +3,16 @@ import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
 import {isReleaseMergeTargets,isReleaseMergePlanEvidence,type ReleaseMergeTargets,type ReleaseMergePlanEvidence,type ReleaseMergeMethod} from '../lib/releaseMergeContract';
 
-export function ReleaseMergeReview({requestId,version}:{requestId:string;version:number}){
+type ReleaseIdentity = {requestId:string;version:number};
+
+export function ReleaseMergeReview({requestId,version,refreshEpoch=0}:ReleaseIdentity & {refreshEpoch?:number}){
+ return <section data-release-detail="review" tabIndex={-1} aria-label="Merge review" className="mt-3 rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
+  <MergeEvidenceReader key={refreshEpoch} requestId={requestId} version={version}/>
+  <ReleaseOperationPlans requestId={requestId} version={version} refreshEpoch={refreshEpoch}/>
+ </section>;
+}
+
+function MergeEvidenceReader({requestId,version}:ReleaseIdentity){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
  const key=JSON.stringify([requestId,version,revision]);
  const owner=useRef<string|null>(key);owner.current=key;
@@ -36,7 +45,7 @@ export function ReleaseMergeReview({requestId,version}:{requestId:string;version
   finally{if(flight.current===operation)flight.current=null}
  }
  const targets=current?.targets,plan=current?.plan?.plan;
- return <section data-release-detail="review" tabIndex={-1} aria-label="Merge review" className="mt-3 rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
+ return <>
   <div className="flex items-center justify-between gap-3"><p className="font-medium text-zinc-100">Merge review</p><button type="button" disabled={current?.busy} onClick={()=>void perform('targets')} className="rounded-sm border border-white/15 px-3 py-1.5 disabled:opacity-50">{current?.busy?'Reading…':targets?'Refresh merge targets':'Review merge'}</button></div>
   <p className="mt-1 text-zinc-500">Review only. No merge will run.</p>
   {current?.error&&<p role="alert" className="mt-2 text-amber-200">{current.error}</p>}
@@ -49,6 +58,5 @@ export function ReleaseMergeReview({requestId,version}:{requestId:string;version
    </div>
    {plan&&<div className="rounded-sm border border-white/10 bg-white/2 p-3"><p className="font-medium text-zinc-100">{plan.pullRequest.headRef} → {plan.pullRequest.baseRef}</p><dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1"><dt>Pull request</dt><dd>#{plan.pullRequest.number}</dd><dt>Source commit</dt><dd className="font-mono">{plan.pullRequest.headSha.slice(0,12)}</dd><dt>Observed base commit</dt><dd className="font-mono">{plan.pullRequest.baseSha.slice(0,12)}</dd></dl><p className="mt-2 text-zinc-500">Current permissions, checks and independent approval must be verified before a merge.</p></div>}
   </div>}
-  <ReleaseOperationPlans requestId={requestId} version={version}/>
- </section>;
+ </>;
 }

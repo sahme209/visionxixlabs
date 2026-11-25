@@ -14,7 +14,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 import { META_REASONER_TARGET_KIND } from "@/lib/workforce/domains/metaReasonerEngineer";
 
 export const COUNCIL_TARGET_KIND = "engineer_council_verdicts";
@@ -198,7 +198,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runCouncilEngineer(organizationId: string): Promise<CouncilReport> {
+export async function runCouncilEngineer(organizationId: string, actorUserId?: string): Promise<CouncilReport> {
   let metaRow: { nextActionsJson: unknown; updatedAt: Date } | null = null;
   try {
     metaRow = await prisma.aiRationaleEnrichment.findUnique({
@@ -230,6 +230,7 @@ export async function runCouncilEngineer(organizationId: string): Promise<Counci
       const fetcher = makeInstrumentedFetcher({
         engineName: "engineer_domain:council_engineer",
         organizationId,
+        actorUserId,
         timeoutMs: 45_000,
         maxTokens: 2500,
       });
@@ -247,7 +248,7 @@ export async function runCouncilEngineer(organizationId: string): Promise<Counci
     } catch (err) {
       const msg = err instanceof Error ? err.message : "unknown";
       errorMessage = msg;
-      outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+      outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
     }
   }
 

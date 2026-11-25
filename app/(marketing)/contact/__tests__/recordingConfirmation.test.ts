@@ -5,10 +5,16 @@ import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/reac
 vi.mock('next/link',()=>({default:({href,children,...props}:any)=>createElement('a',{...props,href},children)}));
 vi.mock('framer-motion',()=>({
  AnimatePresence:({children}:any)=>children,
- motion:new Proxy({}, {get:(_target,tag:string)=>({children,initial,animate,exit,transition,...props}:any)=>createElement(tag,props,children)}),
+ motion:new Proxy({}, {get(target,tag:string) {
+  if (!Reflect.has(target,tag)) {
+   Reflect.set(target,tag,({children,initial,animate,exit,transition,...props}:any)=>createElement(tag,props,children));
+  }
+  return Reflect.get(target,tag);
+ }}),
 }));
 import {ContactClient} from '../ContactClient';
 import ContactPage from '../page';
+import {stageSupportContactDraft} from '@/lib/support/contactDraft';
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
 function fill(){
  render(createElement(ContactClient));
@@ -66,4 +72,28 @@ it('preserves the message on an error response without automatically resubmittin
  await waitFor(()=>expect(screen.getByRole('alert').textContent).toContain('Synthetic server refusal'));
  expect((screen.getByLabelText('What went wrong?') as HTMLTextAreaElement).value).toContain('Synthetic recording check');
  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it('opens the Support topic with an editable one-time draft and leaves submission to the visitor', () => {
+ const fetch = vi.fn();
+ vi.stubGlobal('fetch', fetch);
+ stageSupportContactDraft("How do I find the failed step?");
+ const view = render(createElement(ContactClient, {intent: 'ask-axiom'}));
+ const message = screen.getByLabelText('What went wrong?') as HTMLTextAreaElement;
+ expect(screen.getByRole('button', {name: 'Support'}).getAttribute('aria-pressed')).toBe('true');
+ expect(message.value).toContain("How do I find the failed step?");
+ expect(document.activeElement).toBe(message);
+ fireEvent.change(message, {target: {value: 'I found the failed step and need help reading it.'}});
+ expect(message.value).toBe('I found the failed step and need help reading it.');
+ expect(fetch).not.toHaveBeenCalled();
+ view.unmount();
+ render(createElement(ContactClient, {intent: 'ask-axiom'}));
+ expect((screen.getByLabelText('What went wrong?') as HTMLTextAreaElement).value).toBe('');
+});
+
+it('opens older escalations with the Support topic and ignores questions in the URL', async () => {
+ const query = {topic: 'ask-axiom', question: 'Private text from an old URL'};
+ render(await ContactPage({searchParams: Promise.resolve(query)}));
+ expect(screen.getByRole('button', {name: 'Support'}).getAttribute('aria-pressed')).toBe('true');
+ expect((screen.getByLabelText('What went wrong?') as HTMLTextAreaElement).value).toBe('');
 });

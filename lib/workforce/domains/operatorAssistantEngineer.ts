@@ -161,6 +161,7 @@ function parseAi(text: string): ParsedAi | null {
 export async function runOperatorAssistantEngineer(
   organizationId: string,
   raw: OperatorAssistantInput,
+  actorUserId?: string,
 ): Promise<OperatorAssistantReply> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const prompt = raw.prompt.trim().slice(0, MAX_BODY);
@@ -196,6 +197,7 @@ export async function runOperatorAssistantEngineer(
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:operator_assistant_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2500,
     });

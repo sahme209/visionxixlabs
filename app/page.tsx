@@ -54,7 +54,7 @@ export default async function Home() {
   return (
     <div className="axiom-canvas min-h-screen text-white">
       {/* Match the artwork breakpoint in orbit-public.css. */}
-      <link rel="preload" as="image" href="/images/marketing/axiom-painted-basin-compact-v1.webp" media="(max-width: 700px)" fetchPriority="high" />
+      <link rel="preload" as="image" type="image/avif" href="/images/marketing/axiom-painted-basin-compact-v1.avif" media="(max-width: 700px)" fetchPriority="high" />
       <Navigation />
       <main>
         <AxiomPublicHero />

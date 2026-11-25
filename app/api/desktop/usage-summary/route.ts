@@ -15,6 +15,9 @@ import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStor
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 import type { DesktopBillingSnapshot } from "@/lib/desktop/desktopBillingSummary";
 
+import { workspaceAIUsageBudgetsEnabled } from "@/lib/billing/workspaceAIUsageBudget";
+import { readWorkspaceBudgetSettings } from "@/lib/billing/workspaceAIUsageBudgetSettings";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -28,17 +31,33 @@ export async function GET(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   }
   const organizationId = String(session.organizationId);
-  const [usage, billing, allowance] = await Promise.all([
+  const canManageBilling = session.role === "owner" || session.role === "admin";
+  const budgetRead = canManageBilling && workspaceAIUsageBudgetsEnabled()
+    ? prisma.$transaction(
+      tx => readWorkspaceBudgetSettings(tx, { organizationId, userId: session.userId }),
+      { isolationLevel: "Serializable" },
+    ).catch(() => null)
+    : undefined;
+  const [usage, billing, allowance, budgetResult] = await Promise.all([
     buildUsageSummaryResponse(prisma as unknown as UsageSummaryRepo, organizationId),
     readBillingPlanWithAvailability(organizationId).catch(() => null),
     readCurrentAIAllowance(prisma, organizationId).catch(() => ({ available: false } as const)),
+    budgetRead,
   ]);
   const headers = { "cache-control": "no-store" };
   if (!usage.body.ok) return NextResponse.json(usage.body, { status: usage.status, headers });
   const plan = billing?.plan;
+  const budget = budgetResult?.kind === "ok" ? budgetResult.data.budget : null;
   const billingSnapshot: DesktopBillingSnapshot = {
     version: 1,
-    canManageBilling: session.role === "owner" || session.role === "admin",
+    canManageBilling,
+    ...(budgetRead && { budget: budgetResult?.kind === "ok"
+      ? { available: true, limit: budget && {
+        monthlyLimitCents: budget.monthlyLimitCents,
+        remainingCents: budget.remainingCents,
+        warningReached: budget.warningReached,
+      } }
+      : { available: false } }),
     plan: billing?.available && plan && plan.pricingPlanAvailable !== false ? {
       available: true,
       label: plan.pricingPlan?.displayName ?? plan.spec.label,

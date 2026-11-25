@@ -1,3 +1,4 @@
+import {ReadableTime} from "../components/ReadableTime";
 import type { AgentDraftRequest } from "../lib/agentDraftRequest";
 import { restartWorkflowSourceFromArgs } from "../../../lib/tauri/agentRestartWorkflowSource";
 import {githubPullRequestReviewFromArgs} from "../../../lib/tauri/agentGithubPullRequestReview";
@@ -1493,7 +1494,7 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
         {!isUser && <div className="studio-agent-message-author">
           <img src="/brand/v19-mark.svg" alt="" />
           <span aria-hidden="true">V19</span>
-          {timestamp && <time dateTime={turn.createdAt} title={fullTime} aria-label={fullTime}>{displayedTime}</time>}
+          {turn.createdAt && fullTime && displayedTime && <ReadableTime dateTime={turn.createdAt} fullText={fullTime} displayText={displayedTime}/>}
         </div>}
         {isUser ? <p className="whitespace-pre-wrap wrap-break-word">{turn.content}</p> : <AgentMessageContent text={turn.content} />}
       </div>

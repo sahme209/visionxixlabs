@@ -1,24 +1,25 @@
+import type { LeadGenerationInvocation } from "@/lib/ai/leadGenerationInvocation";
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import type {
   OperatorProfile,
   OperatorTier,
   OperatorEngineOutput,
-  LaunchModule,
-  OptimizeModule,
-  SecureModule,
-  BusinessModule,
-  DetectionSignals,
-  CustomThirtyDayPlan,
 } from "./types";
 import { computeCloudOperatorScores } from "@/lib/cloudStudio/scoring";
 
-function parseJSON<T>(text: string): Partial<T> {
+function parseOperatorOutput(text: string): OperatorEngineOutput {
   const s = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  let parsed: OperatorEngineOutput;
   try {
-    return JSON.parse(s) as Partial<T>;
+    parsed = JSON.parse(s) as OperatorEngineOutput;
   } catch {
-    return {};
+    throw new Error("cloud_operator_output_unverified");
   }
+  if (typeof parsed?.launch?.architecturePlan !== "string" || !parsed.launch.architecturePlan.trim()) {
+    throw new Error("cloud_operator_output_unverified");
+  }
+  return parsed;
 }
 
 const PROVIDER_HINTS: Record<string, string> = {
@@ -130,6 +131,7 @@ Generate a single JSON object with this shape (output ONLY valid JSON, no markdo
 
 Rules:
 - Output ONLY valid JSON. No markdown, no code blocks, no extra text.
+- Keep prose and artifacts compact enough to return the complete JSON object. Use the smallest useful examples.
 - Be specific to ${profile.hostingProvider}, ${profile.projectType}, and "${profile.primaryGoal}".
 - Each phase in thirtyDayPlan must have at least 2 tasks. Tasks must be concrete and actionable.
 - estimatedAnnualSavings: use 15-25% of (monthlySpend * 12) as a reasonable range unless compliance/risk suggests more.
@@ -140,29 +142,23 @@ const PRO_TIERS: OperatorTier[] = ["pro", "growth", "enterprise"];
 
 export async function generateOperatorEngineOutput(
   profile: OperatorProfile,
-  tier: OperatorTier
+  tier: OperatorTier,
+  leadInvocation?: LeadGenerationInvocation
 ): Promise<OperatorEngineOutput> {
   const prompt = buildOperatorPrompt(profile);
   const systemPrompt =
     "You are the AI Cloud Operator™. You produce concrete, provider-specific, actionable JSON outputs for cloud automation planning. Never execute changes. Output only valid JSON.";
 
   const { text } = await orchestrateGenerate({
+    leadInvocation,
     taskType: "cloud_automation",
     systemPrompt,
     userPrompt: prompt,
     temperature: 0.35,
-    maxTokens: 8192,
+    maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
     responseFormat: "json",
   });
-  const parsed = parseJSON<{
-    launch?: LaunchModule;
-    optimize?: OptimizeModule;
-    secure?: SecureModule;
-    business?: BusinessModule;
-    detections?: DetectionSignals;
-    recommendedImprovements?: string[];
-    thirtyDayPlan?: CustomThirtyDayPlan;
-  }>(text);
+  const parsed = parseOperatorOutput(text);
 
   const scores = computeCloudOperatorScores({
     projectType: profile.projectType,

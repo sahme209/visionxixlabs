@@ -40,6 +40,7 @@ export interface DownstreamRunSummary {
 export async function triggerDownstreamChain(
   parentEngineerId: string,
   organizationId: string,
+  actorUserId?: string,
 ): Promise<DownstreamRunSummary[]> {
   const downstream = DOWNSTREAM_CHAIN[parentEngineerId] ?? [];
   if (downstream.length === 0) return [];
@@ -51,7 +52,7 @@ export async function triggerDownstreamChain(
       continue;
     }
     try {
-      const r = await runner.runAndPersist(organizationId);
+      const r = await runner.runAndPersist(organizationId, actorUserId);
       results.push({ engineerId: childId, outcome: r.outcome, errorMessage: r.errorMessage });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "unknown";

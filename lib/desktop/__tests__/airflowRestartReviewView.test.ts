@@ -120,23 +120,23 @@ it("never displays the previous DAG's runs while a newly selected DAG is loading
   const pending = deferred();
   mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
   mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "a", displayName: "DAG A" }, { dagId: "b", displayName: "DAG B" }] } });
-  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise);
+  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagId: "a", dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise);
   render(createElement(AirflowAutomationView)); await screen.findByText("run-A");
   fireEvent.change(screen.getByRole("combobox"), { target: { value: "b" } });
   expect(screen.queryByText("run-A")).toBeNull();
-  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagRunId: "run-B", state: "running" }] } }));
+  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagId: "b", dagRunId: "run-B", state: "running" }] } }));
   await screen.findByText("run-B");
 });
 it("ignores a manual run-history refresh returned after the DAG selection changes", async () => {
   const pending = deferred();
   mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
   mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "a", displayName: "DAG A" }, { dagId: "b", displayName: "DAG B" }] } });
-  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise).mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-B", state: "running" }] } });
+  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagId: "a", dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise).mockResolvedValueOnce({ ok: true, data: { runs: [{ dagId: "b", dagRunId: "run-B", state: "running" }] } });
   render(createElement(AirflowAutomationView)); await screen.findByText("run-A");
   fireEvent.click(screen.getByRole("button", { name: "Refresh run history" }));
   fireEvent.change(screen.getByRole("combobox"), { target: { value: "b" } });
   await screen.findByText("run-B");
-  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagRunId: "old-refresh-A", state: "success" }] } }));
+  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagId: "a", dagRunId: "old-refresh-A", state: "success" }] } }));
   expect(screen.queryByText("old-refresh-A")).toBeNull(); expect(screen.getByText("run-B")).toBeTruthy();
 });
 
@@ -242,7 +242,7 @@ it("disables another restart proposal when its environment disappears from refre
 
 it("refuses running or refreshing history for a DAG removed by the refreshed catalog", async () => {
   mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
-  mock.runs.mockResolvedValue({ ok: true, data: { runs: [{ dagRunId: "old-run", state: "success" }] } });
+  mock.runs.mockResolvedValue({ ok: true, data: { runs: [{ dagId: "batch-dag", dagRunId: "old-run", state: "success" }] } });
   render(createElement(AirflowAutomationView)); await screen.findByText("old-run");
   fireEvent.click(screen.getByRole("button", { name: "approvals" }));
   await screen.findByText("Synthetic restart");
@@ -346,7 +346,7 @@ it("distinguishes an unavailable approval read from an empty approval queue and 
 });
 it("labels failed run history and refreshes real history after one reviewed manual run",async()=>{
   mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
-  mock.runs.mockResolvedValueOnce({ok:false,error:"upstream-secret"}).mockResolvedValue({ok:true,data:{runs:[{dagRunId:"fresh-run",state:"queued"}]}});
+  mock.runs.mockResolvedValueOnce({ok:false,error:"upstream-secret"}).mockResolvedValue({ok:true,data:{runs:[{dagId:"batch-dag",dagRunId:"fresh-run",state:"queued"}]}});
   mock.trigger.mockResolvedValue({ok:true});
   render(createElement(AirflowAutomationView)); await screen.findByText(/Run history could not be verified/);
   fireEvent.click(screen.getByRole("button",{name:"Run now"}));
@@ -417,4 +417,31 @@ it("keeps unknown provider errors private and never treats an uncertain run as s
  mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"active"}});mock.trigger.mockResolvedValue({ok:false,error:"private-provider-host-and-diagnostic"});
  render(createElement(AirflowAutomationView));await screen.findByText("No runs returned.");fireEvent.click(screen.getByRole("button",{name:"Run now"}));fireEvent.click(screen.getByRole("button",{name:"Confirm DAG run"}));
  await screen.findByText("The action's outcome could not be confirmed. Refresh and review its history before retrying.");expect(screen.queryByText("private-provider-host-and-diagnostic")).toBeNull();expect(mock.trigger).toHaveBeenCalledTimes(1);
+});
+
+it("counts only unique recent runs for the selected DAG and clears the count on a failed refresh", async () => {
+  mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
+  const run = (dagId: string, dagRunId: string, state: string) => ({
+    dagId, dagRunId, state, logicalDate: null, startedAt: null, endedAt: null,
+  });
+  const first = run("batch-dag", "fixture-failure", "failed");
+  const pending = deferred();
+  mock.runs.mockResolvedValueOnce({ok:true,data:{runs:[first, run("batch-dag", "fixture-success", "success")]}})
+    .mockReturnValueOnce(pending.promise)
+    .mockResolvedValueOnce({ok:true,data:{runs:[run("other-dag", "foreign-run", "failed")]}});
+  render(createElement(AirflowAutomationView));
+  expect(await screen.findByText("2 recent runs shown · 1 failed")).toBeTruthy();
+  const refresh = screen.getByRole("button",{name:"Refresh run history"});
+  refresh.focus();
+  fireEvent.click(refresh);
+  expect(screen.queryByText("2 recent runs shown · 1 failed")).toBeNull();
+  await act(async () => pending.resolve({ok:true,data:{runs:[first, first]}}));
+  await screen.findByText(/Run history could not be verified/);
+  expect(screen.queryByText("fixture-failure")).toBeNull();
+  expect(document.activeElement).toBe(refresh);
+  fireEvent.click(refresh);
+  await waitFor(() => expect(mock.runs).toHaveBeenCalledTimes(3));
+  await screen.findByText(/Run history could not be verified/);
+  expect(screen.queryByText("foreign-run")).toBeNull();
+  expect(mock.trigger).not.toHaveBeenCalled();
 });

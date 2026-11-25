@@ -1,17 +1,15 @@
 /**
  * GET /api/insights/tenant
  *
- * Synthesizes a 3-5 sentence operator-facing tenant summary using the
- * AI manager, falling back to a deterministic template when AI is
- * unavailable. The seed is computed server-side from Prisma counts
- * (never raw event payloads) so the prompt stays small and tenant
- * data never leaks to the model.
+ * GET reads aggregate metrics. POST explicitly requests a metered summary
+ * using the same server-derived counts.
  */
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
-import { synthesizeInsights, type InsightsSeed } from "@/lib/insights/tenantInsightsSynthesizer";
+import { summarizeInsightsMetrics, synthesizeInsights, type InsightsSeed } from "@/lib/insights/tenantInsightsSynthesizer";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -21,12 +19,28 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_DAYS = 7;
 const MAX_DAYS = 30;
 
-export async function GET(req: NextRequest) {
+export function GET(req: NextRequest) {
+  return readInsights(req, false);
+}
+
+export function POST(req: NextRequest) {
+  return readInsights(req, true);
+}
+
+async function readInsights(req: NextRequest, generate: boolean) {
   const correlationId = resolveCorrelationId(req.headers);
+  const safetyContract = generate ? undefined : "audit_read_only";
   try {
+    if (generate && !isSameOriginRequest(req)) {
+      return apiErr(AxiomErrors.policy("insights.invalid_origin", "Open Tenant Insights in your workspace to generate a summary."), { correlationId, status: 403 });
+    }
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.organizationId) {
+    if (!ctx.isAuthenticated || !ctx.organizationId || (generate && !ctx.userId)) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
+    }
+    const requestKey = req.headers.get("idempotency-key")?.trim() ?? "";
+    if (generate && !/^[A-Za-z0-9_-]{16,160}$/.test(requestKey)) {
+      throw AxiomErrors.validation("insights.request_key_required", "A stable request key is required for AI generation.");
     }
     const rawDays = Number.parseInt(req.nextUrl.searchParams.get("days") ?? `${DEFAULT_DAYS}`, 10);
     const windowDays = Number.isFinite(rawDays) ? Math.max(1, Math.min(rawDays, MAX_DAYS)) : DEFAULT_DAYS;
@@ -82,23 +96,25 @@ export async function GET(req: NextRequest) {
     } catch { /* leave zero */ }
 
     try {
-      // Dissenters bus messages: kind == "council_consensus" carries the
-      // dissent count in payload; counting council_consensus emissions is
-      // a cheap proxy.
+      // Count consensus records. Retain the historical response field name.
       const consensus = await prisma.agentBusMessage.count({
         where: { organizationId: orgId, kind: "council_consensus", createdAt: { gte: since } },
       });
       seed.dissentCount = consensus;
     } catch { /* leave zero */ }
 
-    const narrative = await synthesizeInsights(seed);
+    const narrative = generate && ctx.userId
+      ? await synthesizeInsights(seed, {
+        userId: String(ctx.userId), correlationId, idempotencyKey: `tenant_insights_${requestKey}`,
+      })
+      : summarizeInsightsMetrics(seed);
 
     return apiOk({ seed, narrative }, {
       correlationId,
-      safetyContract: "audit_read_only",
+      safetyContract,
       sourceMode: asApiSourceMode("live"),
     });
   } catch (err) {
-    return apiErr(err, { correlationId, safetyContract: "audit_read_only" });
+    return apiErr(err, { correlationId, safetyContract });
   }
 }

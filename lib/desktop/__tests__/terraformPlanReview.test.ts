@@ -30,6 +30,27 @@ it("reads metadata and explicitly inspects one sanitized artifact without execut
   expect(screen.getByText(/Approval and current backend\/target authority are unavailable/)).not.toBeNull();
   expect(screen.queryByRole("button", { name: /apply|approve|upload|regenerate/i })).toBeNull();
 });
+it("refuses changed bytes behind the selected artifact ID and recovers with freshly listed metadata", async () => {
+  const changed = {...metadata, binaryDigest:"b".repeat(64)};
+  vi.spyOn(desktopClient,"listDeploymentTerraformPlans")
+    .mockResolvedValueOnce({ok:true,data:listData()})
+    .mockResolvedValueOnce({ok:true,data:{...listData(),plans:[changed]}});
+  vi.spyOn(desktopClient,"getDeploymentTerraformPlan").mockResolvedValue({ok:true,data:{...listData(),plans:[{
+    ...changed, inspection:"artifact_bytes_checked", summary:{
+      rows:[], counts:{create:1,update:0,delete:0,replace:0,read:0,"no-op":0}, byProvider:[],destructive:[],severity:"low",
+    },
+  }]}});
+  render(createElement(TerraformPlanReview,{requestId:"request",requestVersion:1}));
+  fireEvent.click(screen.getByRole("button",{name:"Read saved plan metadata"}));
+  fireEvent.click(await screen.findByRole("button",{name:/Inspect aaaaaaaaaaaa/}));
+  expect((await screen.findByRole("alert")).textContent).toContain("no longer matches the selected record");
+  expect(screen.queryByText(/Artifact bytes checked/)).toBeNull();
+  fireEvent.click(screen.getByRole("button",{name:"Read saved plan metadata"}));
+  fireEvent.click(await screen.findByRole("button",{name:/Inspect bbbbbbbbbbbb/}));
+  expect(await screen.findByText(/Artifact bytes checked.*owned local fixture/)).toBeTruthy();
+  expect(screen.getByText(/SHA-256 bbbbbbbbbbbb/)).toBeTruthy();
+});
+
 it("drops a late list response after the selected request changes", async () => {
   let finish!: (v: { ok: true; data: SavedPlanReadData }) => void;
   vi.spyOn(desktopClient, "listDeploymentTerraformPlans").mockImplementation(() => new Promise(resolve => { finish = resolve; }));

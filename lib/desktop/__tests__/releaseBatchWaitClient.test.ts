@@ -10,6 +10,18 @@ it("preserves the monitoring and permission envelope over an encoded paired GET"
  const fetcher = respond(state); expect(await client().releaseBatchWait("release/one", 3)).toEqual({ ok: true, data: state });
  expect(fetcher).toHaveBeenCalledWith("https://axiom.invalid/api/desktop/deployments/release%2Fone/batch-wait?expectedVersion=3", expect.objectContaining({ method: "GET", credentials: "omit" }));
 });
+it("accepts closed status only for the exact release without any monitor authority", async () => {
+ const data = {requestVersion:3,closedRelease:{requestId:"release",version:3},monitoringEnabled:false,canStart:false,canCancel:false,wait:null};
+ respond(data);
+ expect(await client().releaseBatchWait("release",3)).toEqual({ok:true,data});
+ for (const invalid of [
+  {...data, closedRelease:{requestId:"other",version:3}}, {...data, closedRelease:{requestId:"release",version:4}},
+  {...data, monitoringEnabled:true, canStart:true}, {...data, wait}, {...data, canCancel:true, wait},
+ ]) {
+  respond(invalid);
+  expect(await client().releaseBatchWait("release",3)).toMatchObject({ok:false});
+ }
+});
 it("sends only version and chosen deadline when starting", async () => {
  const fetcher = respond(wait); await client().startReleaseBatchWait("release", 3, 1792845000000);
  expect(JSON.parse(fetcher.mock.calls[0][1].body)).toEqual({ expectedVersion: 3, deadlineAt: 1792845000000 });

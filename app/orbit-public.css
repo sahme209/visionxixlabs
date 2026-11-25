@@ -271,7 +271,13 @@ body:has(.site-navigation) main :is(h1,h2) { font-weight:400; }
   .public-home-actions { gap:20px; }
   .public-home-actions :is(a) { font-size:14px; }
   .public-home-painting { height:300px; padding:24px 18px 0; }
-  .public-home-painting,.public-feature-art { background-image:url("/images/marketing/axiom-painted-basin-compact-v1.webp"); }
+  .public-home-painting,.public-feature-art {
+    background-image: url("/images/marketing/axiom-painted-basin-compact-v1.webp");
+    background-image: image-set(
+      url("/images/marketing/axiom-painted-basin-compact-v1.avif") type("image/avif"),
+      url("/images/marketing/axiom-painted-basin-compact-v1.webp") type("image/webp")
+    );
+  }
   .public-home-painting .desktop-demo-frame { min-height:0; }
   .public-home-workspace { grid-template-columns:minmax(0,1fr); min-height:260px; }
   .public-home-editor pre { padding:20px 12px; font-size:10px; }

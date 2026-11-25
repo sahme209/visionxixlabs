@@ -18,8 +18,6 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
   const endpoint = `/api/auth/${provider}-link`;
   const restart = `Start ${providerName} sign-in again. If you came from the desktop app, restart pairing there.`;
   function messageFor(code: string): string {
-    if (code === "restart") return `This request expired or changed. ${restart}`;
-    if (code === `restart_${provider}_signin`) return restart;
     return Object.hasOwn(messages, code) ? messages[code] : messages.google_link_unavailable;
   }
   const [email, setEmail] = useState("");
@@ -27,25 +25,28 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
   const [mode, setMode] = useState<"password" | "code" | null>(null);
   const [proof, setProof] = useState("");
   const [message, setMessage] = useState("");
+  const [restartRequired, setRestartRequired] = useState(false);
   const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const proofInput = useRef<HTMLInputElement>(null);
   const methodButton = useRef<HTMLButtonElement>(null);
+  const restartLink = useRef<HTMLAnchorElement>(null);
   const continueButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (busy) return;
     if (callbackUrl) continueButton.current?.focus();
+    else if (restartRequired) restartLink.current?.focus();
     else if (mode) proofInput.current?.focus();
     else methodButton.current?.focus();
-  }, [mode, busy, callbackUrl]);
+  }, [mode, busy, callbackUrl, restartRequired]);
   useEffect(() => {
     let active = true;
     fetch(endpoint, { cache: "no-store" }).then(async res => {
       const data = await res.json();
       if (!active) return;
       if (res.ok && typeof data.csrf === "string" && typeof data.email === "string") { setCsrf(data.csrf); setEmail(data.email); }
-      else if (data.error === `restart_${provider}_signin`) setMessage(restart);
+      else if (data.error === `restart_${provider}_signin`) { setRestartRequired(true); setMessage(restart); }
       else setMessage(messages.google_link_unavailable);
     }).catch(() => { if (active) setMessage(messages.google_link_unavailable); });
     return () => { active = false; };
@@ -59,7 +60,13 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
       const data = await response.json();
       setProof("");
       if (data.result === "linked" && response.ok && typeof data.callbackUrl === "string") { setCallbackUrl(data.callbackUrl); setCsrf(""); setMessage(`${providerName} is linked. Continue to finish signing in.`); }
-      else { setMessage(messageFor(data.result ?? data.error)); proofInput.current?.focus(); }
+      else if (data.result === "restart" || data.error === `restart_${provider}_signin`) {
+        setCsrf("");
+        setEmail("");
+        setMode(null);
+        setRestartRequired(true);
+        setMessage(`This request expired or changed. ${restart}`);
+      } else setMessage(messageFor(data.result ?? data.error));
     } catch { setMessage(messages.google_link_unavailable); }
     finally { inFlight.current = false; setBusy(false); }
   }
@@ -69,6 +76,7 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
       <h1 className="mb-[30px] text-center text-[20px] font-medium leading-6 tracking-[-0.02em]">{`Finish ${providerName} sign-in`}</h1>
       <p className="mb-5 text-xs leading-5 text-zinc-400">Confirm account ownership before {email ? <>the {providerName} account <strong className="break-words font-normal text-zinc-200">{email}</strong> is linked to V19.</> : `${providerName} is linked to V19.`}</p>
       {message && <p role="status" className="mb-5 text-xs leading-5">{message}</p>}
+      {restartRequired && <Link href="/auth/signin" ref={restartLink} className={control}>Back to sign-in</Link>}
       {callbackUrl ? <button type="button" disabled={busy} ref={continueButton} className={control.replace("bg-[#202020]", "bg-white").replace("text-zinc-100", "text-zinc-950")} onClick={() => { if (inFlight.current) return; inFlight.current = true; setBusy(true); void signIn(provider, { callbackUrl }).catch(() => { setMessage(messages.google_link_unavailable); setBusy(false); inFlight.current = false; }); }}>Continue with {providerName}</button> : csrf && <>
         {!mode ? <div className="space-y-2.5">
           <button type="button" disabled={busy} ref={methodButton} className={control} onClick={() => { setProof(""); setMode("password"); }}>Use existing password</button>
@@ -84,7 +92,7 @@ export default function GoogleLinkClient({ provider = "google" }: { provider?: "
         <summary className="mx-auto min-h-[30px] w-fit cursor-pointer content-center rounded-sm px-2 focus-visible:outline-2 focus-visible:outline-zinc-300">Need help?</summary>
         <p className="mt-2 leading-5">Use the password for an existing verified account, or a fresh code sent to its mailbox. Desktop pairing still requires your separate approval.</p>
         {provider === "gitlab" && <p className="mt-2 leading-5">GitLab must share a verified email address. You can also return to V19 and choose another sign-in method. Repository access is managed separately.</p>}
-        <p className="mt-2"><Link href="/auth/signin" className="underline underline-offset-4">Back to sign-in</Link> · <Link href="/contact" className="underline underline-offset-4">Contact support</Link></p>
+        <p className="mt-2">{!restartRequired && <><Link href="/auth/signin" className="underline underline-offset-4">Back to sign-in</Link> · </>}<Link href="/contact" className="underline underline-offset-4">Contact support</Link></p>
       </details>
     </section>
   </main>;

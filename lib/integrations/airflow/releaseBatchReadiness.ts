@@ -18,7 +18,7 @@ interface ExactReleaseRead {
 }
 
 async function readExactRelease<T>(repo: ReleaseBatchReadinessRepo, input: ExactReleaseRead, read: (client: AirflowClient, selected: ReleaseAirflowDependency) => Promise<T>): Promise<
-  { ok: true; data: T } | { ok: false; reason: "unavailable" | "changed" }
+  { ok: true; data: T } | { ok: false; reason: "unavailable" | "changed"; closed?: true }
 > {
   const signal = input.signal;
   try {
@@ -29,6 +29,7 @@ async function readExactRelease<T>(repo: ReleaseBatchReadinessRepo, input: Exact
       return { ok: false, reason: "unavailable" };
     }
     if (row.version !== input.expectedVersion) return { ok: false, reason: "changed" };
+    if (row.status === "closed") return { ok: false, reason: "unavailable", closed: true };
     if (row.status !== "submitted") return { ok: false, reason: "unavailable" };
     const intake = row.intakeJson;
     if (!intake || typeof intake !== "object" || Array.isArray(intake)) return { ok: false, reason: "unavailable" };
@@ -43,8 +44,10 @@ async function readExactRelease<T>(repo: ReleaseBatchReadinessRepo, input: Exact
       repo.tauriDeploymentRequest.findFirst({ where }),
       repo.tenantIntegrationConnection.findFirst({ where: { id: selected.connectionId, organizationId: input.organizationId, provider: "airflow", status: "active", updatedAt: loaded.connectionUpdatedAt }, select: { id: true } }),
     ]);
-    if (signal?.aborted || !connection || !current || current.id !== input.requestId || current.organizationId !== input.organizationId
-      || current.version !== input.expectedVersion || current.status !== status || sha256ContentHash(current.intakeJson) !== hash) return { ok: false, reason: "changed" };
+    if (signal?.aborted || !current || current.id !== input.requestId || current.organizationId !== input.organizationId
+      || current.version !== input.expectedVersion) return { ok: false, reason: "changed" };
+    if (current.status === "closed") return { ok: false, reason: "changed", closed: true };
+    if (!connection || current.status !== status || sha256ContentHash(current.intakeJson) !== hash) return { ok: false, reason: "changed" };
     return { ok: true, data };
   } catch { return { ok: false, reason: "unavailable" }; }
 }
@@ -66,7 +69,12 @@ export async function readReleaseBatchReadiness(repo: ReleaseBatchReadinessRepo,
   const result = await readExactRelease(repo, input, async (client, selected) => input.includeRuns
     ? observeExactReleaseRunStates(client, selected.runs, input.signal, input.includeTiming)
     : { outcome: await observeExactReleaseDependencies(client, selected.runs, input.signal), runs: undefined });
-  if (!result.ok) return { ready: false, reason: result.reason };
+  if (!result.ok) {
+    if (result.closed && input.includeRuns) {
+      return { ready: false, reason: "changed", closedRelease: {requestId: input.requestId, version: input.expectedVersion} };
+    }
+    return { ready: false, reason: result.reason };
+  }
   const observation = result.data;
   const aggregate = observation.outcome === "ready"
     ? { ready: true as const, requestVersion: input.expectedVersion }
@@ -78,10 +86,14 @@ export async function readReleaseBatchTasks(repo: ReleaseBatchReadinessRepo, inp
   const result = await readExactRelease(repo, input, async (client, selected) => {
     const run = selected.runs.find(({dagId, dagRunId}) => dagId === input.dagId && dagRunId === input.dagRunId);
     if (!run) return undefined;
-    const observed = await observeExactReleaseRunStates(client, [run], input.signal);
-    if (!observed.runs || input.signal?.aborted) return undefined;
+    const before = (await observeExactReleaseRunStates(client, [run], input.signal, true)).runs?.[0];
+    if (!before || input.signal?.aborted) return undefined;
     const page = await client.listTaskInstances(run.dagId, run.dagRunId, input.offset, input.signal);
-    if (!(await observeExactReleaseRunStates(client, [run], input.signal)).runs) return undefined;
+    const after = (await observeExactReleaseRunStates(client, [run], input.signal, true)).runs?.[0];
+    // A provider transition can leave this page describing a previous attempt of the same run.
+    if (!after || after.state !== before.state ||
+      after.timing?.startedAt !== before.timing?.startedAt ||
+      after.timing?.endedAt !== before.timing?.endedAt) return undefined;
     return { requestId: input.requestId, version: input.expectedVersion, dagId: run.dagId, dagRunId: run.dagRunId, ...page };
   });
   return result.ok ? result.data : undefined;

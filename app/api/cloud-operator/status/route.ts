@@ -247,9 +247,10 @@ export async function GET(req: NextRequest) {
       response.policyPackPreview = "IAM, network segmentation, logging, incident response templates available in Enterprise.";
     }
 
-    // Environment summary (from aws:infra-discovery + PLAN_STRONG)
+    // Older summaries could include another lead's same-owner scan results.
+    const scopedEnvironment = payload.environmentEvidenceLeadId === lead.id;
     const environmentSummary = payload.environmentSummary as string | undefined;
-    if (environmentSummary && typeof environmentSummary === "string") {
+    if (scopedEnvironment && environmentSummary && typeof environmentSummary === "string") {
       response.environmentSummary = environmentSummary;
     }
 
@@ -257,7 +258,7 @@ export async function GET(req: NextRequest) {
     const architectureGraph = payload.architectureGraph as
       | { nodes: Array<{ id: string; type: string }>; edges: Array<{ from: string; to: string }>; region?: string }
       | undefined;
-    if (architectureGraph && Array.isArray(architectureGraph.nodes) && Array.isArray(architectureGraph.edges)) {
+    if (scopedEnvironment && architectureGraph && Array.isArray(architectureGraph.nodes) && Array.isArray(architectureGraph.edges)) {
       response.architectureGraph = architectureGraph;
     }
 

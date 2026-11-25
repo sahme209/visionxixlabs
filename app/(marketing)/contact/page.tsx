@@ -13,12 +13,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ topic?: string; question?: string }> }) {
-  const { topic, question } = await searchParams;
-  // Ask Axiom hand-off: a bounded, plain-text question the visitor still reviews and sends themselves.
-  const prefill = topic === "ask-axiom" && typeof question === "string" ? question.replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, 500) : undefined;
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
+  const { topic } = await searchParams;
   const intent = topic === "axiom-production-access" ? "production-access"
     : topic === "security" ? "security"
-    : prefill ? "ask-axiom" : undefined;
-  return <ContactClient intent={intent} prefill={prefill} />;
+    : topic === "ask-axiom" ? "ask-axiom" : undefined;
+  return <ContactClient intent={intent} />;
 }

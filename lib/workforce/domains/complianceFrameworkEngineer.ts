@@ -226,6 +226,7 @@ function parseAi(text: string): ParsedAi | null {
 export async function runComplianceFrameworkEngineer(
   organizationId: string,
   raw: ComplianceFrameworkInput,
+  actorUserId?: string,
 ): Promise<ComplianceFrameworkAssessment> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const cloudPosture = raw.cloudPosture.trim().slice(0, MAX_BODY);
@@ -260,6 +261,7 @@ export async function runComplianceFrameworkEngineer(
     const fetcher = makeInstrumentedFetcher({
       engineName: `engineer_domain:compliance_framework_engineer:${raw.framework}`,
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 4000,
     });

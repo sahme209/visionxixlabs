@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
+import { adminGenerationRevision } from "@/lib/async/adminGenerationIntent";
 import { prisma } from "@/lib/db";
 
 /**
@@ -48,6 +49,7 @@ export async function GET(req: NextRequest) {
           fullPayload: l.fullPayload,
           createdAt: l.createdAt,
           updatedAt: l.updatedAt,
+          generationRevision: adminGenerationRevision(l),
           ...(l.source === "contact" && {
             agentStatus: (payload.agentStatus as string) ?? resolution?.status ?? job?.status ?? "pending",
             actionsTaken: resolution?.actionsTaken ?? [],

@@ -1,17 +1,15 @@
+import { websitePreviewUnavailable } from "@/lib/deploy/websitePreviewUnavailable";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { generateWebsiteStarterWithChanges } from "@/lib/websiteStarter/engine";
-import { websiteDeploymentUpdate } from "@/lib/deploy/websiteDeploymentState";
-import { deployPreview } from "@/lib/previewDeploy";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 import { WEBSITE_BUILD_TIERS, resolveTier } from "@/lib/websiteBuildPricing";
 
 /**
  * POST /api/leads/[id]/preview/update?token=XXX
  * Body: { changeRequest: string }
- * Regenerates AI content based on change request, redeploys preview.
+ * Validate the signed revision request before reporting dispatch availability.
  */
 export async function POST(
   req: NextRequest,
@@ -40,24 +38,22 @@ export async function POST(
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  let body: { changeRequest?: string };
+  let body: { changeRequest?: string } | null;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const changeRequest = String(body.changeRequest || "").trim().slice(0, 2000);
+  const changeRequest = String(body?.changeRequest || "").trim().slice(0, 2000);
   if (!changeRequest) {
     return NextResponse.json({ error: "Change request is required" }, { status: 400 });
   }
 
-  let previousStatus: string | undefined;
   try {
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
 
-    previousStatus = lead.status;
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     const pkg = payload.aiPackage as AIStarterPackage | undefined;
 
@@ -80,40 +76,9 @@ export async function POST(
       );
     }
 
-    await prisma.lead.update({
-      where: { id },
-      data: { status: "deploy_generating" },
-    });
-
-    const formData = {
-      name: form.name as string,
-      email: (form.email as string) || lead.email,
-      company: form.company as string,
-      message: form.message as string,
-      industry: form.industry as string,
-      hasDomain: form.hasDomain as boolean,
-      domainName: form.domainName as string,
-    };
-    const updatedPkg = await generateWebsiteStarterWithChanges(pkg, formData, changeRequest);
-
-    const projectName = `preview-${id.slice(-8)}`;
-    const deployResult = await deployPreview(updatedPkg, projectName);
-
-    const update = websiteDeploymentUpdate({ result: deployResult, payload, previousStatus: lead.status, kind: "preview" });
-    const updatedPayload = {
-      ...update.payload,
-      ...(update.ready ? { aiPackage: updatedPkg } : { pendingAiPackage: updatedPkg, pendingAiPackageDeploymentId: deployResult.deploymentId }),
-      revisionCount: revisionCount + 1,
-      lastChangeRequest: changeRequest,
-    };
-    await prisma.lead.update({ where: { id }, data: { status: update.status, fullPayload: updatedPayload } });
-    return NextResponse.json({ success: true, status: update.status, deploymentPending: !update.ready, previewUrl: update.payload.previewUrl ?? null, deployStatus: update.payload.deployStatus,
-      revisionsRemaining: tierConfig.revisions > 0 ? tierConfig.revisions - revisionCount - 1 : null });
+    return websitePreviewUnavailable();
   } catch (e) {
     console.error("[preview update]", e);
-    if (previousStatus) await prisma.lead
-      .update({ where: { id }, data: { status: previousStatus } })
-      .catch(() => {});
     return NextResponse.json(
       { error: "Failed to update preview" },
       { status: 500 }

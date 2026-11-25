@@ -45,3 +45,56 @@ it.each(['incomplete-date','duplicate'])('refuses %s run observations instead of
  fireEvent.change(screen.getByLabelText('Batch DAG'),{target:{value:'daily'}});fireEvent.click(screen.getByText('Find batch runs'));
  await screen.findByText('Batch runs could not be verified.');expect(screen.queryByLabelText('Exact batch run')).toBeNull();
 });
+
+it.each(["connection", "runs"] as const)("clears earlier observations during an unconfirmed %s refresh", async kind => {
+  render(createElement(Harness));
+  fireEvent.click(screen.getByText("Read Airflow connection"));
+  await screen.findByText("Airflow connection verified");
+  fireEvent.change(screen.getByLabelText("Batch DAG"), {target: {value: "daily"}});
+  fireEvent.click(screen.getByText("Find batch runs"));
+  fireEvent.change(await screen.findByLabelText("Exact batch run"), {target: {value: "specific-run"}});
+  const read = kind === "connection" ? io.connection : io.runs;
+  let fail!: (reason: Error) => void;
+  read.mockReturnValueOnce(new Promise((_, reject) => { fail = reject; }));
+  fireEvent.click(screen.getByText(kind === "connection" ? "Read Airflow connection" : "Find batch runs"));
+  expect(screen.queryByLabelText("Exact batch run")).toBeNull();
+  await act(async () => fail(new Error("Lost response")));
+  await screen.findByText("Batch observations could not be read.");
+  expect(screen.queryByLabelText("Exact batch run")).toBeNull();
+  if (kind === "connection") {
+    expect(screen.queryByText("Airflow connection verified")).toBeNull();
+    expect((screen.getByText("Find batch runs") as HTMLButtonElement).disabled).toBe(true);
+  }
+  expect(screen.getByLabelText("selection").textContent).toBe("null");
+});
+
+it("discards the run chooser when the DAG is edited and does not reuse it when the text is restored", async () => {
+  render(createElement(Harness));
+  fireEvent.click(screen.getByText("Read Airflow connection"));
+  await screen.findByText("Airflow connection verified");
+  const dag = screen.getByLabelText("Batch DAG");
+  fireEvent.change(dag, {target: {value: "daily"}});
+  fireEvent.click(screen.getByText("Find batch runs"));
+  await screen.findByLabelText("Exact batch run");
+  fireEvent.change(dag, {target: {value: "other"}});
+  fireEvent.change(dag, {target: {value: "daily"}});
+  expect(screen.queryByLabelText("Exact batch run")).toBeNull();
+  expect(io.runs).toHaveBeenCalledExactlyOnceWith("daily");
+});
+
+it.each(["config", "revision"] as const)("refuses retained batch controls before the new %s renders", async boundary => {
+  render(createElement(Harness));
+  fireEvent.click(screen.getByText("Read Airflow connection"));
+  await screen.findByText("Airflow connection verified");
+  fireEvent.change(screen.getByLabelText("Batch DAG"), {target: {value: "daily"}});
+  fireEvent.click(screen.getByText("Find batch runs"));
+  fireEvent.change(await screen.findByLabelText("Exact batch run"), {target: {value: "specific-run"}});
+  const use = screen.getByText("Use selected batch");
+  const find = screen.getByText("Find batch runs");
+  if (boundary === "config") io.config = {changed: true};
+  else io.revision++;
+  fireEvent.click(use);
+  fireEvent.click(find);
+  expect(screen.getByLabelText("selection").textContent).toBe("null");
+  expect(io.runs).toHaveBeenCalledExactlyOnceWith("daily");
+});

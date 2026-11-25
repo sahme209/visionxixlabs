@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   let entryCount = 0;
   let totalFailures = 0;
   try {
-    const report = await runPipelineRepairEngineer(org);
+    const report = await runPipelineRepairEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     entryCount = report.entries.length;
     totalFailures = report.totalFailures;

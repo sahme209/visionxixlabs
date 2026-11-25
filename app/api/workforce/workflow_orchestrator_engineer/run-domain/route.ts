@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       workflowSpec,
       approvalPolicy: parseApprovalPolicy(s(f.get("approvalPolicy"))),
       guardrailRequirements: s(f.get("guardrailRequirements")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistWorkflowPlan(org, plan);
   } catch (err) {
     console.warn("[workflow_orchestrator/run-domain] hard failure:", err instanceof Error ? err.message : err);

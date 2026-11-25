@@ -6,6 +6,7 @@ import { allocatePublicCredits, makePublicCreditAttribution, type PublicCreditHo
 import type { PublicBillingIdentity } from "./publicCheckoutService";
 import type { CurrentAIAllowance } from "./currentAIAllowance";
 import type { AICreditReservationResult } from "./aiCreditReservation";
+import { exceedsWorkspaceAIUsageBudget } from "./workspaceAIUsageBudget";
 
 export async function publicDatabaseNow(tx: PublicSql): Promise<Date> {
   // Return a UTC wall-clock timestamp so the adapter cannot discard a session offset.
@@ -62,6 +63,7 @@ export async function reservePublicCredits(tx:PublicSql,input:{organizationId:st
   const f=await facts(tx,input.organizationId,true);
   let a:ReturnType<typeof allocatePublicCredits>;
   try{a=allocatePublicCredits(state.enrollment,state.window,f.holds,f.purchases,now,input.reservedCents);}catch(error){if(error instanceof Error&&error.message==='ai_credit_pool_exhausted')return {ok:false,error:'ai_credit_pool_exhausted'};throw error;}
+  if (await exceedsWorkspaceAIUsageBudget(tx, input, now)) return {ok:false,error:"ai_workspace_budget_exceeded"};
   const id=randomUUID(),expiresAt=new Date(now.getTime()+300000),attribution=makePublicCreditAttribution(id,state.window,a.parts,now);
   await tx.$executeRawUnsafe(`INSERT INTO "AIUsageReservation" (id,"organizationId","idempotencyKey","reservedCents",status,"expiresAt","createdAt","updatedAt","correlationId") VALUES ($1,$2,$3,$4,'reserved',$5::timestamptz AT TIME ZONE 'UTC',$6::timestamptz AT TIME ZONE 'UTC',$6::timestamptz AT TIME ZONE 'UTC',$7)`,id,input.organizationId,input.idempotencyKey,input.reservedCents,expiresAt.toISOString(),now.toISOString(),input.correlationId??null);
   await tx.$executeRawUnsafe('INSERT INTO "PublicCreditAttribution" ("reservationId","organizationId",body) VALUES ($1,$2,$3::jsonb)',id,input.organizationId,JSON.stringify(attribution));
