@@ -11,7 +11,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const PIPELINE_REPAIR_TARGET_KIND = "engineer_pipeline_repair_playbook";
 
@@ -218,7 +218,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runPipelineRepairEngineer(organizationId: string): Promise<PipelineRepairReport> {
+export async function runPipelineRepairEngineer(organizationId: string, actorUserId?: string): Promise<PipelineRepairReport> {
   const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   let failureRows: Array<{
@@ -290,6 +290,7 @@ export async function runPipelineRepairEngineer(organizationId: string): Promise
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:pipeline_repair_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2000,
     });
@@ -307,7 +308,7 @@ export async function runPipelineRepairEngineer(organizationId: string): Promise
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const entries: RepairEntry[] = candidates.map((c) => {

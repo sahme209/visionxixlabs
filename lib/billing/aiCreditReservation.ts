@@ -12,6 +12,7 @@ import { smallSonnetReservation, type SmallSonnetRequest } from "./smallSonnetRe
 import type { Prisma, TenantBillingPlan } from "@/lib/prismaClient";
 
 import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
+import { exceedsWorkspaceAIUsageBudget } from "./workspaceAIUsageBudget";
 import type { PricingPlan } from "./planRegistry";
 import { planForStripeTier } from "./planRegistry";
 
@@ -31,7 +32,7 @@ type ReservationRow = {
 
 export type AICreditReservationResult =
   | { ok: true; reservation: ReservationRow; reused: boolean; smallRequestApplied?: true; small55RequestApplied?: true; allocationPolicy?: "axiom_test_anniversary_v2" | "axiom_public_anniversary_v1" }
-  | { ok: false; error: "ai_credit_pool_exhausted" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
+  | { ok: false; error: "ai_credit_pool_exhausted" | "ai_workspace_budget_exceeded" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
 
 /**
  * Transactional hold for a bounded AI request. The caller must settle or
@@ -153,6 +154,9 @@ export async function reserveAICreditsInTransaction(
       // substitute for prepaid balance.
       if (pool - used - held < input.reservedCents) {
         return { ok: false as const, error: "ai_credit_pool_exhausted" as const };
+      }
+      if (!isolatedPlan && await exceedsWorkspaceAIUsageBudget(tx, input, decisionNow)) {
+        return { ok: false, error: "ai_workspace_budget_exceeded" };
       }
       const reservation = guard ? (await fenceNewTestAdmission(tx, isolatedPlan!, input, true))! : await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });
       return { ok: true as const, reservation, reused: false };

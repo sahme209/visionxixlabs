@@ -15,7 +15,7 @@ it('retains same-owner drafts and refuses Send until AI capability and models ar
  fireEvent.change(screen.getByLabelText('Bot task title'),{target:{value:'Unsent readiness check'}});
  view.rerender(createElement(AgentChatView,{identity:who,active:false}));expect(screen.queryByRole('textbox',{name:'Bot task title'})).toBeNull();
  view.rerender(createElement(AgentChatView,{identity:who}));expect((screen.getByLabelText('Bot task title') as HTMLInputElement).value).toBe('Unsent readiness check');
- expect(screen.getByRole('complementary',{name:'Saved task details'})).toBeTruthy();expect(screen.getByRole('button',{name:'Send'})).toHaveProperty('disabled',true);expect(screen.queryByRole('button',{name:/run|connect|control/i})).toBeNull();expect(screen.queryByRole('combobox',{name:'Bot model'})).toBeNull();expect(new Set(m.methods.keys())).toEqual(new Set(['botAiCapabilities','listSavedBotTasks']));expect(m.methods.get('listSavedBotTasks')).toHaveBeenCalledTimes(1);
+ expect(screen.getByRole('region',{name:'Saved task details'})).toBeTruthy();expect(screen.getByRole('button',{name:'Send'})).toHaveProperty('disabled',true);expect(screen.queryByRole('button',{name:/run|connect|control/i})).toBeNull();expect(screen.queryByRole('combobox',{name:'Bot model'})).toBeNull();expect(new Set(m.methods.keys())).toEqual(new Set(['botAiCapabilities','listSavedBotTasks']));expect(m.methods.get('listSavedBotTasks')).toHaveBeenCalledTimes(1);
 });
 it.each(['config','context','identity'] as const)('withholds old text synchronously after %s replacement',async change=>{
  let who=identity();const view=render(createElement(AgentChatView,{identity:who}));fireEvent.change(screen.getByLabelText('Bot task title'),{target:{value:'PRIVATE OLD DRAFT'}});

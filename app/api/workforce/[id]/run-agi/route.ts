@@ -43,7 +43,7 @@ export async function POST(
 
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   try {
-    const result = await runEngineerAgi(engineer, org);
+    const result = await runEngineerAgi(engineer, org, String(ctx.userId));
     outcome = result.outcome;
     await persistEngineerAgiResult(engineer, org, result);
   } catch (err) {

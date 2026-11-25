@@ -1489,6 +1489,7 @@ it("uses a recorded response timestamp and omits an invalid one", async () => {
   const content = await screen.findByText("Dated response");
   const time = content.closest('[role="group"]')?.querySelector("time");
   expect(time?.getAttribute("datetime")).toBe(recorded);
-  expect(time?.getAttribute("aria-label")).toBe(new Date(recorded).toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"}));
+  expect(time?.textContent).toBe(new Date(recorded).toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"}));
+  expect(time?.hasAttribute("aria-label")).toBe(false);
   expect(screen.getByText("Undated response").closest('[role="group"]')?.querySelector("time")).toBeNull();
 });

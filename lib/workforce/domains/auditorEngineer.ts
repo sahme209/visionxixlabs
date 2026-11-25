@@ -12,7 +12,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const AUDITOR_ENGINEER_TARGET_KIND = "engineer_auditor_observations";
 
@@ -111,7 +111,7 @@ function parseAiResponse(text: string): ParsedAiOutput | null {
   }
 }
 
-export async function runAuditorEngineer(organizationId: string): Promise<AuditorEngineerReport> {
+export async function runAuditorEngineer(organizationId: string, actorUserId?: string): Promise<AuditorEngineerReport> {
   const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   let totalEvents = 0;
@@ -208,6 +208,7 @@ export async function runAuditorEngineer(organizationId: string): Promise<Audito
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:auditor_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt({ totalEvents, outcomeCounts, candidates })}`;
@@ -224,7 +225,7 @@ export async function runAuditorEngineer(organizationId: string): Promise<Audito
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const observations: AuditorObservation[] = candidates.map((c) => ({

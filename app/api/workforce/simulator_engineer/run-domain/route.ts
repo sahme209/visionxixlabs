@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       currentState,
       knownConstraints: s(f.get("knownConstraints")) || undefined,
       blastRadius: s(f.get("blastRadius")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistSimulatorReport(org, report);
   } catch (err) {
     console.warn("[simulator/run-domain] hard failure:", err instanceof Error ? err.message : err);

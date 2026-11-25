@@ -1,3 +1,4 @@
+import { useDesktopUsage, type DesktopUsageRead } from "../lib/useDesktopUsage";
 import { DESKTOP_PRODUCT_NAME } from "../lib/desktopMetadata";
 import {GovernanceWorkspacePreview} from './GovernanceWorkspacePreview';
 import {OutlookIntegrationCard} from '../components/OutlookIntegrationCard';
@@ -5,7 +6,7 @@ import {ProviderLogo,ProviderLogoGroup,type CatalogProvider} from "../components
 import { browserNavigationIntentPath, parseBrowserNavigationIntent } from "../../../lib/desktop/browserNavigationIntent";
 import { Disclosure } from "../components/Disclosure";
 import { isVerifiedIntegrationStatus } from "../lib/integrationStatusPresentation";
-import {parseDesktopUsageSummary,type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
+import {type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import {AzureGuidedConnection} from "../components/AzureGuidedConnection";
@@ -111,7 +112,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", group: "Development & connections", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection, onClose, onOpenRepository, onSignOut }: { onSignOut?: () => Promise<void>; identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
+export function SettingsView({ identity, initialSection, onClose, onOpenRepository, onSignOut, desktopUsage, usageRequest }: { onSignOut?: () => Promise<void>; identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; desktopUsage?: DesktopUsageRead; usageRequest?: number; onOpenRepository?: () => void; onClose?: () => void }) {
   const [governancePreview, setGovernancePreview] = useState<"records" | "limits">();
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
@@ -128,6 +129,10 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
       }
     }
   }, [active]);
+
+  useEffect(() => {
+    if (initialSection) openSection(initialSection);
+  }, [initialSection, usageRequest]);
 
   function openSection(section: Section) {
     setSearch("");
@@ -269,7 +274,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
           {active === "general" && <GeneralSection identity={identity} onOpenSection={openSection} {...preferenceControls} preferenceReadFailed={preferenceReadFailed} onOpenGovernance={() => setGovernancePreview("records")} onOpenExecutionLimits={() => setGovernancePreview("limits")} />}
           {active === "profile" && <ProfileSection identity={identity} {...preferenceControls} onRequestSignOut={() => setShowSignOut(true)} />}
           {active === "appearance" && <AppearanceSection {...preferenceControls} />}
-          {active === "plan" && <PlanSection identity={identity} />}
+          {active === "plan" && (desktopUsage ? <PlanSection identity={identity} read={desktopUsage} /> : <StandalonePlanSection identity={identity} />)}
           {active === "agents" && <AgentsSection {...preferenceControls} />}
           {active === "models" && <ModelsSection />}
           {active === "permissions" && <PermissionsSection identity={identity} />}
@@ -344,11 +349,21 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
           access.members === null ? "Unavailable" : owners.length ? owners.join(", ") : "No accepted owner recorded"}</dd>
       </div>}
     </dl>
-    <section className="studio-settings-overview-links" aria-label="Workspace configuration">
-      <ActionRow title="Environments" detail="Review configured deployment targets." action={<button data-help-id="settings.workspace.overview-environments" type="button" className="btn-secondary" onClick={() => onOpenSection("environments")}>Review environments</button>} />
-      <ActionRow title="Models & AI" detail="Review the workspace's model policy." action={<button data-help-id="settings.workspace.overview-models" type="button" className="btn-secondary" onClick={() => onOpenSection("models")}>Review models</button>} />
-      <ActionRow title="Security" detail="Review workspace identity settings." action={<button data-help-id="settings.workspace.overview-identity" type="button" className="btn-secondary" onClick={() => onOpenSection("identity")}>Review identity</button>} />
-    </section>
+    <div className="studio-settings-configuration">
+      {([
+        {id: "environments", title: "Environments", description: "Review configured deployment targets.", action: "Review environments"},
+        {id: "models", title: "Models & AI", description: "Review the workspace's model policy.", action: "Review models"},
+        {id: "identity", title: "Security", description: "Review workspace identity settings.", action: "Review identity"},
+      ] as const).map(({id, title, description, action}) => (
+        <section key={id} aria-labelledby={`settings-overview-${id}`}>
+          <h2 id={`settings-overview-${id}`}>{title}</h2>
+          <div>
+            <p>{description}</p>
+            <button data-help-id={`settings.workspace.overview-${id}`} type="button" className="btn-secondary" onClick={() => onOpenSection(id)}>{action}</button>
+          </div>
+        </section>
+      ))}
+    </div>
     <section className="studio-settings-overview-links" aria-label="Account">
       <h2>Account</h2>
       <ActionRow title={identity.displayName?.trim() || "Account profile"} detail="Review the verified identity for this session." action={<button type="button" className="btn-secondary" onClick={() => onOpenSection("profile")}>Review profile</button>} />
@@ -648,28 +663,16 @@ function AppearanceSection({ prefs, onSave, preferencesLocked }: PreferenceSecti
   </div>;
 }
 
-function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const context=desktopClient.config;
-  const [attempt,setAttempt]=useState(0);
-  const [read,setRead]=useState<{context:typeof context;organizationId:string;data:DesktopUsageSummary|null;error:string|null}|null>(null);
-  const current=read&&read.context===context&&read.organizationId===identity.organizationId?read:null;
-  const usage=current?.data??null;
-  const snapshot=usage?.billingSnapshot;
-  const legacy=Boolean(usage&&!snapshot);
-  useEffect(()=>{
-    let alive=true;
-    const organizationId=identity.organizationId;
-    setRead({context,organizationId,data:null,error:null});
-    void desktopClient.usageSummary().then(result=>{
-      if(!alive||context!==desktopClient.config)return;
-      const data=result.ok?parseDesktopUsageSummary(result.data):null;
-      setRead({context,organizationId,data,error:data?null:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});
-    }).catch(()=>{if(alive&&context===desktopClient.config)setRead({context,organizationId,data:null,error:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});});
-    const refresh=()=>setAttempt(value=>value+1);
-    window.addEventListener("focus",refresh);
-    const unsubscribe=desktopClient.subscribeContext?.(refresh);
-    return()=>{alive=false;window.removeEventListener("focus",refresh);unsubscribe?.();};
-  },[context,identity.organizationId,attempt]);
+function StandalonePlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  const read = useDesktopUsage(identity.organizationId, desktopClient.config, revision);
+  return <PlanSection identity={identity} read={read} />;
+}
+
+function PlanSection({ identity, read }: { identity: VerifiedDesktopIdentity; read: DesktopUsageRead }) {
+  const { usage, verifiedAt, error: usageError, loading, refresh } = read;
+  const snapshot = usage?.billingSnapshot;
+  const legacy = Boolean(usage && !snapshot);
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const access = identity.access;
@@ -694,7 +697,8 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     : access.planTier;
   return <div>
     <SectionHeading title="Access & usage" detail="Current plan and AI allowance come from the same billing service as the web cockpit." />
-    <div className="mb-4 flex items-center justify-between gap-4 text-xs text-zinc-500"><span>Changes made in the cockpit refresh when this window regains focus.</span><button data-help-id="settings.workspace.usage-refresh" type="button" disabled={!current||(!usage&&!current.error)} onClick={()=>setAttempt(value=>value+1)} className="shrink-0 text-zinc-200 underline disabled:opacity-40">Refresh plan and usage</button></div>
+    <div className="mb-4 flex items-center justify-between gap-4 text-xs text-zinc-500"><span>Changes made in the cockpit refresh when this window regains focus.</span><button data-help-id="settings.workspace.usage-refresh" type="button" disabled={loading} onClick={refresh} className="shrink-0 text-zinc-200 underline disabled:opacity-40">Refresh plan and usage</button></div>
+    {verifiedAt !== undefined && <p className="mb-4 text-xs text-zinc-400">Last checked <time dateTime={new Date(verifiedAt).toISOString()}>{new Date(verifiedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</time></p>}
     <div className="grid gap-4 sm:grid-cols-2">
       {snapshot ? <>
         <SummaryCard label="Workspace plan" value={snapshot.plan.available?snapshot.plan.label:"Unavailable"} detail={snapshot.plan.available?snapshot.plan.status.replaceAll("_"," "):"Current subscription state could not be verified"}/>
@@ -703,7 +707,7 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         <SummaryCard label="Access model" value={accessModel} detail={access.title} />
         <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
       </> : <>
-        <SummaryCard label="Workspace plan" value={current?.error?"Unavailable":"Verifying…"} detail="A current subscription is shown only after the billing service responds"/>
+        <SummaryCard label="Workspace plan" value={usageError?"Unavailable":"Verifying…"} detail="A current subscription is shown only after the billing service responds"/>
         <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
       </>}
     </div>
@@ -717,7 +721,7 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         </div>
         {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
       </> : !legacy ? <div>
-        <p className="text-sm text-zinc-200">{current?.error?"Billing verification unavailable":"Verifying current plan and usage…"}</p>
+        <p className="text-sm text-zinc-200">{usageError?"Billing verification unavailable":"Verifying current plan and usage…"}</p>
         <button data-help-id="settings.workspace.billing-cockpit-legacy" type="button" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError("The billing cockpit could not be opened."))} className="mt-3 text-xs text-zinc-200 underline">View billing in cockpit</button>
         {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
       </div> : isNoPlan ? (
@@ -739,12 +743,14 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
       )}
     </div>
     {usage&&!snapshot&&<p role="status" className="mt-4 text-xs leading-5 text-amber-200">This service version does not report the current plan or allowance. Review them in the cockpit; the access label above is not a current subscription receipt.</p>}
-    <UsageSummaryCard usage={usage} error={current?.error??null}/>
+    <UsageSummaryCard usage={usage} error={usageError}/>
   </div>;
 }
 
 function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:string|null}) {
   const allowance=usage?.billingSnapshot?.allowance;
+  const budget = usage?.billingSnapshot?.budget;
+  const limit = budget?.available ? budget.limit : null;
   const money=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
   return (
     <div className="mt-6">
@@ -754,6 +760,15 @@ function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:st
       {allowance&&<div className="mb-4 grid gap-4 sm:grid-cols-2">
         <SummaryCard label="AI allowance remaining" value={allowance.available?money(allowance.includedRemainingCents):"Unavailable"} detail={allowance.available?`${money(allowance.poolCents)} current account allowance · ${money(allowance.heldCents)} held for unresolved requests`:"No zero balance is inferred when the credit service is unavailable"}/>
         <SummaryCard label="Applied paid top-ups" value={allowance.available?money(allowance.addOnCents):"Unavailable"} detail="Only verified paid records increase available credits"/>
+      </div>}
+      {budget && <div className="mb-4">
+        <SummaryCard
+          label="Monthly workspace AI budget"
+          value={limit ? `${money(limit.remainingCents)} remaining` : budget.available ? "No limit set" : "Unavailable"}
+          detail={limit ? `${money(limit.monthlyLimitCents)} monthly limit · Separate from prepaid credits`
+            : budget.available ? "Prepaid credits still limit AI usage." : "The workspace AI budget could not be verified."}
+        />
+        {limit?.warningReached && <p className="studio-billing-warning mt-2 text-xs">Budget warning threshold reached.</p>}
       </div>}
       {usage && (
         <div className="grid gap-4 sm:grid-cols-3">

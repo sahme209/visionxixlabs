@@ -18,6 +18,17 @@ function validData(data:TerraformPlanReadData):boolean{
   });
 }
 
+function matchesSelectedArtifact(plan: TerraformPlanProjection, selected: TerraformPlanMetadata): boolean {
+  if (plan.id !== selected.id || plan.binaryDigest !== selected.binaryDigest ||
+      plan.requestVersion !== selected.requestVersion || plan.environmentId !== selected.environmentId ||
+      plan.evidenceScope !== selected.evidenceScope) return false;
+  if (plan.evidenceScope === "customer_ci_attested" && selected.evidenceScope === "customer_ci_attested") {
+    return plan.profileId === selected.profileId && plan.profileRevision === selected.profileRevision &&
+      plan.runId === selected.runId && plan.runAttempt === selected.runAttempt && plan.historical === selected.historical;
+  }
+  return true;
+}
+
 /** Stored read projection only. This component never creates a plan, approval,
  * credential, handoff or execution. Context revisions invalidate all evidence. */
 export function TerraformPlanReview({ requestId, requestVersion }: { requestId: string; requestVersion: number }) {
@@ -30,11 +41,13 @@ export function TerraformPlanReview({ requestId, requestVersion }: { requestId: 
   const current = state.key === key ? state : { key, loading: false, plans: [] };
   useEffect(() => () => { attempt.current += 1; }, []);
 
-  async function read(artifactId?: string,reset=false) {
+  async function read(selection?: TerraformPlanMetadata | string) {
+    const selected = typeof selection === "string" ? undefined : selection;
+    const artifactId = typeof selection === "string" ? selection : selection?.id;
     const requestKey = key;
     const requestAttempt = ++attempt.current;
     const requestRevision = desktopClient.getContextRevision();
-    setState({ key, loading: true, plans: artifactId&&!reset ? current.plans : [] });
+    setState({ key, loading: true, plans: selected ? current.plans : [] });
     try {
       const result = artifactId ? await desktopClient.getDeploymentTerraformPlan(requestId, artifactId) : await desktopClient.listDeploymentTerraformPlans(requestId);
       if (activeKey.current !== requestKey || attempt.current !== requestAttempt || desktopClient.getContextRevision() !== requestRevision) return;
@@ -43,7 +56,13 @@ export function TerraformPlanReview({ requestId, requestVersion }: { requestId: 
       if (artifactId) {
         const plan = result.data.plans[0];
         if (result.data.plans.length !== 1 || plan?.id !== artifactId || !(plan.inspection === "artifact_bytes_checked" || plan.inspection === "producer_bytes_verified") || !("summary" in plan)) { setState({ key, loading: false, plans: [], error: unavailable }); return; }
-        setState({ key, loading: false, plans: reset?[]:current.plans, detail: plan });
+        const matches = selected ? matchesSelectedArtifact(plan, selected)
+          : plan.evidenceScope === "customer_ci_attested" && plan.requestVersion === requestVersion && !plan.historical;
+        if (!matches) {
+          setState({ key, loading: false, plans: [], error: "The plan evidence no longer matches the selected record. Read saved plan metadata again." });
+          return;
+        }
+        setState({ key, loading: false, plans: selected ? current.plans : [], detail: plan });
       } else setState({ key, loading: false, plans: result.data.plans, truncated: result.data.truncated });
     } catch {
       if (activeKey.current === requestKey && attempt.current === requestAttempt && desktopClient.getContextRevision() === requestRevision) setState({ key, loading: false, plans: [], error: unavailable });
@@ -57,7 +76,7 @@ export function TerraformPlanReview({ requestId, requestVersion }: { requestId: 
     <button type="button" className="btn-secondary mt-3 disabled:opacity-50" disabled={current.loading} onClick={() => void read()}>{current.loading ? "Reading evidence…" : "Read saved plan metadata"}</button>
     {current.error && <p role="alert" className="mt-3 text-rose-300">{current.error}</p>}
     {!current.loading && state.key === key && !current.error && current.plans.length === 0 && <p className="mt-3">No saved plan evidence loaded.</p>}
-    <ul className="mt-3 space-y-2">{current.plans.map(plan => <li key={plan.id}><button type="button" className="btn-secondary disabled:opacity-50" disabled={current.loading} onClick={() => void read(plan.id)}>Inspect {plan.binaryDigest.slice(0, 12)}</button><span className="ml-2">Metadata only · expires {new Date(plan.expiresAt).toLocaleString()}</span></li>)}</ul>
+    <ul className="mt-3 space-y-2">{current.plans.map(plan => <li key={plan.id}><button type="button" className="btn-secondary disabled:opacity-50" disabled={current.loading} onClick={() => void read(plan)}>Inspect {plan.binaryDigest.slice(0, 12)}</button><span className="ml-2">Metadata only · expires {new Date(plan.expiresAt).toLocaleString()}</span></li>)}</ul>
     {current.truncated && <p className="mt-2">Showing the latest 20 artifact records. Earlier records are not covered by this list.</p>}
     {current.detail && <div className="mt-4" role="status">
       {current.detail.evidenceScope==="owned_local_fixture"?<p>Artifact bytes checked · owned local fixture only</p>:<>
@@ -70,6 +89,6 @@ export function TerraformPlanReview({ requestId, requestVersion }: { requestId: 
       <p className="mt-2">{current.detail.summary.counts.create} create · {current.detail.summary.counts.update} update · {current.detail.summary.counts.delete} delete · {current.detail.summary.counts.replace} replace</p>
       <ul>{current.detail.summary.rows.map(row => <li key={row.address} className="mt-1 break-all">{row.kind}: {row.address}</li>)}</ul>
     </div>}
-    <TerraformCustomerPlanProfile key={key} requestId={requestId} requestVersion={requestVersion} onEvidenceInvalidated={()=>{attempt.current+=1;setState({key,loading:false,plans:[]});}} onImported={id=>void read(id,true)}/>
+    <TerraformCustomerPlanProfile key={key} requestId={requestId} requestVersion={requestVersion} onEvidenceInvalidated={()=>{attempt.current+=1;setState({key,loading:false,plans:[]});}} onImported={id=>void read(id)}/>
   </section>;
 }

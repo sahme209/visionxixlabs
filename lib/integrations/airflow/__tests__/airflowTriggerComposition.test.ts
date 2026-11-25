@@ -16,7 +16,8 @@ vi.mock('../automationExecutor',()=>({executeAirflowAutomation:async()=>({ok:fal
 vi.mock('../airflowClient',async(importActual)=>({...await importActual<any>(),validateAirflowBaseUrl:async(v:string)=>v}));
 import {loadAirflowClient} from '../connection';
 import {runAirflowAutomationTick} from '../automationTick';
-import {POST} from '../../../../app/api/desktop/airflow/dags/[dagId]/runs/route';
+import {GET, POST} from '../../../../app/api/desktop/airflow/dags/[dagId]/runs/route';
+import {GET as getTaskPage} from '../../../../app/api/desktop/airflow/dags/[dagId]/runs/[runId]/tasks/route';
 const now=new Date('2026-11-02T10:01:00Z');
 beforeEach(()=>{
  vi.resetAllMocks();f.enrolled=false;f.metadataError=false;f.afterAuth='';f.finalMetadata='';f.sessionExpiry=null;f.calls=[];f.conflict=false;
@@ -47,3 +48,42 @@ it('manual current actor revoked during final metadata await prevents POST',asyn
 it('scheduled rule disabled during final metadata await prevents POST',async()=>{f.finalMetadata='rule';expect(await runAirflowAutomationTick(now)).toMatchObject({errors:1});expect(writes()).toEqual([]);expect(f.advance).not.toHaveBeenCalled()});
 
 it('actual manual route refuses an expired persisted paired session despite simulated resolver success',async()=>{f.sessionExpiry=new Date(Date.now()-1);expect((await manual()).status).toBe(409);expect(writes()).toEqual([]);expect(f.audit).not.toHaveBeenCalled()});
+
+it("withholds a real client run-list reply after the saved Airflow credential rotates", async () => {
+  vi.stubGlobal("fetch", vi.fn(async (url: string, init: RequestInit) => {
+    const path = new URL(url).pathname;
+    f.calls.push({path, method: init.method ?? "GET", body: undefined});
+    if (path === "/auth/token") return Response.json({access_token:"SIMULATED"});
+    f.connection.encryptedCredential = "ROTATED_SIMULATED_CIPHER";
+    return Response.json({dag_runs:[{dag_id:"daily",dag_run_id:"previous-connection",state:"success"}]});
+  }));
+  const response = await GET(new NextRequest("https://fixture.invalid/api/desktop/airflow/dags/daily/runs"), {
+    params: Promise.resolve({dagId:"daily"}),
+  });
+  expect(response.status).toBe(502);
+  expect(await response.json()).toEqual({ok:false,error:"airflow_connection_changed"});
+  expect(f.calls.map(call => call.path)).toEqual(["/auth/token", "/api/v2/dags/daily/dagRuns"]);
+  expect(writes()).toEqual([]);
+  expect(f.decrypt).toHaveBeenCalledOnce();
+  expect(f.audit).not.toHaveBeenCalled();
+});
+
+it("withholds an exact task page when its Airflow connection is revoked during the provider read", async () => {
+  vi.stubGlobal("fetch", vi.fn(async (url: string, init: RequestInit) => {
+    const path = new URL(url).pathname;
+    f.calls.push({path, method: init.method ?? "GET", body: undefined});
+    if (path === "/auth/token") return Response.json({access_token:"SIMULATED"});
+    f.connection.revokedAt = new Date();
+    return Response.json({total_entries:1,task_instances:[
+      {dag_id:"daily",dag_run_id:"saved-run",task_id:"private-task",map_index:-1,try_number:1,state:"success"},
+    ]});
+  }));
+  const response = await getTaskPage(new NextRequest("https://fixture.invalid/api/desktop/airflow/dags/daily/runs/saved-run/tasks"), {
+    params: Promise.resolve({dagId:"daily",runId:"saved-run"}),
+  });
+  expect(response.status).toBe(502);
+  expect(await response.json()).toEqual({ok:false,error:"airflow_tasks_unavailable"});
+  expect(f.calls.map(call => call.path)).toEqual(["/auth/token", "/api/v2/dags/daily/dagRuns/saved-run/taskInstances"]);
+  expect(writes()).toEqual([]);
+  expect(f.audit).not.toHaveBeenCalled();
+});

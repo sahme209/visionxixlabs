@@ -5,6 +5,7 @@ import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 import type { CustomerView } from "../App";
 import { CUSTOMER_NAVIGATION } from "../lib/customerNavigation";
 import { DESKTOP_VERSION } from "../lib/desktopMetadata";
+import type { DesktopUsageRead } from "../lib/useDesktopUsage";
 
 interface NavItem {
   id: CustomerView;
@@ -28,7 +29,9 @@ export const CUSTOMER_NAV_GROUPS: NavGroup[] = CUSTOMER_NAVIGATION.map(group => 
   ...group, items: group.items.map(item => ({ ...item, Icon: customerIcons[item.id] })),
 }));
 
-export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = false, compact = false, identity }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void; onOpenWelcome?: () => void; homeVisible?: boolean; compact?: boolean; identity?: VerifiedDesktopIdentity }) {
+const creditAmount = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = false, compact = false, identity, usage, onOpenUsage }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void; onOpenWelcome?: () => void; homeVisible?: boolean; compact?: boolean; identity?: VerifiedDesktopIdentity; usage?: DesktopUsageRead; onOpenUsage?: (button: HTMLButtonElement) => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(CUSTOMER_NAV_GROUPS.map((group) => [
       group.kind,
@@ -44,6 +47,14 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
   const workspaceDetails = useDismissibleDetails();
   const account = identity?.displayName?.trim() || "Current account";
   const workspaceRole = identity?.role === "owner" ? "Workspace owner" : identity?.role === "admin" ? "Administrator" : "Account settings";
+  const allowance = usage?.usage?.billingSnapshot?.allowance;
+  const available = allowance?.available ? allowance : null;
+  const remainingPercent = available && available.poolCents > 0
+    ? Math.min(100, available.includedRemainingCents / available.poolCents * 100) : null;
+  const low = remainingPercent !== null && remainingPercent <= 10;
+  const usageStatus = available
+    ? `${creditAmount.format(available.includedRemainingCents / 100)} available${low ? " · Low" : ""}`
+    : usage?.loading ? "Checking balance…" : "Balance unavailable";
 
   return (
     <aside className={`${compact ? "w-16 shrink-0" : "w-[212px]"} studio-rail flex flex-col border-r`} data-tauri-drag-region>
@@ -106,6 +117,22 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
       </nav>
       </div>
       <div className={`${compact ? "px-0" : "px-3"} studio-rail-profile py-3 border-t border-white/6`}>
+        {identity && !compact && usage && onOpenUsage && (
+          <button type="button" className="studio-rail-account studio-rail-credits"
+            aria-label={`AI credits, ${usageStatus}. Open Access and usage`}
+            data-low={low || undefined} onClick={event => onOpenUsage(event.currentTarget)}>
+            <Sparkles aria-hidden="true" size={16} />
+            <span>
+              <strong>AI credits</strong>
+              <small>{usageStatus}</small>
+              {remainingPercent !== null && (
+                <span className="studio-rail-credits-track" aria-hidden="true">
+                  <span style={{ width: `${remainingPercent}%` }} />
+                </span>
+              )}
+            </span>
+          </button>
+        )}
         {identity ? (
           <button type="button" className="studio-rail-account" aria-label="Account settings" onClick={() => onNavigate("settings")}>
             <UserRound aria-hidden="true" size={16} />

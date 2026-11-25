@@ -1,3 +1,4 @@
+import {ReadableTime} from "../components/ReadableTime";
 import { ArrowRight, Box, ChevronRight, GitBranch, History, Layers, ListChecks, Sparkles, SquareStack } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -104,7 +105,7 @@ function HomeReleaseAudit({config, active}: {config: typeof desktopClient.config
       return <li key={event.id}>
         <History aria-hidden size={15}/>
         <div><p>{event.summary}</p><small>{event.outcome === "unknown" ? "Outcome unavailable" : `Outcome: ${event.outcome}`}</small></div>
-        <time dateTime={event.createdAtIso} title={fullTimestamp} aria-label={fullTimestamp}>{timestamp}</time>
+        <ReadableTime dateTime={event.createdAtIso} fullText={fullTimestamp} displayText={timestamp}/>
       </li>;
     })}</ul> : <p className="studio-home-audit-caption" role="status">{
       events === undefined ? "Loading release audit events…" :
@@ -201,7 +202,8 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
     contextOpener.current = opener;
     setOpenContext(field);
   }
-  const [recent, setRecent] = useState<{ owner: string; config: typeof desktopClient.config; releases: RecentRelease[] | null; nextActions: RecentRelease[]; counts?: ReleaseCounts; returnActivity?: SavedReleaseLink; newerVersion?: number }>();
+  const [activityFilter, setActivityFilter] = useState<"all" | "draft" | "submitted" | "closed">("all");
+  const [recent, setRecent] = useState<{ owner: string; config: typeof desktopClient.config; releases: RecentRelease[] | null; loadedRows?: RecentRelease[]; nextActions: RecentRelease[]; counts?: ReleaseCounts; returnActivity?: SavedReleaseLink; newerVersion?: number }>();
   const activityHeading = useRef<HTMLHeadingElement>(null);
   const activityRows = useRef(new Map<string, HTMLButtonElement>());
   const actionRows = useRef(new Map<string, HTMLButtonElement>());
@@ -213,6 +215,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
     let current = true;
     void (async () => {
       let releases: RecentRelease[] | null = null;
+      let loadedRows: RecentRelease[] | undefined;
       let counts: ReleaseCounts | undefined;
       let nextActions: RecentRelease[] = [];
       let newerVersion: number | undefined;
@@ -246,13 +249,14 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
             if (currentRelease && currentRelease.version > returnActivity.version) newerVersion = currentRelease.version;
           }
           releases = rows.slice(0, 4);
+          loadedRows = rows;
           nextActions = rows.filter(row => row.nextAction).slice(0, 3);
         }
       } catch {
         // The rest of Home remains usable when the release service is unavailable.
       }
       if (current && releaseConfig === desktopClient.config && revision === desktopClient.getContextRevision()) {
-        setRecent({ owner: releaseOwner, config: releaseConfig, releases, nextActions, counts, returnActivity, newerVersion });
+        setRecent({ owner: releaseOwner, config: releaseConfig, releases, loadedRows, nextActions, counts, returnActivity, newerVersion });
       }
     })();
     return () => { current = false; };
@@ -267,7 +271,9 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
   }, [active, recent, returnActivity]);
   const ownedActivity = recent?.owner === releaseOwner && recent.config === releaseConfig &&
     recent.returnActivity === returnActivity ? recent : undefined;
-  const releases = ownedActivity?.releases;
+  // Optional activity filter over the already-loaded rows; it never issues another request.
+  const releases = activityFilter === "all" || !ownedActivity?.loadedRows ? ownedActivity?.releases
+    : ownedActivity.loadedRows.filter(release => release.status === activityFilter).slice(0, 4);
   const today = new Date();
   const hour = today.getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -342,7 +348,14 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
     <section className="studio-home-activity" data-has-rows={Boolean(releases?.length)} aria-labelledby="home-recent-releases">
       <div className="studio-home-activity-heading">
         <h2 ref={activityHeading} tabIndex={-1} id="home-recent-releases">Recent deployment activity</h2>
-        <button type="button" onClick={onDeploy} className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100">View all <ArrowRight aria-hidden size={15} /></button>
+        <span className="studio-home-activity-tools">
+          <label className="studio-home-activity-filter"><span className="sr-only">Filter recent activity by request state</span>
+            <select value={activityFilter} disabled={!ownedActivity?.loadedRows} onChange={event => setActivityFilter(event.target.value as typeof activityFilter)}>
+              <option value="all">All states</option><option value="draft">Drafts</option><option value="submitted">Submitted</option><option value="closed">Closed</option>
+            </select>
+          </label>
+          <button type="button" onClick={onDeploy} className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-100">View all <ArrowRight aria-hidden size={15} /></button>
+        </span>
       </div>
       {ownedActivity?.newerVersion && returnActivity && <p className="studio-home-audit-caption" role="status">
         This release has a newer saved version. Review version {ownedActivity.newerVersion} to continue.
@@ -368,7 +381,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
         })}</ul>
       </div> : <p role="status" className="mt-3 text-sm text-zinc-400">{
         releases === undefined ? "Loading recent releases…" :
-        releases === null ? "Recent releases are unavailable." : "No saved releases in this workspace."
+        releases === null ? "Recent releases are unavailable." : activityFilter !== "all" ? "No loaded releases in this state." : "No saved releases in this workspace."
       }</p>}
     </section>
     {canLoadContext && <HomeReleaseAudit active={active} config={releaseConfig}/>}

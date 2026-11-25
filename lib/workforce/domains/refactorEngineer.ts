@@ -99,7 +99,7 @@ function parseAi(text: string): ParsedAi | null {
   } catch { return null; }
 }
 
-export async function runRefactorEngineer(organizationId: string, raw: RefactorInput): Promise<RefactorPlan> {
+export async function runRefactorEngineer(organizationId: string, raw: RefactorInput, actorUserId?: string): Promise<RefactorPlan> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const sourceCode = raw.sourceCode.trim().slice(0, MAX_BODY);
   const refactorGoal = raw.refactorGoal.trim().slice(0, 1000);
@@ -127,6 +127,7 @@ export async function runRefactorEngineer(organizationId: string, raw: RefactorI
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:refactor_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
     });
     const result = await fetcher(`${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(input)}`);

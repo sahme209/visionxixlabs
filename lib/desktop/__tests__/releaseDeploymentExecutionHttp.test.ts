@@ -46,14 +46,15 @@ it('selects the request-bound governance coordinator at actual execute instead o
 it('selects trusted governance preparation only after the actual stored-parent plan binding',async()=>{m.find.mockImplementation(async({where}:any)=>where.workflowKind==='release_operation_plan_v1'?{inputJson:input}:null);const p=ports(),prepare=vi.fn(async()=>operation),run=vi.fn();const r=await handle(req('POST',action('prepare')),'release',planId,{...p,governance:{run,prepare}} as any);expect(r.status).toBe(200);expect(prepare).toHaveBeenCalledWith(expect.anything(),deploymentPlan,expect.any(AbortSignal));expect(m.prepare).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();});
 it('never falls back to legacy execution after governance refusal',async()=>{const p=ports(),run=vi.fn(async()=>{throw Error('revoked')}),prepare=vi.fn();const r=await handle(req('POST',action('execute')),'release',planId,{...p,governance:{run,prepare}} as any);expect(r.status).toBe(409);expect(run).toHaveBeenCalledOnce();expect(m.run).not.toHaveBeenCalled();expect(m.claim).not.toHaveBeenCalled();});
 
-it('returns only dated exact deployment events without initializing or running provider ports', async () => {
+it('returns exact deployment events and the accepted receipt without initializing or running provider ports', async () => {
  const events = [{type:'prepared',at:'2030-01-02T00:00:00Z'},{type:'dispatching',at:'2030-01-02T00:01:00Z'},{type:'accepted',at:'2030-01-02T00:02:00Z'}];
- m.getHistory.mockResolvedValue(events);
+ const receipt = {repositoryFullName:'owner/repo',workflowPath:'.github/workflows/deploy.yml',headSha:'f'.repeat(40),ref:'release',runId:'42',runAttempt:1};
+ m.getHistory.mockResolvedValue({events,receipt});
  m.release.mockResolvedValue({id:'release',organizationId:'org',version:3,requesterUserId:'user',intakeJson:fixtureIntake});
  const factory = vi.fn();
  const response = await handle(req('GET',undefined,'?historyVersion=3'),'release',planId,factory);
  expect(response.status).toBe(200);
- expect(await response.json()).toEqual({ok:true,data:{requestId:'release',requestVersion:3,planId,planDigest:input.planDigest,events}});
+ expect(await response.json()).toEqual({ok:true,data:{requestId:'release',requestVersion:3,planId,planDigest:input.planDigest,events,receipt}});
  expect(m.getHistory).toHaveBeenCalledWith({organizationId:'org',actorUserId:'user',sessionId:'session'},operationId,expect.any(Function));
  expect(factory).not.toHaveBeenCalled();
  expect(m.run).not.toHaveBeenCalled();

@@ -10,7 +10,10 @@ vi.mock('@/components/marketing/CinematicAxiomDemo',()=>({CinematicAxiomDemo:()=
 vi.mock('next/link',()=>({default:({href,children,...props}:any)=>createElement('a',{...props,href},children)}));
 import ProductPage from '@/app/product/page';
 import Home from '@/app/page';
-afterEach(cleanup);
+afterEach(() => {
+ cleanup();
+ window.history.replaceState(null, "", "/");
+});
 it('explains deployment decisions and puts the conceptual workflow before the scripted preview',()=>{
  render(createElement(ProductPage));
  expect(screen.getByRole('heading',{level:1,name:/Deployment decisions.*Clear from the start/i})).toBeDefined();
@@ -60,4 +63,21 @@ it('keeps the homepage scenario destination outside the sticky card containing b
  expect(link.classList.contains('pt-6')).toBe(false);
  expect(section.compareDocumentPosition(link)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  expect(view.container.querySelectorAll('.public-feature-panel')).toHaveLength(3);
+});
+
+it('opens and focuses only the disclosure named by the incoming Product link',()=>{
+ window.history.replaceState(null, "", "/product#deployment-model");
+ render(createElement(ProductPage));
+ const summary=screen.getByText('Inspect deployment scenarios and stages');
+ const records=screen.getByText('Inspect the records behind a decision').closest('details')!;
+ expect(summary.closest('details')?.open).toBe(true);
+ expect(document.activeElement).toBe(summary);
+ expect(records.open).toBe(false);
+ fireEvent.click(summary);
+ expect(summary.closest('details')?.open).toBe(false);
+ window.history.replaceState(null, "", "/product#decision-records");
+ fireEvent(window,new HashChangeEvent("hashchange"));
+ expect(records.open).toBe(true);
+ expect(document.activeElement).toBe(records.querySelector('summary'));
+ expect(summary.closest('details')?.open).toBe(false);
 });

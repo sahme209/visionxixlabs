@@ -160,7 +160,7 @@ async function runAgiCockpitNowForOrganization(orgId: string, actorUserId: strin
           organizationId: orgId,
           entries,
           summaries,
-          fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId: orgId }),
+          fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId: orgId, actorUserId }),
         },
       );
       return r.body.ok ? { ok: true } : { ok: false, reason: r.body.error };

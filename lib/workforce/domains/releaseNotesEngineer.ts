@@ -97,7 +97,7 @@ function parseAi(text: string): ParsedAi | null {
   } catch { return null; }
 }
 
-export async function runReleaseNotesEngineer(organizationId: string, raw: ReleaseNotesInput): Promise<ReleaseNotesDraft> {
+export async function runReleaseNotesEngineer(organizationId: string, raw: ReleaseNotesInput, actorUserId?: string): Promise<ReleaseNotesDraft> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const commitLog = raw.commitLog.trim().slice(0, MAX_BODY);
   if (!title || !commitLog) {
@@ -124,6 +124,7 @@ export async function runReleaseNotesEngineer(organizationId: string, raw: Relea
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:release_notes_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
     });
     const result = await fetcher(`${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(input)}`);

@@ -20,10 +20,13 @@ html:not([data-theme="light"]) .studio-agent-plan {
 .studio-agent-plan-main { min-width: 0; padding: 20px clamp(16px, 1.6vw, 27px); }
 .studio-agent-plan header, .studio-agent-plan-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
 .studio-agent-plan h2 { font-size: 19px; font-weight: 500; }
+.studio-agent-plan header { align-items: flex-start; }
+.studio-agent-plan-title { min-width: 0; }
+.studio-agent-plan-record-meta + h2 { margin-top: 8px; font-size: 23px; letter-spacing: -.025em; }
 .studio-agent-plan p, .studio-agent-plan dt { color: rgb(var(--neutral-zinc-400)); }
 .studio-agent-plan-select { display: grid; gap: 8px; margin-block: 16px; }
 .studio-agent-plan-select select { min-width: 0; padding: 7px; border: 1px solid rgb(var(--axiom-border)); background: rgb(var(--axiom-surface)); }
-.studio-agent-plan-record { margin-block: 22px 24px; }
+.studio-agent-plan-record { margin-block: 0 24px; }
 .studio-agent-plan-record-meta {
   display: flex;
   align-items: baseline;
@@ -39,9 +42,7 @@ html:not([data-theme="light"]) .studio-agent-plan {
   background: rgb(var(--axiom-surface));
   color: rgb(var(--neutral-zinc-300));
 }
-.studio-agent-plan-record h3 { margin-top: 14px; font-size: 23px; font-weight: 500; letter-spacing: -.025em; }
 .studio-agent-plan-facts-heading {
-  margin-top: 14px;
   border-bottom: 1px solid var(--studio-plan-divider);
   font-size: 12px;
   font-weight: 500;
@@ -72,7 +73,7 @@ html:not([data-theme="light"]) .studio-agent-plan {
   color: rgb(var(--neutral-zinc-400));
   font-size: 11px;
 }
-.studio-agent-plan-steps h5 { font-size: 13px; font-weight: 500; }
+.studio-agent-plan-steps h4 { font-size: 13px; font-weight: 500; }
 .studio-agent-plan-steps p { margin-block-start: 5px; font-size: 11px; }
 .studio-agent-plan-destinations { display: flex; flex-wrap: wrap; gap: 8px; }
 .studio-agent-plan-record dt { font-size: 11px; }
@@ -165,7 +166,16 @@ html:not([data-theme="light"]) .studio-agent-plan {
   max-height: none;
   overflow: visible;
 }
-.studio-agent-plan-heading { display: none; }
+@media (max-width: 1339px) {
+  .studio-agent-plan-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 @media (min-width: 1340px) {
   .studio-agent-plan-heading {
     display: block;

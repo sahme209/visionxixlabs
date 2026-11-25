@@ -89,21 +89,23 @@ it("shows recorded workflow evidence without inferring live build health or an o
   const rows = [
     row,
     {...row, id: "observed", displayName: "fixture/billing", lastWorkflow: {name: "Verification", state: "completed" as const, conclusion: "success", startedAtIso: null}},
-    {...row, id: "pending", displayName: "fixture/inventory", lastWorkflow: {name: "Integration checks", state: "in_progress" as const, conclusion: null, startedAtIso: null}},
+    {...row, id: "pending", displayName: "fixture/inventory", lastWorkflow: {name: "Integration checks", state: "in_progress" as const, conclusion: "success", startedAtIso: null}},
   ];
   const read = vi.spyOn(desktopClient, "listRepositories").mockResolvedValue({ok: true, data: {...data, repositories: rows}});
   render(createElement(RepositoryDirectoryView, {active: true, canRead: true, onOpenLocal: vi.fn()}));
   const table = await screen.findByRole("table");
   expect(within(table).getByRole("columnheader", {name: "Last recorded workflow"})).toBeTruthy();
-  expect(within(table).getByText("completed · success")).toBeTruthy();
-  expect(within(table).getByText("in progress · No conclusion recorded")).toBeTruthy();
+  expect(within(table).getByText("Passed")).toBeTruthy();
+  const running = within(table).getByRole("row", {name: /fixture\/inventory/});
+  expect(within(running).getByText("In progress")).toBeTruthy();
+  expect(within(running).queryByText("Passed")).toBeNull();
   expect(within(table).getByText("No workflow recorded")).toBeTruthy();
   const success = screen.getByRole("button", {name: "Successful workflow", description: "1 loaded"});
   success.focus();
   fireEvent.keyDown(success, {key: "/"});
   expect(document.activeElement).toBe(screen.getByRole("searchbox", {name: "Search repositories"}));
   fireEvent.click(success);
-  expect(within(table).getByText("completed · success")).toBeTruthy();
+  expect(within(table).getByText("Passed")).toBeTruthy();
   expect(within(table).queryByText("No workflow recorded")).toBeNull();
   fireEvent.click(screen.getByRole("button", {name: "Failed workflow"}));
   expect(screen.getByText("No matching repositories.")).toBeTruthy();
@@ -130,6 +132,7 @@ it("shows the selected registry facts and only a verified workflow start time in
   expect(within(dialog).getByText("Recorded protection").nextElementSibling?.textContent).toBe("strong");
   expect(within(dialog).getByText("Open PRs").nextElementSibling?.textContent).toBe("2");
   expect(within(dialog).getByText(commitSha)).toBeTruthy();
+  expect(within(dialog).getByText("completed · success")).toBeTruthy();
   expect([...dialog.querySelectorAll("time")].map(time => time.dateTime)).toEqual([syncedAtIso, startedAtIso]);
   fireEvent.click(within(dialog).getByRole("button", {name: "Close repository details"}));
   fireEvent.click(screen.getByRole("button", {name: "Inspect fixture/camera"}));

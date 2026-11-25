@@ -38,8 +38,14 @@ export function WorkflowStoryScene({ scene, context, fraction, reducedMotion, de
         <h3 className="mt-4 text-lg font-medium text-zinc-100">{scene === "check" ? "Run the project type check?" : "Publish branch and open a pull request?"}</h3>
         <dl className="mt-4 grid gap-3 text-xs"><Fact label="Target" value={`${context.repository} · ${context.branch}`} /><Fact label={scene === "check" ? "Command" : "Recovery"} value={scene === "check" ? "npm run typecheck" : "Review the change; revert the commit if needed"} /></dl>
         <p className="mt-4 text-xs leading-6 text-zinc-400">{scene === "check" ? "Repository scripts require approval. Environment variables are restricted; local files and stored credentials can still be read with your user permissions. The check has a 5-minute timeout and separate 1 MB limits for standard output and error output." : "The sample action is scoped to this working branch. No merge, deployment or cloud permission is included."}</p>
-        <div className="mt-5 flex flex-wrap gap-2"><button type="button" className={storyButton} onClick={() => onDecision("rejected")}>Reject sample</button><button type="button" className={`${storyButton} border-white/30 bg-zinc-200 text-zinc-950! hover:bg-white`} onClick={() => onDecision("approved")}>Simulate approval</button></div>
-        {decision && <p role="status" className="mt-4 text-xs text-zinc-200">{decision === "approved" ? "Sample decision recorded" : "Sample rejected · no action taken"}</p>}
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button type="button" className={storyButton} aria-pressed={decision === "rejected"} onClick={() => onDecision("rejected")}>Reject sample</button>
+          <button type="button" className={`${storyButton} border-white/30 bg-zinc-200 text-zinc-950! hover:bg-white`} aria-pressed={decision === "approved"} onClick={() => onDecision("approved")}>Simulate approval</button>
+        </div>
+        <p role="status" aria-atomic="true" className={decision ? "mt-4 text-xs text-zinc-200" : undefined}>
+          {decision === "approved" && "Sample decision recorded"}
+          {decision === "rejected" && "Sample rejected · no action taken"}
+        </p>
         {decision === "approved" && onContinue && <button type="button" className={`${storyButton} mt-3`} onClick={onContinue}>{scene === "check" ? "Inspect sample check output →" : "Inspect outcome evidence →"}</button>}
       </div>}
       {scene === "output" && <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0c0b]">

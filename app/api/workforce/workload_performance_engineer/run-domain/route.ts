@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       telemetrySnapshot,
       baselineExpectations: s(f.get("baselineExpectations")) || undefined,
       recentChanges: s(f.get("recentChanges")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistWorkloadPerformanceAnalysis(org, analysis);
   } catch (err) {
     console.warn(

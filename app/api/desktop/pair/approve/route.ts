@@ -1,12 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
-import { createDesktopSession } from "@/lib/desktop/desktopSession";
+import { createPrivateDesktopSessionService } from "@/lib/desktop/privateDesktopSession";
+import { createPrivatePrismaDesktopSessionStore } from "@/lib/desktop/privateDesktopSessionStore.prisma";
 import { evaluatePairingPolicy } from "@/lib/desktop/desktopAuthPolicy";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { newCorrelationId } from "@/lib/domain/ids";
 
 export const dynamic = "force-dynamic";
+
+class PairingExpiredDuringApproval extends Error {}
 
 async function authorizedRequest(request: NextRequest, challengeInput?: string) {
   const ctx = await currentContext();
@@ -81,38 +84,48 @@ export async function POST(request: NextRequest) {
   if (auth.record.expiresAt <= claimedAt) {
     return NextResponse.json({ error: "pairing_expired" }, { status: 410 });
   }
-  const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
-    where: {
-      id: auth.challenge,
-      deviceFingerprint: auth.record.deviceFingerprint,
-      status: "pending",
-      sessionId: null,
-      consumedAt: null,
-      expiresAt: { gt: claimedAt },
-    },
-    data: {
-      status: "approving",
-      approvedByUserId: auth.userId,
-      approvedOrganizationId: auth.organizationId,
-    },
-  });
-  if (claimed.count !== 1) {
-    return NextResponse.json({ error: "pairing_already_in_progress" }, { status: 409 });
-  }
-
   try {
-    const session = await createDesktopSession({
-      userId: auth.userId,
-      organizationId: auth.organizationId,
-      deviceFingerprint: auth.record.deviceFingerprint,
-      deviceLabel: auth.record.deviceLabel,
-      platform: auth.record.platform as "macos-arm" | "macos-intel" | "windows" | "linux" | "unknown",
-      desktopVersion: auth.record.desktopVersion ?? undefined,
+    const approved = await prisma.$transaction(async tx => {
+      const claimed = await tx.desktopPairingChallengeRecord.updateMany({
+        where: {
+          id: auth.challenge,
+          deviceFingerprint: auth.record.deviceFingerprint,
+          status: "pending",
+          sessionId: null,
+          consumedAt: null,
+          expiresAt: { gt: claimedAt },
+        },
+        data: {
+          status: "approving",
+          approvedByUserId: auth.userId,
+          approvedOrganizationId: auth.organizationId,
+        },
+      });
+      if (claimed.count !== 1) return false;
+
+      const sessionService = createPrivateDesktopSessionService(createPrivatePrismaDesktopSessionStore(tx), () => new Date());
+      const session = await sessionService.createDesktopSession({
+        userId: auth.userId,
+        organizationId: auth.organizationId,
+        deviceFingerprint: auth.record.deviceFingerprint,
+        deviceLabel: auth.record.deviceLabel,
+        platform: auth.record.platform as "macos-arm" | "macos-intel" | "windows" | "linux" | "unknown",
+        desktopVersion: auth.record.desktopVersion ?? undefined,
+      });
+      const approvedAt = new Date(Date.now());
+      const finalized = await tx.desktopPairingChallengeRecord.updateMany({
+        where: { id: auth.challenge, status: "approving", expiresAt: { gt: approvedAt } },
+        data: { status: "approved", sessionId: session.id, approvedAt },
+      });
+      if (finalized.count !== 1) throw new PairingExpiredDuringApproval();
+      return true;
     });
-    await prisma.desktopPairingChallengeRecord.update({
-      where: { id: auth.challenge },
-      data: { status: "approved", sessionId: session.id, approvedAt: new Date() },
-    });
+    if (!approved) {
+      if (auth.record.expiresAt.getTime() <= Date.now()) {
+        return NextResponse.json({ error: "pairing_expired" }, { status: 410 });
+      }
+      return NextResponse.json({ error: "pairing_already_in_progress" }, { status: 409 });
+    }
     try {
       await recordAudit({
         organizationId: auth.organizationId,
@@ -130,10 +143,9 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ ok: true, status: "approved" });
   } catch (error) {
-    await prisma.desktopPairingChallengeRecord.updateMany({
-      where: { id: auth.challenge, status: "approving", sessionId: null },
-      data: { status: "pending", approvedByUserId: null, approvedOrganizationId: null },
-    });
+    if (error instanceof PairingExpiredDuringApproval) {
+      return NextResponse.json({ error: "pairing_expired" }, { status: 410 });
+    }
     console.error(`[${correlationId}] Desktop pairing approval failed`, error);
     try {
       await recordAudit({

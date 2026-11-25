@@ -23,7 +23,7 @@
  * Operator-input engineers (requiresInput: true) are skipped — they
  * can't fire without form payload.
  *
- * Auth: CRON_SECRET bearer when set.
+ * Requires the configured CRON_SECRET bearer. Scheduled reports use rules without a funded member.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -49,11 +49,9 @@ interface SweepableRunner {
 
 export async function GET(req: NextRequest) {
   const expected = process.env.CRON_SECRET;
-  if (expected) {
-    const auth = req.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${expected}`) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  if (!expected) return NextResponse.json({ ok: false, reason: "cron_not_configured" }, { status: 503 });
+  if (req.headers.get("authorization") !== `Bearer ${expected}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const startedAt = Date.now();

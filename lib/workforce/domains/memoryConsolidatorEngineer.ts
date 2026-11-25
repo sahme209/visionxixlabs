@@ -12,7 +12,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const MEMORY_CONSOLIDATOR_TARGET_KIND = "engineer_memory_consolidation";
 
@@ -183,7 +183,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runMemoryConsolidatorEngineer(organizationId: string): Promise<MemoryConsolidationReport> {
+export async function runMemoryConsolidatorEngineer(organizationId: string, actorUserId?: string): Promise<MemoryConsolidationReport> {
   const since14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
   let rows: Array<{
     targetKind: string;
@@ -278,6 +278,7 @@ export async function runMemoryConsolidatorEngineer(organizationId: string): Pro
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:memory_consolidator_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2500,
     });
@@ -295,7 +296,7 @@ export async function runMemoryConsolidatorEngineer(organizationId: string): Pro
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const kindStats: KindStats[] = candidates.map((c) => ({

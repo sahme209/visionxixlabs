@@ -1,3 +1,4 @@
+import type { LeadGenerationInvocation } from "@/lib/ai/leadGenerationInvocation";
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 
 export type AIStarterPackage = {
@@ -30,9 +31,10 @@ type LeadFormData = {
 /**
  * Generate AI starter package from lead request.
  */
-export async function generateAIStarterPackage(formData: LeadFormData): Promise<AIStarterPackage> {
+export async function generateAIStarterPackage(formData: LeadFormData, leadInvocation?: LeadGenerationInvocation): Promise<AIStarterPackage> {
   const prompt = buildPrompt(formData);
   const { text } = await orchestrateGenerate({
+    leadInvocation,
     taskType: "content_generation",
     systemPrompt:
       "You generate professional website content packages for small businesses. Output valid JSON only, no markdown, no code blocks. Be concise and professional.",

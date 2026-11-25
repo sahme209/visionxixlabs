@@ -14,8 +14,8 @@
 import "server-only";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
-import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
-import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 
 export interface InsightsSeed {
   tenantId: string;
@@ -27,7 +27,7 @@ export interface InsightsSeed {
   autonomyCycles: number;
   outboundSends: number;
   outboundFailures: number;
-  dissentCount: number;           // total council dissenters in window
+  dissentCount: number;           // legacy wire field for council consensus records
   topAuthorAgent: string | null;  // most active improver agent name
 }
 
@@ -37,12 +37,13 @@ export interface InsightsNarrative {
   provider: string | null;
   model: string | null;
   latencyMs: number;
+  status: "metrics" | "generated" | "budget_exceeded" | "credits_exhausted" | "already_requested" | "unavailable";
 }
 
 const SYSTEM = [
   "You write a 3-5 sentence operator-facing summary of an AGI ops tenant's last week.",
   "Style: factual, plain English, no marketing, no emojis.",
-  "Mention the proposal funnel (decided / approved / applied / rejected), outbound success ratio, autonomy throughput, and any notable dissent.",
+  "Mention the proposal funnel (decided / approved / applied / rejected), outbound success ratio, autonomy throughput, and recorded council decisions.",
   "Never invent numbers beyond the input.",
 ].join(" ");
 
@@ -55,54 +56,28 @@ function templateFallback(s: InsightsSeed): string {
     `Last ${s.windowDays} day(s): ${s.proposalsDecided} proposal(s) decided`,
     `(${s.proposalsApproved} approved, ${s.proposalsApplied} applied, ${s.proposalsRejected} rejected).`,
     `${s.autonomyCycles} autonomy cycle(s). ${outboundRatio}.`,
-    `${s.dissentCount} council dissenter(s) recorded.${topAuthor}`,
+    `${s.dissentCount} council consensus record(s).${topAuthor}`,
   ].join(" ");
 }
 
-/**
- * Loads the workspace's AI provider policy and checks its budget before
- * any provider call, mirroring the enforcement in /api/ai/generate and
- * lib/releaseops/instrumentedAiFetcher. This engine previously called
- * the AI manager directly with no policy or budget check: a workspace
- * that explicitly disallowed a provider in its own AI settings could
- * still have this tenant-summary call use whatever provider the service
- * has configured, unmetered against the workspace's budget, with no
- * usage record. Returns null (fail closed, caller falls back to the
- * deterministic template) when the policy can't be loaded, is disabled,
- * has no allowed providers, or the budget is exhausted.
- */
-async function resolveGovernedGenerationOptions(organizationId: string): Promise<{
-  allowedProviders: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["allowedProviders"];
-  modelSelections: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["modelSelections"];
-  fallbackOrder: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["fallbackOrder"];
-} | null> {
-  const mgr = getAIProviderManager();
-  const serviceEnabled = mgr.status()
-    .filter((provider) => provider.configured && provider.provider !== "mock")
-    .map((provider) => provider.provider);
-  const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(organizationId).catch(() => null);
-  if (!loadedPolicy || loadedPolicy.storageState !== "ready") return null;
-  const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
-  if (!policy.enabled || policy.allowedProviders.length === 0) return null;
-  const creditDecision = await checkWorkspaceAICredits(
-    organizationId,
-    0,
-    { failClosedOnUsageReadError: true },
-  ).catch(() => null);
-  if (!creditDecision || creditDecision.kind === "block") return null;
-  return { allowedProviders: policy.allowedProviders, modelSelections: policy.modelSelections, fallbackOrder: policy.fallbackOrder };
+export function summarizeInsightsMetrics(seed: InsightsSeed, status: InsightsNarrative["status"] = "metrics"): InsightsNarrative {
+  return { paragraph: templateFallback(seed), status, aiUsed: false, provider: null, model: null, latencyMs: 0 };
 }
 
-export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNarrative> {
-  const fallback = templateFallback(seed);
+export async function synthesizeInsights(seed: InsightsSeed, actor: {userId: string; correlationId: string; idempotencyKey: string}): Promise<InsightsNarrative> {
+  const organizationId = seed.tenantId;
   try {
-    const governed = await resolveGovernedGenerationOptions(seed.tenantId);
-    if (!governed) {
-      return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: 0 };
+    const manager = getAIProviderManager();
+    const gateway = manager.status().find(provider => provider.configured && provider.provider === "vercel_gateway");
+    const loaded = await loadWorkspaceAIProviderPolicyWithState(organizationId);
+    if (!gateway || loaded.storageState !== "ready") return summarizeInsightsMetrics(seed, "unavailable");
+    const policy = resolveWorkspaceAIProviderPolicy({ stored: loaded.policy, serviceEnabled: ["vercel_gateway"] });
+    const defaultModel = gateway.defaultModel;
+    const model = effectiveGatewayModel({ modelSelection: policy.modelSelections.vercel_gateway, defaultModel });
+    if (!policy.enabled || !policy.allowedProviders.includes("vercel_gateway") || !gatewayModelOutputBoundVerified(model)) {
+      return summarizeInsightsMetrics(seed, "unavailable");
     }
-    const mgr = getAIProviderManager();
     const prompt = [
-      `Tenant id: ${seed.tenantId}`,
       `Window: last ${seed.windowDays} day(s)`,
       `Proposals decided: ${seed.proposalsDecided}`,
       `Proposals approved: ${seed.proposalsApproved}`,
@@ -111,39 +86,30 @@ export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNa
       `Autonomy cycles: ${seed.autonomyCycles}`,
       `Outbound sends: ${seed.outboundSends}`,
       `Outbound failures: ${seed.outboundFailures}`,
-      `Council dissent count: ${seed.dissentCount}`,
-      `Top improver agent: ${seed.topAuthorAgent ?? "(none)"}`,
+      `Council consensus records: ${seed.dissentCount}`,
     ].join("\n");
-    const r = await mgr.generateText(prompt, {
-      system: SYSTEM,
-      maxTokens: 4096,
-      temperature: 0.3,
-      timeoutMs: 15_000,
-      organizationId: seed.tenantId,
-      allowedProviders: governed.allowedProviders,
-      modelSelections: governed.modelSelections,
-      fallbackOrder: governed.fallbackOrder,
-    });
-    const text = (r.text ?? "").trim();
-    if (!text || r.provider === "mock") {
-      return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: r.latencyMs };
+    const admission = await admitAIText({
+      organizationId, userId: actor.userId, correlationId: actor.correlationId, idempotencyKey: actor.idempotencyKey, source: "tenant_insights", textPolicy: { provider: "vercel_gateway", model, defaultModel },
+    }, { prompt, system: SYSTEM });
+    if (!admission.ok) {
+      const status = {
+        ai_workspace_budget_exceeded: "budget_exceeded",
+        ai_credit_pool_exhausted: "credits_exhausted",
+        request_already_reserved: "already_requested",
+        idempotency_key_conflict: "already_requested",
+        ai_credit_reservation_unavailable: "unavailable",
+      } as const;
+      return summarizeInsightsMetrics(seed, status[admission.error]);
     }
-    if (r.usage) {
-      const usageWrite = await recordAIUsageEvent({
-        organizationId: seed.tenantId,
-        provider: r.provider,
-        model: r.model,
-        inputTokens: r.usage.promptTokens ?? 0,
-        outputTokens: r.usage.completionTokens ?? 0,
-        externalUsageId: r.gatewayGenerationId,
-        triggeredBy: "system:tenant_insights_synthesizer",
-        metadata: { engineName: "tenant_insights_synthesizer" },
-      });
-      if (!usageWrite.recorded) throw new Error("ai_usage_meter_unavailable");
-    }
+    const result = await manager.generateTextWithAdmission(prompt, {
+      system: SYSTEM, maxTokens: 512, temperature: 0.3, timeoutMs: 15_000,
+      organizationId, correlationId: actor.correlationId, only: "vercel_gateway", model,
+    }, admission.admission);
+    const text = result.text.trim();
+    if (!text) return summarizeInsightsMetrics(seed, "unavailable");
     const paragraph = text.length > MAX_OUT ? `${text.slice(0, MAX_OUT - 3)}...` : text;
-    return { paragraph, aiUsed: true, provider: r.provider, model: r.model, latencyMs: r.latencyMs };
+    return { paragraph, status: "generated", aiUsed: true, provider: result.provider, model: result.model, latencyMs: result.latencyMs };
   } catch {
-    return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: 0 };
+    return summarizeInsightsMetrics(seed, "unavailable");
   }
 }

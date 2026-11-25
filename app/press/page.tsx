@@ -46,7 +46,7 @@ export default function PressPage() {
             <h2 className="text-lg font-medium">Logo</h2>
             <div className="flex items-center gap-5">
               <Image src="/vision-xix-logo.png" alt="Vision XIX Labs" width={72} height={72} className="rounded-2xl" />
-              <p className="text-sm leading-6 text-zinc-500">
+              <p className="text-sm leading-6 text-zinc-400">
                 Keep clear space around the mark. Do not recolor, distort, or
                 imply certification or partnership.
               </p>

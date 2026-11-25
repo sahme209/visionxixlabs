@@ -1,4 +1,5 @@
 import { useId, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
+import { ArrowRight, Layers3, Rocket, Ticket } from "lucide-react";
 import { ExternalLink } from "../components/Primitives";
 import { documentationWorkflows, workflowSteps } from "./documentationWorkflow";
 import "./DocumentationWorkflowMap.css";
@@ -69,12 +70,14 @@ function connectionsFor(steps: typeof workflowSteps) {
   });
 }
 
+const workflowIcons = {release: Rocket, tickets: Ticket, batches: Layers3};
+
 export function DocumentationWorkflowMap({onBack}: {onBack: () => void}) {
   const prefix = useId();
   const title = useRef<HTMLHeadingElement>(null);
   const [workflow, setWorkflow] = useState<(typeof documentationWorkflows)[number]>(documentationWorkflows[0]);
 
-  useLayoutEffect(() => { title.current?.focus(); }, []);
+  useLayoutEffect(() => { title.current?.focus(); }, [workflow.id]);
 
   return <section className="studio-flow" aria-labelledby={prefix + "-title"}>
     <header className="studio-flow-header">
@@ -84,11 +87,26 @@ export function DocumentationWorkflowMap({onBack}: {onBack: () => void}) {
       </div>
       <button data-help-id="documentation.workflow.back" type="button" className="btn-secondary" onClick={onBack}>Back to guides</button>
     </header>
-    <nav data-help-id="documentation.workflow.families" className="studio-flow-families" aria-label="Workflow maps">
-      {documentationWorkflows.map(item => <button type="button" className="btn-secondary" key={item.id}
-        aria-pressed={item.id === workflow.id} onClick={() => setWorkflow(item)}>{item.label}</button>)}
-    </nav>
     <WorkflowCanvas key={workflow.id} workflow={workflow} onBack={onBack}/>
+    <nav data-help-id="documentation.workflow.families" className="studio-flow-families" aria-label="Workflow maps">
+      <h3>Key workflows</h3>
+      <div className="studio-flow-family-cards">
+        {documentationWorkflows.map(item => {
+          const Icon = workflowIcons[item.id];
+          const label = `${prefix}-family-${item.id}`;
+          return <button type="button" className="studio-flow-family-card" key={item.id} aria-labelledby={label}
+            aria-describedby={label + "-description"} aria-pressed={item.id === workflow.id} onClick={() => {
+              if (item.id === workflow.id) title.current?.focus();
+              else setWorkflow(item);
+            }}>
+            <Icon className="studio-flow-family-icon" size={20} aria-hidden="true"/>
+            <strong id={label}>{item.label}</strong>
+            <small id={label + "-description"}>{item.description}</small>
+            <ArrowRight className="studio-flow-family-arrow" size={15} aria-hidden="true"/>
+          </button>;
+        })}
+      </div>
+    </nav>
   </section>;
 }
 
@@ -286,7 +304,12 @@ function WorkflowCanvas({workflow, onBack}: {workflow: (typeof documentationWork
       </div>
       {step && <aside className="studio-flow-inspector" aria-labelledby={prefix + "-details"}>
         <div className="studio-flow-detail-heading">
-          <h3 id={prefix + "-details"} tabIndex={-1} ref={inspector}>{step.title}</h3>
+          <h3 id={prefix + "-details"} aria-describedby={prefix + "-step-position"} tabIndex={-1} ref={inspector}>{step.title}</h3>
+          <span id={prefix + "-step-position"} className="studio-flow-step-position">
+            <span className="sr-only">Map </span>Step {steps.filter(item =>
+              item.group < step.group || (item.group === step.group && item.row < step.row)
+            ).length + 1} of {steps.length}
+          </span>
           <button data-help-id="documentation.workflow.close-details" type="button" className="btn-secondary" onClick={closeDetails}>Close details</button>
         </div>
         {step.status && <p className="studio-flow-status">{step.status}</p>}

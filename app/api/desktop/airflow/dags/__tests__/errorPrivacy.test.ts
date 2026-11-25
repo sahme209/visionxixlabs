@@ -10,7 +10,7 @@ import { GET as runs, POST as trigger } from "../[dagId]/runs/route";
 const handlers = [dags, runs, trigger];
 const request = () => new Request("https://synthetic.invalid/api", {method:"POST", body:"{}"}) as NextRequest;
 const context = () => ({params: Promise.resolve({dagId:"synthetic"})});
-beforeEach(() => { vi.resetAllMocks(); m.session.mockResolvedValue({id:"s",userId:"u",organizationId:"o"}); });
+beforeEach(() => { vi.resetAllMocks(); m.session.mockResolvedValue({id:"s",userId:"u",organizationId:"o",credentialKind:"desktop_session"}); });
 it.each(handlers.flatMap(handler => ["SYNTHETIC_PRIVATE_MARKER", "airflow_SYNTHETIC_PRIVATE_MARKER", "airflow_api_failed_SYNTHETIC_PRIVATE:secret"].map(message => ({handler,message}))))("redacts $message", async ({handler,message}) => {
   m.load.mockRejectedValueOnce(Error(message)); const response = await handler(request(), context());
   expect(response.status).toBe(502); expect(await response.json()).toEqual({ok:false,error:handler===trigger?"airflow_trigger_failed":"airflow_unavailable"});

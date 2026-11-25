@@ -142,7 +142,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runSimulatorEngineer(organizationId: string, raw: SimulatorInput): Promise<SimulatorReport> {
+export async function runSimulatorEngineer(organizationId: string, raw: SimulatorInput, actorUserId?: string): Promise<SimulatorReport> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const proposedAction = raw.proposedAction.trim().slice(0, MAX_BODY);
   const currentState = raw.currentState.trim().slice(0, MAX_BODY);
@@ -178,6 +178,7 @@ export async function runSimulatorEngineer(organizationId: string, raw: Simulato
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:simulator_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 2500,
     });

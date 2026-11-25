@@ -44,6 +44,8 @@ it('footer separates account support, learning and utility destinations',()=>{
  render(createElement(Footer));
  const footerNav=within(screen.getByRole('navigation',{name:'Footer navigation'}));
  const utilities=within(screen.getByRole('navigation',{name:'Footer utilities'}));
+ const developers=footerNav.getByRole('heading',{name:'Developers'}).parentElement!;
+ expect(within(developers).getByRole('link',{name:'GitLab setup guide'}).getAttribute('href')).toBe('/docs/integration-setup#gitlab');
  expect(footerNav.getByRole('link',{name:'Account support (sign-in required)'}).getAttribute('href')).toBe('/account/help');
  expect(footerNav.getByRole('link',{name:'Founding Supporters'}).getAttribute('href')).toBe('/support');
  expect(footerNav.queryByRole('link',{name:'Support V19'})).toBeNull();

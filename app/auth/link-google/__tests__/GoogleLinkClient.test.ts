@@ -34,5 +34,32 @@ it("explicitly reports missing delivery and never claims Google authentication o
 it("expired recovery directs desktop users to restart pairing without extending the challenge", async () => {
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ error: "restart_google_signin" }, { status: 409 })));
   render(createElement(GoogleLinkClient)); await screen.findByRole("status");
-  expect(screen.getByRole("status").textContent).toContain("restart pairing"); expect(m.signIn).not.toHaveBeenCalled();
+  expect(screen.getByRole("status").textContent).toContain("restart pairing");
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "Back to sign-in" })));
+  expect(m.signIn).not.toHaveBeenCalled();
+});
+
+it.each([
+  ["google", "Google", { result: "restart" }],
+  ["gitlab", "GitLab", { error: "restart_gitlab_signin" }],
+] as const)("retires the %s proof form when its active request expires", async (provider, label, refusal) => {
+  const fetcher = vi.fn()
+    .mockResolvedValueOnce(Response.json({ csrf: "form-proof", email: "owner@example.test" }))
+    .mockResolvedValueOnce(Response.json(refusal, { status: 409 }));
+  vi.stubGlobal("fetch", fetcher);
+  render(createElement(GoogleLinkClient, { provider }));
+  await screen.findByText("owner@example.test");
+  fireEvent.click(screen.getByRole("button", { name: "Use existing password" }));
+  fireEvent.change(screen.getByLabelText("Existing account password"), { target: { value: "synthetic-password" } });
+  fireEvent.click(screen.getByRole("button", { name: `Confirm and link ${label}` }));
+
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "Back to sign-in" })));
+  const restart = screen.getByRole("link", { name: "Back to sign-in" });
+  expect(restart.getAttribute("href")).toBe("/auth/signin");
+  expect(screen.getByRole("status").textContent).toContain("restart pairing");
+  expect(screen.queryByText("owner@example.test")).toBeNull();
+  expect(screen.queryByLabelText("Existing account password")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Email me a confirmation code" })).toBeNull();
+  expect(fetcher.mock.calls.map(([path]) => path)).toEqual(Array(2).fill(`/api/auth/${provider}-link`));
+  expect(m.signIn).not.toHaveBeenCalled();
 });

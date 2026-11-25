@@ -1,12 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { getDesktopSession, statusFor } from "@/lib/desktop/desktopSession";
+import { statusFor, type DesktopSession } from "@/lib/desktop/privateDesktopSession";
+import { createPrivatePrismaDesktopSessionStore } from "@/lib/desktop/privateDesktopSessionStore.prisma";
 import { mintDesktopToken } from "@/lib/desktop/desktopToken";
 import { asRecord, requireString } from "@/lib/security/validation";
 
 export const dynamic = "force-dynamic";
 
-function presentSession(session: NonNullable<Awaited<ReturnType<typeof getDesktopSession>>>) {
+class PairingExpiredDuringConsumption extends Error {}
+
+function presentSession(session: DesktopSession) {
   return {
     id: session.id,
     deviceLabel: session.deviceLabel,
@@ -61,34 +64,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "pending" }, { status: 202 });
     }
 
-    const session = await getDesktopSession(record.sessionId);
-    if (!session || statusFor(session) !== "active") {
-      return NextResponse.json({ error: "The approved desktop session is no longer active." }, { status: 410 });
-    }
-    const claimedAt = new Date(Date.now());
-    if (record.expiresAt <= claimedAt) {
-      return NextResponse.json({ error: "Pairing request expired. Start again from the desktop app." }, { status: 410 });
-    }
-    const claimed = await prisma.desktopPairingChallengeRecord.updateMany({
-      where: {
-        id: challenge,
-        deviceFingerprint,
-        status: "approved",
-        sessionId: record.sessionId,
-        consumedAt: null,
-        expiresAt: { gt: claimedAt },
-      },
-      data: { consumedAt: claimedAt, status: "consumed" },
+    const { sessionId, approvedByUserId, approvedOrganizationId } = record;
+    const result = await prisma.$transaction(async tx => {
+      // Keep the approved session stable through consumption, including against
+      // concurrent revocation. Lock before reading its current binding and TTL.
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM "DesktopSessionRecord" WHERE id = ${sessionId} FOR SHARE
+      `;
+      if (locked.length !== 1) return { state: "unavailable" } as const;
+      const session = await createPrivatePrismaDesktopSessionStore(tx).getById(sessionId);
+      const claimedAt = new Date(Date.now());
+      if (record.expiresAt <= claimedAt) throw new PairingExpiredDuringConsumption();
+      if (!session || !Number.isFinite(Date.parse(session.expiresAt)) || statusFor(session, claimedAt) !== "active" ||
+          !approvedByUserId || !approvedOrganizationId || session.id !== sessionId ||
+          session.userId !== approvedByUserId || session.organizationId !== approvedOrganizationId ||
+          session.deviceFingerprint !== deviceFingerprint) {
+        return { state: "unavailable" } as const;
+      }
+
+      // Confirm signing readiness before changing the one-use record.
+      const token = mintDesktopToken(session.id);
+      const claimed = await tx.desktopPairingChallengeRecord.updateMany({
+        where: {
+          id: challenge,
+          deviceFingerprint,
+          status: "approved",
+          sessionId,
+          approvedByUserId,
+          approvedOrganizationId,
+          consumedAt: null,
+          expiresAt: { gt: claimedAt },
+        },
+        data: { consumedAt: claimedAt, status: "consumed" },
+      });
+      if (claimed.count !== 1) return { state: "used" } as const;
+      const now = new Date(Date.now());
+      if (record.expiresAt <= now || statusFor(session, now) !== "active") {
+        throw new PairingExpiredDuringConsumption();
+      }
+      return { state: "approved", token, session: presentSession(session) } as const;
     });
-    if (claimed.count !== 1) {
+
+    if (result.state === "unavailable") {
+      return NextResponse.json({ error: "The approved desktop session is no longer available for this request." }, { status: 410 });
+    }
+    if (result.state === "used") {
       return NextResponse.json({ error: "Pairing request was already used. Start a new sign-in." }, { status: 409 });
     }
-    return NextResponse.json({
-      status: "approved",
-      token: mintDesktopToken(session.id),
-      session: presentSession(session),
-    });
+    return NextResponse.json(
+      { status: "approved", token: result.token, session: result.session },
+      { headers: { "cache-control": "no-store" } },
+    );
   } catch (error) {
+    if (error instanceof PairingExpiredDuringConsumption) {
+      return NextResponse.json({ error: "Pairing request expired. Start again from the desktop app." }, { status: 410 });
+    }
     const correlationId = `desktop_pair_status_${crypto.randomUUID()}`;
     console.error(`[${correlationId}] Desktop pairing status failed`, error);
     return NextResponse.json(

@@ -1,3 +1,6 @@
+import type {DeploymentState} from "../tauri/releaseDeploymentExecutionContract";
+import type {ReleaseWorkflowObservation} from "../tauri/releaseWorkflowEvidenceContract";
+
 /** Presentation only. These summaries never confer authority or replace the
  * exact provider stores, native policies, human decisions or execution guards. */
 export type JourneyStage='readiness'|'review'|'outcome'|'recovery';
@@ -26,10 +29,136 @@ export function actionJourney(o:ActionObservation):CustomerJourney{
  {id:'recovery',title:'Recovery',state:uncertain||o.attemptCount===1&&!confirmed?'attention':'unverified',detail:recovery},
  ]};
 }
-export type ReleaseJourneyObservation={status:string;approvalDecision:string;blockers:readonly string[];prStatus:string;noPrRequired:boolean;rollbackAvailability:string;stale:boolean};
-export function releaseJourney(o:ReleaseJourneyObservation):CustomerJourney{
- const ready=!o.stale&&o.status==='submitted'&&o.approvalDecision==='ready_for_human_approval';
- const next=o.stale?{title:'Refresh saved status',owner:'Current workspace member',detail:'The last request observation may be stale. Refresh before making a decision.'}:o.status==='closed'?{title:'Review saved outcomes and history',owner:'Requester and reviewer',detail:'This request is closed. Inspect saved evidence and use only separately supported recovery controls.'}:o.status==='draft'?{title:'Complete release details',owner:'Release requester',detail:'Capture scope, repository, validation, ownership and recovery requirements.'}:!ready?{title:'Resolve readiness items',owner:'Release requester',detail:o.blockers.join(' · ')||'Review the current request and its required signals.'}:{title:'Review exact execution controls',owner:'Requester and independent reviewer',detail:'Inspect the saved plan, its independent review and its separate execution approvals.'};
- const recovery=o.rollbackAvailability==='yes'?'A rollback path is declared, not a verified rollback. Review its exact scope, owner, evidence and separate authority.':'A verified recovery path is not established. Record the responsible owner and inspect the supported recovery controls.';
- return{next,recovery,steps:[{id:'readiness',title:'Readiness',state:ready?'verified':o.stale?'unverified':'attention',detail:ready?'Recorded prerequisite signals are present; this does not authorize execution.':o.blockers.join(' · ')||'Review required release details and current signals.'},{id:'review',title:'Human review',state:'attention',detail:`${o.noPrRequired?'PR not required for this request':o.prStatus==='approved'?'PR approval recorded':'PR approval needs review'}. Exact merge, deployment and ticket actions require separate approvals.`},{id:'outcome',title:'Verified outcome',state:'unverified',detail:o.status==='closed'?'The Axiom request is closed. Read the saved provider receipts; request closure does not prove deployment success or application health.':'Read saved execution outcomes and successful-run evidence. This request summary does not establish provider effects or application health.'},{id:'recovery',title:'Recovery',state:'unverified',detail:recovery}]};
+type RecordedPrRequirement = {prStatus?: string; noPrRequired?: boolean};
+
+export function prReviewNotRequired({ prStatus, noPrRequired }: RecordedPrRequirement) {
+  return noPrRequired === true || prStatus === "not_applicable";
+}
+
+export function recordedPrReview(approval: RecordedPrRequirement) {
+  if (prReviewNotRequired(approval)) return "PR not required";
+  const {prStatus} = approval;
+  if (prStatus === "approved") return "Approved (recorded)";
+  if (prStatus === "pending") return "Pending";
+  return "Unavailable";
+}
+
+export type ReleaseJourneyObservation = {
+  status: string;
+  approvalDecision: string;
+  blockers: readonly string[];
+  prStatus: string;
+  noPrRequired: boolean;
+  rollbackAvailability: string;
+  stale: boolean;
+  // Desktop supplies these only after reading exact release and plan evidence.
+  executionState?: DeploymentState;
+  workflowState?: Exclude<ReleaseWorkflowObservation["conclusion"], null> | "queued" | "in_progress";
+};
+
+export type ReleaseJourney = CustomerJourney & {
+  next: CustomerJourney["next"] & {section?: "evidence" | "logs"};
+};
+
+function recordedExecutionGuidance({status, executionState, workflowState}: ReleaseJourneyObservation):
+  {next: ReleaseJourney["next"]; recovery?: string} | undefined {
+  const owner = "Release requester";
+  if (executionState === "dispatching" || executionState === "unknown") {
+    return {
+      next: {title: "Check the saved deployment outcome", owner, section: "evidence",
+        detail: "The dispatch outcome is unconfirmed. Review this plan’s execution history in Evidence before deciding what happens next."},
+      recovery: "Do not send another deployment request while this outcome is unconfirmed.",
+    };
+  }
+  if (executionState === "refused" || executionState === "cancelled") {
+    const refused = executionState === "refused";
+    return {
+      next: {title: refused ? "Review the recorded refusal" : "Review the saved cancellation", owner, section: "evidence",
+        detail: "Open Evidence to inspect the outcome saved for this release and plan."},
+      recovery: "Do not resend this request. Any replacement needs its own review and approval.",
+    };
+  }
+  if (workflowState === "success") {
+    return {next: {title: "Check release verification", owner, section: "logs",
+      detail: "The recorded workflow succeeded. Review the exact attempt, then verify application health and artifact delivery separately."
+        + (status === "submitted" ? " Once verified externally, use Record external outcome to attach the result." : "")}};
+  }
+  if (workflowState && workflowState !== "queued" && workflowState !== "in_progress") {
+    const outcome = {failure: "failed", cancelled: "cancelled", timed_out: "timed out",
+      action_required: "requires action", neutral: "neutral", skipped: "skipped"}[workflowState];
+    return {
+      next: {title: "Inspect the recorded workflow", owner, section: "logs",
+        detail: `The recorded outcome is ${outcome}. Inspect the matching run in Logs and check for any effects before recovery.`},
+      recovery: "Rollback requires separate review and authority. A workflow outcome does not confirm what changed in the target environment.",
+    };
+  }
+  if (workflowState || executionState === "accepted") {
+    return {next: {title: "Check the acknowledged workflow", owner, section: "evidence",
+      detail: "Open Evidence to inspect the workflow recorded for this plan. Acknowledgment alone does not verify the deployment."}};
+  }
+}
+
+export function releaseJourney(o: ReleaseJourneyObservation): ReleaseJourney {
+  if (o.stale) {
+    const recovery = "Refresh the saved release to check its recovery requirements.";
+    return {
+      next: {
+        title: "Refresh saved status",
+        owner: "Current workspace member",
+        detail: "The latest release status could not be verified. Refresh before making a decision.",
+      },
+      recovery,
+      steps: [
+        {id: "readiness", title: "Readiness", state: "unverified", detail: "Current prerequisites are unavailable."},
+        {id: "review", title: "Human review", state: "unverified", detail: "Current approval requirements and decisions are unavailable."},
+        {id: "outcome", title: "Verified outcome", state: "unverified", detail: "Current release outcomes are unavailable."},
+        {id: "recovery", title: "Recovery", state: "unverified", detail: recovery},
+      ],
+    };
+  }
+
+  const ready = o.status === "submitted" && o.approvalDecision === "ready_for_human_approval";
+  const noPrReview = prReviewNotRequired(o);
+  const blockers = o.blockers.join(" · ");
+  const execution = recordedExecutionGuidance(o);
+  let next: ReleaseJourney["next"];
+  if (execution) {
+    next = execution.next;
+  } else if (o.status === "closed") {
+    next = {title: "Review saved outcomes and history", owner: "Requester and reviewer",
+      detail: "This request is closed. Inspect saved evidence and use only separately supported recovery controls."};
+  } else if (o.status === "draft") {
+    next = {title: "Complete release details", owner: "Release requester",
+      detail: "Capture scope, repository, validation, ownership and recovery requirements."};
+  } else if (!ready) {
+    next = {title: "Resolve readiness items", owner: "Release requester",
+      detail: blockers || "Review the current request and its required signals."};
+  } else if (!noPrReview) {
+    next = {title: "View release review", owner: "Requester and independent reviewer",
+      detail: "Check the pull request and the saved merge decision for this release version. Execution requires its own approval."};
+  } else {
+    next = {title: "Review exact execution controls", owner: "Requester and independent reviewer",
+      detail: "Inspect the saved plan, its independent review and its separate execution approvals."};
+  }
+
+  const recovery = execution?.recovery ?? (o.rollbackAvailability === "yes"
+    ? "A rollback path is declared, not a verified rollback. Review its exact scope, owner, evidence and separate authority."
+    : "A verified recovery path is not established. Record the responsible owner and inspect the supported recovery controls.");
+  const review = noPrReview ? "PR not required for this request" : o.prStatus === "approved"
+    ? "PR approval recorded" : "PR approval needs review";
+  return {
+    next,
+    recovery,
+    steps: [
+      {id: "readiness", title: "Readiness", state: ready ? "verified" : "attention",
+        detail: ready ? "Recorded prerequisite signals are present; this does not authorize execution." : blockers || "Review required release details and current signals."},
+      {id: "review", title: "Human review", state: "attention",
+        detail: `${review}. Exact merge, deployment and ticket actions require separate approvals.`},
+      {id: "outcome", title: "Verified outcome", state: "unverified",
+        detail: execution?.next.detail ?? (o.status === "closed"
+          ? "The release request is closed. Inspect saved provider receipts to verify deployment and application health."
+          : "Read saved execution outcomes and successful-run evidence. This request summary does not establish provider effects or application health.")},
+      {id: "recovery", title: "Recovery", state: execution?.recovery ? "attention" : "unverified", detail: recovery},
+    ],
+  };
 }

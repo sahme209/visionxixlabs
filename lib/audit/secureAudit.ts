@@ -88,6 +88,8 @@ export type AuditAction =
   | "billing.entitlement_blocked"
   // Alerts — Phase 385.
   | "billing.alert_fired"
+  | "billing.workspace_ai_budget_changed"
+  | "billing.workspace_ai_auto_top_up_consent_changed"
   // Add-ons — Phase 386.
   | "billing.addon_purchase_initiated"
   | "billing.addon_purchase_completed"

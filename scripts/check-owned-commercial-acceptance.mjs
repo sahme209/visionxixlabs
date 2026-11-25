@@ -4,11 +4,13 @@ import { pathToFileURL } from "node:url";
 
 const APPLICATION_HTTP_CASE = "actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold";
 const CHECKOUT_HTTP_CASE = "actual owned pricing HTTP checkout and signed webhook compose existing TEST service in a separate synthetic worker";
-const SQL_CASE_COUNT = 34;
+const SQL_CASE_COUNT = 36;
 const TOTAL_CASE_COUNT = SQL_CASE_COUNT + 2;
 const REQUIRED_BILLING_CASES = [
   "binds Gateway usage replays to the original workspace and request",
   "reconciles the visible prepaid allowance through checkout, refund and usage settlement",
+  "enforces a workspace AI budget against settled usage and outstanding holds without changing prepaid credit",
+  "qualifies audited workspace budget settings with its current owner or admin and rolls back on audit failure",
 ];
 const HTTP_CASES = new Set([
   APPLICATION_HTTP_CASE,

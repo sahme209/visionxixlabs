@@ -157,7 +157,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runBoundaryGateEngineer(organizationId: string, raw: BoundaryInput): Promise<BoundaryClassification> {
+export async function runBoundaryGateEngineer(organizationId: string, raw: BoundaryInput, actorUserId?: string): Promise<BoundaryClassification> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const actionDescription = raw.actionDescription.trim().slice(0, MAX_BODY);
   if (!title || !actionDescription) {
@@ -192,6 +192,7 @@ export async function runBoundaryGateEngineer(organizationId: string, raw: Bound
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:boundary_gate_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2000,
     });

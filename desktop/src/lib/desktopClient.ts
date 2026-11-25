@@ -1,3 +1,5 @@
+import { batchHistoryPageSchema, type BatchHistoryCursor, type BatchHistoryPage } from "../../../lib/desktop/batchHistoryContract";
+import { releaseClosureEvidenceSchema, type ReleaseClosureEvidence } from "../../../lib/tauri/releaseClosureEvidence";
 import { deploymentRequestSummarySchema, savedReleaseLocatorSchema, type DeploymentRequestSummary } from "../../../lib/tauri/deploymentRequestSummary";
 import {createPlatformTemplateClient,createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformReviewClient,createPlatformExecutionClient,createPlatformPreparationClient} from './platformReview';
 import {releaseDeploymentApprovalPreviewSchema,type ReleaseDeploymentApprovalPreview} from '../../../lib/tauri/releaseDeploymentApprovalContract';
@@ -1527,6 +1529,17 @@ export class DesktopClient {
     return this.get(includeRequester ? "/api/desktop/deployments?includeRequester=1" : "/api/desktop/deployments");
   }
 
+  batchReleaseHistory(before?: BatchHistoryCursor, exclude: readonly string[] = []): Promise<ApiResult<BatchHistoryPage>> {
+    const query = new URLSearchParams({batchHistory:"1"});
+    if (before) {
+      query.set("beforeReleaseId", before.id);
+      query.set("beforeClosedAt", before.closedAt);
+    }
+    for (const id of exclude) query.append("excludeReleaseId", id);
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments?${query}`, undefined,
+      (value): value is BatchHistoryPage => batchHistoryPageSchema.safeParse(value).success, "Release history");
+  }
+
   async currentLinkedRelease(releaseId: string): Promise<ApiResult<{id: string; version: number} | null>> {
     const identifier = savedReleaseLocatorSchema.shape.id.safeParse(releaseId);
     if (!identifier.success) return { ok: false, error: "invalid_linked_release" };
@@ -1941,7 +1954,7 @@ export class DesktopClient {
   }
   releaseBatchWait(requestId: string, version: number): Promise<ApiResult<ReleaseBatchWaitState>> {
     return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-wait?expectedVersion=${version}`, undefined,
-      (value): value is ReleaseBatchWaitState => isReleaseBatchWaitState(value, version));
+      (value): value is ReleaseBatchWaitState => isReleaseBatchWaitState(value, version, requestId));
   }
   startReleaseBatchWait(requestId: string, version: number, deadlineAt: number): Promise<ApiResult<ReleaseBatchWait>> {
     return this.pairedValidatedRequest("POST", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-wait`, { expectedVersion: version, deadlineAt }, isReleaseBatchWait);
@@ -1982,12 +1995,12 @@ export class DesktopClient {
       (value): value is ReleaseBatchTaskPage => isReleaseBatchTaskPage(value, { requestId, version, dagId, dagRunId, offset }), "Batch task evidence");
   }
 
-  deploymentRequestForRevision(requestId: string): Promise<ApiResult<{
+  deploymentRequestForRevision(requestId: string, version: number): Promise<ApiResult<{
     id: string;
     version: number;
     intake: Record<string, unknown>;
   }>> {
-    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}`);
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}?expectedVersion=${version}`);
   }
 
   reviseDeploymentRequest(
@@ -2007,25 +2020,33 @@ export class DesktopClient {
     );
   }
 
+  releaseClosureEvidence(id: string, version: number): Promise<ApiResult<ReleaseClosureEvidence>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(id)}/close?expectedVersion=${version}`, undefined,
+      (value): value is ReleaseClosureEvidence => {
+        const receipt = releaseClosureEvidenceSchema.safeParse(value);
+        return receipt.success && receipt.data.id === id && receipt.data.version === version;
+      }, "Recorded closure evidence");
+  }
+
   closeDeploymentRequest(
     requestId: string,
     expectedVersion: number,
     closureEvidenceId: string,
     closureSummary: string,
-  ): Promise<ApiResult<{ id: string; status: string; closedAt: string | null }>> {
+  ): Promise<ApiResult<{ id: string; version: number; status: string; closedAt: string | null }>> {
     return this.post(
       `/api/desktop/deployments/${encodeURIComponent(requestId)}/close`,
       { expectedVersion, closureEvidenceId, closureSummary },
     );
   }
 
-  deploymentRequestHistory(requestId: string): Promise<ApiResult<Array<{
+  deploymentRequestHistory(requestId: string, version: number): Promise<ApiResult<Array<{
     version: number;
     createdAt: string;
     author: "You" | "Workspace member";
     changes: string[];
   }>>> {
-    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/history`);
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/history?throughVersion=${version}`);
   }
 
   deploymentOperations(requestId: string): Promise<ApiResult<Array<{
@@ -2063,9 +2084,11 @@ export class DesktopClient {
     return this.post(`/api/desktop/deployments/${encodeURIComponent(requestId)}/github-evidence?expectedVersion=${version}`, {});
   }
 
-  generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
+  generateDeploymentPlaybook(requestId: string, requestVersion: number, attemptId: string): Promise<ApiResult<{
     id: string;
     requestId: string;
+    requestVersion: number;
+    attemptId: string;
     version: number;
     status: string;
     contentHash: string;
@@ -2087,8 +2110,9 @@ export class DesktopClient {
     }>;
   }>> {
     return this.post(
-      `/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks`,
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks/generate?expectedVersion=${requestVersion}`,
       {},
+      {"x-playbook-attempt-id": attemptId},
     );
   }
 

@@ -32,7 +32,9 @@ export const deploymentExecutionHistorySchema = z.object({
   planId: deploymentPlanSchema.shape.planId,
   planDigest: deploymentActionSchema.shape.planDigest,
   events: z.array(deploymentEvent).max(3),
-}).strict().refine(({events}) => {
+  receipt: deploymentReceiptSchema.optional(),
+}).strict().refine(({events, receipt}) => {
+  if (receipt && events[events.length - 1]?.type !== 'accepted') return false;
   if (!events.length) return true;
   if (events[0].type !== 'prepared' || events.some((event, index) => index > 0 && Date.parse(event.at) < Date.parse(events[index - 1].at))) return false;
   if (events.length === 1) return true;

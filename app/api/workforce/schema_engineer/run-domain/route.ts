@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       slowQueryLog,
       databaseEngine: s(f.get("databaseEngine")) || undefined,
       knownConstraints: s(f.get("knownConstraints")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistSchemaProposal(org, proposal);
   } catch (err) {
     console.warn("[schema/run-domain] hard failure:", err instanceof Error ? err.message : err);

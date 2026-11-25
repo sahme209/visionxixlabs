@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   PaperAirplaneIcon,
@@ -13,6 +14,7 @@ import {
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
 import { containsSupportSecret, SUPPORT_SECRET_NOTICE } from "@/lib/support/secretQuestion";
+import { stageSupportContactDraft, SUPPORT_CONTACT_HREF } from "@/lib/support/contactDraft";
 import { classifySupportAction, SUPPORT_ACTION_INFO, type SupportAction } from "@/lib/support/supportActions";
 
 interface Message {
@@ -75,16 +77,23 @@ const SUGGESTIONS = [
   "Are credentials stored?",
 ];
 
-function focusGuideHeading(fragment: string) {
-  const section = document.getElementById(fragment);
-  if (!section) return;
-  const target = section.querySelector<HTMLElement>("h1,h2,h3,h4,h5,h6") ?? section;
-  if (!target.hasAttribute("tabindex")) target.tabIndex = -1;
-  target.focus({ preventScroll: true });
+const internalSourceHref = /^(\/(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?)(?:#([a-z0-9-]+))?$/;
+
+function focusSourceHeading(fragment?: string) {
+  const section = fragment ? document.getElementById(fragment) : null;
+  const main = document.querySelector<HTMLElement>("main");
+  const heading = section
+    ? section.querySelector<HTMLElement>("h1,h2,h3,h4,h5,h6") ?? section
+    : main?.querySelector<HTMLElement>("h1") ?? main;
+  if (!heading) return;
+  if (!heading.hasAttribute("tabindex")) heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
 }
 
 export default function AIChatWidget() {
   const pathname = usePathname();
+  const { status: sessionStatus } = useSession();
+  const inDocumentation = pathname === "/docs" || pathname?.startsWith("/docs/");
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -94,7 +103,7 @@ export default function AIChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const pendingGuide = useRef<{ path: string; fragment: string } | null>(null);
+  const pendingSource = useRef<{ path: string; fragment?: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -115,17 +124,19 @@ export default function AIChatWidget() {
   }, [open]);
 
   useEffect(() => {
-    const guide = pendingGuide.current;
-    pendingGuide.current = null;
-    if (guide?.path === pathname && window.location.hash === `#${guide.fragment}`) focusGuideHeading(guide.fragment);
+    const source = pendingSource.current;
+    pendingSource.current = null;
+    if (source?.path === pathname && window.location.hash === (source.fragment ? `#${source.fragment}` : "")) {
+      focusSourceHeading(source.fragment);
+    }
   }, [pathname]);
 
-  function openCitedGuide(href: string) {
-    const match = /^(\/docs(?:\/[a-z0-9-]+)*)#([a-z0-9-]+)$/.exec(href);
+  function openCitedSource(href: string) {
+    const match = internalSourceHref.exec(href);
     if (!match) return;
     const [, path, fragment] = match;
-    if (path === pathname) focusGuideHeading(fragment);
-    else pendingGuide.current = { path, fragment };
+    if (path === pathname) focusSourceHeading(fragment);
+    else pendingSource.current = { path, fragment };
     setOpen(false);
   }
 
@@ -180,9 +191,9 @@ export default function AIChatWidget() {
       }
       // Never keep a message that looked like a secret, not even in this browser.
       if (data.guard === "secret_pasted") setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, content: REMOVED_SECRET } : m)));
-      // Signed in? Questions about this workspace get a read-only answer from it.
-      // Anonymous visitors get 401 before any data is read; secrets never go further.
-      if (data.guard !== "secret_pasted") {
+      // Skip the account lookup for a known anonymous session. The server
+      // still verifies authority when sign-in is pending or confirmed.
+      if (data.guard !== "secret_pasted" && sessionStatus !== "unauthenticated") {
         const acct = await fetch("/api/support/account-answer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
         if (acct?.ok && acct.answered) { data.answer = acct.answer; data.sources = acct.sources; data.accessForm = acct.intent === "access_request"; }
         // Offering is not permission: the server re-checks role and exact confirmation.
@@ -246,7 +257,7 @@ export default function AIChatWidget() {
         aria-label="Open V19 Assistant"
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="fixed bottom-6 right-6 z-9998 hidden min-h-11 items-center gap-2.5 rounded-full border border-white/8 bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/16 hover:bg-brand-ink-card hover:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-coral/50 md:flex"
+        className={`fixed bottom-4 right-4 z-9998 ${inDocumentation ? "flex" : "hidden"} min-h-11 items-center gap-2.5 rounded-full border border-white/8 bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/16 hover:bg-brand-ink-card hover:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-coral/50 md:bottom-6 md:right-6 md:flex`}
       >
         <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
           <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-zinc-300" />
@@ -257,7 +268,7 @@ export default function AIChatWidget() {
 
       {open && (
         <div
-          className="fixed right-6 left-auto w-[420px] z-9999 hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
+          className={`fixed inset-x-3 bottom-3 z-9999 ${inDocumentation ? "flex" : "hidden"} max-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-2xl glass-dark docs-support-panel shadow-xl md:bottom-6 md:right-6 md:left-auto md:flex md:w-[420px] md:max-h-[calc(100vh-8rem)]`}
           role="dialog"
           aria-labelledby="v19-assistant-title"
           onKeyDown={(event) => {
@@ -281,7 +292,7 @@ export default function AIChatWidget() {
               type="button"
               onClick={closeChat}
               aria-label="Close chat"
-              className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white"
+              className="grid min-h-11 min-w-11 place-items-center rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white md:min-h-0 md:min-w-0"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -292,7 +303,7 @@ export default function AIChatWidget() {
             role="log"
             aria-label="Conversation"
             tabIndex={0}
-            className="flex max-h-[320px] min-h-[240px] flex-1 flex-col overflow-y-auto p-4 bg-white/2"
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-white/2 p-4 md:max-h-[320px] md:min-h-[240px]"
           >
             {messages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center text-center">
@@ -343,14 +354,17 @@ export default function AIChatWidget() {
                       {m.role === "assistant" && m.accessForm && <AccessRequestForm />}
                       {m.role === "assistant" && m.supportAction && <SupportActionCard action={m.supportAction} />}
                       {m.role === "assistant" && m.mode === "grounded" && m.question && m.unsure && (
-                        <a href={`/contact?topic=ask-axiom&question=${encodeURIComponent(m.question.slice(0, 500))}`} className="mt-2 mr-3 inline-block text-[11px] text-zinc-300 underline underline-offset-2 hover:text-white">Send this question to support</a>
+                        <Link href={SUPPORT_CONTACT_HREF} onNavigate={() => {
+                          stageSupportContactDraft(m.question!);
+                          setOpen(false);
+                        }} className="mt-2 mr-3 inline-block text-[11px] text-zinc-300 underline underline-offset-2 hover:text-white">Review a support request</Link>
                       )}
                       {m.role === "assistant" && m.mode === "grounded" && m.question && (
                         <button type="button" onClick={() => void askAi(m.question!)} disabled={loading} className="mt-2 text-[11px] text-zinc-400 underline underline-offset-2 hover:text-white disabled:opacity-50">Get a fuller AI answer (signed-in workspaces; uses prepaid credits)</button>
                       )}
                       {m.role === "assistant" && m.sources && m.sources.length > 0 && (
                         <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/6 pt-2 text-[11px]">
-                          {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} onNavigate={() => openCitedGuide(src.href)} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
+                          {m.sources.map((src) => internalSourceHref.test(src.href) ? <li key={src.href + src.title}><Link href={src.href} onNavigate={() => openCitedSource(src.href)} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
                         </ul>
                       )}
                     </div>
@@ -390,7 +404,7 @@ export default function AIChatWidget() {
                 placeholder="Ask about setup, security, pricing…"
                 aria-label="Ask V19 a question"
                 readOnly={loading}
-                className="flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300"
+                className="min-w-0 flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-base md:text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300"
               />
               <button
                 onClick={sendMessage}

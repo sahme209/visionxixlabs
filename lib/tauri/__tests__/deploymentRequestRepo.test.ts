@@ -55,7 +55,8 @@ class FakeRepo implements DeploymentRequestRepo {
                     candidate.id === where.id
                     && candidate.organizationId === where.organizationId
                     && candidate.version === where.version
-                    && (where.status === undefined || candidate.status === where.status),
+                    && candidate.status === where.status
+                    && candidate.closedAt === where.closedAt,
                 );
                 if (!row) return { count: 0 };
                 if (data.title !== undefined) row.title = data.title;

@@ -46,12 +46,14 @@ describe("mobile website contract", () => {
     expect(navigation).not.toContain("Mobile navigation links\">\n                  <Link");
   });
 
-  it("removes competing floating controls from phone layouts", () => {
+  it("reserves the phone-width support launcher for Documentation", () => {
     const layout = source("app/layout.tsx");
     const chat = source("components/AIChatWidget.tsx");
 
     expect(layout).not.toContain("<StickyMobileCTA");
-    expect(chat).toContain("hidden md:flex");
+    expect(chat).toContain('pathname === "/docs" || pathname?.startsWith("/docs/")');
+    expect(chat).toContain('inDocumentation ? "flex" : "hidden"');
+    expect(chat).toContain('md:flex');
   });
 
   it("keeps download and demo actions touch-sized and phone-shaped", () => {

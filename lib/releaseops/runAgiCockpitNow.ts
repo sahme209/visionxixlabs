@@ -47,7 +47,7 @@ export async function runAgiCockpitNowForOrganization(orgId: string, actorUserId
       const timelineResponse = await buildMemorySummaryTimelineResponse(prisma as unknown as MemorySummaryRepo, { organizationId, take: 20 });
       const entries: SuggestionContextEntry[] = memoryResponse.body.ok ? memoryResponse.body.data.entries.map((entry, index) => ({ citationId: `e${index + 1}`, targetKind: entry.targetKind, targetId: entry.targetId, rowTargetKind: entry.targetKind, rowTargetId: entry.targetId, narrative: entry.narrative, outcome: entry.outcome, modelHint: entry.modelHint, generatedAtIso: entry.generatedAtIso })) : [];
       const summaries: SuggestionContextSummary[] = timelineResponse.body.ok ? timelineResponse.body.data.entries.map((summary, index) => ({ citationId: `s${index + 1}`, targetKind: summary.targetKind, narrative: summary.narrative, generatedAtIso: summary.generatedAtIso })) : [];
-      const response = await buildSuggestionGenerateResponse(prisma as unknown as ProactiveSuggestionRepo, { organizationId, entries, summaries, fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId }) });
+      const response = await buildSuggestionGenerateResponse(prisma as unknown as ProactiveSuggestionRepo, { organizationId, entries, summaries, fetcher: makeLiveRationaleFetcher({ engineName: "proactive_suggestion", organizationId, actorUserId }) });
       return response.body.ok ? { ok: true } : { ok: false, reason: response.body.error };
     },
   };

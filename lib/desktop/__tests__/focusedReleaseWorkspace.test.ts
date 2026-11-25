@@ -20,13 +20,22 @@ it('opens only the selected inspector, retains opened drafts, and exposes attent
  expect((screen.getByLabelText('Release Alpha note') as HTMLInputElement).value).toBe('unsaved exact review');
  fireEvent.click(first);expect((screen.getByLabelText('Release Alpha note') as HTMLInputElement).value).toBe('unsaved exact review');
 });
-it('keeps selection attached to the release ID when reordered and falls back safely when removed',()=>{
+it('keeps selection attached to the release ID when reordered and requires a choice when removed',()=>{
  const view=render(h(FocusedReleaseWorkspace,{items,children:item=>h(Draft,{name:item.title})}));
  fireEvent.click(screen.getByRole('button',{name:/Release Beta/}));
  view.rerender(h(FocusedReleaseWorkspace,{items:[...items].reverse(),children:item=>h(Draft,{name:item.title})}));
  expect(screen.getByRole('button',{name:/Release Beta/}).getAttribute('aria-current')).toBe('true');
+ view.rerender(h(FocusedReleaseWorkspace,{items:[],children:item=>h(Draft,{name:item.title})}));
+ expect(screen.queryByRole('navigation',{name:'Select a release'})).toBeNull();
  view.rerender(h(FocusedReleaseWorkspace,{items:[items[0]],children:item=>h(Draft,{name:item.title})}));
- expect(screen.getByRole('button',{name:/Release Alpha/}).getAttribute('aria-current')).toBe('true');
+ const replacement=screen.getByRole('button',{name:/Release Alpha/});
+ expect(replacement.hasAttribute('aria-current')).toBe(false);
+ expect(replacement.tabIndex).toBe(0);
+ expect(view.container.querySelector('section:not([hidden])')).toBeNull();
+ expect(screen.getByRole('status').textContent).toContain('The selected release is no longer in the loaded directory.');
+ fireEvent.click(replacement);
+ expect(replacement.getAttribute('aria-current')).toBe('true');
+ expect(within(view.container.querySelector('section:not([hidden])')!).getByLabelText('Release Alpha note')).toBeTruthy();
 });
 it('gives each visible workspace its navigation label without creating execution or approval controls',()=>{
  const view=render(h(FocusedReleaseWorkspace,{items,children:item=>h('p',null,item.title+' context')}));
@@ -209,4 +218,25 @@ it("leaves focus to the requested section when opening a deep link", () => {
   }));
   expect(screen.getByRole("button",{name:/Release Alpha/}).getAttribute("aria-current")).toBe("true");
   expect(document.activeElement).toBe(search);
+});
+
+it("shows recent age at the directory snapshot and preserves the exact timestamp for assistive technology", () => {
+  const observedAt = new Date("2026-11-17T10:35:00.000Z");
+  const updatedAt = "2026-11-17T10:25:00.000Z";
+  const future = "2026-11-17T10:36:00.000Z";
+  const view = render(h(FocusedReleaseWorkspace, {
+    items: [{...items[0], updatedAt}, {...items[1], updatedAt: future}],
+    observedAt, children: () => null,
+  }));
+  const recent = within(screen.getByRole("button", {name: /Release Alpha/}));
+  expect(recent.getByText("10 minutes ago").getAttribute("aria-hidden")).toBe("true");
+  const exact = new Date(updatedAt).toLocaleString();
+  expect(recent.getByText("Updated " + exact).closest("time")?.getAttribute("datetime")).toBe(updatedAt);
+  expect(screen.getByRole("button", {name: /Release Alpha/}).getAttribute("aria-label")).toBeNull();
+  const futureTime = within(screen.getByRole("button", {name: /Release Beta/})).getByText("Updated " + new Date(future).toLocaleString()).closest("time");
+  expect(futureTime?.querySelector('[aria-hidden="true"]')?.textContent).not.toMatch(/ago|Just now/);
+  view.rerender(h(FocusedReleaseWorkspace, {
+    items: [{...items[0], updatedAt}], observedAt: new Date("2026-11-18T10:35:00.000Z"), children: () => null,
+  }));
+  expect(screen.queryByText("10 minutes ago")).toBeNull();
 });

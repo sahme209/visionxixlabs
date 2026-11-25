@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       riskContext,
       requestedAuthority: s(f.get("requestedAuthority")) || undefined,
       knownDependencies: s(f.get("knownDependencies")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistApprovalPacket(org, packet);
   } catch (err) {
     console.warn("[approver/run-domain] hard failure:", err instanceof Error ? err.message : err);

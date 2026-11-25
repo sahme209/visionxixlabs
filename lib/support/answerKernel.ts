@@ -56,6 +56,9 @@ const PRIVATE_MEMBERSHIP_QUERY = /\b(?:who|show|list|check|identify|name)\b.*\b(
 const REQUEST_PREFIX = /^\s*(?:please[\s,]+)?(?:(?:can|could|would|will)\s+you\s+(?:please[\s,]+)?)?/i;
 const WORKSPACE_ACTION = /^(?:deploy|delete|merge|rollback|roll back|restart|approve|reject|revoke|refund|cancel|run|trigger)\b/i;
 const BATCH_ACTION = /^(?:start|retry|schedule)\s+(?:(?:a|an|the|my|our|this|that|failed|current|latest|pending|staging|production|airflow|batch)\s+){0,5}(?:dags?|jobs?|runs?|workflows?|batches?)\b/i;
+const CLOSURE_ACTION = /^close\s+(?:(?:a|the|my|our|this|that|current|pending|staging|production)\s+){0,5}(?:release|deployment)(?:\s+request)?\b/i;
+const PRIVATE_BATCH_HISTORY = /\b(?:my|our)\s+(?:(?:closed\s+)?release\s+history\s+in\s+batches|(?:batches|batch)\s+(?:release\s+)?history)\b/i;
+const PRIVATE_CLOSURE_RECORD = /\b(?:my|our)\s+(?:(?:release|deployment|latest|current)\s+){0,3}closure\s+(?:evidence|receipt|record|status)\b/i;
 const PRIVATE_WORKSPACE_RECORD = /\b(?:my|our)\s+(?:(?:production|staging|current|latest|pending)\s+)?(?:workspace|account|invoice|bill|deployment|release|runs?|pipeline|approval|repository|org|organization|subscription|credits?|balance)\b/i;
 
 export function isPrivateAuditEvidenceQuestion(question: string): boolean {
@@ -69,8 +72,8 @@ export function isPrivateBatchEvidenceQuestion(question: string): boolean {
 export function guard(question: string): GuardResult {
   if (containsSupportSecret(question)) return { kind: "secret_pasted" };
   const request = question.replace(REQUEST_PREFIX, "");
-  if (WORKSPACE_ACTION.test(request) || BATCH_ACTION.test(request)) return { kind: "action_request" };
-  if (PRIVATE_MEMBERSHIP_QUERY.test(question)) return { kind: "workspace_specific" };
+  if (WORKSPACE_ACTION.test(request) || BATCH_ACTION.test(request) || CLOSURE_ACTION.test(request)) return { kind: "action_request" };
+  if (PRIVATE_MEMBERSHIP_QUERY.test(question) || PRIVATE_CLOSURE_RECORD.test(question) || PRIVATE_BATCH_HISTORY.test(question)) return { kind: "workspace_specific" };
   if (WORKSPACE_LOOKUP.test(question) && (PRIVATE_AUDIT_RECORD.test(question) || PRIVATE_BATCH_RECORD.test(question) || PRIVATE_WORKSPACE_RECORD.test(question))) {
     return { kind: "workspace_specific" };
   }

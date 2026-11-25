@@ -18,7 +18,7 @@ import { prepareSmallSonnetRequest, smallSonnetReservation, smallSonnetReservati
 import { prepareSmallSonnet55Request, smallSonnet55Reservation, smallSonnet55ReservationEvidence, authorizeSmallSonnet55Dispatch, SMALL_SONNET_55_MODEL, type SmallSonnet55Request } from "./smallSonnet55Request";
 import { requestReservationCents } from "./requestReservationCents";
 
-type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal"; codingRunClaim?: CodingRunClaim; codingPhase?: "initial"|"refinement"; codingModel?: string; textPolicy?: TextAdmissionPolicyRequirement }>;
+type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal" | "releaseops" | "tenant_insights" | "workflow_translator"; codingRunClaim?: CodingRunClaim; codingPhase?: "initial"|"refinement"; codingModel?: string; textPolicy?: TextAdmissionPolicyRequirement }>;
 declare const admissionBrand: unique symbol;
 /** No serializable flag or constructor. Only a committed durable claim mints it. */
 export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
@@ -43,7 +43,9 @@ export async function admitGovernedExtract(input: Scope, request?: { model: stri
   abortSignal?.throwIfAborted();
   const result = await reserveAndClaim(input, governedExtractReservationKey(input), "extract_structured_data", small, abortSignal, small55);
   if (!result.ok) {
-    if (result.error === "ai_credit_pool_exhausted") throw new AICreditAdmissionRefusal();
+    if (result.error === "ai_credit_pool_exhausted" || result.error === "ai_workspace_budget_exceeded") {
+      throw new AICreditAdmissionRefusal(result.error);
+    }
     deny();
   }
   return result.admission;
@@ -76,7 +78,7 @@ export async function admitQuotedAIText(input: Scope & { idempotencyKey: string 
 }
 
 async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task, small?: SmallSonnetRequest, abortSignal?: AbortSignal, small55?: SmallSonnet55Request): Promise<AdmissionResult> {
-  const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId, ...(input.source === "coding_proposal" ? { source: input.source } : {}) });
+  const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId, ...(input.source ? { source: input.source } : {}) });
   if (![scope.organizationId, scope.userId, scope.correlationId].every(v => typeof v === "string" && v.length > 0 && v.length <= 1024)) deny();
   const reserved = input.source === "coding_proposal"
     ? await reserveCodingCall(prisma,input.codingRunClaim,scope,{idempotencyKey,phase:input.codingPhase!,model:input.codingModel!,estimatedCents:requestReservationCents()})
@@ -164,7 +166,7 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
       const input: RecordAIUsageInput = {
         organizationId: scope.organizationId, triggeredBy: scope.userId, correlationId: scope.correlationId,
         provider: result.provider, model: result.model, externalUsageId: result.gatewayGenerationId,
-        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: scope.source === "coding_proposal" ? "pipeline/code_propose" : "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
+        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: scope.source === "coding_proposal" ? "pipeline/code_propose" : scope.source === "releaseops" ? "releaseops/instrumented_fetcher" : scope.source === "tenant_insights" ? "api/insights/tenant" : scope.source === "workflow_translator" ? "api/workflows/translate" : "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
       };
       if (v2) {
         const saved = scope.source === "coding_proposal" ? await prisma.$transaction(async tx => {

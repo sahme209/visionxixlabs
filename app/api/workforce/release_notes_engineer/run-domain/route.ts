@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       title, commitLog,
       releaseTag: s(f.get("releaseTag")) || undefined,
       audience: s(f.get("audience")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistReleaseNotesDraft(org, draft);
   } catch (err) {
     console.warn("[release_notes/run-domain] hard failure:", err instanceof Error ? err.message : err);

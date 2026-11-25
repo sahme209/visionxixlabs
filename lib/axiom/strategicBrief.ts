@@ -4,6 +4,7 @@
  */
 
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 
 export type StrategicBriefInput = {
   profile: { projectType?: string; hostingProvider?: string; monthlySpend?: string; complianceNeeds?: string };
@@ -97,27 +98,31 @@ Return this JSON structure (no other text):
 
 function deterministicFallback(input: StrategicBriefInput): StrategicBrief {
   const scores = input.axiomScores;
-  const infra = scores.infrastructureScore ?? 0;
-  const savings = scores.estimatedAnnualSavings ?? 0;
-  const risk = scores.riskExposureLevel ?? "Medium";
-  const friction = scores.deploymentFrictionIndex ?? 50;
-
-  const exec =
-    infra >= 70
-      ? `Infrastructure readiness is strong (${infra}/100). Estimated annual savings of ${savings ? `$${savings.toLocaleString()}` : "material"} available. Focus on automation and governance.`
-      : `Infrastructure score ${infra}/100 indicates optimization opportunity. Risk level: ${risk}. Prioritize stabilization and cost levers.`;
+  const finite = (n: unknown): n is number => typeof n === "number" && Number.isFinite(n);
+  const infra = finite(scores.infrastructureScore) ? scores.infrastructureScore : null;
+  const savings = finite(scores.estimatedAnnualSavings) ? scores.estimatedAnnualSavings : null;
+  const risk = typeof scores.riskExposureLevel === "string" && scores.riskExposureLevel.trim() ? scores.riskExposureLevel : null;
+  const friction = finite(scores.deploymentFrictionIndex) ? scores.deploymentFrictionIndex : null;
+  const drift = input.driftSignals?.hasDrift === true;
+  const exec = [
+    infra === null ? "Infrastructure readiness has yet to be measured." : `Recorded infrastructure readiness is ${infra}/100.`,
+    risk ? `Recorded risk level is ${risk}.` : "No risk level was recorded.",
+    ...(drift ? ["The assessment recorded infrastructure drift."] : []),
+  ].join(" ");
 
   const financial =
-    savings && savings > 0
-      ? `Identified savings of approximately $${savings.toLocaleString()} annually. Right-sizing, reserved capacity, and storage tiering are primary levers.`
-      : "Cost optimization levers require baseline measurement. Establish tagging and attribution first.";
+    savings !== null && savings > 0
+      ? `Estimated annual savings are $${savings.toLocaleString()}. Validate the estimate against actual usage before committing changes.`
+      : savings === 0 ? "The assessment recorded no estimated savings." : "No annual savings estimate was recorded.";
 
   const operational =
-    risk === "High"
+    risk?.toLowerCase() === "high"
       ? "Operational risk is elevated. Address security posture and deployment friction before scaling."
-      : "Operational baseline is manageable. Incremental improvements in CI/CD and drift detection recommended.";
+      : "Review the available security and deployment evidence before setting operational priorities.";
 
-  const scal = infra >= 60 ? "Scalability outlook is positive. Automation readiness supports growth." : "Scalability constrained until infrastructure baseline improves.";
+  const scal = infra === null ? "Measure infrastructure readiness before planning for higher demand."
+    : infra >= 60 ? "Validate capacity and load assumptions before scaling."
+    : "Review the infrastructure baseline before scaling.";
 
   return {
     executiveSummary: exec,
@@ -137,10 +142,16 @@ function deterministicFallback(input: StrategicBriefInput): StrategicBrief {
     ],
     recommendedInvestmentZones: ["Automation and CI/CD", "Cost optimization tooling", "Governance and compliance"],
     riskIfIgnored: "Continued drift and unaddressed risk will increase technical debt and reduce ability to scale.",
+    boardSlideOutline: input.tier === "enterprise"
+      ? ["Infrastructure readiness and evidence", "Cost baseline and savings estimate", "Operational risk and next decisions"]
+      : undefined,
     objectionForecast: input.tier !== "free"
       ? [
-          savings < 5000 ? "ROI may be questioned — emphasize risk avoidance" : "Timing and prioritization — align with current initiatives",
-          friction > 70 ? "Implementation effort concerns — offer phased approach" : "Budget constraints — lead with quick wins",
+          savings === null ? "Validate the savings baseline before discussing return on investment."
+            : savings < 5000 ? "Use the estimate to explain expected return and risk reduction."
+            : "Validate the estimate before prioritizing implementation.",
+          friction !== null && friction > 70 ? "Review whether a phased rollout would reduce implementation effort."
+            : "Identify the costs and dependencies for the proposed changes.",
         ]
       : undefined,
   };
@@ -169,6 +180,9 @@ export async function generateStrategicBrief(input: StrategicBriefInput): Promis
     };
   }
 
+  // Starter lead tokens carry no workspace and cannot fund a model call.
+  if (publicBillingPolicyEnabled()) return fallback;
+
   try {
     const { text } = await orchestrateGenerate({
       taskType: "reasoning_planning",
@@ -189,7 +203,7 @@ export async function generateStrategicBrief(input: StrategicBriefInput): Promis
       boardLevelKPIsToTrack: Array.isArray(parsed.boardLevelKPIsToTrack) ? parsed.boardLevelKPIsToTrack : fallback.boardLevelKPIsToTrack,
       recommendedInvestmentZones: Array.isArray(parsed.recommendedInvestmentZones) ? parsed.recommendedInvestmentZones : fallback.recommendedInvestmentZones,
       riskIfIgnored: parsed.riskIfIgnored ?? fallback.riskIfIgnored,
-      boardSlideOutline: input.tier === "enterprise" && Array.isArray(parsed.boardSlideOutline) ? parsed.boardSlideOutline : undefined,
+      boardSlideOutline: input.tier === "enterprise" && Array.isArray(parsed.boardSlideOutline) ? parsed.boardSlideOutline : fallback.boardSlideOutline,
       objectionForecast: Array.isArray(parsed.objectionForecast) ? parsed.objectionForecast : fallback.objectionForecast,
     };
   } catch {

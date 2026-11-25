@@ -5,6 +5,7 @@ export interface ReleaseBatchWait {
 export interface ReleaseBatchWaitState {
   requestVersion: number; monitoringEnabled: boolean; canStart: boolean; canCancel: boolean;
   wait: ReleaseBatchWait | null;
+  closedRelease?: {requestId: string; version: number};
 }
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export function isReleaseBatchWait(v: unknown): v is ReleaseBatchWait {
@@ -15,9 +16,13 @@ export function isReleaseBatchWait(v: unknown): v is ReleaseBatchWait {
     && (v.deadlineAt === null || typeof v.deadlineAt === "number" && Number.isSafeInteger(v.deadlineAt) && v.deadlineAt > 0)
     && (v.nextObservationAt === null || typeof v.nextObservationAt === "string" && Number.isFinite(Date.parse(v.nextObservationAt)));
 }
-export function isReleaseBatchWaitState(v: unknown, expectedVersion: number): v is ReleaseBatchWaitState {
+export function isReleaseBatchWaitState(v: unknown, expectedVersion: number, requestId: string): v is ReleaseBatchWaitState {
   if (!record(v) || v.requestVersion !== expectedVersion || typeof v.monitoringEnabled !== "boolean"
     || typeof v.canStart !== "boolean" || typeof v.canCancel !== "boolean" || v.wait !== null && !isReleaseBatchWait(v.wait)) return false;
+  if (v.closedRelease !== undefined) {
+    return record(v.closedRelease) && v.closedRelease.requestId === requestId && v.closedRelease.version === expectedVersion
+      && v.wait === null && !v.monitoringEnabled && !v.canStart && !v.canCancel;
+  }
   return (!v.canStart || v.monitoringEnabled && v.wait === null)
     && (!v.canCancel || v.wait !== null && ["queued", "running", "retrying", "paused_for_input"].includes((v.wait as ReleaseBatchWait).status));
 }

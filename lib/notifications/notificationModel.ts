@@ -25,7 +25,8 @@ export type NotificationType =
   | "evidence_export_ready"
   | "readiness_blocker"
   | "policy_violation"
-  | "scheduled_scan_failed";
+  | "scheduled_scan_failed"
+  | "workspace_ai_budget_warning";
 
 export type NotificationSeverity = "info" | "warning" | "critical";
 
@@ -92,4 +93,5 @@ export const TYPE_LABEL: Record<NotificationType, string> = {
   readiness_blocker:         "Readiness blocker",
   policy_violation:          "Policy violation",
   scheduled_scan_failed:     "Scheduled scan failed",
+  workspace_ai_budget_warning: "AI budget warning",
 };

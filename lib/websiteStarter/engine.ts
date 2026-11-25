@@ -4,6 +4,7 @@
  * Preserves existing output shapes.
  */
 
+import type { LeadGenerationInvocation } from "@/lib/ai/leadGenerationInvocation";
 import type { UnifiedTier } from "@/lib/pricing/unifiedTier";
 import {
   generateAIStarterPackage,
@@ -41,12 +42,13 @@ export type WebsiteStarterOutput = AIStarterPackage | AiStarterPackage;
  */
 export async function generateWebsiteStarter(
   input: WebsiteStarterInput,
-  _tier: UnifiedTier
+  _tier: UnifiedTier,
+  leadInvocation?: LeadGenerationInvocation
 ): Promise<WebsiteStarterOutput> {
   if (input.variant === "simple") {
-    return generateAIStarterPackage(input.form);
+    return generateAIStarterPackage(input.form, leadInvocation);
   }
-  return generateDetailedPackage(input.form);
+  return generateDetailedPackage(input.form, leadInvocation);
 }
 
 /**

@@ -34,7 +34,8 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const [detailsTarget,setDetailsTarget]=useState<HTMLDivElement|null>(null);
  const replacePrompt=useRef<HTMLElement>(null),replaceOpener=useRef<HTMLButtonElement|null>(null);
  const inspectorOpener=useRef<HTMLButtonElement|null>(null);
- const requestedHistoryVersion=useRef<number>(undefined);
+ const requestedHistory=useRef<{version?:number}|null>(null);
+ const historyHeading=useRef<HTMLHeadingElement>(null);
  const focusDraftContext=useRef(false);
  const editor=useRef<HTMLDivElement>(null);
  const focusNewInstruction=useRef(false);
@@ -67,12 +68,15 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     const context=inspector.current?.querySelector<HTMLTextAreaElement>('[data-help-id="bot.composer.context"]');
     if(context&&!context.disabled){context.focus();return}
    }
-   const version=requestedHistoryVersion.current;
-   requestedHistoryVersion.current=undefined;
-   const record=version===undefined?null:inspector.current?.querySelector<HTMLDetailsElement>(`[data-saved-task-version="${version}"]`);
-   if(record){
-    record.open=true;
-    record.querySelector<HTMLElement>("summary")?.focus();
+   const historyTarget=requestedHistory.current;
+   requestedHistory.current=null;
+   if(historyTarget){
+    const record=historyTarget.version===undefined?null:
+      inspector.current?.querySelector<HTMLDetailsElement>(`[data-saved-task-version="${historyTarget.version}"]`);
+    if(record){
+     record.open=true;
+     record.querySelector<HTMLElement>("summary")?.focus();
+    }else historyHeading.current?.focus();
     return;
    }
    inspector.current?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')?.focus();
@@ -99,7 +103,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const [pending,setPending]=useState<PendingSave>(),[confirmOpen,setConfirmOpen]=useState<string>(),[conflict,setConflict]=useState(false);
  useEffect(()=>{if(confirmOpen)replacePrompt.current?.focus()},[confirmOpen]);
  const [history,setHistory]=useState<SavedBotTaskHistoryDto>(),[historyError,setHistoryError]=useState<string>();
- const historyHeading=useRef<HTMLHeadingElement>(null),olderHistory=useRef<HTMLButtonElement>(null);
+ const olderHistory=useRef<HTMLButtonElement>(null);
  const [candidate,setCandidate]=useState(false),[editorGeneration,setEditorGeneration]=useState(0);
  useLayoutEffect(()=>{
   if(!focusNewInstruction.current)return;
@@ -202,7 +206,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  function openVersionHistory(opener:HTMLButtonElement,recordedVersion?:number){
   if(historyLocked||!selected||!owns())return;
   inspectorOpener.current=opener;
-  requestedHistoryVersion.current=recordedVersion;
+  requestedHistory.current={version:recordedVersion};
   setInspectorTab("Details");
   setInspectorOpen(true);
   setTasksOpen(false);
@@ -226,7 +230,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const visibleRows=rows.filter(task=>task.title.toLocaleLowerCase().includes(filter.trim().toLocaleLowerCase()));
  return <div onKeyDown={event=>{if(event.nativeEvent.isComposing||event.nativeEvent.keyCode===229)return;if(event.key==="Escape"&&!event.defaultPrevented){if(confirmOpen){event.preventDefault();cancelReplace()}else if(tasksOpen){event.preventDefault();closeTasks()}else if(inspectorOpen){event.preventDefault();closeInspector()}}}} className="bot-task-workbench relative flex min-h-0 flex-1 overflow-hidden">
   {headerActionsTarget&&createPortal(newTaskButton,headerActionsTarget)}
-  <aside ref={taskList} id={`bot-task-list-${ownerKey}`} aria-label="Bot task list" className={`studio-task-list ${tasksOpen?'flex':'hidden'} absolute inset-y-0 left-0 z-20 w-56 shrink-0 flex-col border-r border-white/10 bg-zinc-950 p-4 shadow-2xl`}>
+  <section ref={taskList} id={`bot-task-list-${ownerKey}`} aria-label="Bot task list" className={`studio-task-list ${tasksOpen?'flex':'hidden'} absolute inset-y-0 left-0 z-20 w-56 shrink-0 flex-col border-r border-white/10 bg-zinc-950 p-4 shadow-2xl`}>
    <button data-help-id="bot.workspace.tasks-close" type="button" className="mb-3 text-left text-xs text-zinc-400" onClick={closeTasks}>Close task list</button>
    <label className="studio-task-search">
     <Search size={15} aria-hidden="true"/>
@@ -238,10 +242,10 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     {listState==="ready"&&rows.length===0&&<p className="text-xs leading-5 text-zinc-500">No saved task drafts yet. Save a draft when you are ready.</p>}
     {listState==="ready"&&rows.length>0&&visibleRows.length===0&&<p className="text-xs text-zinc-500">No loaded tasks match.</p>}
     {listState==="error"&&<p className="text-xs leading-5 text-zinc-500">Saved tasks could not be loaded. Refresh to retry; the editor is retained.</p>}
-    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-500">Draft · version {task.version}</span></span></button></li>)}</ul>
+    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-400">Draft · version {task.version}</span></span></button></li>)}</ul>
     {nextCursor&&<button data-help-id="bot.workspace.tasks-more" type="button" className="btn-secondary mt-3" disabled={Boolean(busy)} onClick={()=>void loadList(nextCursor)}>More saved tasks</button>}
    </div>
-  </aside>
+  </section>
   <div ref={editor} className="studio-task-editor flex min-h-0 min-w-0 flex-1 flex-col">
    <header className="bot-task-toolbar flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
     <div className="flex min-w-0 items-center gap-3"><button data-help-id="bot.workspace.tasks-toggle" type="button" ref={tasksTrigger} className="btn-secondary" aria-controls={`bot-task-list-${ownerKey}`} aria-expanded={tasksOpen} onClick={()=>{setTasksOpen(!tasksOpen);setInspectorOpen(false)}}>Tasks</button><h2 className="studio-task-title">{selected?.title??"New task"}</h2>{selected&&<span className="studio-task-badge">v{selected.version}</span>}<span className="studio-task-badge">Draft</span></div>
@@ -275,7 +279,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     </div>
    </section>
   </div>
-  <aside className="studio-task-summary" aria-label="Task draft summary" inert={inspectorOpen}>
+  <section className="studio-task-summary" aria-label="Task draft summary" inert={inspectorOpen}>
    <h2>Task details</h2>
    <dl>
     <div><dt>Status</dt><dd>{selected?"Saved draft":"Local draft"}</dd></div>
@@ -310,8 +314,8 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
      <ChevronDown aria-hidden="true" size={13}/>
     </button>)}
    </section>}
-  </aside>
-  <aside ref={inspector} id={`bot-task-inspector-${ownerKey}`} aria-label="Saved task details" className={`${inspectorOpen?'block':'hidden'} absolute inset-y-0 right-0 z-20 w-72 shrink-0 overflow-y-auto border-l border-white/10 bg-zinc-950 p-5 shadow-2xl`}>
+  </section>
+  <section ref={inspector} id={`bot-task-inspector-${ownerKey}`} aria-label="Saved task details" className={`${inspectorOpen?'block':'hidden'} absolute inset-y-0 right-0 z-20 w-72 shrink-0 overflow-y-auto border-l border-white/10 bg-zinc-950 p-5 shadow-2xl`}>
    <div role="tablist" aria-label="Bot task inspector" className="flex gap-1 border-b border-white/10 pb-4">{(["Details","Library","Computer"] as const).map(tab=><button data-help-id="bot.workspace.inspector-tab" key={tab} type="button" role="tab" id={`bot-tab-${ownerKey}-${tab}`} aria-selected={inspectorTab===tab} tabIndex={inspectorTab===tab?0:-1} onKeyDown={event=>{if(event.nativeEvent.isComposing||event.nativeEvent.keyCode===229)return;const tabs=["Details","Library","Computer"] as const;const index=tabs.indexOf(tab);const next=event.key==="ArrowRight"?tabs[(index+1)%3]:event.key==="ArrowLeft"?tabs[(index+2)%3]:event.key==="Home"?tabs[0]:event.key==="End"?tabs[2]:undefined;if(next){event.preventDefault();setInspectorTab(next);const sibling=event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(`[id="bot-tab-${ownerKey}-${next}"]`);sibling?.focus()}}} aria-controls={`bot-panel-${ownerKey}-${tab}`} className={`rounded-lg px-3 py-2 text-xs ${inspectorTab===tab?'bg-white/5 text-zinc-200':'text-zinc-500'}`} onClick={()=>setInspectorTab(tab)}>{tab==='Library'?'Workspace report':tab}</button>)}</div>
    <button data-help-id="bot.workspace.details-close" type="button" className="mt-3 text-xs text-zinc-400 underline" onClick={closeInspector}>Close task details</button>
    <div role="tabpanel" id={`bot-panel-${ownerKey}-Details`} aria-labelledby={`bot-tab-${ownerKey}-Details`} hidden={inspectorTab!=="Details"} className="space-y-5 pt-5">
@@ -355,7 +359,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
    </div>
    <div role="tabpanel" id={`bot-panel-${ownerKey}-Library`} aria-labelledby={`bot-tab-${ownerKey}-Library`} hidden={inspectorTab!=="Library"} className="pt-6"><BotReadinessReportPanel key={`${selected?.id??"new"}:${selected?.version??0}`} task={selected} dirty={dirty} active={active&&inspectorOpen&&inspectorTab==="Library"}/></div>
    <div role="tabpanel" id={`bot-panel-${ownerKey}-Computer`} aria-labelledby={`bot-tab-${ownerKey}-Computer`} hidden={inspectorTab!=="Computer"} className="pt-6"><BotComputerObservationPanel active={active&&inspectorOpen&&inspectorTab==="Computer"} owner={observationIdentity?{...observationIdentity,contextRevision:initialRevision,taskId:selected?.id??null,taskVersion:selected?.version??null}:undefined} onInputSelection={setInputSelection}/><BotComputerInputPanel recoveryIdentity={recoveryIdentity} active={active&&!dirty&&inspectorOpen&&inspectorTab==="Computer"} owner={observationIdentity?{...observationIdentity,contextRevision:initialRevision,taskId:selected?.id??null,taskVersion:selected?.version??null}:undefined} selection={inputSelection}/></div>
-  </aside>
+  </section>
  </div>;
 }
 

@@ -26,6 +26,24 @@ let events = new Set<string>();
 function request() {
   return new NextRequest("https://example.test/api/billing/add-ons/purchase", { method: "POST", headers: { origin: "https://example.test", "content-type": "application/json", "idempotency-key": "checkout_intent_key_1" }, body: JSON.stringify({ sku: "ai_credits_small" }) });
 }
+function openCheckoutSession(id: string) {
+  return {
+    id, url: `https://checkout.stripe.com/c/pay/${id}`, mode: "payment", livemode: false,
+    status: "open", payment_status: "unpaid", currency: "usd",
+    expires_at: Math.floor(Date.now() / 1000) + 600,
+    amount_total: row.pricePaidCents, client_reference_id: row.organizationId,
+    metadata: { purpose: "axiom_ai_credit_add_on", organizationId: row.organizationId, addOnPurchaseId: row.id, sku: row.sku },
+  };
+}
+
+function purchaseThroughRoute(_url: string, options: RequestInit) {
+  const headers = new Headers(options.headers);
+  headers.set("origin", "https://example.test");
+  return purchase(new NextRequest("https://example.test/api/billing/add-ons/purchase", {
+    method: options.method, body: options.body, headers,
+  }));
+}
+
 function paidEvent(id = "evt_paid") {
   const body = JSON.stringify({ id, type: "checkout.session.completed", livemode: false, data: { object: { id: "cs_test_lost", payment_status: "paid", payment_intent: "pi_test_paid", amount_total: 1000, currency: "usd", metadata: { purpose: "axiom_ai_credit_add_on", addOnPurchaseId: row.id, organizationId: row.organizationId, sku: row.sku } } } });
   const timestamp = Math.floor(Date.now() / 1000);
@@ -69,15 +87,11 @@ afterEach(() => { cleanup(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
 describe("uncertain credit Checkout → late signed fulfillment", () => {
   it("composes the actual customer button, route, helper and provider response through redirect", async () => {
-    io.stripeCreate.mockResolvedValue({ id: "cs_test_confirmed", url: "https://checkout.stripe.com/c/pay/cs_test_confirmed" });
+    io.stripeCreate.mockResolvedValue(openCheckoutSession("cs_test_confirmed"));
     const requests: RequestInit[] = [];
     vi.stubGlobal("fetch", async (_url: string, options: RequestInit) => {
       requests.push(options);
-      const headers = new Headers(options.headers);
-      headers.set("origin", "https://example.test");
-      return purchase(new NextRequest("https://example.test/api/billing/add-ons/purchase", {
-        method: options.method, body: options.body, headers,
-      }));
+      return purchaseThroughRoute(_url, options);
     });
     render(createElement(PurchaseAddOnButton, { sku: "ai_credits_small", organizationId: "org_1" }));
     fireEvent.click(screen.getByRole("button", { name: "Buy" }));
@@ -87,6 +101,18 @@ describe("uncertain credit Checkout → late signed fulfillment", () => {
     expect(io.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ idempotencyKey: key, pricePaidCents: 1000 }) }));
     expect(io.stripeCreate).toHaveBeenCalledWith(expect.anything(), { idempotencyKey: `ai-credit:org_1:${key}` });
     expect(row.stripeCheckoutSessionId).toBe("cs_test_confirmed");
+  });
+
+  it("shows uncertain checkout and the purchase reference without redirecting to a mismatched session", async () => {
+    io.stripeCreate.mockResolvedValue({ ...openCheckoutSession("cs_test_wrong"), client_reference_id: "another_workspace" });
+    vi.stubGlobal("fetch", purchaseThroughRoute);
+    render(createElement(PurchaseAddOnButton, { sku: "ai_credits_small", organizationId: "org_1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Buy" }));
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Checkout outcome is uncertain."));
+    expect(screen.getByText("purchase_1", { exact: false })).toBeTruthy();
+    expect(io.push).not.toHaveBeenCalled();
+    expect(io.stripeCreate).toHaveBeenCalledTimes(1);
+    expect(row).toMatchObject({ status: "pending", stripeCheckoutSessionId: null });
   });
 
   it("retains pending intent after a lost response, refuses recreation, then fulfills the signed paid event once", async () => {

@@ -36,48 +36,78 @@ function failed(error:unknown) {
 }
 const auditScope = (organizationId:string, incidentId:string) =>
   ({organizationId,kind,subjectKind:"release",subjectId:incidentId,outcome:"ok"});
+const collectionAuditId = (organizationId:string, userId:string, incidentId:string, attemptId:string) =>
+  "iec_" + createHash("sha256").update(JSON.stringify([organizationId,userId,incidentId,attemptId])).digest("hex");
 
 export async function GET(request:NextRequest) {
   const query = request.nextUrl.searchParams;
   const input = ticketLinkId.safeParse(query.get("incidentId"));
-  if (query.size !== 1 || !input.success) return reply({ok:false,error:"invalid_incident_collection"},400);
+  const attempt = query.has("attemptId") ? incidentCollectionRequest.shape.attemptId.safeParse(query.get("attemptId")) : undefined;
+  if (query.size !== (attempt ? 2 : 1) || !input.success || attempt?.success === false) return reply({ok:false,error:"invalid_incident_collection"},400);
   const incidentId = input.data;
   try {
     const actor = await reader(request);
     if (!actor) throw new Refusal(403,"incident_collection_permission_required");
     const {organizationId,userId} = actor;
-    const readIncident = () => prisma.deploymentIncident.findFirst({
+    const incident = await prisma.deploymentIncident.findFirst({
       where:{id:incidentId,organizationId}, select:{releaseId:true,updatedAt:true},
     });
-    const incident = await readIncident();
     if (!incident) throw new Refusal(404,"incident_collection_source_unavailable");
-    const event = await prisma.auditEvent.findFirst({
-      where:auditScope(organizationId,incidentId),orderBy:[{createdAt:"desc"},{id:"desc"}],
-      select:{detailJson:true,actorUserId:true,correlationId:true},
-    });
-    const release = await prisma.release.findFirst({where:{id:incident.releaseId,organizationId},select:{
-      commitSha:true,updatedAt:true,rollbackReferenceReleaseId:true,applicationId:true,targetEnvironmentId:true,evidenceRepositoryId:true,
-    }});
-    if (!release) throw new Refusal(404,"incident_collection_source_unavailable");
-    const receipt = incidentCollectionReceipt.safeParse(event?.detailJson);
-    const incidentRevision = incident.updatedAt.toISOString();
-    const recorded = receipt.success && receipt.data.workspaceId === organizationId && receipt.data.actorId === event?.actorUserId &&
-      receipt.data.attemptId === event?.correlationId && receipt.data.incidentId === incidentId && receipt.data.releaseId === incident.releaseId &&
-      receipt.data.incidentRevision === incidentRevision && receipt.data.commit === release.commitSha &&
-      receipt.data.releaseRevision === release.updatedAt.toISOString();
-    const baseline = recorded && release.rollbackReferenceReleaseId && await prisma.release.findFirst({
-      where:{id:release.rollbackReferenceReleaseId,organizationId,commitSha:receipt.data.baselineCommit,
-        applicationId:release.applicationId,targetEnvironmentId:release.targetEnvironmentId,evidenceRepositoryId:release.evidenceRepositoryId},
-      select:{id:true},
-    });
-    const [current,refreshedActor] = await Promise.all([readIncident(),reader(request)]);
-    if (!sameActor(refreshedActor,actor)) throw new Refusal(403,"incident_collection_permission_required");
-    if (!current || current.updatedAt.getTime() !== incident.updatedAt.getTime() || current.releaseId !== incident.releaseId) {
+    if (!sameActor(await reader(request),actor)) throw new Refusal(403,"incident_collection_permission_required");
+    if (attempt?.success) {
+      const attemptId = attempt.data;
+      const event = await prisma.auditEvent.findFirst({
+        where:{...auditScope(organizationId,incidentId),id:collectionAuditId(organizationId,userId,incidentId,attemptId),
+          actorUserId:userId,correlationId:attemptId},
+        select:{detailJson:true},
+      });
+      if (!event) return reply({ok:true,data:null});
+      const receipt = incidentCollectionReceipt.safeParse(event.detailJson);
+      if (!receipt.success || receipt.data.workspaceId !== organizationId || receipt.data.actorId !== userId ||
+          receipt.data.incidentId !== incidentId || receipt.data.releaseId !== incident.releaseId || receipt.data.attemptId !== attemptId) {
+        throw new Refusal(409,"incident_collection_attempt_conflict");
+      }
+      return reply({ok:true,data:receipt.data});
+    }
+
+
+    // All source facts and the latest receipt must describe the same database snapshot.
+    const [current] = await prisma.$queryRaw<Array<{
+      releaseId:string; incidentRevision:Date; releaseRevision:Date|null; commit:string|null; baselineCommit:string|null;
+      detailJson:unknown; actorUserId:string|null; correlationId:string|null;
+    }>>`
+      SELECT i."releaseId", i."updatedAt" AS "incidentRevision", r."updatedAt" AS "releaseRevision",
+        r."commitSha" AS "commit", baseline."commitSha" AS "baselineCommit",
+        event."detailJson", event."actorUserId", event."correlationId"
+      FROM "DeploymentIncident" i
+      LEFT JOIN "Release" r ON r."id" = i."releaseId" AND r."organizationId" = i."organizationId"
+      LEFT JOIN "Release" baseline ON baseline."id" = r."rollbackReferenceReleaseId"
+        AND baseline."organizationId" = r."organizationId"
+        AND baseline."applicationId" = r."applicationId"
+        AND baseline."targetEnvironmentId" IS NOT DISTINCT FROM r."targetEnvironmentId"
+        AND baseline."evidenceRepositoryId" IS NOT DISTINCT FROM r."evidenceRepositoryId"
+      LEFT JOIN LATERAL (
+        SELECT a."detailJson", a."actorUserId", a."correlationId"
+        FROM "AuditEvent" a
+        WHERE a."organizationId" = i."organizationId" AND a."kind" = ${kind} AND a."subjectKind" = 'release'
+          AND a."subjectId" = i."id" AND a."outcome" = 'ok'
+        ORDER BY a."createdAt" DESC, a."id" DESC
+        LIMIT 1
+      ) event ON true
+      WHERE i."id" = ${incidentId} AND i."organizationId" = ${organizationId}`;
+    if (!current || current.incidentRevision.getTime() !== incident.updatedAt.getTime() || current.releaseId !== incident.releaseId) {
       throw new Refusal(409,"incident_collection_changed");
     }
+    if (!current.releaseRevision) throw new Refusal(404,"incident_collection_source_unavailable");
+    const receipt = incidentCollectionReceipt.safeParse(current.detailJson);
+    const incidentRevision = current.incidentRevision.toISOString();
+    const recorded = receipt.success && receipt.data.workspaceId === organizationId && receipt.data.actorId === current.actorUserId &&
+      receipt.data.attemptId === current.correlationId && receipt.data.incidentId === incidentId && receipt.data.releaseId === current.releaseId &&
+      receipt.data.incidentRevision === incidentRevision && receipt.data.commit === current.commit &&
+      receipt.data.releaseRevision === current.releaseRevision.toISOString() && receipt.data.baselineCommit === current.baselineCommit;
     return reply({ok:true,data:incidentCollectionStatus.parse({
-      workspaceId:organizationId,actorId:userId,incidentId,releaseId:incident.releaseId,
-      incidentRevision,collectedAt:baseline && receipt.success ? receipt.data.recordedAt : null,
+      workspaceId:organizationId,actorId:userId,incidentId,releaseId:current.releaseId,
+      incidentRevision,collectedAt:recorded ? receipt.data.recordedAt : null,
     })});
   } catch (error) { return failed(error); }
 }
@@ -94,7 +124,7 @@ export async function POST(request:NextRequest) {
     const {organizationId,userId} = actor;
     if (command.workspaceId !== organizationId || command.actorId !== userId) throw new Refusal(403,"incident_collection_permission_required");
     const {incidentId,releaseId,attemptId} = command;
-    const id = "iec_" + createHash("sha256").update(JSON.stringify([organizationId,userId,incidentId,attemptId])).digest("hex");
+    const id = collectionAuditId(organizationId,userId,incidentId,attemptId);
     const data = await prisma.$transaction(async tx => {
       const [membership] = await tx.$queryRaw<Array<{role:string; acceptedAt:Date|null}>>`
         SELECT "role"::text AS "role", "acceptedAt" FROM "OrgMembership"

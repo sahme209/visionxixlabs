@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       intentText,
       knownCapabilities: s(f.get("knownCapabilities")) || undefined,
       hardConstraints: s(f.get("hardConstraints")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistIntentWorkflow(org, workflow);
   } catch (err) {
     console.warn("[intent_parser/run-domain] hard failure:", err instanceof Error ? err.message : err);

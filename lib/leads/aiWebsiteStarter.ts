@@ -1,9 +1,9 @@
 /**
  * AI Website Starter Package generator.
- * Uses unified provider (OpenAI, Gemini, Anthropic) per AI_PROVIDER or fallback order.
- * Env: OPENAI_API_KEY | GEMINI_API_KEY | ANTHROPIC_API_KEY, AI_PROVIDER (optional), NEXT_PUBLIC_BASE_URL.
+ * Uses the shared AI Gateway orchestrator.
  */
 
+import type { LeadGenerationInvocation } from "@/lib/ai/leadGenerationInvocation";
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 import type { LeadFormData } from "./leadSchema";
 
@@ -90,10 +90,12 @@ function buildUserPrompt(data: LeadFormData): string {
 }
 
 export async function generateWebsiteStarterPackage(
-  data: LeadFormData
+  data: LeadFormData,
+  leadInvocation?: LeadGenerationInvocation
 ): Promise<AiStarterPackage> {
   const prompt = buildUserPrompt(data);
   const { text } = await orchestrateGenerate({
+    leadInvocation,
     taskType: "content_generation",
     systemPrompt: SYSTEM_PROMPT,
     userPrompt: prompt,

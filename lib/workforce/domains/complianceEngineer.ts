@@ -27,7 +27,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 import { COMPLIANCE_CONTROLS, scoreControl, type ComplianceControl } from "@/lib/compliance/controls";
 
 export const COMPLIANCE_ENGINEER_TARGET_KIND = "engineer_compliance_report";
@@ -132,7 +132,7 @@ function parseAiResponse(text: string): ParsedAiOutput | null {
   }
 }
 
-export async function runComplianceEngineer(organizationId: string): Promise<ComplianceEngineerReport> {
+export async function runComplianceEngineer(organizationId: string, actorUserId?: string): Promise<ComplianceEngineerReport> {
   // Step 1 — pull rule codes from recent findings.
   const ruleCodes: string[] = [];
   try {
@@ -166,6 +166,7 @@ export async function runComplianceEngineer(organizationId: string): Promise<Com
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:compliance_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt({ controls: scored, ruleCodesObserved: ruleCodes.length })}`;
@@ -182,7 +183,7 @@ export async function runComplianceEngineer(organizationId: string): Promise<Com
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const controls: ComplianceControlReport[] = scored.map((s) => ({

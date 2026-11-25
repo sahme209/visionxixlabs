@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       tier0Services: s(f.get("tier0Services")) || undefined,
       existingBackups: s(f.get("existingBackups")) || undefined,
       complianceContext: s(f.get("complianceContext")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistDrPlan(org, plan);
   } catch (err) {
     console.warn("[dr_planner/run-domain] hard failure:", err instanceof Error ? err.message : err);

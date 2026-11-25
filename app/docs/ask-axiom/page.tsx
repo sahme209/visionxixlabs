@@ -11,8 +11,8 @@ export default function AskAxiomDocsPage() {
    summary="The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in." />
   <Callout variant="warning" title="Never share secrets">Do not paste passwords, API keys or tokens into the chat. Messages that look like secrets are refused and removed from the chat history in your browser. If you shared a real secret, rotate it.</Callout>
   <DocSection id="answers" kicker="01" title="Answers from the docs">
-   <p>Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to send your question to support.</p>
-   <p>Follow a source link to a specific section of a guide. The chat closes and keyboard focus moves to the cited heading. Open Ask V19 again to return to the conversation.</p>
+   <p>Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to open a support request for you to review.</p>
+   <p>Follow a source link to open the guide or page. The chat closes and keyboard focus moves to the cited section or to the page heading. Open Ask V19 again to return to the conversation.</p>
    <p>Try a plain question such as <em>How do I set up GCP?</em> or <em>How do I block a GitHub Actions deploy until someone approves?</em> The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.</p>
   </DocSection>
   <DocSection id="ai" kicker="02" title="Fuller AI answers">
@@ -23,7 +23,7 @@ export default function AskAxiomDocsPage() {
    <p>Say <em>something is broken</em> or <em>run a health check</em> for a saved-state diagnostic with links to fix each finding. It does not test providers live.</p>
   </DocSection>
   <DocSection id="actions" kicker="04" title="What it can do for you">
-   <p>It can open a pre-filled support request that you review and send, and it can record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions.</p>
+   <p>Choose <strong>Review a support request</strong> to carry the question to the contact form in the same tab. Review and edit it before you send. The question stays out of the page address, and opening the form does not submit a request. Ask V19 can also record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions.</p>
    <p>It can also run three fixed actions, governed like any other agent: <em>seal the audit log</em> (owners and admins), <em>verify the audit log</em> (any member) and <em>list API keys expiring soon</em> (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.</p>
   </DocSection>
   <DocFooterNav prev={{href:"/docs/batch-providers",label:"Batch providers"}} next={{href:"/docs/plugins",label:"Apps and skills"}} />

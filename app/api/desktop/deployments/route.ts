@@ -1,4 +1,5 @@
 import { verifyIntakeWorkflowSource } from "@/lib/tauri/intakeWorkflowSource";
+import { batchHistoryCursorSchema, batchHistoryExcludedIdsSchema, batchHistoryPageSize, type BatchHistoryCursor } from "@/lib/desktop/batchHistoryContract";
 import { releaseAirflowDependencySchema } from "@/lib/integrations/airflow/releaseDependencySchema";
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
@@ -157,19 +158,31 @@ async function readRequesterNames(organizationId: string, rows: DeploymentReques
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
-        const session = await resolveRequestDesktopSession(request, {
-            requiredScope: "pipeline:read",
-            route: "GET /api/desktop/deployments",
-        });
-        if (!session) {
-            return NextResponse.json(
-                { ok: false, error: "desktop_session_required" },
-                { status: 401 },
-            );
+        const query = request.nextUrl.searchParams;
+        const history = query.getAll("batchHistory");
+        const beforeIds = query.getAll("beforeReleaseId");
+        const beforeTimes = query.getAll("beforeClosedAt");
+        const excluded = query.getAll("excludeReleaseId");
+        const archive = history.length > 0;
+        const authority = { requiredScope: "pipeline:read", route: "GET /api/desktop/deployments",
+            ...(archive && { allowApiKey: false, requiredCapability: "workspace:read" as const }) } as const;
+        const unauthorized = () => NextResponse.json({ok:false,error:"desktop_session_required"}, {status:401});
+        const session = await resolveRequestDesktopSession(request, authority);
+        if (!session) return unauthorized();
+
+        let before: BatchHistoryCursor | undefined;
+        if (archive || beforeIds.length || beforeTimes.length || excluded.length) {
+            const invalid = () => NextResponse.json({ok:false,error:"invalid_batch_history_selection"},{status:400});
+            if (history.length !== 1 || history[0] !== "1" || !batchHistoryExcludedIdsSchema.safeParse(excluded).success ||
+                ["savedReleaseId", "savedReleaseVersion", "linkedReleaseId", "includeRequester"].some(key => query.has(key))) return invalid();
+            if (beforeIds.length || beforeTimes.length) {
+                const cursor = batchHistoryCursorSchema.safeParse({id:beforeIds[0],closedAt:beforeTimes[0]});
+                if (beforeIds.length !== 1 || beforeTimes.length !== 1 || !cursor.success) return invalid();
+                before = cursor.data;
+            }
         }
 
         const canReadGithub = session.credentialKind === "desktop_session" && session.capabilities.includes("github:read");
-        const query = request.nextUrl.searchParams;
         const ids = query.getAll("savedReleaseId");
         const versions = query.getAll("savedReleaseVersion");
         const organizationId = String(session.organizationId);
@@ -186,7 +199,28 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ ok: true, data }, { headers: { "Cache-Control": "private, no-store" } });
         }
         let rows: DeploymentRequestRow[];
-        if (ids.length || versions.length) {
+        let nextCursor: BatchHistoryCursor | null = null;
+        if (archive) {
+            const closedAt = before ? new Date(before.closedAt) : undefined;
+            const candidates = await prisma.tauriDeploymentRequest.findMany({
+                where: {
+                    organizationId, status:"closed", closedAt:{not:null},
+                    intakeJson:{path:["airflowDependency","runs"],array_contains:[]},
+                    ...(excluded.length > 0 && {id:{notIn:excluded}}),
+                    ...(before && {OR:[{closedAt:{lt:closedAt}},{closedAt,id:{lt:before.id}}]}),
+                },
+                orderBy:[{closedAt:"desc"},{id:"desc"}],
+                take:batchHistoryPageSize + 1,
+            });
+            const scanned = candidates.slice(0,batchHistoryPageSize);
+            const tail = scanned.at(-1);
+            if (candidates.length > batchHistoryPageSize && tail?.closedAt) {
+                nextCursor = batchHistoryCursorSchema.parse({id:tail.id,closedAt:tail.closedAt.toISOString()});
+            }
+            // A matching JSON array is a candidate. Legacy or malformed declarations stay out of the archive.
+            rows = scanned.filter(row => row.organizationId === organizationId && row.status === "closed" && row.closedAt &&
+                releaseAirflowDependencySchema.safeParse(record(row.intakeJson).airflowDependency).success);
+        } else if (ids.length || versions.length) {
             const exact = savedReleaseLocatorSchema.safeParse({ id: ids[0], version: Number(versions[0]) });
             if (ids.length !== 1 || versions.length !== 1 || !/^[1-9][0-9]*$/.test(versions[0]) || !exact.success) {
                 return NextResponse.json({ ok: false, error: "invalid_saved_release" }, { status: 400 });
@@ -226,32 +260,37 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             }
         }
 
-        return NextResponse.json({
-            ok: true,
-            data: rows.map((row) => {
-                const latest = latestByRequest.get(row.id);
-                const requesterName = row.organizationId === organizationId ? requesterNames?.get(row.requesterUserId) : undefined;
-                return {
-                    id: row.id,
-                    title: row.title,
-                    status: row.status,
-                    version: row.version,
-                    correlationId: row.correlationId,
-                    submittedAt: row.submittedAt?.toISOString() ?? null,
-                    closedAt: row.closedAt?.toISOString() ?? null,
-                    updatedAt: row.updatedAt.toISOString(),
-                    ...(requesterName ? { requesterName } : {}),
-                    releaseContext: summarizeReleaseContext(row.intakeJson, canReadGithub),
-                    latestPlaybook: latest ? {
-                        id: latest.id,
-                        version: latest.version,
-                        status: latest.status,
-                        contentHash: latest.contentHash,
-                        createdAt: latest.createdAt.toISOString(),
-                    } : null,
-                };
-            }),
-        }, { headers: { "Cache-Control": "private, no-store" } });
+        const data = rows.map((row) => {
+            const latest = latestByRequest.get(row.id);
+            const requesterName = row.organizationId === organizationId ? requesterNames?.get(row.requesterUserId) : undefined;
+            return {
+                id: row.id,
+                title: row.title,
+                status: row.status,
+                version: row.version,
+                correlationId: row.correlationId,
+                submittedAt: row.submittedAt?.toISOString() ?? null,
+                closedAt: row.closedAt?.toISOString() ?? null,
+                updatedAt: row.updatedAt.toISOString(),
+                ...(requesterName ? { requesterName } : {}),
+                releaseContext: summarizeReleaseContext(row.intakeJson, canReadGithub),
+                latestPlaybook: latest ? {
+                    id: latest.id,
+                    version: latest.version,
+                    status: latest.status,
+                    contentHash: latest.contentHash,
+                    createdAt: latest.createdAt.toISOString(),
+                } : null,
+            };
+        });
+        if (archive) {
+            const current = await resolveRequestDesktopSession(request, {...authority, recordHeartbeat:false});
+            if (!current || current.id !== session.id || current.userId !== session.userId ||
+                current.organizationId !== session.organizationId || request.signal.aborted ||
+                (canReadGithub && !current.capabilities.includes("github:read"))) return unauthorized();
+        }
+        return NextResponse.json({ok:true,data:archive ? {releases:data,nextCursor} : data},
+            {headers:{"Cache-Control":"private, no-store"}});
     } catch {
         return NextResponse.json(
             { ok: false, error: "deployment_request_list_failed" },

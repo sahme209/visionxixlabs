@@ -44,9 +44,9 @@ export default function DesignPage() {
           <div className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
             <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
               <div>
-                <p className="font-mono text-xs text-zinc-600">01</p>
+                <p className="font-mono text-xs text-zinc-400">01</p>
                 <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Color</h2>
-                <p className="mt-3 text-sm leading-6 text-zinc-500">
+                <p className="mt-3 text-sm leading-6 text-zinc-400">
                   Near-black structure, white primary type, and warm neutral
                   supporting text. Original artwork keeps its own colors.
                 </p>
@@ -57,7 +57,7 @@ export default function DesignPage() {
                     <div className="h-24 rounded-xl border border-white/10" style={{ backgroundColor: hex }} />
                     <div className="mt-4 flex items-center justify-between gap-4 text-sm">
                       <span>{name}</span>
-                      <code className="text-xs text-zinc-600">{hex}</code>
+                      <code className="text-xs text-zinc-400">{hex}</code>
                     </div>
                   </div>
                 ))}
@@ -69,7 +69,7 @@ export default function DesignPage() {
         <section className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
           <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
             <div>
-              <p className="font-mono text-xs text-zinc-600">02</p>
+              <p className="font-mono text-xs text-zinc-400">02</p>
               <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Type and rhythm</h2>
             </div>
             <div className="space-y-10 border-y border-white/8 py-8">
@@ -81,7 +81,7 @@ export default function DesignPage() {
                 next action. Technical detail stays available without occupying
                 the first reading path.
               </p>
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-600">
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400">
                 Status · repository scoped · approval required
               </p>
             </div>
@@ -90,13 +90,13 @@ export default function DesignPage() {
 
         <section className="border-y border-white/8 bg-[#171615]">
           <div className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
-            <p className="font-mono text-xs text-zinc-600">03</p>
+            <p className="font-mono text-xs text-zinc-400">03</p>
             <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Interaction rules</h2>
             <div className="mt-10 divide-y divide-white/8 border-y border-white/8">
               {principles.map(([title, detail]) => (
                 <div key={title} className="grid gap-3 py-6 md:grid-cols-[260px_1fr]">
                   <h3 className="font-medium">{title}</h3>
-                  <p className="max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p>
+                  <p className="max-w-2xl text-sm leading-6 text-zinc-400">{detail}</p>
                 </div>
               ))}
             </div>

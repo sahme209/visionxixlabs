@@ -1,3 +1,4 @@
+import { automaticTopUpSetupPath, automaticTopUpSetupPublishableKey } from "./lib/billing/automaticTopUpSetupPage";
 import { isolatedHttpAllowed, isolatedRuntimeRequested } from "./lib/billing/isolatedApplication/runtime";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -10,13 +11,15 @@ const ALLOWED_DESKTOP_ORIGINS = new Set([
   "http://localhost:5173",
 ]);
 
-function applySecurityHeaders(response: NextResponse): NextResponse {
+function applySecurityHeaders(response: NextResponse, stripeSetup = false): NextResponse {
   response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' data: blob:; frame-ancestors 'self';",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' data: blob:; frame-ancestors 'self';"
+      .replace("script-src 'self'", stripeSetup ? "script-src 'self' https://js.stripe.com https://*.js.stripe.com" : "script-src 'self'")
+      .replace("frame-src 'self'", stripeSetup ? "frame-src 'self' https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com" : "frame-src 'self'"),
   );
   return response;
 }
@@ -115,7 +118,7 @@ export function proxy(request: NextRequest) {
     response.headers.set("Vary", "Origin");
   }
 
-  return applySecurityHeaders(response);
+  return applySecurityHeaders(response, pathname === automaticTopUpSetupPath && automaticTopUpSetupPublishableKey() !== null);
 }
 
 export const config = {

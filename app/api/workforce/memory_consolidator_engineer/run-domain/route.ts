@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   let kindCount = 0;
   let totalRows = 0;
   try {
-    const report = await runMemoryConsolidatorEngineer(org);
+    const report = await runMemoryConsolidatorEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     kindCount = report.kindStats.length;
     totalRows = report.totalRows;

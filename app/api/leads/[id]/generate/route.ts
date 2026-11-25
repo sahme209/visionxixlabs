@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
+import { LeadEngineBusyError, LeadGenerationRevisionChangedError, runAsyncLeadEngine } from "@/lib/async/engineRunner";
+import { parseAdminGenerationHeaders } from "@/lib/async/adminGenerationIntent";
 import { prisma } from "@/lib/db";
 import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 
@@ -18,50 +20,54 @@ export async function POST(
   const { id } = await params;
   if (!id) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
 
+  const intent = parseAdminGenerationHeaders(req.headers);
+  if (!intent) {
+    return NextResponse.json({ error: "A valid generation request and lead revision are required." }, { status: 400 });
+  }
+  const { requestId, revision } = intent;
+
   try {
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
 
-    await prisma.lead.update({
-      where: { id },
-      data: { status: "package_generating" },
+    const run = await runAsyncLeadEngine({
+      leadId: id,
+      engineName: "website-builder",
+      getTier: () => "free",
+      adminIntent: { actorId: auth.user.uid, requestId, revision },
+      isReady: (payload) => !!payload.aiPackage,
+      getExistingResult: (payload) => (payload.aiPackage as Awaited<ReturnType<typeof generateWebsiteStarter>>) || null,
+      generate: async ({ payload, invocation }) => {
+        const form = (payload.form as Record<string, unknown>) || {};
+        return generateWebsiteStarter(
+          {
+            variant: "simple",
+            form: {
+              name: form.name as string,
+              email: form.email as string,
+              company: form.company as string,
+              message: form.message as string,
+              industry: form.industry as string,
+              hasDomain: form.hasDomain as boolean,
+              domainName: form.domainName as string,
+            },
+          },
+          "free",
+          invocation
+        );
+      },
+      persist: ({ result }) => ({ aiPackage: result }),
     });
 
-    const payload = (lead.fullPayload as Record<string, unknown>) || {};
-    const form = (payload.form as Record<string, unknown>) || {};
-
-    const pkg = await generateWebsiteStarter(
-      {
-        variant: "simple",
-        form: {
-          name: form.name as string,
-          email: form.email as string,
-          company: form.company as string,
-          message: form.message as string,
-          industry: form.industry as string,
-          hasDomain: form.hasDomain as boolean,
-          domainName: form.domainName as string,
-        },
-      },
-      "free"
-    );
-
-    const updatedPayload = { ...payload, aiPackage: pkg };
-
-    await prisma.lead.update({
-      where: { id },
-      data: {
-        status: "package_ready",
-        fullPayload: updatedPayload as object,
-      },
-    });
-
-    return NextResponse.json({ success: true, status: "package_ready" });
+    return NextResponse.json({ success: true, status: "package_ready", requestId, replayed: run.reused });
   } catch (e) {
+    if (e instanceof LeadGenerationRevisionChangedError) {
+      return NextResponse.json({ error: e.message, code: "lead_revision_changed", requestId }, { status: 409 });
+    }
+    if (e instanceof LeadEngineBusyError) {
+      return NextResponse.json({ error: e.message }, { status: 409 });
+    }
     console.error("[leads generate]", e);
-    await prisma.lead
-      .update({ where: { id }, data: { status: "created" } })
-      .catch(() => {});
     return NextResponse.json(
       { error: "Failed to generate package" },
       { status: 500 }

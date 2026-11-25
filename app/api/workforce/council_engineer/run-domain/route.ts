@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let decisionCount = 0;
   try {
-    const report = await runCouncilEngineer(org);
+    const report = await runCouncilEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     decisionCount = report.decisions.length;
     await persistCouncilReport(org, report);

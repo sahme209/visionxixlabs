@@ -7,6 +7,7 @@
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isTenantAdmin } from "@/lib/auth/platformAdmin";
 import { buildNotifications } from "@/lib/notifications/notificationBuilder";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
@@ -23,13 +24,16 @@ export async function GET(req: NextRequest) {
     const report = await buildNotifications({
       tenantId: ctx.organizationId,
       actorUserId: ctx.userId,
+      canReviewBilling: isTenantAdmin(ctx.roles),
     });
     const firstMode = report.notifications[0]?.sourceMode ?? "preview";
-    return apiOk(report, {
+    const response = apiOk(report, {
       correlationId,
       safetyContract: "notification_read_only",
       sourceMode: asApiSourceMode(firstMode),
     });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "notification_read_only" });
   }

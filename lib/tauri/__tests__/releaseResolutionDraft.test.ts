@@ -14,7 +14,7 @@ it('rejects a reused correlation identifier with different content',async()=>{co
 it('validates untrusted content before storage even if the caller skips parsing',async()=>{const r=repo();expect(await createReleaseResolutionDraft(r as unknown as DeploymentRequestRepo,{...input(),draft:{...draft(),workflowInputs:{publish:'true'}}})).toMatchObject({ok:false,reason:'validation_failed'});expect(r.$transaction).not.toHaveBeenCalled()});
 it('cannot turn a stored resolution draft into a playbook',async()=>{
  const {persistNextPlaybook}=await import('../deploymentPlaybookRepo');
- const storage={tauriDeploymentRequest:{findFirst:vi.fn().mockResolvedValue({id:'draft1',organizationId:'org',version:1,intakeJson:draft()})},tauriPlaybook:{findFirst:vi.fn(),create:vi.fn()},tauriAuditEvent:{create:vi.fn()},$transaction:vi.fn()};
+ const storage={$queryRaw:vi.fn().mockResolvedValue([{id:'draft1',organizationId:'org',version:1,status:'draft',closedAt:null,intakeJson:draft()}]),tauriPlaybook:{findFirst:vi.fn(),create:vi.fn()},tauriAuditEvent:{create:vi.fn()},$transaction:vi.fn()};
  storage.$transaction.mockImplementation(async fn=>fn(storage));
  const result=await persistNextPlaybook(storage as unknown as import('../deploymentPlaybookRepo').PlaybookRepo,{organizationId:'org',deploymentRequestId:'draft1',actorUserId:'user',actorRole:'requester',correlationId:'corr',generatedAtUtc:'2026-10-24T05:10:00Z'});
  expect(result).toMatchObject({ok:false,reason:'stored_intake_invalid'});expect(storage.tauriPlaybook.findFirst).not.toHaveBeenCalled();expect(storage.tauriPlaybook.create).not.toHaveBeenCalled();expect(storage.tauriAuditEvent.create).not.toHaveBeenCalled();

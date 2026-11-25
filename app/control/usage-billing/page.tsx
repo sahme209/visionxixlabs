@@ -7,8 +7,10 @@ import { UsageRecords } from "@/components/cockpit/UsageRecords";
 import { InvoicePanel } from "@/components/cockpit/InvoicePanel";
 import { SectionTabs } from "@/components/cockpit/SectionTabs";
 import { AccountBillingPanel } from "@/components/auth/AccountBillingPanel";
+import { automaticTopUpSetupPath, automaticTopUpSetupPublishableKey } from "@/lib/billing/automaticTopUpSetupPage";
+import { WorkspaceAIUsageBudgetPanel } from "@/components/billing/WorkspaceAIUsageBudgetPanel";
 import { currentContext } from "@/lib/auth/currentContext";
-import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isAdminOrOwner, isTenantAdmin } from "@/lib/auth/platformAdmin";
 import { checkDeploymentQuota } from "@/lib/billing/deploymentQuota";
 import { PUBLIC_PLAN_CATALOG, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 import { describeStripeStatus } from "@/lib/billing/stripeHelper";
@@ -16,6 +18,7 @@ import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStor
 import { prisma } from "@/lib/db";
 import { hasAppliedCreditPayment } from "@/lib/billing/creditPaymentEvidence";
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
+import { workspaceAIUsageBudgetsEnabled } from "@/lib/billing/workspaceAIUsageBudget";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +90,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
   let usage = { calls: 0, inputTokens: 0, outputTokens: 0, billedCents: 0, pendingCalls: 0 };
   let transactions: CreditTransaction[] = [];
   const isolated = isolatedRuntimeRequested();
+  const showWorkspaceBudget = !isolated && workspaceAIUsageBudgetsEnabled() && isTenantAdmin(context.roles);
   const deployment = isolated ? { allowed: false, reason: "deployment_quota_unavailable", planId: null, used: null, limit: null, remaining: 0 } as const : await checkDeploymentQuota(prisma, organizationId);
   const allowance = await withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId, now));
   try {
@@ -156,6 +160,8 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
 <dl className="mt-5 grid gap-3 rounded-xl border border-white/8 bg-[#171717] p-5 sm:grid-cols-3">            <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {planAvailable ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
             <div><dt className="text-xs text-zinc-500">Deployment records this month</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : deployment.used}</dd>{isolated && <p className="mt-1 text-[11px] text-zinc-600">Deployment activity is unavailable in this isolated test environment.</p>}</div>
             <div><dt className="text-xs text-zinc-500">Gateway calls</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : usage.calls}</dd>{!unavailable && <p className="mt-1 text-[11px] text-zinc-600">{usage.pendingCalls} awaiting cost settlement</p>}</div></dl>
+{showWorkspaceBudget && <WorkspaceAIUsageBudgetPanel key={organizationId} organizationId={organizationId} />}
+{!isolated && automaticTopUpSetupPublishableKey() && isTenantAdmin(context.roles) && <div className="mt-5"><a className="text-sm text-zinc-200 underline underline-offset-4" href={automaticTopUpSetupPath}>Automatic top-up test setup</a></div>}
 {usageSection}{transactionSection}</> },
         { id:"usage", label:"Usage", content:<>{usageSection}<UsageRecords/>{transactionSection}</> },
         { id:"invoices", label:"Invoices", content:<section className="rounded-xl border border-white/8 bg-[#171717] p-6"><h2 className="text-base font-medium">Invoices & payment details</h2><p className="mb-5 mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Review verified provider invoices. Manage payment methods and subscription details in the secure billing portal.</p><InvoicePanel canRead={context.roles.some(role=>role==="owner"||role==="admin")}/><div className="mt-7 border-t border-white/10 pt-5"><h3 className="mb-3 text-sm font-medium">Secure billing portal</h3></div>{planAvailable ? <AccountBillingPanel planLabel={publicPlan.name} status={billing.status} billingEnabled={isSelfServiceBillingEnabled() || Boolean(billing.publicPlanId)} canManage={canManage} hasStripeCustomer={Boolean(billing.stripeCustomerId)}/> : <p role="status" className="text-sm text-zinc-400">Billing records are unavailable. Refresh to verify your workspace before opening invoices.</p>}{planAvailable && !billing.stripeCustomerId && <p className="mt-4 text-xs text-zinc-400">No billing customer is linked to this workspace. A workspace owner can review plans; no payment method or invoice is inferred.</p>}</section> },

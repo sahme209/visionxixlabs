@@ -1,6 +1,7 @@
 import { configuredPublicBillingIdentity, configuredPublicWebhookApiVersion, publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 import { publicBillingRuntime } from "@/lib/billing/publicBillingRuntime";
 import { ownedWebhookPost } from "@/lib/billing/ownedCheckoutBridge/http";
+import { automaticTopUpPurpose, recordAutomaticTopUpTestRefund, type AutomaticTopUpRefundCharge } from "@/lib/billing/automaticAICreditTopUpRefund";
 /**
  * POST /api/billing/stripe-webhook
  *
@@ -42,7 +43,7 @@ interface StripeWebhookEvent {
   account?: string | null;
   api_version?: string | null;
   data?: {
-    object?: {
+    object?: AutomaticTopUpRefundCharge & {
       id?: string;
       customer?: string;
       metadata?: {
@@ -109,6 +110,25 @@ export async function POST(req: NextRequest) {
   const creditRefund = event.type === "charge.refunded" && obj?.metadata?.purpose === "axiom_ai_credit_add_on";
   const taggedCreditEvent = creditCheckout || creditRefund;
   const usesPublicPolicy = publicBillingPolicyEnabled();
+
+  if (event.type === "charge.refunded" && obj?.metadata?.purpose === automaticTopUpPurpose) {
+    if (!usesPublicPolicy) return NextResponse.json({ok:false,error:{code:"billing.disabled"}},{status:503});
+    try {
+      const identity = configuredPublicBillingIdentity();
+      if (identity.livemode || event.livemode !== false || !event.id
+          || (event.account != null && event.account !== identity.accountId)
+          || event.api_version !== configuredPublicWebhookApiVersion()) {
+        return NextResponse.json({ok:false,error:{code:"stripe.credit_event_invalid"}},{status:400});
+      }
+      const { prisma } = await import("@/lib/db");
+      const result = await recordAutomaticTopUpTestRefund(prisma, identity, event.id, obj);
+      if (result === "invalid") return NextResponse.json({ok:false,error:{code:"stripe.credit_event_invalid"}},{status:400});
+      if (result !== "payment_unbound") return NextResponse.json({ok:true,outcome:result},{status:200});
+    } catch {
+      // No acknowledgement until the signed evidence has been committed.
+    }
+    return NextResponse.json({ok:false,error:{code:"billing.verification_unavailable"}},{status:503});
+  }
 
   if (taggedCreditEvent) {
     if (event.livemode !== false || !event.id || !/^evt_[A-Za-z0-9_]{1,180}$/.test(event.id) || !obj?.id) {

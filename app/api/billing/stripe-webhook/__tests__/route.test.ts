@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   fulfillCredit: vi.fn(),
   failCredit: vi.fn(),
   refundCredit: vi.fn(),
+  refundAutomaticTopUp: vi.fn(),
 }));
 
 vi.mock("@/lib/billing/stripeHelper", () => ({
@@ -21,6 +22,10 @@ vi.mock("@/lib/billing/aiCreditFulfillment", () => ({
   fulfillAICreditCheckout: mocks.fulfillCredit,
   recordAICreditCheckoutFailure: mocks.failCredit,
   reverseAICreditRefund: mocks.refundCredit,
+}));
+vi.mock("@/lib/billing/automaticAICreditTopUpRefund", async importOriginal => ({
+  ...await importOriginal<typeof import("@/lib/billing/automaticAICreditTopUpRefund")>(),
+  recordAutomaticTopUpTestRefund: mocks.refundAutomaticTopUp,
 }));
 
 const originalBillingFlag = process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED;
@@ -66,6 +71,7 @@ describe("POST /api/billing/stripe-webhook", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     if (originalBillingFlag === undefined) delete process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED;
     else process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED = originalBillingFlag;
   });
@@ -127,6 +133,27 @@ describe("POST /api/billing/stripe-webhook", () => {
     const { POST } = await import("../route");
     expect((await POST(request(event))).status).toBe(200);
     expect(mocks.refundCredit).toHaveBeenCalledWith({ id: "evt_refund_1", type: "charge.refunded" }, event.data.object);
+  });
+
+  it("scopes automatic refund evidence to the signed test account and requests retry while payment is unbound", async () => {
+    vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1");
+    vi.stubEnv("AXIOM_STRIPE_ACCOUNT_ID", "acct_fixture");
+    vi.stubEnv("AXIOM_STRIPE_MODE", "test");
+    vi.stubEnv("AXIOM_STRIPE_WEBHOOK_API_VERSION", "2024-06-20");
+    const obj = { id: "ch_fixture", metadata: { purpose: "axiom_auto_ai_credit_top_up_v1" } };
+    const event = { id: "evt_fixture", type: "charge.refunded", livemode: false, account: "acct_fixture",
+      api_version: "2024-06-20", data: { object: obj } };
+    const { POST } = await import("../route");
+    mocks.verifyWebhookSignature.mockReturnValueOnce({ ok: false, reason: "Invalid signature." });
+    expect((await POST(request(event))).status).toBe(401);
+    expect((await POST(request({ ...event, livemode: true }))).status).toBe(400);
+    expect((await POST(request({ ...event, account: "acct_other" }))).status).toBe(400);
+    expect(mocks.refundAutomaticTopUp).not.toHaveBeenCalled();
+    mocks.refundAutomaticTopUp.mockResolvedValueOnce("payment_unbound").mockResolvedValueOnce("replay");
+    expect((await POST(request(event))).status).toBe(503);
+    expect(await (await POST(request(event))).json()).toEqual({ ok: true, outcome: "replay" });
+    expect(mocks.refundAutomaticTopUp).toHaveBeenCalledWith(expect.anything(), { accountId: "acct_fixture", livemode: false }, "evt_fixture", obj);
+    expect(mocks.refundCredit).not.toHaveBeenCalled();
   });
 
   it("fails closed when a subscription event lacks authoritative identifiers", async () => {
