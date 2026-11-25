@@ -19,7 +19,7 @@ function trustedWarningPreload(): string {
     const preload = realpathSync(resolve(dirname(pkg), "suppress-warnings.cjs"));
     // Explicitly reviewed installed/locked framework code, not an arbitrary
     // caller-selected preload or a basename-based guard exception.
-    if (installed.version !== "5.1.0" || lock.packages?.["node_modules/vitest"]?.version !== installed.version
+    if (installed.version !== "5.1.1" || lock.packages?.["node_modules/vitest"]?.version !== installed.version
       || createHash("sha256").update(readFileSync(preload)).digest("hex") !== "3f415a8b5d53b4262580a8fe99158722cfe0f1514a000a457d1379c96da90f9f") unsupported();
     return preload;
   } catch { return unsupported(); }
