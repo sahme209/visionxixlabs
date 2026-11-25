@@ -81,6 +81,8 @@ it('searches the guide list and focuses an in-page destination without opening a
   const outline=screen.getByRole('navigation',{name:'On this page'});
   fireEvent.click(within(outline).getByRole('button',{name:'Release lifecycle'}));
   expect(document.activeElement?.id).toBe('release-lifecycle');
+  fireEvent.click(within(outline).getByRole('button', {name: 'Overview'}));
+  expect(document.activeElement).toBe(screen.getByRole('region', {name: 'Release governance'}));
   expect(boundary.open).not.toHaveBeenCalled();
 });
 
@@ -93,7 +95,7 @@ it('finds built-in guide sections and preserves the selected source in the unsen
   fireEvent.change(search, {target: {value: '  AIRFLOW  '}});
   const schedule = index.getByRole('button', {name: 'Schedule with Airflow'});
   fireEvent.click(schedule);
-  expect(document.activeElement?.id).toBe('guide-stage-schedule');
+  expect(document.activeElement).toBe(screen.getByRole('listitem', {name: 'Schedule with Airflow'}));
   expect(schedule.getAttribute('aria-current')).toBe('location');
   expect(search).toHaveProperty('value', '  AIRFLOW  ');
   fireEvent.click(screen.getByRole('button', {name: 'Ask about this page'}));
@@ -222,10 +224,13 @@ it('opens the workflow map, follows a review branch and restores the guide reade
   const review = screen.getByRole('button', {name: 'Review current authority'});
   fireEvent.click(review);
   let details = screen.getByRole('complementary', {name: 'Review current authority'});
-  expect(document.activeElement).toBe(within(details).getByRole('heading', {name: 'Review current authority'}));
+  const heading = within(details).getByRole('heading', {name: 'Review current authority'});
+  expect(document.activeElement).toBe(heading);
+  expect(document.getElementById(heading.getAttribute('aria-describedby')!)?.textContent).toBe('Map Step 4 of 11');
   expect(within(details).getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/approval-workflow#desktop-release-review');
   fireEvent.click(within(details).getByRole('button', {name: /Hold for review/}));
   details = screen.getByRole('complementary', {name: 'Hold for review'});
+  expect(within(details).getByText('Step 5 of 11')).toBeTruthy();
   fireEvent.keyDown(within(details).getByRole('heading', {name: 'Hold for review'}), {key: 'Escape'});
   expect(document.activeElement).toBe(review);
   expect(screen.queryByRole('complementary', {name: 'Hold for review'})).toBeNull();
@@ -247,6 +252,8 @@ it('switches between release and ticket maps without carrying the previous inspe
   const maps = within(screen.getByRole('navigation', {name: 'Workflow maps'}));
   fireEvent.click(maps.getByRole('button', {name: 'Tickets and recovery'}));
   expect(maps.getByRole('button', {name: 'Tickets and recovery'}).getAttribute('aria-pressed')).toBe('true');
+  expect(maps.getByRole('heading', {name: 'Key workflows'})).toBeTruthy();
+  expect(document.activeElement).toBe(screen.getByRole('heading', {name: 'Tickets and recovery workflow map'}));
   expect(screen.queryByRole('complementary', {name: 'Scope the change'})).toBeNull();
 
   fireEvent.click(screen.getByRole('button', {name: 'Open a recorded ticket'}));
@@ -262,6 +269,41 @@ it('switches between release and ticket maps without carrying the previous inspe
   fireEvent.click(maps.getByRole('button', {name: 'Release'}));
   expect(screen.getByRole('heading', {name: 'Release workflow map'})).toBeTruthy();
   expect(screen.queryByRole('complementary', {name: 'Review a saved ServiceNow action'})).toBeNull();
+  expect(navigate).not.toHaveBeenCalled();
+  expect(boundary.open).not.toHaveBeenCalled();
+});
+
+it('links the Release closure step to the exact versioned evidence guide', () => {
+  const navigate = vi.fn();
+  render(createElement(DocsView, {onNavigate: navigate}));
+  fireEvent.click(screen.getByRole('button', {name: 'Workflow map'}));
+  const verify = screen.getByRole('button', {name: 'Verify the outcome'});
+  fireEvent.click(verify);
+  const details = within(screen.getByRole('complementary', {name: 'Verify the outcome'}));
+  fireEvent.click(details.getByRole('button', {name: /Closure criteria met/}));
+  const closure = within(screen.getByRole('complementary', {name: 'Record closure'}));
+  expect(closure.getByText(/Read closure evidence/)).toBeTruthy();
+  expect(closure.getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/surfaces#release-closure-evidence');
+  fireEvent.keyDown(closure.getByRole('heading', {name: 'Record closure'}), {key: 'Escape'});
+  expect(document.activeElement).toBe(verify);
+  expect(navigate).not.toHaveBeenCalled();
+  expect(boundary.open).not.toHaveBeenCalled();
+});
+
+it('connects saved Batches dependencies and confirmed closure to the archive guide', () => {
+  const navigate = vi.fn();
+  render(createElement(DocsView, {onNavigate: navigate}));
+  fireEvent.click(screen.getByRole('button', {name: 'Workflow map'}));
+  fireEvent.click(within(screen.getByRole('navigation', {name: 'Workflow maps'})).getByRole('button', {name:'Batches'}));
+  const dependencies = screen.getByRole('button', {name: 'Select exact release dependencies'});
+  fireEvent.click(dependencies);
+  const panel = within(screen.getByRole('complementary', {name:'Select exact release dependencies'}));
+  fireEvent.click(panel.getByRole('button', {name:/Find a closed release/}));
+  const history = within(screen.getByRole('complementary', {name:'Find older closed releases'}));
+  expect(history.getByRole('link', {name:'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/surfaces#batch-closed-history');
+  expect(history.getByText(/Provider results and application health need their own evidence/)).toBeTruthy();
+  fireEvent.keyDown(history.getByRole('heading', {name:'Find older closed releases'}), {key:'Escape'});
+  expect(document.activeElement).toBe(dependencies);
   expect(navigate).not.toHaveBeenCalled();
   expect(boundary.open).not.toHaveBeenCalled();
 });
@@ -285,12 +327,35 @@ it('explains batch waiting and recovery without granting release authority', () 
   expect(tasks.getByText(/choose Inspect failed run/)).toBeTruthy();
   expect(tasks.getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/surfaces#batch-failed-run');
   fireEvent.click(tasks.getByRole('button', {name: /Refresh readiness for the selected version/}));
-  fireEvent.click(check.getByRole('button', {name: /Required runs completed/}));
+  fireEvent.click(check.getByRole('button', {name: /Run failed or task details needed/}));
+  fireEvent.click(tasks.getByRole('button', {name: /Inspect release workflow evidence/}));
+  const logs = within(screen.getByRole('complementary', {name: 'Open the release’s Logs'}));
+  expect(logs.getByText(/Airflow task logs remain unavailable/)).toBeTruthy();
+  expect(logs.getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/surfaces#batch-release-logs');
+  fireEvent.click(logs.getByRole('button', {name: 'Close details'}));
+  fireEvent.click(screen.getByRole('button', {name: 'Check the declared batches'}));
+  const reopenedCheck = within(screen.getByRole('complementary', {name: 'Check the declared batches'}));
+  fireEvent.click(reopenedCheck.getByRole('button', {name: /Required runs completed/}));
   const review = within(screen.getByRole('complementary', {name: 'Return to release review'}));
   expect(review.getByText(/does not grant execution authority/)).toBeTruthy();
   expect(review.getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe('https://visionxixlabs.com/docs/approval-workflow');
   expect(navigate).not.toHaveBeenCalled();
   expect(boundary.open).not.toHaveBeenCalled();
+});
+
+it.each([
+  ['Inspect the recorded change', 'ticket-release-draft'],
+  ['Inspect the release evidence', 'ticket-collection-receipt'],
+])('links %s in the Tickets map to the exact public guide', (name, anchor) => {
+  render(createElement(DocsView, {onNavigate: vi.fn()}));
+  fireEvent.click(screen.getByRole('button', {name: 'Workflow map'}));
+  fireEvent.click(screen.getByRole('button', {name: 'Tickets and recovery'}));
+  const step = screen.getByRole('button', {name});
+  fireEvent.click(step);
+  const details = within(screen.getByRole('complementary', {name}));
+  expect(details.getByRole('link', {name: 'Read the guide'}).getAttribute('href')).toBe(`https://visionxixlabs.com/docs/surfaces#${anchor}`);
+  fireEvent.click(details.getByRole('button', {name: 'Close details'}));
+  expect(document.activeElement).toBe(step);
 });
 
 it('fits the entire canvas and keeps step details open when jumping from the overview to a group', () => {

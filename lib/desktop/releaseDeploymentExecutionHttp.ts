@@ -50,7 +50,7 @@ export async function handleReleaseDeploymentExecution(request:NextRequest,reque
   const matchesHistory = (p: ReturnType<typeof deploymentPlanSchema.parse>) => bindingMatches(p)
    && p.creatorUserId === row.requestedByUserId && p.requesterUserId === original.releaseRequesterUserId
    && p.executorUserId === original.releaseRequesterUserId;
-  const events = saved ? await withGithubAbort(history.getHistory(scope, operationId, matchesHistory), signal) : [];
+  const record = saved ? await withGithubAbort(history.getHistory(scope, operationId, matchesHistory), signal) : {events: []};
   const release = await withGithubAbort(prisma.tauriDeploymentRequest.findFirst({
    where: {id: requestId, organizationId: scope.organizationId}, select: {id: true, organizationId: true, version: true, requesterUserId: true, intakeJson: true},
   }), signal);
@@ -59,7 +59,7 @@ export async function handleReleaseDeploymentExecution(request:NextRequest,reque
    || sha256ContentHash({requestVersion, intake: release.intakeJson}) !== plan.intakeDigest) {
    throw new Refusal('release_deployment_refresh_required', 409);
   }
-  const data = deploymentExecutionHistorySchema.parse({requestId, requestVersion, planId, planDigest: original.planDigest, events});
+  const data = deploymentExecutionHistorySchema.parse({requestId, requestVersion, planId, planDigest: original.planDigest, ...record});
   await assertCurrent(undefined, scope);
   return reply({ok: true, data});
  }

@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, Box, Search, X } from "lucide-react";
-import { useEffectEvent, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffectEvent, useId, useImperativeHandle, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 
 export interface ReleaseWorkspaceItem {
@@ -17,6 +17,15 @@ export interface ReleaseWorkspaceItem {
 }
 
 const releasePageSize = 6;
+const releaseAge = new Intl.RelativeTimeFormat(undefined, {style: "long"});
+
+function updatedLabel(updated: Date, observedAt?: Date) {
+  const minutes = Math.floor(((observedAt?.getTime() ?? NaN) - updated.getTime()) / 60_000);
+  if (minutes >= 0 && minutes < 60) return minutes === 0 ? "Just now" : releaseAge.format(-minutes, "minute");
+  if (minutes >= 60 && minutes < 24 * 60) return releaseAge.format(-Math.floor(minutes / 60), "hour");
+  return updated.toLocaleDateString(undefined, {month: "short", day: "numeric"}) + " " +
+    updated.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"});
+}
 
 const filters = [
   { id: "all", label: "All releases" },
@@ -33,19 +42,21 @@ function focusReleaseDetails(panelId: string) {
 }
 
 /** Keep opened request panels mounted through filtering and selection changes. */
-export function FocusedReleaseWorkspace({ items, children, directoryContext, requestedRelease, requestedReleaseAvailable, focusRequestedRow = true, preserveDirectoryContext = false, renderSelectedActivity, searchShortcutActive = true }: {
+export function FocusedReleaseWorkspace({ items, children, directoryContext, requestedRelease, requestedReleaseAvailable, focusRequestedRow = true, preserveDirectoryContext = false, renderSelectedActivity, searchShortcutActive = true, retainDisplayedRelease, observedAt }: {
   items: ReleaseWorkspaceItem[];
   searchShortcutActive?: boolean;
-  children: (item: ReleaseWorkspaceItem, closeButton: ReactNode) => ReactNode;
+  children: (item: ReleaseWorkspaceItem, closeButton: ReactNode, isOpen: boolean) => ReactNode;
   directoryContext?: ReactNode;
   renderSelectedActivity?: (item: ReleaseWorkspaceItem) => ReactNode;
   requestedRelease?: { id: string };
   requestedReleaseAvailable?: boolean;
   focusRequestedRow?: boolean;
   preserveDirectoryContext?: boolean;
+  retainDisplayedRelease?: Ref<() => void>;
+  observedAt?: Date;
 }) {
   const prefix = useId();
-  const [selected, setSelected] = useState<string>();
+  const [selected, setSelected] = useState<Pick<ReleaseWorkspaceItem, "id" | "version">>();
   const [detailsClosed, setDetailsClosed] = useState(false);
   const [status, setStatus] = useState<(typeof filters)[number]["id"]>("all");
   const [search, setSearch] = useState("");
@@ -56,7 +67,7 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
   const requestFocus = useRef<string | null>(null);
   const panelFocus = useRef<string | null>(null);
   const searchInput = useRef<HTMLInputElement>(null);
-  useSearchShortcut(searchInput, searchShortcutActive);
+  useSearchShortcut(searchInput, searchShortcutActive && items.length > 0);
 
   useLayoutEffect(() => {
     setSelected(undefined);
@@ -102,8 +113,10 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
     if (query && ![item.title, item.id, item.environment].some(value => value?.toLowerCase().includes(query))) return [];
     return [{ item, index }];
   });
-  const selection = items.some(item => item.id === selected) ? selected
-    : requestedRelease && requestedReleaseAvailable ? requestedRelease.id : undefined;
+  const selectedRow = selected && items.find(item => item.id === selected.id);
+  const selectionUnverified = selected !== undefined && (!selectedRow || selectedRow.version !== selected.version);
+  const selection = selectionUnverified ? undefined
+    : selectedRow?.id ?? (requestedReleaseAvailable ? requestedRelease?.id : undefined);
   const selectionIndex = matching.findIndex(({ item }) => item.id === selection);
   const pageCount = Math.ceil(matching.length / releasePageSize);
   const lastPage = Math.max(0, pageCount - 1);
@@ -116,7 +129,7 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
   const rangeTotal = matching.length === items.length ? loadedCount
     : `${matching.length} ${matching.length === 1 ? "match" : "matches"} in ${loadedCount}`;
   const firstPageButton = Math.max(0, Math.min(currentPage - 1, pageCount - 3));
-  const active = selection ?? (requestedRelease ? undefined : visibleItems[0]?.item.id);
+  const active = selection ?? (requestedRelease || selectionUnverified ? undefined : visibleItems[0]?.item.id);
   const visibleActive = visibleItems.some(({ item }) => item.id === active) ? active : undefined;
   const openPanel = detailsClosed ? undefined : visibleActive;
 
@@ -138,15 +151,20 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
       event.key === "ArrowUp" || event.key === "ArrowLeft" ? (index - 1 + visibleItems.length) % visibleItems.length : undefined;
     if (next === undefined) return;
     event.preventDefault();
-    const nextId = visibleItems[next].item.id;
-    setSelected(nextId);
+    const {id, version} = visibleItems[next].item;
+    setSelected({id, version});
     setPage(undefined);
-    buttons.current.get(nextId)?.focus();
+    buttons.current.get(id)?.focus();
   }
 
   const selectedItem = items.find(item => item.id === visibleActive);
+  useImperativeHandle(retainDisplayedRelease, () => () => {
+    if (requestedRelease || !openPanel || !selectedItem) return;
+    setSelected(previous => previous ?? {id: selectedItem.id, version: selectedItem.version});
+  }, [requestedRelease, openPanel, selectedItem]);
 
-  return <div className="release-focus-layout">
+
+  return <div hidden={items.length === 0} className={items.length ? "release-focus-layout" : "hidden"}>
     <div className="release-focus-directory">
       {directoryContext}
       <div className="release-focus-filters" role="group" aria-label="Release state">
@@ -182,10 +200,9 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
             aria-expanded={visibleActive === item.id && !detailsClosed}
             onClick={() => {
               panelFocus.current = item.id;
-              setSelected(item.id);
+              setSelected({id: item.id, version: item.version});
               setPage(undefined);
               setDetailsClosed(false);
-              // An already selected, open row may not cause a render.
               if (visibleActive === item.id && !detailsClosed) {
                 panelFocus.current = null;
                 focusReleaseDetails(`${prefix}-panel-${index}`);
@@ -208,8 +225,8 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
             </span>
             <span className="release-focus-item-updated">{updated && Number.isFinite(updated.getTime())
               ? <time dateTime={updated.toISOString()} title={updated.toLocaleString()}>
-                {updated.toLocaleDateString(undefined, { month: "short", day: "numeric" })}{" "}
-                {updated.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                <span aria-hidden="true">{updatedLabel(updated, observedAt)}</span>
+                <span className="sr-only">Updated {updated.toLocaleString()}</span>
               </time>
               : "Unavailable"}</span>
           </button>;
@@ -231,6 +248,10 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
       {selectedItem && renderSelectedActivity?.(selectedItem)}
     </div>
     <div className="release-focus-detail">
+      {selectionUnverified && <p role="status" className="release-focus-empty">
+        {selectedRow ? "The selected release version changed. Choose a release to review its current version."
+          : "The selected release is no longer in the loaded directory. Choose a release to continue."}
+      </p>}
       {items.map((item, index) => <section key={item.id} id={`${prefix}-panel-${index}`}
         aria-labelledby={`${prefix}-item-${index}`} hidden={openPanel !== item.id}
         tabIndex={-1} onKeyDown={event => {
@@ -242,7 +263,7 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
         }}>
         {(openPanel === item.id || openedPanels.has(item.id)) && children(item, <button type="button" className="release-focus-close" aria-label="Close release details" onClick={() => closeDetails(item.id)}>
           <X aria-hidden="true" size={15}/>
-        </button>)}
+        </button>, openPanel === item.id)}
       </section>)}
     </div>
   </div>;

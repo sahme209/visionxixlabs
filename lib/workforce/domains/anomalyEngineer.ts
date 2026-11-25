@@ -11,7 +11,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const ANOMALY_ENGINEER_TARGET_KIND = "engineer_anomaly_notices";
 
@@ -119,7 +119,7 @@ function parseAiResponse(text: string): ParsedAiOutput | null {
   }
 }
 
-export async function runAnomalyEngineer(organizationId: string): Promise<AnomalyEngineerReport> {
+export async function runAnomalyEngineer(organizationId: string, actorUserId?: string): Promise<AnomalyEngineerReport> {
   const now = Date.now();
   const since7d = new Date(now - 7 * 24 * 60 * 60 * 1000);
   const since14d = new Date(now - 14 * 24 * 60 * 60 * 1000);
@@ -164,6 +164,7 @@ export async function runAnomalyEngineer(organizationId: string): Promise<Anomal
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:anomaly_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
       // Phase 593: route this engineer to OpenAI when available.
       // Anomaly classification + short-text generation is the sweet
@@ -185,7 +186,7 @@ export async function runAnomalyEngineer(organizationId: string): Promise<Anomal
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const notices: AnomalyNotice[] = candidates.map((c) => ({

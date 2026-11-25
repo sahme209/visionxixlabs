@@ -46,7 +46,7 @@ export function isAgentToolActivity(value: unknown): value is AgentToolActivity 
 
 export const AGENT_MESSAGE_ISSUES = [
   "workspace_ai_disabled", "workspace_ai_provider_unavailable", "workspace_ai_model_not_allowed", "workspace_ai_policy_unavailable",
-  "workspace_ai_credit_meter_unavailable", "workspace_ai_credit_pool_exhausted", "workspace_agent_disabled", "workspace_agent_policy_unavailable",
+  "workspace_ai_credit_meter_unavailable", "workspace_ai_credit_pool_exhausted", "workspace_ai_credit_budget_exceeded", "workspace_agent_disabled", "workspace_agent_policy_unavailable",
   "agent_tool_not_allowed", "decision_malformed", "max_iterations_exceeded", "tool_execution_failed", "request_failed",
 ] as const;
 export type AgentMessageIssue = typeof AGENT_MESSAGE_ISSUES[number];

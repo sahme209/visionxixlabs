@@ -374,6 +374,13 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
+@media (max-width: 767px) {
+  .docs-support-panel {
+    background: #141414;
+    backdrop-filter: none;
+  }
+}
+
 /* ── Card Interactions ─────────────────────────────────────────── */
 .card-hover {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),

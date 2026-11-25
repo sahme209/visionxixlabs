@@ -69,6 +69,7 @@ export async function POST(req: Request) {
     const fetcher = makeInstrumentedFetcher({
       engineName: `${ENGINE_NAME_PREFIX}:${engineer.id}`,
       organizationId: org,
+      actorUserId: String(ctx.userId),
       timeoutMs: 30_000,
     });
 
@@ -150,6 +151,7 @@ export async function POST(req: Request) {
       const synthFetcher = makeInstrumentedFetcher({
         engineName: "workforce_synthesis",
         organizationId: org,
+        actorUserId: String(ctx.userId),
         timeoutMs: 30_000,
       });
       const answersForPrompt = await prisma.aiRationaleEnrichment.findMany({

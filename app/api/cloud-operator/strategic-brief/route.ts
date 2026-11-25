@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
-import { resolveOperatorTier, canViewTechnicalOutputs, hasContinuousReassessment, hasEnterpriseEngagement } from "@/lib/cloudOperator/pricing";
+import { resolveOperatorTier, hasContinuousReassessment } from "@/lib/cloudOperator/pricing";
 import { generateStrategicBrief } from "@/lib/axiom/strategicBrief";
 
 /**
  * Phase 8: GET /api/cloud-operator/strategic-brief?token=XXX
- * Generates C-level strategic brief. Tier-gated.
+ * Returns a C-level strategic brief in the selected lead's scope.
  * Caches result in fullPayload.axiomResult.strategicBrief.
  */
 export async function GET(req: NextRequest) {

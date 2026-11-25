@@ -62,6 +62,7 @@ export interface SafetyPreflightResult {
 export async function runSafetyPreflight(
   organizationId: string,
   input: SafetyPreflightInput,
+  actorUserId?: string,
 ): Promise<SafetyPreflightResult> {
   const reasons: string[] = [];
   const errors: string[] = [];
@@ -75,17 +76,17 @@ export async function runSafetyPreflight(
           title: input.title,
           proposedAction: input.actionDescription,
           tenantCharter: input.tenantCharter,
-        })
+        }, actorUserId)
       : Promise.resolve(null),
     runBoundaryGateEngineer(organizationId, {
       title: input.title,
       actionDescription: input.actionDescription,
-    }),
+    }, actorUserId),
     runApproverEngineer(organizationId, {
       title: input.title,
       proposalDescription: input.actionDescription,
       riskContext: input.riskContext,
-    }),
+    }, actorUserId),
   ]);
 
   // Persist each (best-effort) so the packet is auditable. Override

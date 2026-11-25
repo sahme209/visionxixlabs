@@ -27,7 +27,7 @@ import { logAudit } from "@/lib/security/auditLog";
 import { generateScoreExplanation } from "@/lib/axiom/explainability";
 import { generateDealSignals, deriveTagsFromDealSignals } from "@/lib/axiom/dealSignals";
 import { computeEnterpriseReadinessIndex } from "@/lib/axiom/infrastructureAdvantage";
-import { eventEngineTriggered, eventEngineCompleted, eventEngineFailed, eventDriftDetected } from "@/lib/observability/events";
+import { eventEngineTriggered, eventEngineCompleted, eventDriftDetected } from "@/lib/observability/events";
 import type { OperatorProfileInput } from "@/lib/cloudStudio/scoring";
 
 type Generated = {
@@ -39,108 +39,13 @@ type Generated = {
   tier: OperatorTier;
 };
 
-/**
- * Run full Cloud Operator analysis for a lead.
- * Idempotent when output already ready.
- */
-export async function runCloudOperatorAnalysis(leadId: string) {
-  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-  if (!lead || lead.source !== "cloud-operator") {
-    throw new Error("Lead not found or invalid source");
-  }
+type CompletedAnalysis = Generated & ReturnType<typeof enrichAnalysis>;
+type CachedAnalysis = { axiomScores: Generated["axiom"]["scores"] };
 
-  const payload = lead.fullPayload as Record<string, unknown>;
-  const tierForRate = resolveOperatorTier((payload.tier as string) || "free");
-
-  eventEngineTriggered({
-    leadId,
-    engineName: "cloud-operator",
-    tier: tierForRate,
-    unifiedTier: tierForRate,
-    scoringVersion: SCORING_VERSION,
-  });
-
-  const { generated } = await runAsyncLeadEngine<Generated>({
-    leadId,
-    engineName: "cloud-operator",
-    expectedSource: "cloud-operator",
-    getTier: (_, p) => String(resolveOperatorTier((p.tier as string) || "free")),
-    isReady: (p) => !!p.operatorOutput,
-    getExistingResult: (p) => {
-      const o = p.operatorOutput;
-      const a = p.axiomResult;
-      if (!o || !a) return null;
-      return {
-        operatorOutput: o as Generated["operatorOutput"],
-        operatorScores: (p.operatorScores as Generated["operatorScores"]) || (o as { scores?: unknown }).scores,
-        axiom: a as Generated["axiom"],
-        rawProfile: (p.operatorProfile as Record<string, unknown>) || {},
-        profile: {} as OperatorProfile,
-        tier: resolveOperatorTier((p.tier as string) || "free") as OperatorTier,
-      };
-    },
-    async generate({ tier, payload: p }) {
-      const rawProfile = (p.operatorProfile as Record<string, unknown>) || {};
-      const tierResolved = resolveOperatorTier((p.tier as string) || "free") as OperatorTier;
-
-      const profile: OperatorProfile = {
-        projectType: String(rawProfile.projectType ?? "").trim(),
-        hostingProvider: String(rawProfile.hostingProvider ?? "").trim(),
-        monthlySpend: String(rawProfile.monthlySpend ?? "").trim(),
-        trafficLevel: (String(rawProfile.trafficLevel ?? "Low").trim() || "Low") as "Low" | "Medium" | "High",
-        hasCiCd: (String(rawProfile.hasCiCd ?? "no").trim().toLowerCase() === "yes" ? "yes" : "no") as "yes" | "no",
-        publicExposure: (String(rawProfile.publicExposure ?? "Internal Only").trim() || "Internal Only") as "API" | "Public Web" | "Internal Only" | "Other",
-        complianceNeeds: String(rawProfile.complianceNeeds ?? "").trim(),
-        gitProvider: (String(rawProfile.gitProvider ?? "None").trim() || "None") as "GitHub" | "GitLab" | "Bitbucket" | "None" | "Other",
-        primaryGoal: String(rawProfile.primaryGoal ?? "").trim(),
-      };
-
-      const operatorOutput = await generateOperatorEngineOutput(profile, tierResolved);
-      const operatorInput: OperatorProfileInput = {
-        projectType: profile.projectType,
-        hostingProvider: profile.hostingProvider,
-        monthlySpend: profile.monthlySpend,
-        trafficLevel: profile.trafficLevel,
-        hasCiCd: profile.hasCiCd,
-        publicExposure: profile.publicExposure,
-        complianceNeeds: profile.complianceNeeds,
-        gitProvider: profile.gitProvider,
-        primaryGoal: profile.primaryGoal,
-      };
-      const operatorScores = computeOperatorScores(operatorInput);
-      const axiomProfile = { ...profile, contextType: "operator" as const };
-      const customPlan = (operatorOutput as { thirtyDayPlan?: unknown })?.thirtyDayPlan;
-      const axiom = computeInfrastructureAdvantageScore(axiomProfile, operatorScores, customPlan ?? null);
-
-      return { operatorOutput, operatorScores, axiom, rawProfile, profile, tier: tierResolved };
-    },
-    persist({ tier, result }) {
-      const { operatorOutput, operatorScores, axiom, rawProfile, profile } = result;
-      return {
-        operatorProfile: rawProfile,
-        operatorOutput,
-        operatorScores,
-        axiomProfile: { ...profile, contextType: "operator" as const },
-        axiomScores: axiom.scores,
-        axiomResult: axiom,
-        axiomPlan: axiom.plan,
-        engine: {
-          scores: operatorScores,
-          axiomScores: axiom.scores,
-          roadmap: axiom.plan,
-          scoringVersion: SCORING_VERSION,
-        },
-      };
-    },
-  });
-
+function enrichAnalysis(generated: Generated, previousSnapshot: Record<string, unknown> | null) {
   const { operatorOutput, axiom, profile, tier: tierResolved } = generated;
 
-  const lastSnapshot = await prisma.axiomScoreSnapshot.findFirst({
-    where: { leadId },
-    orderBy: { createdAt: "desc" },
-  });
-  const drift = detectDrift(profile, (lastSnapshot?.raw as Record<string, unknown>) ?? null);
+  const drift = detectDrift(profile, previousSnapshot);
   let axiomFinal = drift.signals.length > 0 ? { ...axiom, driftSignals: drift } : axiom;
 
   const playbooks = generatePlaybooks(axiom.plan);
@@ -225,27 +130,103 @@ export async function runCloudOperatorAnalysis(leadId: string) {
     scores: { ...axiomFinal.scores, enterpriseReadinessIndex },
   };
 
-  await logAudit({ leadId, action: "roadmap_generated", actor: "system" });
-  if (drift.signals.length > 0) {
-    await logAudit({ leadId, action: "drift_detected", actor: "system", metadata: { signalCount: drift.signals.length } });
-    eventDriftDetected({ leadId, signalCount: drift.signals.length });
-  }
-  eventEngineCompleted({ leadId, engineName: "cloud-operator", tier: tierResolved, unifiedTier: tierResolved, scoringVersion: SCORING_VERSION });
+  return { axiomFinal, tags, driftSignalCount: drift.signals.length };
+}
 
-  const latest = await prisma.lead.findUnique({ where: { id: leadId } });
-  const currentPayload = (latest?.fullPayload as Record<string, unknown>) ?? {};
-  const existingTags = (currentPayload.tags as string[]) ?? [];
-  const mergedTags = [...new Set([...existingTags, ...tags])];
-  await prisma.lead.update({
-    where: { id: leadId },
-    data: {
-      fullPayload: {
-        ...currentPayload,
+/**
+ * Run full Cloud Operator analysis for a lead.
+ * Idempotent when output already ready.
+ */
+export async function runCloudOperatorAnalysis(leadId: string) {
+  const run = await runAsyncLeadEngine<CompletedAnalysis, CachedAnalysis>({
+    leadId,
+    engineName: "cloud-operator",
+    expectedSource: "cloud-operator",
+    getTier: (_, p) => String(resolveOperatorTier((p.tier as string) || "free")),
+    replacePayloadKeys: ["axiomResult"],
+    isReady: (p) => !!p.operatorOutput,
+    getExistingResult: (payload) => {
+      const axiom = payload.axiomResult as Generated["axiom"] | undefined;
+      const axiomScores = (payload.axiomScores as Generated["axiom"]["scores"] | undefined) ?? axiom?.scores;
+      return axiomScores ? { axiomScores } : null;
+    },
+    async generate({ tier, payload: p, invocation }) {
+      const rawProfile = (p.operatorProfile as Record<string, unknown>) || {};
+      const tierResolved = resolveOperatorTier(tier);
+      eventEngineTriggered({ leadId, engineName: "cloud-operator", tier: tierResolved, unifiedTier: tierResolved, scoringVersion: SCORING_VERSION });
+      const lastSnapshot = await prisma.axiomScoreSnapshot.findFirst({
+        where: { leadId },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const profile: OperatorProfile = {
+        projectType: String(rawProfile.projectType ?? "").trim(),
+        hostingProvider: String(rawProfile.hostingProvider ?? "").trim(),
+        monthlySpend: String(rawProfile.monthlySpend ?? "").trim(),
+        trafficLevel: (String(rawProfile.trafficLevel ?? "Low").trim() || "Low") as "Low" | "Medium" | "High",
+        hasCiCd: (String(rawProfile.hasCiCd ?? "no").trim().toLowerCase() === "yes" ? "yes" : "no") as "yes" | "no",
+        publicExposure: (String(rawProfile.publicExposure ?? "Internal Only").trim() || "Internal Only") as "API" | "Public Web" | "Internal Only" | "Other",
+        complianceNeeds: String(rawProfile.complianceNeeds ?? "").trim(),
+        gitProvider: (String(rawProfile.gitProvider ?? "None").trim() || "None") as "GitHub" | "GitLab" | "Bitbucket" | "None" | "Other",
+        primaryGoal: String(rawProfile.primaryGoal ?? "").trim(),
+      };
+
+      const operatorOutput = await generateOperatorEngineOutput(profile, tierResolved, invocation);
+      const operatorInput: OperatorProfileInput = {
+        projectType: profile.projectType,
+        hostingProvider: profile.hostingProvider,
+        monthlySpend: profile.monthlySpend,
+        trafficLevel: profile.trafficLevel,
+        hasCiCd: profile.hasCiCd,
+        publicExposure: profile.publicExposure,
+        complianceNeeds: profile.complianceNeeds,
+        gitProvider: profile.gitProvider,
+        primaryGoal: profile.primaryGoal,
+      };
+      const operatorScores = computeOperatorScores(operatorInput);
+      const axiomProfile = { ...profile, contextType: "operator" as const };
+      const customPlan = (operatorOutput as { thirtyDayPlan?: unknown })?.thirtyDayPlan;
+      const axiom = computeInfrastructureAdvantageScore(axiomProfile, operatorScores, customPlan ?? null);
+
+      const generated = { operatorOutput, operatorScores, axiom, rawProfile, profile, tier: tierResolved };
+      return {
+        ...generated,
+        ...enrichAnalysis(generated, (lastSnapshot?.raw as Record<string, unknown>) ?? null),
+      };
+    },
+    persist({ result, payload }) {
+      const { operatorOutput, operatorScores, axiom, axiomFinal, rawProfile, profile, tags } = result;
+      const existingTags = Array.isArray(payload.tags) ? payload.tags : [];
+      return {
+        operatorProfile: rawProfile,
+        operatorOutput,
+        operatorScores,
+        axiomProfile: { ...profile, contextType: "operator" as const },
+        axiomScores: axiom.scores,
         axiomResult: axiomFinal,
-        tags: mergedTags,
-      } as object,
+        tags: [...new Set([...existingTags, ...tags])],
+        axiomPlan: axiom.plan,
+        engine: {
+          scores: operatorScores,
+          axiomScores: axiom.scores,
+          roadmap: axiom.plan,
+          scoringVersion: SCORING_VERSION,
+        },
+      };
     },
   });
+
+  if (run.reused) {
+    return { success: true, status: "ready", axiomScores: run.generated.axiomScores };
+  }
+
+  const { axiom, profile, tier: tierResolved, driftSignalCount, rawProfile } = run.generated;
+  await logAudit({ leadId, action: "roadmap_generated", actor: "system" });
+  if (driftSignalCount > 0) {
+    await logAudit({ leadId, action: "drift_detected", actor: "system", metadata: { signalCount: driftSignalCount } });
+    eventDriftDetected({ leadId, signalCount: driftSignalCount });
+  }
+  eventEngineCompleted({ leadId, engineName: "cloud-operator", tier: tierResolved, unifiedTier: tierResolved, scoringVersion: SCORING_VERSION });
 
   await insertAxiomSnapshot({
     leadId,
@@ -257,7 +238,7 @@ export async function runCloudOperatorAnalysis(leadId: string) {
     deploymentFrictionIndex: axiom.scores.deploymentFrictionIndex,
     complexityTier: axiom.scores.complexityTier,
     automationReadinessScore: axiom.scores.automationReadinessScore,
-    raw: { operatorProfile: generated.rawProfile },
+    raw: { operatorProfile: rawProfile },
   });
 
   return {

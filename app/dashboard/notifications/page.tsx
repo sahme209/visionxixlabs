@@ -81,6 +81,7 @@ const TYPE_ICON: Record<string, typeof BellAlertIcon> = {
   readiness_blocker:         ExclamationTriangleIcon,
   policy_violation:          LockClosedIcon,
   scheduled_scan_failed:     ClockIcon,
+  workspace_ai_budget_warning: BellAlertIcon,
 };
 
 export default function NotificationsPage() {
@@ -114,7 +115,7 @@ export default function NotificationsPage() {
         kicker={`Team workflows · notifications${report?.generatedAt ? ` · last sync ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
         title={<>What needs <span className="text-zinc-500">attention.</span></>}
         description="Every notification is derived from a real canonical event. No random noise, no fake alerts — review only, no action taken."
-        helps="See critical, warning, and informational signals derived from cloud + monitoring + agent activity, with the source link for every one."
+        helps="Review cloud, monitoring, and Agent signals. Workspace owners and admins also see active AI budget warnings when a saved threshold is reached."
         connectFirst="Connectors that produce events: cloud, monitoring, GitHub. Slack/Teams downstream for outbound digests."
         engineers={["Notification routing", "Incident Engineer"]}
         requiresApproval="Notification routing rules + Slack/Teams outbound digest configuration."

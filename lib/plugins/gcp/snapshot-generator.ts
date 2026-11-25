@@ -307,7 +307,13 @@ export async function getGcpAccessToken(
   // GoogleAuth returns the bearer string directly; OAuth2Client token objects
   // are a different SDK contract. Never manufacture or log a credential.
   const storage = new Storage({ credentials });
-  const authClient = storage.authClient;
+  // @google-cloud/storage 8 exposes `authClient`; 9 moves it to `storageTransport.authClient`.
+  const sdk = storage as unknown as {
+    authClient?: { getAccessToken(): Promise<unknown> };
+    storageTransport?: { authClient?: { getAccessToken(): Promise<unknown> } };
+  };
+  const authClient = sdk.storageTransport?.authClient ?? sdk.authClient;
+  if (!authClient) throw new Error("Failed to get access token");
   const token = await authClient.getAccessToken();
   if (typeof token !== "string" || !token.trim()) throw new Error("Failed to get access token");
   return token;

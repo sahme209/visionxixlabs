@@ -99,7 +99,7 @@ export async function POST(req: Request) {
       cloudPosture,
       auditContext: s(f.get("auditContext")) || undefined,
       inScopeControls: s(f.get("inScopeControls")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistComplianceFrameworkAssessment(org, assessment);
   } catch (err) {
     console.warn(

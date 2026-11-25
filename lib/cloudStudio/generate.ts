@@ -1,3 +1,5 @@
+import type { LeadGenerationInvocation } from "@/lib/ai/leadGenerationInvocation";
+import { GenerationNotDispatchedError } from "@/lib/ai/generationNotDispatched";
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
 import type { CloudStudioForm, CloudStudioOutput, CloudStudioTier } from "./types";
 import { isFreeTier } from "./pricing";
@@ -20,7 +22,8 @@ function parseJSON<T>(text: string): Partial<T> {
 
 export async function generateCloudStudioOutput(
   request: CloudStudioForm,
-  tier: CloudStudioTier
+  tier: CloudStudioTier,
+  leadInvocation?: LeadGenerationInvocation
 ): Promise<CloudStudioOutput> {
   const fullOutput = !isFreeTier(tier);
 
@@ -42,10 +45,11 @@ export async function generateCloudStudioOutput(
       prompt = buildNetworkingPrompt(request.form as import("./types").NetworkingForm, fullOutput);
       break;
     default:
-      throw new Error("Unknown service type");
+      throw new GenerationNotDispatchedError("Unknown service type");
   }
 
   const { text } = await orchestrateGenerate({
+    leadInvocation,
     taskType: "cloud_automation",
     systemPrompt:
       "You are an expert cloud and DevOps consultant. Output valid JSON when asked for JSON; otherwise output plain text. Be professional and concise.",

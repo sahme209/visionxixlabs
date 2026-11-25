@@ -18,6 +18,7 @@ import { buildRiskQueue } from "@/lib/risk/riskQueueBuilder";
 import { buildIntegrationHealthReport } from "@/lib/integrations/integrationHealthChecker";
 import { buildPriorityReport } from "@/lib/intelligence/priorityEngine";
 import { buildAxiomOSState } from "@/lib/axiomOS/axiomOSStateBuilder";
+import { readWorkspaceAIBudgetWarning } from "./workspaceAIBudgetWarning";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import type {
   NotificationItem,
@@ -30,14 +31,18 @@ import type {
 export interface BuildNotificationsInput {
   tenantId: OrganizationId;
   actorUserId?: UserId;
+  canReviewBilling?: boolean;
 }
 
 export async function buildNotifications(input: BuildNotificationsInput): Promise<NotificationReport> {
-  const [risk, health, priorities, state] = await Promise.all([
+  const [risk, health, priorities, state, budgetWarning] = await Promise.all([
     buildRiskQueue({ tenantId: input.tenantId, actorUserId: input.actorUserId }),
     buildIntegrationHealthReport({ tenantId: input.tenantId, actorUserId: input.actorUserId }),
     buildPriorityReport({ tenantId: input.tenantId, actorUserId: input.actorUserId }),
     buildAxiomOSState({ tenantId: input.tenantId, actorUserId: input.actorUserId }),
+    input.canReviewBilling
+      ? readWorkspaceAIBudgetWarning(input.tenantId, input.actorUserId).catch(() => "unavailable" as const)
+      : false,
   ]);
 
   const notifications: NotificationItem[] = [];
@@ -138,6 +143,22 @@ export async function buildNotifications(input: BuildNotificationsInput): Promis
     }));
   }
 
+  if (budgetWarning === true) {
+    notifications.push(buildNotification({
+      id: "notify:billing:workspace-ai-budget-warning",
+      type: "workspace_ai_budget_warning",
+      severity: "warning",
+      title: "AI budget warning threshold reached",
+      description: "This workspace’s monthly AI usage and outstanding reservations have reached its saved warning threshold.",
+      sourceSystem: "workspace_ai_budget",
+      sourceMode: "live",
+      route: { label: "Review AI budget", href: "/control/usage-billing" },
+      evidenceRefs: ["billing:workspace-ai-budget"],
+      limitations: ["Current budget warning. Review the billing page for the latest balance."],
+      createdAt: state.generatedAt,
+    }));
+  }
+
   // Sort: critical first, then warning, then info; newest first within band
   notifications.sort((a, b) => severityWeight(a.severity) - severityWeight(b.severity));
 
@@ -168,6 +189,7 @@ export async function buildNotifications(input: BuildNotificationsInput): Promis
     summary,
     safetyContract: "notifications_review_only_no_action_taken",
     limitations: [
+      ...(budgetWarning === "unavailable" ? ["The workspace AI budget warning could not be verified."] : []),
       "Notifications are synthesised at request time — historical persistence is not yet wired.",
       "Each notification carries a route the operator can click; the page itself never triggers downstream effects.",
     ],

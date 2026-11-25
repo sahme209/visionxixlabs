@@ -108,10 +108,13 @@ describe("POST /api/ai/generate reservation boundary", () => {
     expect((await POST(request())).status).toBeGreaterThanOrEqual(400);
     expect(mocks.release).not.toHaveBeenCalled(); expect(mocks.generateText).toHaveBeenCalledOnce();
   });
-  it("does not call a provider when the pool cannot reserve the request", async () => {
-    mocks.reserve.mockResolvedValue({ ok: false, error: "ai_credit_pool_exhausted" });
+  it.each([
+    ["ai_credit_pool_exhausted", "ai.credit_pool_exhausted"],
+    ["ai_workspace_budget_exceeded", "ai.workspace_budget_exceeded"],
+  ])("does not call a provider after %s", async (error, code) => {
+    mocks.reserve.mockResolvedValue({ ok: false, error });
     const { POST } = await import("../route"); const response = await POST(request());
-    expect(response.status).toBe(422); expect((await response.json()).error.code).toBe("ai.credit_pool_exhausted");
+    expect(response.status).toBe(422); expect((await response.json()).error.code).toBe(code);
     expect(mocks.generateAdmitted).not.toHaveBeenCalled(); expect(mocks.legacyClaim).not.toHaveBeenCalled();
   });
   it("rejects oversized Unicode input before reservation or model dispatch", async () => {

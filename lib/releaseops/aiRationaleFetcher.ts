@@ -25,9 +25,11 @@ import { makeInstrumentedFetcher } from "./instrumentedAiFetcher";
 export function makeLiveRationaleFetcher(opts: {
   engineName?: string;
   organizationId?: string | null;
+  actorUserId?: string | null;
 } = {}): RationaleAiFetcher {
   return makeInstrumentedFetcher({
     engineName: opts.engineName ?? "ad_hoc",
     organizationId: opts.organizationId ?? null,
+    actorUserId: opts.actorUserId,
   });
 }

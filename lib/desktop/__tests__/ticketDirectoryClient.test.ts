@@ -1,5 +1,5 @@
 import {afterEach, expect, it, vi} from "vitest";
-import {readIncidentRelease, readIncidentUpdates, readTicketDirectory, reportDeploymentIncident, saveIncidentUpdate} from "../../../desktop/src/lib/ticketDirectoryClient";
+import {readIncidentCollectionReceipt, readIncidentRelease, readIncidentUpdates, readTicketDirectory, reportDeploymentIncident, saveIncidentUpdate} from "../../../desktop/src/lib/ticketDirectoryClient";
 import {ticketDirectoryBodyLimit} from "../../tauri/ticketDirectoryContract";
 
 const fixture = "https://fixture.invalid";
@@ -100,4 +100,26 @@ it("falls back to legacy evidence and rejects a source response for a different 
   expect(wire.mock.calls[1][0]).toContain("includeReleaseEvidence=1");
   expect(await read()).toBeUndefined();
   expect(wire).toHaveBeenCalledTimes(3);
+});
+
+
+it("reads only the exact collection receipt with a paired GET", async () => {
+  const instant = "2026-11-20T12:00:00.000Z";
+  const command = {
+    workspaceId: "workspace", actorId: "actor", incidentId: "incident", releaseId: "release",
+    incidentRevision: instant, repository: "fixture/inventory", commit: "a".repeat(40), baselineCommit: "b".repeat(40),
+    runId: "17", observedAt: instant, attemptId: "7b1280e8-382a-4b7c-839b-839a7145c8bb",
+  };
+  const receipt = {...command, recordedAt: instant, releaseRevision: instant};
+  const wire = vi.fn().mockResolvedValueOnce(Response.json({ok:true,data:receipt}))
+    .mockResolvedValueOnce(Response.json({ok:true,data:{...receipt,runId:"18"}}))
+    .mockResolvedValueOnce(Response.json({ok:true,data:null}));
+  vi.stubGlobal("fetch", wire);
+  const read = () => readIncidentCollectionReceipt(fixture, token, new AbortController().signal, command);
+  expect(await read()).toEqual(receipt);
+  expect(await read()).toBeUndefined();
+  expect(await read()).toBeNull();
+  expect(wire).toHaveBeenCalledWith(fixture + "/api/desktop/tickets/incident-collection?incidentId=incident&attemptId=" + command.attemptId,
+    expect.objectContaining({method:"GET",credentials:"omit",cache:"no-store",redirect:"error"}));
+  expect(wire.mock.calls.every(([, options]) => !("body" in options))).toBe(true);
 });

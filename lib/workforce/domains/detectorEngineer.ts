@@ -14,7 +14,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const DETECTOR_ENGINEER_TARGET_KIND = "engineer_detector_signals";
 
@@ -209,7 +209,7 @@ function effectiveConfidence(ruleFloor: SignalConfidence, aiSuggested: SignalCon
   return rank[aiSuggested] > rank[ruleFloor] ? aiSuggested : ruleFloor;
 }
 
-export async function runDetectorEngineer(organizationId: string): Promise<DetectorEngineerReport> {
+export async function runDetectorEngineer(organizationId: string, actorUserId?: string): Promise<DetectorEngineerReport> {
   const now = Date.now();
   const since7d = new Date(now - 7 * 24 * 60 * 60 * 1000);
   const since30d = new Date(now - 30 * 24 * 60 * 60 * 1000);
@@ -255,6 +255,7 @@ export async function runDetectorEngineer(organizationId: string): Promise<Detec
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:detector_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(candidates, inputs)}`;
@@ -271,7 +272,7 @@ export async function runDetectorEngineer(organizationId: string): Promise<Detec
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   // Step 4 — merge AI + rules into typed signal list.

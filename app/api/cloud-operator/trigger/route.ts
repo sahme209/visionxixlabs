@@ -1,3 +1,4 @@
+import { LeadEngineBusyError } from "@/lib/async/engineRunner";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
@@ -61,6 +62,9 @@ export async function POST(req: NextRequest) {
       axiomResult: axiomResult ?? null,
     });
   } catch (e) {
+    if (e instanceof LeadEngineBusyError) {
+      return NextResponse.json({ error: e.message }, { status: 409 });
+    }
     eventEngineFailed({ leadId, engineName: "cloud-operator", error: e instanceof Error ? e.message : String(e), unifiedTier: tierForRate });
     return NextResponse.json(
       { error: "Failed to generate output. Please try again." },

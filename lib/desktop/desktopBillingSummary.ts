@@ -10,6 +10,10 @@ export type DesktopAIAllowance = { available: false } | {
   overagePolicy: string;
 };
 
+type DesktopAIBudget = { available: false } | {
+  available: true;
+  limit: { monthlyLimitCents: number; remainingCents: number; warningReached: boolean } | null;
+};
 type PublicPlanId = "free" | "pro" | "enterprise";
 export interface DesktopBillingSnapshot {
   version: 1;
@@ -21,6 +25,7 @@ export interface DesktopBillingSnapshot {
     hasCustomer: boolean;
   };
   allowance: DesktopAIAllowance;
+  budget?: DesktopAIBudget;
   canManageBilling: boolean;
 }
 export interface DesktopUsageSummary {
@@ -83,5 +88,19 @@ export function parseDesktopUsageSummary(value: unknown): DesktopUsageSummary | 
       overagePolicy: allowance.overagePolicy as string,
     } : { available: false },
   };
+  if (snapshot.budget !== undefined && snapshot.canManageBilling) {
+    const budget = snapshot.budget;
+    // A bad budget read does not hide independently verified prepaid credits.
+    base.billingSnapshot.budget = { available: false };
+    if (record(budget) && budget.available === true) {
+      const { limit } = budget;
+      if (limit === null) base.billingSnapshot.budget = { available: true, limit };
+      else if (record(limit) && count(limit.monthlyLimitCents) && count(limit.remainingCents)
+        && limit.remainingCents <= limit.monthlyLimitCents && typeof limit.warningReached === "boolean") {
+        const { monthlyLimitCents, remainingCents, warningReached } = limit;
+        base.billingSnapshot.budget = { available: true, limit: { monthlyLimitCents, remainingCents, warningReached } };
+      }
+    }
+  }
   return base;
 }

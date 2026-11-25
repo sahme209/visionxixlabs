@@ -195,7 +195,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runWorkflowOrchestratorEngineer(organizationId: string, raw: WorkflowInput): Promise<WorkflowPlan> {
+export async function runWorkflowOrchestratorEngineer(organizationId: string, raw: WorkflowInput, actorUserId?: string): Promise<WorkflowPlan> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const workflowSpec = raw.workflowSpec.trim().slice(0, MAX_BODY);
   if (!title || !workflowSpec) {
@@ -229,6 +229,7 @@ export async function runWorkflowOrchestratorEngineer(organizationId: string, ra
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:workflow_orchestrator_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 3500,
     });

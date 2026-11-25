@@ -35,7 +35,7 @@ interface DeploymentRequestDelegate {
         where: { organizationId: string; correlationId?: string; id?: string };
     }): Promise<DeploymentRequestRow | null>;
     updateMany(args: {
-        where: { id: string; organizationId: string; version: number; status?: string };
+        where: { id: string; organizationId: string; version: number; status: string; closedAt: null };
         data: {
             title?: string;
             intakeJson?: unknown;
@@ -140,7 +140,7 @@ export interface ReviseDeploymentRequestInput {
 
 export type CloseDeploymentRequestResult =
     | { ok: true; request: DeploymentRequestRow }
-    | { ok: false; reason: "not_found" | "closed" | "version_conflict" | "closure_evidence_required" };
+    | { ok: false; reason: "not_found" | "closed" | "request_not_submitted" | "version_conflict" | "closure_evidence_required" };
 
 export interface CloseDeploymentRequestInput {
     organizationId: string;
@@ -292,7 +292,9 @@ export async function reviseDeploymentRequest(
         const submitsResolutionDraft = existing.status === "draft" && stored.kind === "resolution_draft";
         const nextVersion = existing.version + 1;
         const claimed = await tx.tauriDeploymentRequest.updateMany({
-            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, ...(submitsResolutionDraft ? { status: "draft" } : {}) },
+            // Closure preserves the version, so a version check alone cannot
+            // detect that closure won the race after our read.
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, status: existing.status, closedAt: null },
             data: {
                 title: input.intake.title,
                 intakeJson: input.intake,
@@ -378,6 +380,7 @@ export async function closeDeploymentRequest(
     type CloseTransactionResult =
         | { kind: "not_found" }
         | { kind: "already_closed" }
+        | { kind: "request_not_submitted" }
         | { kind: "version_conflict" }
         | { kind: "closed"; request: DeploymentRequestRow };
 
@@ -387,10 +390,11 @@ export async function closeDeploymentRequest(
         });
         if (!existing) return { kind: "not_found" as const };
         if (existing.closedAt || existing.status === "closed") return { kind: "already_closed" as const };
+        if (existing.status !== "submitted") return { kind: "request_not_submitted" as const };
         if (existing.version !== input.expectedVersion) return { kind: "version_conflict" as const };
 
         const claimed = await tx.tauriDeploymentRequest.updateMany({
-            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, status: existing.status },
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, status: "submitted", closedAt: null },
             data: { status: "closed", closedAt: new Date(input.closedAtUtc) },
         });
         if (claimed.count !== 1) return { kind: "version_conflict" as const };

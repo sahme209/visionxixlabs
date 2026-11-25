@@ -29,6 +29,32 @@ describe('verified public webhook dispatch',()=>{
     const f=fixture();await reconcilePublicWebhook(event('charge.dispute.created','dp_fixture'),identity,f.lookup,f.reconcile);
     expect(f.applied).toEqual([['intent_1',{id:'evt_fixture',type:'charge.dispute.created',objectId:'ch_fixture'}]]);
   });
+  it('routes only canonical automatic top-up disputes into prepaid accounting',async()=>{
+    const f=fixture();
+    const dispute={id:'du_fixture',livemode:false,charge:'ch_fixture'};
+    const charge={id:'ch_fixture',livemode:false,metadata:{purpose:'axiom_auto_ai_credit_top_up_v1'}};
+    f.lookup.get=vi.fn(async(kind)=>kind==='dispute'?dispute:charge);
+    const record=vi.fn().mockResolvedValueOnce('recorded').mockResolvedValueOnce('payment_unbound');
+    const notification=event('charge.dispute.created','du_fixture');
+    await expect(reconcilePublicWebhook(notification,identity,f.lookup,f.reconcile,{recordDispute:record})).resolves.toEqual({handled:true,outcome:'recorded'});
+    expect(record).toHaveBeenCalledExactlyOnceWith({id:'evt_fixture',type:'charge.dispute.created'},dispute,charge);
+    expect(f.applied).toEqual([]);
+    await expect(reconcilePublicWebhook(notification,identity,f.lookup,f.reconcile,{recordDispute:record})).rejects.toThrow('automatic_top_up_dispute_unverified');
+  });
+  it('uses signed automatic payment events only as scoped triggers for a canonical read',async()=>{
+    const f=fixture();
+    const reconcilePayment=vi.fn().mockResolvedValueOnce({kind:'provider_observed',status:'requires_payment_method'}).mockResolvedValueOnce({kind:'retry'});
+    const notification={...event('payment_intent.payment_failed','pi_fixture'),data:{object:{
+      id:'pi_fixture',object:'payment_intent',status:'succeeded',
+      metadata:{purpose:'axiom_auto_ai_credit_top_up_v1',organizationId:'org_fixture',intentId:'intent_fixture'},
+    }}};
+    await expect(reconcilePublicWebhook({...notification,account:'acct_other'},identity,f.lookup,f.reconcile,{reconcilePayment})).rejects.toThrow('public_webhook_boundary_invalid');
+    expect(reconcilePayment).not.toHaveBeenCalled();
+    await expect(reconcilePublicWebhook(notification,identity,f.lookup,f.reconcile,{reconcilePayment})).resolves.toEqual({handled:true,outcome:'provider_observed'});
+    expect(reconcilePayment).toHaveBeenCalledExactlyOnceWith({organizationId:'org_fixture',intentId:'intent_fixture'},'pi_fixture',false);
+    await expect(reconcilePublicWebhook(notification,identity,f.lookup,f.reconcile,{reconcilePayment})).rejects.toThrow('automatic_top_up_payment_unverified');
+    expect(f.applied).toEqual([]);
+  });
   it('canonicalizes a credit note to its invoice and rechecks current collection',async()=>{
     const f=fixture();await reconcilePublicWebhook(event('credit_note.created','cn_fixture'),identity,f.lookup,f.reconcile);
     expect(f.applied).toEqual([['intent_1',{id:'evt_fixture',type:'invoice.credit_note_changed',objectId:'in_fixture'}]]);

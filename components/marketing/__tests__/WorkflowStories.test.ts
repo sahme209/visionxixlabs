@@ -219,3 +219,29 @@ it("uses source-bound stills as part of the Demo story controls only", () => {
     expect(screen.getByRole("status", {name: "Current story step"}).textContent).toContain("Step 1 of");
   }
 });
+
+it("updates a mounted live region for both sample decisions while retaining keyboard focus", () => {
+  mount();
+  fireEvent.click(screen.getByRole("button", {name: "Step 3: Review the bounded check."}));
+  const response = within(screen.getByRole("region", {name: "Sample workflow response"}));
+  const status = response.getByRole("status");
+  const approve = response.getByRole("button", {name: "Simulate approval", pressed: false});
+  const reject = response.getByRole("button", {name: "Reject sample", pressed: false});
+  expect(status.textContent).toBe("");
+
+  approve.focus();
+  fireEvent.click(approve);
+  expect(response.getByRole("status")).toBe(status);
+  expect(status.textContent).toBe("Sample decision recorded");
+  expect(response.getByRole("button", {name: "Simulate approval", pressed: true})).toBe(approve);
+  expect(response.getByRole("button", {name: /Inspect sample check output/})).toBeTruthy();
+  expect(document.activeElement).toBe(approve);
+
+  reject.focus();
+  fireEvent.click(reject);
+  expect(response.getByRole("status")).toBe(status);
+  expect(status.textContent).toBe("Sample rejected · no action taken");
+  expect(response.getByRole("button", {name: "Reject sample", pressed: true})).toBe(reject);
+  expect(response.queryByRole("button", {name: /Inspect sample check output/})).toBeNull();
+  expect(document.activeElement).toBe(reject);
+});

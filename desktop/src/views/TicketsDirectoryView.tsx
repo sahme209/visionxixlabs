@@ -1,3 +1,4 @@
+import {ReadableTime} from "../components/ReadableTime";
 import {useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type Ref} from "react";
 import {invoke} from "@tauri-apps/api/core";
 import {ArrowRight, Check, ChevronDown, Code2, Download, FileText, Filter, Layers, Package, Plus, RefreshCw, Search, Sparkles} from "lucide-react";
@@ -23,6 +24,7 @@ import {emptyTicketFacets, matchesTicketFacets, TicketFacetFilters} from "./Tick
 import "./TicketsDirectoryView.css";
 
 const key = (record: TicketRecord) => `${record.kind}:${record.id}`;
+const changeDraftKey = (source: {provider: string; id: string; reference: string}) => JSON.stringify([source.provider, source.id, source.reference]);
 const stateLabel = (value: string) => value.replaceAll("_", " ");
 const timeLabel = (value: string) => new Date(value).toLocaleString();
 const filters = ["open", "mine", "changes", "resolved", "all"] as const;
@@ -57,26 +59,30 @@ function inFilter(record: TicketRecord, filter: Filter, userId?:string) {
     : ["pending", "in_progress", "approved"].includes(record.status);
 }
 
-export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpenSavedDraft, onPrepareRemediation, active = true}: {
+export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpenSavedDraft, onPrepareRemediation, onParkedDraftsChange, active = true}: {
   active?: boolean;
   identity: VerifiedDesktopIdentity;
   revision: number;
   onOpenReleases: () => void;
   onOpenSavedDraft?: (release: SavedReleaseLink) => void;
+  onParkedDraftsChange?: (hasDrafts: boolean) => void;
   onPrepareRemediation?: (incident: Extract<TicketRecord, {kind: "incident"}>, release: IncidentRelease["release"]) => void;
 }) {
   const canRead = identity.kind === "desktop_session" && Boolean(identity.userId) && identity.capabilities.includes("workspace:read");
   const canReport = canRead && canReportDeploymentIncident(identity.role);
-  const [changeDraft, setChangeDraft] = useState<(ChangeDraftSource & {title: string})>();
-  const [changeDraftOpen, setChangeDraftOpen] = useState(false);
+  const [changeDrafts, setChangeDrafts] = useState<{
+    owner: string;
+    sources: Map<string, ChangeDraftSource & {title: string}>;
+    openKey?: string;
+  }>();
+  const savedDraftReturn = useRef<{owner: string; sourceKey: string; departed: boolean} | undefined>(undefined);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportNotice, setReportNotice] = useState("");
   useEffect(() => {
     setReportOpen(false);
     setReportNotice("");
     setTransitionNotice("");
-    setChangeDraft(undefined);
-    setChangeDraftOpen(false);
+    setChangeDrafts(undefined);
   }, [revision, identity.organizationId, identity.userId]);
   const [updateEvidence, setUpdateEvidence] = useState<IncidentEvidenceHistory>();
   const latestAttachment = useRef<HTMLDetailsElement>(null);
@@ -95,6 +101,7 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     assignmentAttempts.current.clear();
   }
   const [directory, setDirectory] = useState<TicketDirectory | null>();
+  const directoryOwner = useRef<string | undefined>(undefined);
   const [filter, setFilter] = useState<Filter>("open");
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("");
@@ -115,6 +122,10 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
   useSearchShortcut(searchField, active && canRead && !facetsOpen);
   const [selected, setSelected] = useState<string>();
   const [detailSelection, setDetailSelection] = useState<{ticket: string; tab: DetailTab}>();
+  useEffect(() => {
+    setSelected(undefined);
+    setDetailSelection(undefined);
+  }, [updatesOwner]);
   const panelId = useId();
   const timelineHeadingId = useId();
   const panel = useRef<HTMLElement>(null);
@@ -135,12 +146,13 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     const abort = new AbortController();
     void readTicketDirectory(config.apiBase, config.sessionToken, abort.signal).then(result => {
       if (abort.signal.aborted || config !== desktopClient.config || revision !== desktopClient.getContextRevision()) return;
+      directoryOwner.current = updatesOwner;
       setDirectory(result?.workspaceId === identity.organizationId && result.actorId === identity.userId ? result : null);
     });
     return () => abort.abort();
-  }, [active, canRead, identity.organizationId, identity.userId, revision, refresh]);
+  }, [active, canRead, identity.organizationId, identity.userId, revision, refresh, updatesOwner]);
 
-  const data = canRead ? directory : undefined;
+  const data = canRead && directoryOwner.current === updatesOwner ? directory : undefined;
   const needle = query.trim().toLowerCase();
   const owners = new Map<string,string>();
   for (const row of data?.records ?? []) {
@@ -152,6 +164,25 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     && matchesTicketFacets(record,facets)
     && (!classification || classification === classificationKey(record))
     && ticketSearchText(record).includes(needle));
+  useLayoutEffect(() => {
+    const entry = savedDraftReturn.current;
+    if (!entry) return;
+    if (entry.owner !== updatesOwner) {
+      savedDraftReturn.current = undefined;
+      return;
+    }
+    if (!active) {
+      entry.departed = true;
+      return;
+    }
+    if (!entry.departed || data === undefined) return;
+    savedDraftReturn.current = undefined;
+    const focused = document.activeElement;
+    if (focused !== document.body && !focused?.closest("[hidden]")) return;
+    const index = visible.findIndex(row => row.kind === "change" && changeDraftKey(row) === entry.sourceKey);
+    (document.getElementById(`${panelId}-row-${index}`) ?? searchField.current)?.focus();
+  }, [active, data, updatesOwner, visible, panelId]);
+
   const exportFlight = useRef(false);
   const [exporting, setExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
@@ -185,7 +216,9 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
       if (config === desktopClient.config && revision === desktopClient.getContextRevision()) setExportMessage(message);
     }
   }
-  const record = visible.find(row => key(row) === selected) ?? visible[0];
+  const selectionUnavailable = Boolean(data && selected && !data.records.some(row => key(row) === selected));
+  const record = selectionUnavailable ? undefined : visible.find(row => key(row) === selected) ?? visible[0];
+  const tabbableRow = record ?? visible[0];
   const recordKey = record && key(record);
   const tab = detailSelection?.ticket === recordKey ? detailSelection?.tab ?? "Overview" : "Overview";
   const incident = record?.kind === "incident" ? record : undefined;
@@ -236,12 +269,32 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
   const canReadSources = identity.capabilities.includes("github:read");
   const selectedSource = record?.kind === "change"
     ? changeDraftSourceSchema.safeParse({id: record.id, provider: record.provider, reference: record.reference}) : undefined;
-  const changeDraftAction = canReadLinkedReleases && record?.kind === "change" && selectedSource?.success &&
+  const ownedDrafts = changeDrafts?.owner === updatesOwner ? changeDrafts : undefined;
+  const hasDrafts = Boolean(ownedDrafts?.sources.size);
+  useEffect(() => onParkedDraftsChange?.(hasDrafts), [hasDrafts, onParkedDraftsChange]);
+  const sourceKey = selectedSource?.success
+    ? changeDraftKey(selectedSource.data) : undefined;
+  const changeDraftAction = canReadLinkedReleases && record?.kind === "change" && selectedSource?.success && sourceKey &&
     <button type="button" className="btn-secondary" onClick={() => {
-      if (!active || revision !== desktopClient.getContextRevision()) return;
-      setChangeDraft(current => current ?? {...selectedSource.data, title: record.title});
-      setChangeDraftOpen(true);
-    }}>{changeDraft ? `Resume release draft for ${changeDraft.reference}` : "Start release draft"}</button>;
+      if (!active || !canRead || revision !== desktopClient.getContextRevision()) return;
+      setSelected(key(record));
+      setChangeDrafts(current => {
+        const sources = new Map(current?.owner === updatesOwner ? current.sources : undefined);
+        if (!sources.has(sourceKey)) sources.set(sourceKey, {...selectedSource.data, title: record.title});
+        return {owner: updatesOwner, sources, openKey: sourceKey};
+      });
+    }}>{ownedDrafts?.sources.has(sourceKey) ? `Resume release draft for ${selectedSource.data.reference}` : "Start release draft"}</button>;
+
+  function closeChangeDraft(key: string, discard: boolean) {
+    setChangeDrafts(current => {
+      if (current?.owner !== updatesOwner || current.openKey !== key) return current;
+      if (!discard) return {...current, openKey: undefined};
+      const sources = new Map(current.sources);
+      sources.delete(key);
+      return {owner: current.owner, sources};
+    });
+  }
+
   const changeReleaseLinks = record?.kind === "change" && record.relatedReleases > 0 && canReadLinkedReleases
     ? <ChangeTicketReleaseLinks key={JSON.stringify([record.id, revision])} ticketId={record.id}
         identity={identity} revision={revision} active={active && canRead}/>
@@ -261,6 +314,7 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     <IncidentReleaseLink key={JSON.stringify([record.id, record.releaseId, revision])}
       incident={record} identity={identity} revision={revision} active={active && canRead} actionRef={remediationAction}
       label="Prepare remediation plan" onOpen={release => {
+        setSelected(key(record));
         ticketReturn.current = {ticket: key(record), releaseId: release.id};
         onPrepareRemediation(record, release);
       }} />
@@ -291,9 +345,8 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
         const local = new Date(at);
         const absolute = timeLabel(at);
         const sameDay = local.toDateString() === new Date(record.reportedAt).toDateString();
-        return <li key={label}><span>{label}</span><time dateTime={at} title={absolute} aria-label={absolute}>
-          {sameDay ? local.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"}) : absolute}
-        </time></li>;
+        return <li key={label}><span>{label}</span><ReadableTime dateTime={at} fullText={absolute}
+          displayText={sameDay ? local.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"}) : absolute}/></li>;
       })}
     </ol>
   </section>;
@@ -330,17 +383,21 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     {exportMessage && active && canRead && <p role="status">{exportMessage}</p>}
     {reportNotice && active && canRead && <p role="status">{reportNotice}</p>}
     {transitionNotice && active && canRead && <p role="status">{transitionNotice}</p>}
-    {changeDraft && <ResolutionDraftForm key={JSON.stringify([revision, identity.organizationId, identity.userId, changeDraft.id])}
-      source={changeDraft} active={active && changeDraftOpen}
-      dialog={{open: active && changeDraftOpen,
-        onClose: saved => {setChangeDraftOpen(false); if (saved) setChangeDraft(undefined);},
-        onDiscard: () => {setChangeDraftOpen(false);setChangeDraft(undefined);},
-        onOpenSaved: onOpenSavedDraft && (release => {
-          setChangeDraftOpen(false);
-          setChangeDraft(undefined);
-          onOpenSavedDraft(release);
-        }),
-      }}/>}
+    {ownedDrafts && [...ownedDrafts.sources].map(([draftKey, source]) => {
+      const open = active && canRead && canReadLinkedReleases && ownedDrafts.openKey === draftKey;
+      return <ResolutionDraftForm key={JSON.stringify([updatesOwner, draftKey])}
+        source={source} active={open}
+        dialog={{open,
+          onClose: saved => closeChangeDraft(draftKey, saved),
+          onDiscard: () => closeChangeDraft(draftKey, true),
+          onOpenSaved: onOpenSavedDraft && (release => {
+            if (!open || revision !== desktopClient.getContextRevision()) return;
+            savedDraftReturn.current = {owner: updatesOwner, sourceKey: draftKey, departed: false};
+            closeChangeDraft(draftKey, true);
+            onOpenSavedDraft(release);
+          }),
+        }}/>;
+    })}
     {canReport && identity.userId && <IncidentReportDialog
       key={JSON.stringify([revision, identity.organizationId, identity.userId])}
       open={active && reportOpen} workspaceId={identity.organizationId} actorId={identity.userId} revision={revision}
@@ -394,7 +451,12 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
       <div className="studio-ticket-filter-actions">
         <button type="button" className="btn-secondary studio-ticket-icon-action" aria-label="Refresh tickets"
           title="Refresh tickets" aria-disabled={data === undefined}
-          onClick={() => {if (data !== undefined) {setDirectory(undefined);setRefresh(value => value+1);}}}>
+          onClick={() => {
+            if (data === undefined) return;
+            if (recordKey) setSelected(recordKey);
+            setDirectory(undefined);
+            setRefresh(value => value + 1);
+          }}>
           <RefreshCw aria-hidden="true" size={15}/>
         </button>
         <button ref={filtersAction} type="button" className="btn-secondary" aria-haspopup="dialog" aria-expanded={facetsOpen}
@@ -425,16 +487,17 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
         ? <p key={name} role="status">{label} are unavailable{source.state === "migration_pending" ? " while workspace storage is being prepared" : ""}.</p>
         : source.limited ? <p key={name} role="status">Only the latest loaded {label.toLowerCase()} are shown.</p> : null;
     })}
-    {showNoRows && <p role="status">{data.records.length ? "No loaded tickets match." : "No records from the available sources."}</p>}
-    {record && <div className="studio-tickets-workbench">
+    {selectionUnavailable && <p role="status">The selected ticket could not be verified in the loaded records. Refresh or select another ticket.</p>}
+    {showNoRows && !selectionUnavailable && <p role="status">{data.records.length ? "No loaded tickets match." : "No records from the available sources."}</p>}
+    {visible.length > 0 && <div className="studio-tickets-workbench">
       <nav aria-label="Select a ticket" aria-describedby={`${panelId}-instructions`}>
         <p id={`${panelId}-instructions`} className="sr-only">Use the Up and Down arrow keys to select a ticket. Press Enter to focus its details.</p>
         {visible.map((row, index) => {
           const context = row.kind === "incident" ? row.releaseContext : undefined;
           const scope = [context?.environment, context?.application].filter(Boolean).join(" · ");
           return (
-            <button key={key(row)} id={`${panelId}-row-${index}`} type="button" aria-controls={panelId}
-              tabIndex={row === record ? 0 : -1} aria-current={row === record ? "true" : undefined}
+            <button key={key(row)} id={`${panelId}-row-${index}`} type="button" aria-controls={record ? panelId : undefined}
+              tabIndex={row === tabbableRow ? 0 : -1} aria-current={row === record ? "true" : undefined}
               onKeyDown={event => navigateRows(event, index)} onClick={() => {
                 const next = key(row);
                 if (selected === next) panel.current?.focus();
@@ -445,7 +508,7 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
               }}>
               <span className="studio-ticket-list-meta">
                 <small className="studio-ticket-reference" title={ticketReference(row)}>{ticketReference(row)}</small>
-                <span className="studio-ticket-chip">{row.kind === "change" ? row.priority : row.severity}</span>
+                <span className="studio-ticket-chip" data-ticket-priority={row.kind === "change" ? row.priority : row.severity}>{row.kind === "change" ? row.priority : row.severity}</span>
               </span>
               <span>{row.title || "Untitled record"}</span>
               <small>{scope || (row.kind === "incident" ? "Deployment incident" : stateLabel(row.type))} · {stateLabel(row.status)}</small>
@@ -453,7 +516,7 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
           );
         })}
       </nav>
-      <article ref={panel} id={panelId} tabIndex={-1} aria-label="Selected ticket details" onKeyDown={event => {
+      {record && <article ref={panel} id={panelId} tabIndex={-1} aria-label="Selected ticket details" onKeyDown={event => {
         if (event.key !== "Escape" || event.defaultPrevented || event.nativeEvent.isComposing ||
           event.nativeEvent.keyCode === 229 || (event.target instanceof Element &&
             event.target.closest('input, textarea, select, [contenteditable], [role="dialog"], [role="alertdialog"]'))) return;
@@ -465,10 +528,10 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
         <header className="studio-ticket-detail-heading">
           <p className="studio-ticket-state studio-ticket-reference">{ticketReference(record)}</p>
           <div className="studio-ticket-detail-chips">
-            <span className="studio-ticket-chip">
+            <span className="studio-ticket-chip" data-ticket-priority={record.kind === "incident" ? record.severity : record.priority}>
               {record.kind === "incident" ? `Severity: ${record.severity}` : `Priority: ${record.priority}`}
             </span>
-            <span className="studio-ticket-chip">{stateLabel(record.status)}</span>
+            <span className="studio-ticket-chip" data-ticket-status={record.status}>{stateLabel(record.status)}</span>
             {record.kind === "incident" && record.revision && identity.userId && canReadLinkedReleases &&
               canChangeIncidentStatus(identity.role) && <IncidentStatusActions
                 key={JSON.stringify([updatesOwner, record.id, record.releaseId, record.revision])}
@@ -611,7 +674,7 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
           key={JSON.stringify([updatesOwner, record.id, record.releaseId])} visible={active && tab === "Overview"}
           incidentId={record.id} releaseId={record.releaseId} actorId={identity.userId} workspaceId={identity.organizationId}
           revision={revision} drafts={updateDrafts.current} onEvidenceHistory={setUpdateEvidence} latestAttachmentRef={latestAttachment}/>}
-      </article>
+      </article>}
     </div>}
   </section>;
 }

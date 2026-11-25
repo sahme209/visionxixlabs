@@ -7,6 +7,7 @@
 
 import type { AgentContext, ObserveResult, PlanResult } from "../agentLoop";
 import { orchestrateGenerate } from "@/lib/ai/orchestrator";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 
 export async function observeCostIdleResources(ctx: AgentContext): Promise<ObserveResult> {
   const payload = ctx.fullPayload ?? {};
@@ -37,10 +38,22 @@ export async function observeCostIdleResources(ctx: AgentContext): Promise<Obser
 
 export async function planCostIdleResources(
   ctx: AgentContext,
-  observeResult: ObserveResult
+  observeResult: ObserveResult,
+  manualOnly = false
 ): Promise<PlanResult> {
   if (observeResult.detectedIssues.length === 0) {
     return { actions: [] };
+  }
+  if (manualOnly || publicBillingPolicyEnabled()) {
+    return {
+      actions: [{
+        id: "cost-idle-review",
+        actionType: "manual",
+        title: "Review idle resources",
+        description: "Review the recorded idle-resource signals. An AI remediation draft requires verified workspace access.",
+        approvalRequired: true,
+      }],
+    };
   }
 
   const payload = ctx.fullPayload ?? {};

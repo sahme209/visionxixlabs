@@ -10,25 +10,21 @@
  * - replaying an already-consumed challenge is rejected, not re-served.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
   findPairing: vi.fn(),
   updateManyPairing: vi.fn(),
   getDesktopSession: vi.fn(),
+  transaction: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
-  prisma: { desktopPairingChallengeRecord: { findUnique: mocks.findPairing, updateMany: mocks.updateManyPairing } },
+  prisma: { $transaction: mocks.transaction, desktopPairingChallengeRecord: { findUnique: mocks.findPairing } },
 }));
-vi.mock("@/lib/desktop/desktopSession", () => ({
-  getDesktopSession: mocks.getDesktopSession,
-  statusFor: (s: { revokedAt?: string; expiresAt: string }) => {
-    if (s.revokedAt) return "revoked";
-    if (Date.parse(s.expiresAt) <= Date.now()) return "expired";
-    return "active";
-  },
+vi.mock("@/lib/desktop/privateDesktopSessionStore.prisma", () => ({
+  createPrivatePrismaDesktopSessionStore: () => ({ getById: mocks.getDesktopSession }),
 }));
 
 function postRequest(body: object) {
@@ -47,9 +43,14 @@ const baseRecord = {
   consumedAt: null,
   status: "approved",
   sessionId: "sess-1",
+  approvedByUserId: "fixture-user",
+  approvedOrganizationId: "fixture-org",
 };
 const activeSession = {
   id: "sess-1",
+  userId: "fixture-user",
+  organizationId: "fixture-org",
+  deviceFingerprint: FP,
   deviceLabel: "Sam's Mac",
   issuedAt: new Date().toISOString(),
   expiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
@@ -58,9 +59,15 @@ const activeSession = {
 
 describe("POST /api/desktop/pair/status", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    mocks.transaction.mockImplementation(callback => callback({
+      $queryRaw: async () => [{ id: "sess-1" }],
+      desktopPairingChallengeRecord: { updateMany: mocks.updateManyPairing },
+    }));
     vi.stubEnv("DESKTOP_SESSION_SIGNING_KEY", "a".repeat(32));
   });
+
+  afterEach(() => vi.unstubAllEnvs());
 
   it("mints a token and atomically consumes the record on first successful poll", async () => {
     mocks.findPairing.mockResolvedValue({ ...baseRecord });
@@ -73,9 +80,10 @@ describe("POST /api/desktop/pair/status", () => {
 
     expect(res.status).toBe(200);
     expect(body.status).toBe("approved");
+    expect(res.headers.get("cache-control")).toBe("no-store");
     expect(body.token).toMatch(/^axm\.desk\.sess-1\./);
     expect(mocks.updateManyPairing).toHaveBeenCalledWith({
-      where: { id: "challenge-1", deviceFingerprint: FP, status: "approved", sessionId: "sess-1", consumedAt: null, expiresAt: { gt: expect.any(Date) } },
+      where: { id: "challenge-1", deviceFingerprint: FP, status: "approved", sessionId: "sess-1", approvedByUserId: "fixture-user", approvedOrganizationId: "fixture-org", consumedAt: null, expiresAt: { gt: expect.any(Date) } },
       data: { consumedAt: expect.any(Date), status: "consumed" },
     });
   });
@@ -133,6 +141,36 @@ describe("POST /api/desktop/pair/status", () => {
     const { POST } = await import("../route");
     const res = await POST(postRequest({ challenge: "challenge-1", deviceFingerprint: FP }));
     expect(res.status).toBe(409);
+  });
+
+  it.each([
+    { userId: "different-user" }, { organizationId: "different-org" }, { deviceFingerprint: "different-device" },
+    { revokedAt: new Date().toISOString() }, { expiresAt: "invalid" },
+  ])("withholds a token when the approved session cannot be verified (%j)", async fields => {
+    mocks.findPairing.mockResolvedValue({ ...baseRecord });
+    mocks.getDesktopSession.mockResolvedValue({ ...activeSession, ...fields });
+    const { POST } = await import("../route");
+    const res = await POST(postRequest({ challenge: "challenge-1", deviceFingerprint: FP }));
+    expect(res.status).toBe(410);
+    expect(await res.json()).not.toHaveProperty("token");
+    expect(mocks.updateManyPairing).not.toHaveBeenCalled();
+  });
+
+  it("keeps the approval available after a signing configuration failure", async () => {
+    vi.stubEnv("DESKTOP_SESSION_SIGNING_KEY", "");
+    vi.stubEnv("NEXTAUTH_SECRET", "");
+    mocks.findPairing.mockResolvedValue({ ...baseRecord });
+    mocks.getDesktopSession.mockResolvedValue(activeSession);
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const { POST } = await import("../route");
+      const res = await POST(postRequest({ challenge: "challenge-1", deviceFingerprint: FP }));
+      expect(res.status).toBe(503);
+      expect(await res.json()).not.toHaveProperty("token");
+      expect(mocks.updateManyPairing).not.toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 
   it("reports pending while no session has been approved yet", async () => {

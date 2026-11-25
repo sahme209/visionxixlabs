@@ -75,6 +75,7 @@ export async function askEngineer(
   engineer: AgentEngineer,
   organizationId: string,
   rawQuestion: string,
+  actorUserId?: string,
 ): Promise<EngineerAskResult> {
   const question = rawQuestion.trim().slice(0, MAX_QUESTION_LEN);
   if (!question) {
@@ -91,6 +92,7 @@ export async function askEngineer(
   const fetcher = makeInstrumentedFetcher({
     engineName: `${ENGINE_NAME_PREFIX}:${engineer.id}`,
     organizationId,
+    actorUserId,
     timeoutMs: 30_000,
   });
 

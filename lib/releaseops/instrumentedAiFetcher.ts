@@ -17,12 +17,18 @@
  */
 
 import "server-only";
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 import type { PreferredProvider } from "@/lib/ai/directProviderCall";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { workspaceAIUsageBudgetsEnabled } from "@/lib/billing/workspaceAIUsageBudget";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
+import { boundedAIOutputTokens } from "@/lib/billing/requestReservationCents";
 import type { RationaleAiFetcher } from "./aiRationaleEnricherEngine";
 import {
   lookupCircuitState,
@@ -31,11 +37,19 @@ import {
 } from "./aiCallLogResponder";
 import { shouldShortCircuit, type CircuitConfig } from "./aiCallLogEngine";
 
+export const WORKSPACE_AI_ACTOR_REQUIRED = "workspace_ai_billing_actor_required";
+
+export function isRuleFallbackReason(message: string): boolean {
+  return message === WORKSPACE_AI_ACTOR_REQUIRED || message.startsWith("circuit_open_");
+}
+
 export interface InstrumentedFetcherOptions {
   /** Engine name for log + circuit scope. Stored on every row. */
   engineName: string;
   /** Optional org for scoping log rows. Null when unscoped (cron). */
   organizationId?: string | null;
+  /** Real initiating workspace member from the authenticated server context. */
+  actorUserId?: string | null;
   /** Override breaker thresholds — engineers may tune per engine. */
   circuitConfig?: Partial<CircuitConfig>;
   /** Provider call timeout in milliseconds. Default 30_000. */
@@ -89,6 +103,9 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     // Provider call with timeout race.
+    const actorMissing = Boolean(orgId && !opts.actorUserId);
+    const funded = Boolean(orgId && (publicBillingPolicyEnabled() || workspaceAIUsageBudgetsEnabled()));
+    let attempted = false;
     let raw: {
       text: string;
       provider: string;
@@ -99,10 +116,9 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     try {
       const maxTokens = opts.maxTokens ?? 500;
       const temperature = opts.temperature ?? 0.2;
-      // Scoped calls check the current credit meter and refuse on an outage.
-      // This read does not reserve capacity or admit a dispatch. An upstream
-      // financial hold, if required, must be established by the caller.
-      if (orgId) {
+      if (actorMissing) throw new Error(WORKSPACE_AI_ACTOR_REQUIRED);
+      // Preserve the read-side check during the rollout on legacy workers.
+      if (orgId && !funded) {
         const creditDecision = await checkWorkspaceAICredits(
           orgId,
           0,
@@ -133,22 +149,34 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
       if (workspacePolicy && !workspacePolicy.enabled) {
         throw new Error("workspace_ai_disabled");
       }
-      if (workspacePolicy && workspacePolicy.allowedProviders.length === 0) {
+      if (workspacePolicy && !workspacePolicy.allowedProviders.includes("vercel_gateway")) {
         throw new Error("workspace_ai_provider_unavailable");
       }
-      // Organization-scoped release work uses the same server-resolved policy
-      // as the workspace generation route. Legacy direct-provider hints are
-      // ignored because Gateway is the sole outbound inference boundary.
-      const generate = opts.generateText
-        ?? ((p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, {
-          ...o,
-          organizationId: orgId ?? undefined,
-          only: "vercel_gateway",
-          allowedProviders: workspacePolicy?.allowedProviders,
-          modelSelections: workspacePolicy?.modelSelections,
-          fallbackOrder: workspacePolicy?.fallbackOrder,
-        }));
-      const result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
+      const dispatch = {
+        maxTokens, temperature, organizationId: orgId ?? undefined,
+        only: "vercel_gateway" as const,
+        allowedProviders: workspacePolicy?.allowedProviders,
+        modelSelections: workspacePolicy?.modelSelections,
+        fallbackOrder: workspacePolicy?.fallbackOrder,
+      };
+      let result: unknown;
+      if (funded && orgId && opts.actorUserId) {
+        const defaultModel = manager.status().find(row => row.provider === "vercel_gateway")?.defaultModel;
+        const model = effectiveGatewayModel({ modelSelection: workspacePolicy?.modelSelections.vercel_gateway, defaultModel });
+        if (!gatewayModelOutputBoundVerified(model)) throw new Error("workspace_ai_output_bound_unverified");
+        boundedAIOutputTokens(maxTokens);
+        const correlationId = `releaseops_${randomUUID()}`;
+        const admission = await admitAIText({
+          organizationId: orgId, userId: opts.actorUserId, correlationId, idempotencyKey: correlationId,
+          source: "releaseops", textPolicy: { provider: "vercel_gateway", model, defaultModel },
+        }, { prompt });
+        if (!admission.ok) throw new Error(admission.error);
+        attempted = true;
+        result = await raceWithTimeout(manager.generateTextWithAdmission(prompt, { ...dispatch, correlationId, model }, admission.admission), timeoutMs);
+      } else {
+        const generate = opts.generateText ?? ((p: string) => manager.generateText(p, dispatch));
+        result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
+      }
       raw = result as typeof raw;
     } catch (err) {
       const latencyMs = now().getTime() - startMs;
@@ -157,7 +185,7 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
         organizationId: orgId,
         engineName,
         model: null,
-        outcome: isTimeout ? "timeout" : "error",
+        outcome: (actorMissing || funded && !attempted) ? "short_circuit" : isTimeout ? "timeout" : "error",
         errorMessage: err instanceof Error ? err.message : "unknown",
         latencyMs,
         promptTokens: null,
@@ -168,12 +196,9 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     const latencyMs = now().getTime() - startMs;
-    // Keep the budget meter tenant-scoped without retaining prompt text,
-    // system instructions, provider credentials, or provider account data.
-    // This post-call usage write is not a pre-call financial reservation.
-    // An unscoped call skips this branch; missing usage is not proof of zero
-    // cost. The timeout race below does not cancel an in-flight provider call.
-    if (orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
+    // Funded generation records its usage with the reservation. Legacy scope
+    // still needs the pre-existing usage writer.
+    if (!funded && orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
       const usageWrite = await recordAIUsageEvent({
         organizationId: orgId,
         provider: raw.provider,

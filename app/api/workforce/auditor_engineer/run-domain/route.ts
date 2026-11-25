@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   let observationCount = 0;
   let totalEvents = 0;
   try {
-    const report = await runAuditorEngineer(org);
+    const report = await runAuditorEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     observationCount = report.observations.length;
     totalEvents = report.totalAuditEvents;

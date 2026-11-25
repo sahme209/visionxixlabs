@@ -31,7 +31,24 @@ it('keeps normal flow for oversized content, phone sizes or reduced-motion prefe
  expect(root.dataset.stackReady).toBe('false');
  height=400;matches=false;act(()=>{for(const changed of changes)changed()});flush();
  expect(root.dataset.stackReady).toBe('false');
- expect(root.querySelector<HTMLElement>('article')!.style.getPropertyValue('--feature-scale')).toBe('1');
+ expect(root.querySelector<HTMLElement>('article')!.style.getPropertyValue('--feature-scale')).toBe('');
+});
+it('schedules no layout work in normal flow and resumes only while the media query matches',()=>{
+ matches=false;
+ const view=mount(),root=view.container.querySelector('section')!;
+ expect(requestAnimationFrame).not.toHaveBeenCalled();
+ fireEvent.scroll(window);fireEvent.resize(window);fireEvent.focusIn(root);
+ expect(requestAnimationFrame).not.toHaveBeenCalled();
+ matches=true;act(()=>{for(const changed of changes)changed()});flush();
+ expect(root.dataset.stackReady).toBe('true');
+ fireEvent.scroll(window);
+ expect(requestAnimationFrame).toHaveBeenCalledTimes(2);
+ matches=false;act(()=>{for(const changed of changes)changed()});
+ expect(cancelAnimationFrame).toHaveBeenCalledWith(7);
+ flush();fireEvent.scroll(window);fireEvent.resize(window);fireEvent.focusIn(root);
+ expect(requestAnimationFrame).toHaveBeenCalledTimes(2);
+ expect(root.dataset.stackReady).toBe('false');
+ expect(root.querySelector<HTMLElement>('article')!.style.getPropertyValue('--feature-lift')).toBe('');
 });
 it('releases its pending frame and listeners on unmount',()=>{
  const view=mount();expect(changes.size).toBe(1);view.unmount();

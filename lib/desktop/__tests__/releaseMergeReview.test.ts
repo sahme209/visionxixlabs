@@ -28,3 +28,23 @@ it('clears prior evidence when the selected method changes',async()=>{
 it('blocks malformed current-context responses without displaying raw errors',async()=>{
  io.targets.mockResolvedValue({ok:true,data:{...targets,requestVersion:9}});render(createElement(ReleaseMergeReview,{requestId:'release',version:3}));fireEvent.click(screen.getByText('Review merge'));await screen.findByRole('alert');expect(screen.queryByLabelText('Linked pull request')).toBeNull();
 });
+it('requires a fresh provider read after a same-version release refresh',async()=>{
+ const view=render(createElement(ReleaseMergeReview,{requestId:'release',version:3,refreshEpoch:1}));
+ await select();
+ fireEvent.click(screen.getByText('Read merge plan'));
+ await screen.findByText('a'.repeat(12));
+
+ view.rerender(createElement(ReleaseMergeReview,{requestId:'release',version:3,refreshEpoch:2}));
+ expect(screen.queryByLabelText('Linked pull request')).toBeNull();
+ expect(screen.queryByText('a'.repeat(12))).toBeNull();
+ expect(io.plan).toHaveBeenCalledTimes(1);
+
+ let resolve!:(v:unknown)=>void;
+ io.plan.mockReturnValueOnce(new Promise(r=>{resolve=r}));
+ await select();
+ fireEvent.click(screen.getByText('Read merge plan'));
+ view.rerender(createElement(ReleaseMergeReview,{requestId:'release',version:3,refreshEpoch:3}));
+ await act(async()=>resolve({ok:true,data:plan}));
+ expect(screen.queryByText('a'.repeat(12))).toBeNull();
+ expect(screen.getByRole('button',{name:'Review merge'})).toHaveProperty('disabled',false);
+});

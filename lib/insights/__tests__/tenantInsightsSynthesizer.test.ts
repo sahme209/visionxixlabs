@@ -2,9 +2,8 @@
  * Vitest unit tests for the tenant insights synthesizer fallback path.
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { synthesizeInsights, type InsightsSeed } from "../tenantInsightsSynthesizer";
-import { _resetAIProviderManagerForTests } from "@/lib/ai/AIProviderManager";
+import { describe, it, expect } from "vitest";
+import { summarizeInsightsMetrics, type InsightsSeed } from "../tenantInsightsSynthesizer";
 
 const SEED: InsightsSeed = {
   tenantId: "tenant-42",
@@ -21,21 +20,8 @@ const SEED: InsightsSeed = {
 };
 
 describe("tenantInsightsSynthesizer", () => {
-  beforeEach(() => {
-    delete process.env.GITHUB_TOKEN;
-    delete process.env.GROQ_API_KEY;
-    delete process.env.GEMINI_API_KEY;
-    delete process.env.HUGGINGFACE_API_KEY;
-    delete process.env.OPENROUTER_API_KEY;
-    delete process.env.CLOUDFLARE_ACCOUNT_ID;
-    delete process.env.CLOUDFLARE_API_TOKEN;
-    process.env.OLLAMA_BASE_URL = "http://127.0.0.1:1";
-    process.env.LM_STUDIO_BASE_URL = "http://127.0.0.1:2";
-    _resetAIProviderManagerForTests();
-  });
-
-  it("falls back to deterministic template when only Mock is available", async () => {
-    const r = await synthesizeInsights(SEED);
+  it("builds the deterministic summary without a provider", () => {
+    const r = summarizeInsightsMetrics(SEED);
     expect(r.aiUsed).toBe(false);
     expect(r.paragraph).toContain("7 day");
     expect(r.paragraph).toContain("10 proposal");
@@ -43,26 +29,26 @@ describe("tenantInsightsSynthesizer", () => {
     expect(r.paragraph).toContain("4 applied");
     expect(r.paragraph).toContain("4 rejected");
     expect(r.paragraph).toContain("120 autonomy");
-    expect(r.paragraph).toContain("5 council dissenter");
-  }, 60_000);
+    expect(r.paragraph).toContain("5 council consensus record");
+  });
 
-  it("mentions topAuthorAgent when present", async () => {
-    const r = await synthesizeInsights(SEED);
+  it("mentions topAuthorAgent when present", () => {
+    const r = summarizeInsightsMetrics(SEED);
     expect(r.paragraph).toContain("improver");
-  }, 60_000);
+  });
 
-  it("omits topAuthorAgent line when null", async () => {
-    const r = await synthesizeInsights({ ...SEED, topAuthorAgent: null });
+  it("omits topAuthorAgent line when null", () => {
+    const r = summarizeInsightsMetrics({ ...SEED, topAuthorAgent: null });
     expect(r.paragraph).not.toContain("Most active improver");
-  }, 60_000);
+  });
 
-  it("renders outbound ratio correctly when sends > 0", async () => {
-    const r = await synthesizeInsights(SEED);
+  it("renders outbound ratio correctly when sends > 0", () => {
+    const r = summarizeInsightsMetrics(SEED);
     expect(r.paragraph).toContain("47/50 sends ok");
-  }, 60_000);
+  });
 
-  it("uses 'no outbound sends' wording when sends == 0", async () => {
-    const r = await synthesizeInsights({ ...SEED, outboundSends: 0, outboundFailures: 0 });
+  it("uses 'no outbound sends' wording when sends == 0", () => {
+    const r = summarizeInsightsMetrics({ ...SEED, outboundSends: 0, outboundFailures: 0 });
     expect(r.paragraph).toContain("no outbound sends");
-  }, 60_000);
+  });
 });

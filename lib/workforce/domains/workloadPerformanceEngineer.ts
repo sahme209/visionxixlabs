@@ -202,6 +202,7 @@ function parseAi(text: string): ParsedAi | null {
 export async function runWorkloadPerformanceEngineer(
   organizationId: string,
   raw: WorkloadPerformanceInput,
+  actorUserId?: string,
 ): Promise<WorkloadPerformanceAnalysis> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const serviceDescription = raw.serviceDescription.trim().slice(0, MAX_BODY);
@@ -239,6 +240,7 @@ export async function runWorkloadPerformanceEngineer(
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:workload_performance_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 75_000,
       maxTokens: 3000,
     });

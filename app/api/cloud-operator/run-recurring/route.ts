@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
 import { resolveOperatorTier } from "@/lib/cloudOperator/pricing";
@@ -20,6 +21,7 @@ import "@/lib/plugins/aws";
 const SYSTEM_USER_ID = process.env.CONTACT_AGENT_USER_ID || "system-recurring";
 const IAM_SCAN_PLUGIN = "aws:iam-exposure-scan";
 const INFRA_DISCOVERY_PLUGIN = "aws:infra-discovery";
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const JOB_PLUGIN: Record<string, string> = {
   iam_scan: IAM_SCAN_PLUGIN,
@@ -29,9 +31,8 @@ const JOB_PLUGIN: Record<string, string> = {
 function isAwsLinked(payload: Record<string, unknown>): boolean {
   const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
   const aws = connectors.aws;
-  const status = (aws?.status as string) ?? "pending";
-  const verifiedAccountId = (aws?.verifiedAccountId as string) ?? "";
-  return status === "linked" && !!verifiedAccountId?.trim();
+  const accountId = aws?.verifiedAccountId;
+  return aws?.status === "linked" && typeof accountId === "string" && accountId.trim().length > 0;
 }
 
 async function ensureRecurringRecords(leadId: string): Promise<void> {
@@ -73,10 +74,17 @@ async function ensureRecurringRecords(leadId: string): Promise<void> {
 }
 
 export async function POST(req: NextRequest) {
-  const cronSecret = req.headers.get("x-cron-secret") || req.nextUrl.searchParams.get("cronSecret");
-  const expectedSecret = process.env.CRON_SECRET;
-  if (expectedSecret && cronSecret !== expectedSecret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const headers = { "Cache-Control": "no-store" };
+  const secret = process.env.CRON_SECRET;
+  if (!secret?.trim()) {
+    return NextResponse.json({ error: "Scheduler is not configured" }, { status: 503, headers });
+  }
+  const bearer = req.headers.get("authorization");
+  const legacyHeader = req.headers.get("x-cron-secret");
+  const supplied = Buffer.from(bearer ?? (legacyHeader === null ? "" : `Bearer ${legacyHeader}`));
+  const expected = Buffer.from(`Bearer ${secret}`);
+  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
   }
 
   const now = new Date();
@@ -102,6 +110,7 @@ export async function POST(req: NextRequest) {
 
   let processed = 0;
   let notified = 0;
+  let failed = 0;
 
   for (const ra of due) {
     try {
@@ -113,6 +122,16 @@ export async function POST(req: NextRequest) {
 
       const payload = (lead.fullPayload as Record<string, unknown>) || {};
       if (!isAwsLinked(payload)) continue;
+
+      const intervalDays = ra.frequency === "daily" ? 1 : ra.frequency === "weekly" ? 7 : 30;
+      const nextRunAt = new Date(now.getTime() + intervalDays * DAY_MS);
+      // Claim the due slot before scanning or notifying. An uncertain
+      // outcome must not cause a second delivery for the same slot.
+      const claimed = await prisma.recurringAnalysis.updateMany({
+        where: { id: ra.id, leadId: lead.id, enabled: true, nextRunAt: ra.nextRunAt },
+        data: { nextRunAt, updatedAt: now },
+      });
+      if (claimed.count !== 1) continue;
 
       const userPlan = lead.userId
         ? (await prisma.user.findUnique({ where: { id: lead.userId }, select: { plan: true } }))?.plan ?? null
@@ -134,7 +153,8 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        if (result.status === "success" && ra.jobType === "iam_scan" && result.data) {
+        if (result.status !== "success") throw new Error("Recurring check did not complete");
+        if (ra.jobType === "iam_scan" && result.data) {
           const findings = (result.data.findings as Array<{ type?: string; severity?: string; detail?: string }>) ?? [];
           const critical = findings.filter(
             (f) => (f.severity ?? "").toLowerCase() === "critical"
@@ -190,20 +210,13 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const intervalMs =
-        ra.frequency === "daily"
-          ? 24 * 60 * 60 * 1000
-          : ra.frequency === "weekly"
-            ? 7 * 24 * 60 * 60 * 1000
-            : 30 * 24 * 60 * 60 * 1000;
-      const nextRun = new Date(Date.now() + intervalMs);
-
       await prisma.recurringAnalysis.update({
         where: { id: ra.id },
-        data: { lastRunAt: now, nextRunAt: nextRun, updatedAt: now },
+        data: { lastRunAt: now, updatedAt: now },
       });
       processed++;
     } catch (err) {
+      failed++;
       console.error("[run-recurring] failed for", ra.id, err);
     }
   }
@@ -243,5 +256,5 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ success: true, processed, notified });
+  return NextResponse.json({ success: failed === 0, processed, notified, failed }, { headers });
 }

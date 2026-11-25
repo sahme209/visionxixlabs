@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       organizationId: ctx.organizationId,
       releaseId,
       engineInputs: agg.inputs,
-      ...(withAi ? { asyncVoters: [makeAiNativeVoterAsync(ctx.organizationId)] } : {}),
+      ...(withAi ? { asyncVoters: [makeAiNativeVoterAsync(ctx.organizationId, ctx.userId)] } : {}),
     },
   );
 
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         inputs: agg.inputs,
         // Only call live AI when the operator asked for it on this run;
         // otherwise persist a deterministic fallback (cheap).
-        fetcher: withAi ? makeLiveRationaleFetcher({ engineName: "council_rationale", organizationId: ctx.organizationId }) : null,
+        fetcher: withAi ? makeLiveRationaleFetcher({ engineName: "council_rationale", organizationId: ctx.organizationId, actorUserId: ctx.userId }) : null,
       },
     );
 

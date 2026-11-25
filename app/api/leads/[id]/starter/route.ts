@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { leadGenerationRecovery } from "@/lib/async/generationRecovery";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/leads/starterToken";
 
@@ -27,15 +28,14 @@ export async function GET(
     const payload = lead.fullPayload as Record<string, unknown>;
     const pkg = payload?.aiStarterPackage;
     const error = payload?.aiStarterError;
+    const starterEngine = payload?.starterEngine as { outputStatus?: string } | undefined;
+    const generationRecovery = starterEngine && leadGenerationRecovery(lead.status, payload, "starterEngine");
 
-    if (error === true) {
-      return NextResponse.json({ error: true, message: "AI generation failed. Our team will follow up." });
+    if (pkg && typeof pkg === "object") return NextResponse.json({ aiStarterPackage: pkg });
+    if (error === true || starterEngine?.outputStatus === "failed") {
+      return NextResponse.json({ error: true, message: "AI generation failed. Our team will follow up.", generationRecovery });
     }
-    if (!pkg || typeof pkg !== "object") {
-      return NextResponse.json({ pending: true });
-    }
-
-    return NextResponse.json({ aiStarterPackage: pkg });
+    return NextResponse.json({ pending: true, generationRecovery });
   } catch (e) {
     console.error("[Leads Starter API] Error:", e);
     return NextResponse.json({ error: "Failed to load starter package" }, { status: 500 });

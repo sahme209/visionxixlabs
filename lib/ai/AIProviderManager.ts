@@ -23,6 +23,7 @@ import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, discardGovernedAIAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
 import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "./effectiveGatewayModel";
@@ -30,6 +31,15 @@ import { AccountedDecisionMalformed } from "./accountedDecisionMalformed";
 import { AgentStreamInterrupted, streamedDecisionMessage } from "./streamedDecisionMessage";
 
 let SINGLETON: AIProviderManager | null = null;
+
+function requireAdmittedWorkspaceCall(options?: AIRequestOptions) {
+  if (options?.organizationId && publicBillingPolicyEnabled()) {
+    throw new AIProviderError({
+      provider: "vercel_gateway", kind: "not_configured",
+      message: "Workspace AI requires prepaid admission.", retryable: false,
+    });
+  }
+}
 
 export interface AIEnvSnapshot {
   AI_GATEWAY_AUTH: boolean;
@@ -128,6 +138,7 @@ export class AIProviderManager {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
+    requireAdmittedWorkspaceCall(options);
     // Governance boundary: this is the one place every production call
     // path funnels through before a prompt leaves the service for an
     // external provider (Anthropic, OpenAI, etc.). Scrub known secret/
@@ -144,7 +155,19 @@ export class AIProviderManager {
     return out.result;
   }
 
+  async generateLeadTextOnce(prompt: string, options: AIRequestOptions): Promise<AITextResponse> {
+    requireAdmittedWorkspaceCall(options);
+    const gateway = this.admittedGateway(options);
+    const out = await runWithFallback<AITextResponse>(
+      [gateway],
+      () => gateway.generateTextOnce(redact(prompt), this.optionsForProvider(gateway, options)),
+      { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
+    );
+    return out.result;
+  }
+
   async summarize(text: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
+    requireAdmittedWorkspaceCall(options);
     const safeText = redact(text);
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
@@ -155,6 +178,7 @@ export class AIProviderManager {
   }
 
   async classify(text: string, labels: readonly string[], options?: AIRequestOptions & { only?: AIProviderName }): Promise<AIClassifyResponse> {
+    requireAdmittedWorkspaceCall(options);
     const safeText = redact(text);
     const out = await runWithFallback<AIClassifyResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
@@ -169,6 +193,7 @@ export class AIProviderManager {
     schemaHint: string,
     options?: AIRequestOptions & { only?: AIProviderName },
   ): Promise<AIStructuredResponse<T>> {
+    requireAdmittedWorkspaceCall(options);
     const safeText = redact(text);
     const out = await runWithFallback<AIStructuredResponse<T>>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
@@ -347,6 +372,10 @@ export class AIProviderManager {
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {
+    if (options?.organizationId && publicBillingPolicyEnabled()) {
+      yield { text: "", done: true, finishReason: "error" };
+      return;
+    }
     // Streaming uses the first configured provider; we don't try to
     // re-stream from a fallback mid-stream. If it fails before yielding,
     // we surface a single error chunk and end.

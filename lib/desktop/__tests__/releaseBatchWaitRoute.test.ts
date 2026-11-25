@@ -56,6 +56,27 @@ describe("paired release batch wait controls", () => {
   const result = await response.json(); expect(result.data).toMatchObject({ requestVersion: 2, monitoringEnabled: true, canStart: false, canCancel: true, wait: { id: "wait" } });
   expect(JSON.stringify(result.data)).not.toContain("requestedByUserId");
  });
+ it.each(["before", "during"] as const)("reports exact closure %s a monitor read and retires permission", async timing => {
+  const submitted = {id:"release", organizationId:"org", version:2, status:"submitted", intakeJson:{fixture:true}};
+  if (timing === "during") m.request.mockResolvedValueOnce(submitted);
+  m.request.mockResolvedValue({...submitted, status:"closed"});
+  m.wait.mockResolvedValue({id:"stale-wait", version:4, status:"running", requestedByUserId:"user", inputJson:{}});
+  const path = "https://axiom.invalid/api/desktop/deployments/release/batch-wait?expectedVersion=2";
+  const response = await GET(new NextRequest(path), context);
+  expect(await response.json()).toEqual({ok:true,data:{requestVersion:2,closedRelease:{requestId:"release",version:2},
+   monitoringEnabled:false,canStart:false,canCancel:false,wait:null}});
+  expect(m.wait).toHaveBeenCalledTimes(timing === "during" ? 1 : 0);
+  expect(m.auth).toHaveBeenCalledTimes(2);
+  expect(m.create).not.toHaveBeenCalled();
+  expect(m.cancel).not.toHaveBeenCalled();
+ });
+
+ it("withholds the monitor if its paired member changes during the read", async () => {
+  m.auth.mockResolvedValueOnce({organizationId:"org",userId:"first",capabilities:["deploy:execute"]})
+    .mockResolvedValueOnce({organizationId:"org",userId:"second",capabilities:["deploy:execute"]});
+  const response = await GET(new NextRequest("https://axiom.invalid/api/desktop/deployments/release/batch-wait?expectedVersion=2"), context);
+  expect(response.status).toBe(401);
+ });
  it("reads only a tenant-bound current release wait with read capability", async () => {
   m.wait.mockResolvedValue({ id: "wait", version: 4, status: "paused_for_input", currentStep: "preflight_required", inputJson: { deadlineAt: body.deadlineAt }, stateJson: { observationCount: 2 } });
   const response = await GET(new NextRequest("https://axiom.invalid/api/desktop/deployments/release/batch-wait?expectedVersion=2"), context);

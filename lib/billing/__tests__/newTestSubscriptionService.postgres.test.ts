@@ -28,6 +28,9 @@ import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newT
 import { ownedCheckoutLaunchPolicy } from "./fixtures/ownedCheckoutLaunchPolicy";
 import { fulfillAICreditCheckout, reverseAICreditRefund } from "../aiCreditFulfillment";
 import { readCurrentAIAllowance } from "../currentAIAllowance";
+import { readWorkspaceAIUsageBudget } from "../workspaceAIUsageBudget";
+import { readWorkspaceBudgetSettings, saveWorkspaceBudgetSettings } from "../workspaceAIUsageBudgetSettings";
+import type { CorrelationId } from "@/lib/domain/ids";
 import { settleGatewayGenerationInTransaction, type GatewayUsageTransaction } from "../reconcileGatewayUsage";
 // Paid coverage is checked against the real DB clock, so the synthetic billing period must be the current UTC month (fixed Oct 2026 dates expired on Nov 1).
 const PERIOD_NOW = new Date(), PERIOD_START = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth(), 1)).toISOString(), PERIOD_END = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth() + 1, 1)).toISOString(), PERIOD_MONTH = PERIOD_START.slice(0, 7);
@@ -245,6 +248,87 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await allowance()).toMatchObject({addOnCents:0, usedCents:billed, heldCents:0, includedRemainingCents:20000-billed});
     const exhausted = await reserveAICredits(db, {organizationId, idempotencyKey:"owned_visible_over_limit", reservedCents:20001-billed});
     expect(exhausted).toEqual({ok:false, error:"ai_credit_pool_exhausted"});
+  });
+
+  it("enforces a workspace AI budget against settled usage and outstanding holds without changing prepaid credit", async () => {
+    const organizationId = "owned-workspace-usage-budget";
+    const decision = new Date(PERIOD_NOW);
+    const priorMonth = new Date(Date.parse(PERIOD_START) - 60_000);
+    await db.tenantBillingPlan.create({data:{organizationId,tier:"growth",status:"active"}});
+    await db.$executeRawUnsafe(
+      'INSERT INTO "WorkspaceAIUsageBudget" ("organizationId","monthlyLimitCents","warningThresholdCents","updatedAt") VALUES ($1,100,70,CURRENT_TIMESTAMP)',
+      organizationId,
+    );
+    await db.usageEvent.createMany({data:[
+      {organizationId,eventKind:"ai_invocation",billedCents:600,createdAt:priorMonth},
+      {organizationId,eventKind:"ai_invocation",billedCents:30,createdAt:decision},
+      {organizationId,eventKind:"cloud_scan",billedCents:600,createdAt:decision},
+      {organizationId:"unrelated-budget-workspace",eventKind:"ai_invocation",billedCents:600,createdAt:decision},
+    ]});
+    await db.aIUsageReservation.create({data:{
+      organizationId,idempotencyKey:"prior_month_dispatched",reservedCents:20,status:"dispatch_unknown",createdAt:priorMonth,expiresAt:priorMonth,
+    }});
+    await db.aIUsageReservation.create({data:{
+      organizationId,idempotencyKey:"expired_unclaimed_hold",reservedCents:600,status:"reserved",createdAt:priorMonth,expiresAt:priorMonth,
+    }});
+    const reserve = (idempotencyKey: string, reservedCents: number) => reserveAICredits(db, {organizationId,idempotencyKey,reservedCents}, decision);
+    vi.stubEnv("AXIOM_WORKSPACE_AI_USAGE_BUDGETS", "true");
+    try {
+      expect(await readWorkspaceAIUsageBudget(db, organizationId, decision)).toEqual({
+        monthlyLimitCents:100,warningThresholdCents:70,remainingCents:50,warningReached:false,
+      });
+      const contenders = ["concurrent_budget_hold_a","concurrent_budget_hold_b"];
+      const results = await Promise.all(contenders.map(key => reserve(key, 40)));
+      expect(results.filter(result => result.ok)).toHaveLength(1);
+      const loser = contenders[results.findIndex(result => !result.ok)];
+      expect(await reserve(loser, 40)).toEqual({ok:false,error:"ai_workspace_budget_exceeded"});
+      expect(await readWorkspaceAIUsageBudget(db, organizationId, decision)).toMatchObject({remainingCents:10,warningReached:true});
+      expect(await reserve("exact_budget_boundary", 10)).toMatchObject({ok:true,reused:false});
+      expect(await reserve("budget_boundary_exceeded", 1)).toEqual({ok:false,error:"ai_workspace_budget_exceeded"});
+      expect(await reserve("exact_budget_boundary", 10)).toMatchObject({ok:true,reused:true});
+      expect(await readCurrentAIAllowance(db, organizationId, decision)).toMatchObject({available:true,includedRemainingCents:19900});
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it("qualifies audited workspace budget settings with its current owner or admin and rolls back on audit failure", async () => {
+    const organizationId = "owned-budget-settings";
+    const owner = { organizationId, userId: "budget-owner" };
+    const admin = { organizationId, userId: "budget-admin" };
+    const viewer = { organizationId, userId: "budget-viewer" };
+    await db.orgMembership.createMany({ data: [
+      { ...owner, role: "owner", acceptedAt: new Date() },
+      { ...admin, role: "admin", acceptedAt: new Date() },
+      { ...viewer, role: "finance_viewer", acceptedAt: new Date() },
+    ] });
+    const read = () => db.$transaction(tx => readWorkspaceBudgetSettings(tx, owner), { isolationLevel: "Serializable" });
+    const save = (actor: typeof owner, expectedRevision: string | null, budget: {monthlyLimitCents: number; warningThresholdCents: number | null} | null) =>
+      db.$transaction(tx => saveWorkspaceBudgetSettings(tx, actor, {
+        expectedRevision, budget, correlationId: "owned-budget-settings-correlation" as CorrelationId,
+      }), { isolationLevel: "Serializable" });
+    const values = { monthlyLimitCents: 500, warningThresholdCents: 350 };
+    expect(await read()).toEqual({ kind: "ok", data: { organizationId, revision: null, budget: null } });
+    expect(await save(viewer, null, values)).toEqual({ kind: "forbidden" });
+    const created = await save(owner, null, values);
+    if (created.kind !== "ok" || !created.data.revision) throw Error("expected initial budget revision");
+    expect(created.data.budget).toMatchObject({ ...values, remainingCents: 500, warningReached: false });
+    expect(await save(admin, null, { monthlyLimitCents: 0, warningThresholdCents: null })).toEqual({ kind: "conflict" });
+    expect(await save(owner, created.data.revision, values)).toEqual(created);
+    const auditAction = "billing.workspace_ai_budget_changed";
+    const auditRows = () => db.secureAuditRecord.findMany({ where: { organizationId, action: auditAction } });
+    expect(await auditRows()).toMatchObject([{ actorUserId: owner.userId, detail: { hasBudget: true, monthlyLimitCents: 500 } }]);
+    await db.$executeRawUnsafe(`ALTER TABLE "SecureAuditRecord" ADD CONSTRAINT "fixture_budget_audit_failure" CHECK (action <> 'billing.workspace_ai_budget_changed') NOT VALID`);
+    try {
+      await expect(save(admin, created.data.revision, null)).rejects.toThrow();
+      expect(await read()).toEqual(created);
+    } finally {
+      await db.$executeRawUnsafe('ALTER TABLE "SecureAuditRecord" DROP CONSTRAINT "fixture_budget_audit_failure"');
+    }
+    expect(await save(admin, created.data.revision, null)).toEqual({ kind: "ok", data: { organizationId, revision: null, budget: null } });
+    expect(await auditRows()).toEqual(expect.arrayContaining([expect.objectContaining({
+      actorUserId: admin.userId, detail: expect.objectContaining({ hasBudget: false, previousMonthlyLimitCents: 500 }),
+    })]));
   });
 
   it("binds captured original collection once, protects financial/tenant state and models monthly remaining pool", async () => {

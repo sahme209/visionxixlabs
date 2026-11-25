@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   let snapshotCount = 0;
   let downstreamRan = 0;
   try {
-    const report = await runMetaReasonerEngineer(org);
+    const report = await runMetaReasonerEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     observationCount = report.observations.length;
     snapshotCount = report.snapshotCount;
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     // packet in the same click. Only fires when meta produced
     // observations worth voting on.
     if (outcome !== "error" && observationCount > 0) {
-      const downstream = await triggerDownstreamChain("meta_reasoner_engineer", org);
+      const downstream = await triggerDownstreamChain("meta_reasoner_engineer", org, String(ctx.userId));
       downstreamRan = downstream.length;
     }
   } catch (err) {

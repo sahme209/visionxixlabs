@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       language: s(f.get("language")) || undefined,
       framework: s(f.get("framework")) || undefined,
       focus: s(f.get("focus")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistTestProposal(org, proposal);
   } catch (err) {
     console.warn("[test_coverage/run-domain] hard failure:", err instanceof Error ? err.message : err);

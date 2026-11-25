@@ -139,7 +139,7 @@ function parseAiResponse(text: string): ParsedAiSpec | null {
   }
 }
 
-export async function runSpecWriter(organizationId: string, rawInput: SpecWriterInput): Promise<WrittenSpec> {
+export async function runSpecWriter(organizationId: string, rawInput: SpecWriterInput, actorUserId?: string): Promise<WrittenSpec> {
   const title = rawInput.title.trim().slice(0, MAX_TITLE_LEN);
   const problem = rawInput.problem.trim().slice(0, MAX_FREEFORM_LEN);
   if (!title || !problem) {
@@ -179,6 +179,7 @@ export async function runSpecWriter(organizationId: string, rawInput: SpecWriter
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:spec_writer_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(input)}`;

@@ -5,7 +5,7 @@
  * reviewable workflow draft. Draft is NEVER applied automatically.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { SparklesIcon, PlayIcon } from "@heroicons/react/24/outline";
 
 type TriggerKind = "telemetry_signal" | "cloud_inventory_change" | "schedule" | "manual";
@@ -32,20 +32,34 @@ export default function WorkflowTranslatorPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const run = useCallback(() => {
+  const activeRequest = useRef(false);
+  const request = useRef<{ intent: string; key: string } | null>(null);
+
+  const run = useCallback(async () => {
+    if (activeRequest.current || !intent.trim()) return;
+    const attempt = request.current?.intent === intent ? request.current : { intent, key: crypto.randomUUID() };
+    request.current = attempt;
+    activeRequest.current = true;
     setBusy(true); setError(null); setResp(null);
-    fetch("/api/workflows/translate", {
-      method: "POST", credentials: "include",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ intent }),
-    })
-      .then((r) => r.json())
-      .then((j: { ok?: boolean; data?: TranslateResp; error?: { userMessage?: string } }) => {
-        if (j.ok && j.data) setResp(j.data);
-        else setError(j.error?.userMessage ?? "Translation failed.");
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : "Network error."))
-      .finally(() => setBusy(false));
+    try {
+      const response = await fetch("/api/workflows/translate", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", "idempotency-key": attempt.key },
+        body: JSON.stringify({ intent }),
+      });
+      const result: { ok?: boolean; data?: TranslateResp; error?: { userMessage?: string } } = await response.json();
+      if (result.ok && result.data) {
+        setResp(result.data);
+        if (result.data.draft) request.current = null;
+      } else {
+        setError(result.error?.userMessage ?? "Translation failed.");
+      }
+    } catch {
+      setError("The request outcome could not be confirmed. Retry with the same intent to check the same request.");
+    } finally {
+      activeRequest.current = false;
+      setBusy(false);
+    }
   }, [intent]);
 
   return (
@@ -64,7 +78,7 @@ export default function WorkflowTranslatorPage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Type what should happen. The translator drafts a structured workflow with allowed triggers and stage-only
-          actions. V19 never auto-applies a workflow — your review is the deciding step.
+          actions. Drafting uses your workspace AI credits and budget. You review the draft before any separate workflow action.
         </p>
       </div>
 
@@ -81,7 +95,7 @@ export default function WorkflowTranslatorPage() {
         <button
           onClick={run}
           disabled={busy || intent.trim().length === 0}
-          className="inline-flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-200 border border-emerald-500/30 hover:bg-emerald-500/20 disabled:opacity-50"
+          className="inline-flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-zinc-100 text-zinc-950 border border-zinc-100 hover:bg-white disabled:opacity-50"
         >
           <PlayIcon className="h-3.5 w-3.5" />
           {busy ? "Drafting…" : "Translate"}
@@ -129,11 +143,23 @@ export default function WorkflowTranslatorPage() {
             </div>
           ) : (
             <div className="text-[12px] text-zinc-400">
-              No draft produced. <span className="font-mono text-rose-300">reason: {resp.rejectionReason ?? "unknown"}</span>
+              <p role="status">{rejectionText(resp.rejectionReason)}</p>
+              {(resp.rejectionReason === "ai_workspace_budget_exceeded" || resp.rejectionReason === "ai_credit_pool_exhausted") &&
+                <a href="/control/usage-billing" className="mt-2 inline-block text-zinc-200 underline">Review Usage &amp; billing</a>}
             </div>
           )}
         </div>
       )}
     </div>
   );
+}
+
+function rejectionText(reason: string | undefined) {
+  switch (reason) {
+    case "ai_workspace_budget_exceeded": return "The workspace AI budget cannot cover this request.";
+    case "ai_credit_pool_exhausted": return "The workspace has insufficient prepaid AI credits.";
+    case "request_already_reserved":
+    case "idempotency_key_conflict": return "This request was already accepted or is still being reconciled. No second draft was started.";
+    default: return "No workflow draft is available for this request.";
+  }
 }

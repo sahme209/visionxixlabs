@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be",
+      "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -68,7 +68,12 @@
         "Choose a desktop destination",
         "Follow a desktop workflow",
         "Follow conditional next steps in the workflow map",
+        "Start, save and resume a release draft from Tickets",
+        "Check the collection receipt for incident evidence",
+        "Read recorded closure evidence in Deployments",
         "Inspect a failed Airflow run in Batches release dependencies",
+        "Find older closed releases in Batches History",
+        "Find release logs in desktop Batches",
         "Use the website for guidance",
         "Watch a V19 desktop recording or scripted tour",
         "Know who acts next",
@@ -208,7 +213,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db",
+      "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
@@ -226,7 +231,7 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04",
+      "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e",
       "fields": [
         "Operator integration configuration",
         "Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps.",
@@ -362,7 +367,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a",
+      "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db",
       "fields": [
         "Ask V19.",
         "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",

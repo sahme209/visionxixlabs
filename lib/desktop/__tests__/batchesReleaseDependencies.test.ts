@@ -3,9 +3,9 @@ import {createElement} from "react";
 import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 
-const m = vi.hoisted(() => ({config: {apiBase: "https://desktop-fixture.example.invalid"}, revision: 1, read: vi.fn(), lookup: vi.fn(), readiness: vi.fn(), declarations: vi.fn(), monitor: vi.fn(), tasks: vi.fn(), start: vi.fn(), stop: vi.fn()}));
+const m = vi.hoisted(() => ({config: {apiBase: "https://desktop-fixture.example.invalid"}, revision: 1, read: vi.fn(), lookup: vi.fn(), archive: vi.fn(), readiness: vi.fn(), declarations: vi.fn(), monitor: vi.fn(), tasks: vi.fn(), start: vi.fn(), stop: vi.fn()}));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({
-  desktopClient: {get config() {return m.config;}, getContextRevision: () => m.revision, deploymentRequests: m.read, savedDeploymentRequest: m.lookup, releaseBatchReadiness: m.readiness, releaseBatchDeclarations: m.declarations, releaseBatchTasks: m.tasks, releaseBatchWait: m.monitor, startReleaseBatchWait: m.start, cancelReleaseBatchWait: m.stop, subscribeContext: () => () => {}},
+  desktopClient: {get config() {return m.config;}, getContextRevision: () => m.revision, deploymentRequests: m.read, savedDeploymentRequest: m.lookup, batchReleaseHistory: m.archive, releaseBatchReadiness: m.readiness, releaseBatchDeclarations: m.declarations, releaseBatchTasks: m.tasks, releaseBatchWait: m.monitor, startReleaseBatchWait: m.start, cancelReleaseBatchWait: m.stop, subscribeContext: () => () => {}},
 }));
 vi.mock("../../../desktop/src/views/AirflowAutomationView", () => ({
   AirflowAutomationView: ({active}: {active: boolean}) => createElement("input", {"aria-label": "Airflow draft", "data-active": String(active)}),
@@ -22,6 +22,7 @@ const show = (canRead = true, onOpenRelease = vi.fn(), canCheckReadiness = true)
 beforeEach(() => {
   m.config = {apiBase: "https://desktop-fixture.example.invalid"};
   m.revision = 1;
+  m.archive.mockReset();
   m.readiness.mockReset();
   m.declarations.mockReset().mockResolvedValue({ok: false});
   m.lookup.mockReset().mockResolvedValue({ok: true, data: null});
@@ -125,6 +126,9 @@ it("does not show or open a delayed result after credential replacement", async 
 });
 
 it("checks only the selected submitted release on request and clears its evidence on selection change", async () => {
+  m.declarations.mockResolvedValue({ok: true, data: {
+    requestId: release.id, version: release.version, runs: [{dagId: "payments", dagRunId: "staging"}, {dagId: "ledger", dagRunId: "staging"}],
+  }});
   m.read.mockResolvedValue({ok: true, data: [release, {...release, id: "second", title: "Draft rollout", status: "draft"}]});
   m.readiness.mockResolvedValue({ok: true, data: {ready: true, requestVersion: 3, observations: {
     requestId: "fixture-release", version: 3, runs: [
@@ -157,7 +161,7 @@ it("checks only the selected submitted release on request and clears its evidenc
   expect(m.tasks).not.toHaveBeenCalled();
   fireEvent.click(within(ledgerTasks).getByRole("button", {name: "Inspect tasks"}));
   expect(m.tasks).toHaveBeenCalledExactlyOnceWith(release.id, release.version, "ledger", "staging", 0);
-  expect(await within(ledgerTasks).findByText("0 of 0 tasks · observed state only")).toBeTruthy();
+  expect(await within(ledgerTasks).findByText("No task instances were observed for this run.")).toBeTruthy();
   expect(within(paymentsTasks).queryByRole("status")?.textContent).toBe("");
   const list = within(screen.getByRole("navigation", {name: "Select a release dependency"}));
   fireEvent.click(list.getByRole("button", {name: /Draft rollout/}));
@@ -165,6 +169,71 @@ it("checks only the selected submitted release on request and clears its evidenc
   expect(screen.queryByRole("button", {name: "Check batches"})).toBeNull();
   expect(screen.queryByText(/Selected batches completed/)).toBeNull();
   expect(screen.getByText("Batch readiness is available for submitted release versions.")).toBeTruthy();
+});
+
+it("handles a saved release that closes without changing version and opens the exact record", async () => {
+  const open = vi.fn();
+  const recordedApproval = {noPrRequired: false, prStatus: "pending"};
+  const row = {...release, releaseContext: {...release.releaseContext, approval: recordedApproval}};
+  m.read.mockResolvedValueOnce({ok: true, data: [row]})
+    .mockResolvedValueOnce({ok: true, data: [{...row, status: "closed"}]});
+  m.readiness.mockResolvedValue({ok: false});
+  show(true, open);
+  load();
+  fireEvent.click(await screen.findByRole("button", {name: "Check batches"}));
+  expect(m.readiness).toHaveBeenCalledExactlyOnceWith(release.id, release.version, true);
+  expect(screen.getByRole("button", {name: "Review approvals"})).toBeTruthy();
+
+  fireEvent.click(screen.getByRole("button", {name: "Refresh dependencies"}));
+  expect(await screen.findByText("Batch readiness checks are unavailable for closed releases. Open the saved release to review its recorded closure.")).toBeTruthy();
+  const progress = within(screen.getByRole("list", {name: "Release dependency progress"}));
+  expect(progress.getByText("Request submitted")).toBeTruthy();
+  expect(progress.getByText("No current check")).toBeTruthy();
+  expect(progress.getByText("Review closed record")).toBeTruthy();
+  expect(screen.queryByText("Review release approvals in Deployments.")).toBeNull();
+  expect(screen.queryByRole("button", {name: "Check batches"})).toBeNull();
+  expect(screen.queryByRole("button", {name: "View monitor status"})).toBeNull();
+  expect(screen.queryByRole("button", {name: "Review approvals"})).toBeNull();
+  expect(m.monitor).not.toHaveBeenCalled();
+  expect(m.tasks).not.toHaveBeenCalled();
+  expect(m.readiness).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", {name: "Open release Fixture rollout"}));
+  expect(open).toHaveBeenCalledExactlyOnceWith({id:release.id,version:release.version});
+});
+
+it.each(["readiness", "monitor"] as const)("retires the sibling controls when %s confirms closure", async source => {
+  const binding = {requestId:release.id, version:release.version};
+  const row = {...release, releaseContext:{...release.releaseContext, approval:{noPrRequired:false, prStatus:"pending"}}};
+  m.read.mockResolvedValue({ok:true,data:[row,{...row,id:"other",title:"Another rollout"}]});
+  m.declarations.mockResolvedValue({ok:true,data:{...binding,runs:[{dagId:"first",dagRunId:"one"},{dagId:"second",dagRunId:"two"}]}});
+  m.readiness.mockResolvedValue({ok:true,data:{ready:false,reason:"changed",closedRelease:binding}});
+  m.monitor.mockResolvedValue({ok:true,data:{requestVersion:release.version,closedRelease:binding,monitoringEnabled:false,canStart:false,canCancel:false,wait:null}});
+  const open = vi.fn();
+  show(true, open);
+  load();
+  const check = await screen.findByRole("button",{name:"Check batches"});
+  const monitor = screen.getByRole("button",{name:"View monitor status"});
+  const clicked = source === "readiness" ? check : monitor;
+  clicked.focus();
+  fireEvent.click(clicked);
+  await screen.findByText(/This saved release (was|is) closed/);
+  expect(document.activeElement).toBe(clicked);
+  expect(screen.queryByRole("button",{name:"Review approvals"})).toBeNull();
+  expect(screen.queryByRole("table",{name:"Saved Airflow runs"})).toBeNull();
+  expect(check.getAttribute("aria-disabled")).toBe("true");
+  expect(monitor.getAttribute("aria-disabled")).toBe("true");
+  fireEvent.click(check);
+  fireEvent.click(monitor);
+  expect(m.readiness).toHaveBeenCalledTimes(source === "readiness" ? 1 : 0);
+  expect(m.monitor).toHaveBeenCalledTimes(source === "monitor" ? 1 : 0);
+  fireEvent.click(screen.getByRole("button",{name:"Open release Fixture rollout"}));
+  expect(open).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button",{name:"Refresh dependencies"}));
+  await screen.findByText(/This saved release is closed/);
+  expect(screen.getByRole("button",{name:"View monitor status"}).getAttribute("aria-disabled")).toBe("true");
+  fireEvent.click(screen.getByRole("button",{name:/Another rollout/}));
+  expect(screen.getByRole("button",{name:"Check batches"}).getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByRole("button",{name:"View monitor status"}).getAttribute("aria-disabled")).toBe("false");
 });
 
 it("requires pipeline read for the readiness operation", async () => {
@@ -180,7 +249,8 @@ it("requires pipeline read for the readiness operation", async () => {
 it("reads exact monitor status on demand without granting monitor actions", async () => {
   m.read.mockResolvedValue({ok: true, data: [release, {...release, id: "second", version: 4, title: "Other rollout"}]});
   m.monitor.mockResolvedValueOnce({ok: true, data: {requestVersion: 3, monitoringEnabled: true, canStart: false, canCancel: true,
-    wait: {status: "paused_for_input", phase: "preflight_required"}}})
+    wait: {status: "paused_for_input", phase: "preflight_required",
+      deadlineAt: Date.parse("2026-11-17T13:00:00-05:00"), nextObservationAt: "2026-11-17T11:35:00+01:00"}}})
     .mockResolvedValueOnce({ok: true, data: {requestVersion: 4, monitoringEnabled: true, canStart: true, canCancel: false, wait: null}});
   show();
   load();
@@ -189,6 +259,12 @@ it("reads exact monitor status on demand without granting monitor actions", asyn
   fireEvent.click(monitor);
   expect(await screen.findByText(/Recorded monitor status · paused for input/)).toBeTruthy();
   expect(screen.getByText(/Release approval is still required/)).toBeTruthy();
+  const deadline = screen.getByText("Recorded deadline").nextElementSibling?.querySelector("time");
+  expect(deadline?.dateTime).toBe("2026-11-17T18:00:00.000Z");
+  expect(deadline?.textContent).toContain("UTC");
+  const next = screen.getByText("Recorded next observation").nextElementSibling?.querySelector("time");
+  expect(next?.dateTime).toBe("2026-11-17T10:35:00.000Z");
+  expect(next?.textContent).toContain("UTC");
   expect(screen.queryByRole("button", {name: "Stop watching"})).toBeNull();
   fireEvent.click(screen.getByRole("button", {name: /Other rollout/}));
   expect(screen.queryByText(/Recorded monitor status/)).toBeNull();
@@ -200,6 +276,76 @@ it("reads exact monitor status on demand without granting monitor actions", asyn
   expect(m.stop).not.toHaveBeenCalled();
 });
 
+it("groups loaded closed releases under History and preserves exact keyboard selection", async () => {
+  const closed = {...release,id:"closed",title:"Closed rollout",version:7,status:"closed",closedAt:"2030-01-02T18:00:00.000Z"};
+  const open = vi.fn();
+  m.read.mockResolvedValue({ok:true,data:[closed,release]});
+  show(true,open);
+  load();
+
+  const directory = within(await screen.findByRole("navigation",{name:"Select a release dependency"}));
+  const history = within(directory.getByRole("group",{name:"History"}));
+  const active = directory.getByRole("button",{name:/Fixture rollout/});
+  const saved = history.getByRole("button",{name:/Closed rollout/});
+  expect(history.queryByRole("button",{name:/Fixture rollout/})).toBeNull();
+  expect(history.queryByText(/succeeded|failed|completed/i)).toBeNull();
+  expect(saved.querySelector("time")?.getAttribute("datetime")).toBe(closed.closedAt);
+  expect(active.tabIndex).toBe(0);
+  expect(saved.tabIndex).toBe(-1);
+  active.focus();
+  fireEvent.keyDown(active,{key:"ArrowDown"});
+  expect(document.activeElement).toBe(saved);
+  expect(saved.getAttribute("aria-current")).toBe("true");
+
+  fireEvent.change(screen.getByRole("searchbox",{name:"Search release dependencies"}),{target:{value:"closed"}});
+  const inspector = screen.getByRole("article",{name:"Selected release dependency"});
+  expect(within(inspector).getByText("Release version 7")).toBeTruthy();
+  fireEvent.click(within(inspector).getByRole("button",{name:"Open release Closed rollout"}));
+  expect(open).toHaveBeenCalledExactlyOnceWith({id:"closed",version:7});
+  expect(m.readiness).not.toHaveBeenCalled();
+  expect(m.monitor).not.toHaveBeenCalled();
+});
+it("pages older closed dependencies only on request and retries the same cursor", async () => {
+  const archived = {...release,id:"archive-one",title:"Older archived release",version:6,status:"closed",closedAt:"2030-01-03T00:00:00.000Z"};
+  const older = {...archived,id:"archive-two",title:"Oldest archived release",version:5,closedAt:"2030-01-02T00:00:00.000Z"};
+  const cursor = {id:archived.id,closedAt:archived.closedAt};
+  const recent = {...archived,id:"recent-closed",title:"Recently closed release"};
+  m.read.mockResolvedValue({ok:true,data:[release,recent]});
+  const wronglyNewer = {...older,id:"too-new",title:"Out of window",closedAt:"2030-01-04T00:00:00.000Z"};
+  m.archive.mockResolvedValueOnce({ok:true,data:{releases:[archived],nextCursor:cursor}})
+    .mockResolvedValueOnce({ok:false,error:"Offline"})
+    .mockResolvedValueOnce({ok:true,data:{releases:[wronglyNewer],nextCursor:null}})
+    .mockResolvedValueOnce({ok:true,data:{releases:[],nextCursor:{...cursor,closedAt:"2030-01-03T00:00:00Z"}}})
+    .mockResolvedValueOnce({ok:true,data:{releases:[older],nextCursor:null}});
+  const open = vi.fn();
+  show(true,open);
+  load();
+  await screen.findByRole("button",{name:/Recently closed release/});
+  const more = await screen.findByRole("button",{name:"History"});
+  expect(more.closest("header")?.textContent).toContain("Batches");
+  expect(m.archive).not.toHaveBeenCalled();
+  more.focus();
+  fireEvent.click(more);
+  await screen.findByRole("button",{name:/Older archived release/});
+  expect(document.activeElement).toBe(more);
+  fireEvent.click(more);
+  await screen.findByText("Older release history could not be verified.");
+  for (let attempt = 0; attempt < 2; attempt++) {
+    fireEvent.click(more);
+    await screen.findByRole("button",{name:"Retry history"});
+    expect(screen.queryByRole("button",{name:/Out of window/})).toBeNull();
+    expect(screen.getByRole("button",{name:/Older archived release/})).toBeTruthy();
+  }
+  fireEvent.click(more);
+  await screen.findByRole("button",{name:/Oldest archived release/});
+  expect(m.archive.mock.calls).toEqual([[undefined,[recent.id]],...Array(4).fill([cursor,[recent.id]])]);
+  expect(more.getAttribute("aria-disabled")).toBe("true");
+  fireEvent.click(screen.getByRole("button",{name:/Oldest archived release/}));
+  fireEvent.click(screen.getByRole("button",{name:"Open release Oldest archived release"}));
+  expect(open).toHaveBeenCalledExactlyOnceWith({id:older.id,version:older.version});
+  expect(m.readiness).not.toHaveBeenCalled();
+  expect(m.monitor).not.toHaveBeenCalled();
+});
 it("moves through loaded dependencies and returns to the exact selected version without running a check", async () => {
   m.read.mockResolvedValue({ok: true, data: [release, {...release, id: "next", version: 4, title: "Next rollout"}]});
   const openRelease = vi.fn();
@@ -330,6 +476,30 @@ it.each([
   expect(m.monitor).not.toHaveBeenCalled();
 });
 
+it("keeps verified current dependencies usable while an older selection is being checked", async () => {
+  const other = {...release, id: "newer", title: "Other rollout", version: 9};
+  m.read.mockResolvedValue({ok: true, data: [other]});
+  let finishLookup!: (response: {ok: true; data: typeof release}) => void;
+  m.lookup.mockReturnValueOnce(new Promise(resolve => { finishLookup = resolve; }));
+  const open = vi.fn();
+  const requestedRelease = {id: release.id, version: release.version};
+  render(createElement(BatchesWorkspaceView, {canRead: true, canCheckReadiness: true, ownerConfig: m.config,
+    revision: m.revision, requestedRelease, onOpenRelease: open, onInspect: vi.fn()}));
+
+  const current = await screen.findByRole("button", {name: /Other rollout/});
+  expect(screen.getByText("Checking the selected release version…")).toBeTruthy();
+  expect(screen.queryByRole("article", {name: "Selected release dependency"})).toBeNull();
+  fireEvent.click(current);
+  expect(screen.getByRole("heading", {name: "Other rollout"})).toBeTruthy();
+
+  await act(async () => finishLookup({ok: true, data: release}));
+  expect(screen.queryByRole("button", {name: /Fixture rollout/})).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name: "Open release Other rollout"}));
+  expect(open).toHaveBeenCalledExactlyOnceWith({id: other.id, version: other.version});
+  expect(m.lookup).toHaveBeenCalledExactlyOnceWith(requestedRelease);
+  expect(m.readiness).not.toHaveBeenCalled();
+});
+
 it("keeps current dependencies visible when an exact lookup rejects and recovers the exact version", async () => {
   const other = {...release, id: "newer", title: "Other rollout", version: 9};
   m.read.mockResolvedValue({ok: true, data: [other]});
@@ -379,26 +549,37 @@ it("shows only the selected release version's recorded approval and recovery fac
   expect(safetyChecks.getByText("Validation plan").nextElementSibling?.textContent).toBe("2 steps planned · deferred");
   expect(safetyChecks.getByText("Monitoring plan").nextElementSibling?.textContent).toBe("Recorded");
   expect(safetyChecks.getByText("Release evidence references").nextElementSibling?.textContent).toBe("4");
+  expect(safetyChecks.getByText("Development readiness").nextElementSibling?.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+  expect(safetyChecks.getByText("Production readiness").nextElementSibling?.querySelector("svg")).toBeNull();
   expect(screen.queryByRole("button", {name: /approve|execute|rollback/i})).toBeNull();
   expect(m.readiness).not.toHaveBeenCalled();
   expect(m.monitor).not.toHaveBeenCalled();
 
   fireEvent.click(screen.getByRole("button", {name: /Legacy rollout/}));
-  expect(within(screen.getByRole("region", {name: "Approval gate"})).getByText("Unavailable")).toBeTruthy();
+  const legacyApproval = within(screen.getByRole("region", {name: "Approval gate"}));
+  expect(legacyApproval.getByText("Recorded prerequisites").nextElementSibling?.textContent).toBe("Unavailable");
+  expect(legacyApproval.getByText("Recorded PR state").nextElementSibling?.textContent).toBe("Unavailable");
   expect(within(screen.getByRole("region", {name: "Recovery"})).getAllByText("Unavailable")).toHaveLength(2);
   expect(within(screen.getByRole("region", {name: "Recorded safety checks"})).getAllByText("Unavailable")).toHaveLength(5);
+  expect(screen.getByRole("region", {name: "Recorded safety checks"}).querySelector("svg")).toBeNull();
+  expect(screen.getByRole("region", {name: "Approval gate"}).querySelector("svg")).toBeNull();
 });
 
-it("shows the recorded UTC window only for the selected exact release", async () => {
+it("shows recorded plan scope and the UTC window only for the selected exact release", async () => {
   const window = {startUtc: "2026-11-17T18:00:00Z", endUtc: "2026-11-17T19:00:00Z"};
-  const scheduled = {...release, releaseContext: {...release.releaseContext, window}};
+  const scheduled = {...release, releaseContext: {...release.releaseContext, window,
+    scope: {...release.releaseContext.scope, applicationCount: 3, repositoryCount: 2},
+  }};
   const other = {...release, id: "other", title: "Other rollout", releaseContext: {
     ...release.releaseContext, window: {startUtc: window.endUtc, endUtc: window.startUtc},
+    scope: {...release.releaseContext.scope, applicationCount: 0, repositoryCount: -1},
   }};
   m.read.mockResolvedValueOnce({ok: true, data: [scheduled, other]});
   show();
   load();
   const config = within(await screen.findByRole("region", {name: "Recorded run configuration"}));
+  expect(config.getByText("Applications in plan").nextElementSibling?.textContent).toBe("3");
+  expect(config.getByText("Repositories in plan").nextElementSibling?.textContent).toBe("2");
   const field = config.getByText("Recorded window").nextElementSibling;
   expect([...field!.querySelectorAll("time")].map(time => time.dateTime)).toEqual([
     "2026-11-17T18:00:00.000Z", "2026-11-17T19:00:00.000Z",
@@ -407,15 +588,24 @@ it("shows the recorded UTC window only for the selected exact release", async ()
   fireEvent.click(directory.getByRole("button", {name: /Other rollout/}));
   const otherConfig = within(screen.getByRole("region", {name: "Recorded run configuration"}));
   expect(otherConfig.getByText("Recorded window").nextElementSibling?.textContent).toBe("Unavailable");
+  expect(otherConfig.getByText("Applications in plan").nextElementSibling?.textContent).toBe("0");
+  expect(otherConfig.getByText("Repositories in plan").nextElementSibling?.textContent).toBe("Unavailable");
   expect(m.readiness).not.toHaveBeenCalled();
   expect(m.monitor).not.toHaveBeenCalled();
 });
 
 it("opens only the observed failed run and clears it when a new check cannot verify the release", async () => {
+  m.declarations.mockResolvedValue({ok: true, data: {
+    requestId: release.id, version: release.version, runs: [{dagId: "one", dagRunId: "fixture"}, {dagId: "two", dagRunId: "fixture"}],
+  }});
   m.readiness.mockResolvedValueOnce({ok: true, data: {ready: false, reason: "unavailable", observations: {
     requestId: release.id, version: release.version, runs: [
-      {dagId: "one", dagRunId: "fixture", state: "success"},
-      {dagId: "two", dagRunId: "fixture", state: "failed"},
+      {dagId: "one", dagRunId: "fixture", state: "success", timing: {
+        startedAt: "2026-11-17T12:04:00+02:00", endedAt: "2026-11-17T10:08:27Z",
+      }},
+      {dagId: "two", dagRunId: "fixture", state: "failed", timing: {
+        startedAt: "2026-11-17T10:09:00Z", endedAt: null,
+      }},
     ],
   }}});
   let finish!: (result: unknown) => void;
@@ -426,21 +616,33 @@ it("opens only the observed failed run and clears it when a new check cannot ver
   const progress = within(screen.getByRole("list", {name: "Release dependency progress"}));
   fireEvent.click(check);
   expect(await progress.findByText("1 / 2 completed · 1 failed")).toBeTruthy();
+  const meter = screen.getByRole<HTMLProgressElement>("progressbar", {name: "Observed Airflow run success"});
+  expect(meter.value).toBe(1);
+  expect(meter.max).toBe(2);
+  expect(meter.getAttribute("aria-valuetext")).toBe("1 of 2 succeeded");
+  const exactRun = within(screen.getByRole("row", {name: /one fixture Succeeded/}));
+  expect(exactRun.getByText("Duration").nextElementSibling?.textContent).toBe("4m 27s");
+  expect(within(screen.getByRole("row", {name: /two fixture Failed/})).queryByText("Duration")).toBeNull();
+  expect(screen.getByText("1 failed run")).toBeTruthy();
   expect(m.tasks).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", {name: "Inspect failed run"}));
   const failedTasks = within(screen.getByRole("region", {name: "Tasks for two / fixture"}));
-  expect(await failedTasks.findByText("0 of 0 tasks · observed state only")).toBeTruthy();
+  expect(await failedTasks.findByText("No task instances were observed for this run.")).toBeTruthy();
   expect(document.activeElement).toBe(failedTasks.getByRole("button", {name: "Refresh tasks"}));
   expect(m.tasks).toHaveBeenCalledExactlyOnceWith(release.id, release.version, "two", "fixture", 0);
   expect(m.start).not.toHaveBeenCalled();
   expect(m.stop).not.toHaveBeenCalled();
   fireEvent.click(check);
   expect(progress.getByText("Checking…")).toBeTruthy();
+  expect(screen.queryByRole("progressbar", {name: "Observed Airflow run success"})).toBeNull();
+  expect(screen.queryByText("4m 27s")).toBeNull();
   expect(screen.queryByRole("button", {name: "Inspect failed run"})).toBeNull();
+  expect(screen.queryByText(/\d+ failed runs?/)).toBeNull();
   expect(progress.queryByText("1 / 2 completed · 1 failed")).toBeNull();
   await act(async () => finish({ok: true, data: {ready: false, reason: "changed"}}));
   expect(progress.getByText("Release changed")).toBeTruthy();
   expect(screen.queryByRole("button", {name: "Inspect failed run"})).toBeNull();
+  expect(screen.queryByText(/\d+ failed runs?/)).toBeNull();
   expect(screen.queryByRole("table", {name: "Observed Airflow runs"})).toBeNull();
   expect(progress.getByText("Wave 2").nextElementSibling?.textContent).toBe("Unavailable");
 });
@@ -473,4 +675,74 @@ it("navigates the selected dependency and discloses unavailable logs without loa
   expect(m.readiness).not.toHaveBeenCalled();
   expect(m.tasks).not.toHaveBeenCalled();
   expect(open).not.toHaveBeenCalled();
+});
+
+it("keeps Logs selected while retrying the same release version and resets for a new version", async () => {
+  m.read.mockResolvedValueOnce({ok: true, data: [release]})
+    .mockResolvedValueOnce({ok: false})
+    .mockResolvedValueOnce({ok: true, data: [release]})
+    .mockResolvedValueOnce({ok: true, data: [{...release, version: 4}]});
+  const open = vi.fn();
+  show(true, open);
+  load();
+  await screen.findByText("Release version 3");
+  const section = (name: string) => within(screen.getByRole("navigation", {name: "Release dependency sections"}))
+    .getByRole("button", {name});
+  const refresh = screen.getByRole("button", {name: "Refresh dependencies"});
+  fireEvent.click(section("Logs"));
+  refresh.focus();
+  fireEvent.click(refresh);
+  await screen.findByRole("alert");
+  expect(screen.queryByRole("article", {name: "Selected release dependency"})).toBeNull();
+
+  fireEvent.click(refresh);
+  await screen.findByText("Release version 3");
+  expect(section("Logs").getAttribute("aria-current")).toBe("location");
+  expect(screen.getByText("View logs").closest("details")?.open).toBe(true);
+  expect(document.activeElement).toBe(refresh);
+
+  fireEvent.click(refresh);
+  await screen.findByText(/The selected release version is unavailable/);
+  fireEvent.click(screen.getByRole("button", {name: /Fixture rollout.*v4/}));
+  expect(screen.getByText("Release version 4")).toBeTruthy();
+  expect(section("Overview").getAttribute("aria-current")).toBe("location");
+  expect(screen.getByText("View logs").closest("details")?.open).toBe(false);
+  expect(open).not.toHaveBeenCalled();
+  expect(m.readiness).not.toHaveBeenCalled();
+  expect(m.tasks).not.toHaveBeenCalled();
+});
+
+it("recovers the original Approvals section and focus after a failed return and retry", async () => {
+  const reviewed = {...release, releaseContext: {...release.releaseContext, approval: {noPrRequired: false, prStatus: "pending"}}};
+  m.read.mockResolvedValueOnce({ok: true, data: [reviewed]})
+    .mockResolvedValueOnce({ok: false}).mockResolvedValueOnce({ok: true, data: [reviewed]});
+  const onOpenRelease = vi.fn();
+  const props = {canRead: true, canCheckReadiness: true, ownerConfig: m.config, revision: m.revision,
+    onOpenRelease, onInspect: vi.fn()};
+  const view = render(createElement(BatchesWorkspaceView, {...props, active: true}));
+  load();
+  const opener = await screen.findByRole("button", {name: "Review approvals"});
+  const search = screen.getByRole<HTMLInputElement>("searchbox", {name: "Search release dependencies"});
+  fireEvent.change(search, {target: {value: "Fixture"}});
+  opener.focus();
+  fireEvent.click(opener);
+  expect(onOpenRelease).toHaveBeenCalledExactlyOnceWith({id: release.id, version: 3}, "review");
+  view.rerender(createElement(BatchesWorkspaceView, {...props, active: false}));
+  view.rerender(createElement(BatchesWorkspaceView, {...props, active: true}));
+
+  const error = await screen.findByRole("alert");
+  expect(document.activeElement).toBe(error);
+  expect(screen.queryByRole("article", {name: "Selected release dependency"})).toBeNull();
+  const retry = screen.getByRole("button", {name: "Refresh dependencies"});
+  retry.focus();
+  fireEvent.click(retry);
+
+  const restored = await screen.findByRole("button", {name: "Review approvals"});
+  const navigation = screen.getByRole("navigation", {name: "Release dependency sections"});
+  expect(within(navigation).getByRole("button", {name: "Approvals"}).getAttribute("aria-current")).toBe("location");
+  expect(document.activeElement).toBe(restored);
+  expect(screen.getByText("Release version 3")).toBeTruthy();
+  expect(search.value).toBe("Fixture");
+  expect(m.readiness).not.toHaveBeenCalled();
+  expect(m.start).not.toHaveBeenCalled();
 });

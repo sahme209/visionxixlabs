@@ -152,10 +152,45 @@ describe("Desktop workflow map support", () => {
     ["How do I inspect a failed Airflow run in Batches release dependencies?", "Inspect failed run"],
     ["Why is Inspect failed run missing when the Airflow dependency is waiting?", "Waiting or unverified"],
     ["How do I retry reading tasks for a failed batch run?", "Retry tasks"],
+    ["What does the Observed task states table show in Batches?", "try number"],
   ])("cites the failed-run guide for %s", (question, statement) => {
     const answer = answerQuestion(index, question);
     expect(answer.status).toBe("answered");
     expect(answer.sources[0]?.href).toBe("/docs/surfaces#batch-failed-run");
+    expect(answer.answer).toContain(statement);
+  });
+
+  it.each([
+    ["How do I read recorded closure evidence in Deployments?", "Read closure evidence"],
+    ["Where is the reported external outcome for a closed release version?", "evidence reference and reported outcome"],
+    ["Does an unavailable release closure receipt mean that closing failed?", "does not tell you that the closure failed"],
+  ])("cites the saved release closure evidence guide for %s", (question, statement) => {
+    const answer = answerQuestion(index, question);
+    expect(answer.status).toBe("answered");
+    expect(answer.sources[0]?.href).toBe("/docs/surfaces#release-closure-evidence");
+    expect(answer.answer).toContain(statement);
+  });
+
+  it.each([
+    ["How do I load older closed releases in desktop Batches?", "Load more history"],
+    ["What does Retry history do for a Batches History page?", "Retry history"],
+    ["Does Batches History verify application health?", "independent validation"],
+  ])("cites the closed release archive guide for %s", (question, statement) => {
+    const answer = answerQuestion(index, question);
+    expect(answer.status).toBe("answered");
+    expect(answer.sources[0]?.href).toBe("/docs/surfaces#batch-closed-history");
+    expect(answer.answer).toContain(statement);
+  });
+
+  it.each([
+    ["Where do I find release logs from Batches in desktop V19?", "Open release logs"],
+    ["Does the Batches release Logs section show Airflow task logs?", "Airflow task logs"],
+    ["How do I return to Batches from Deployments Logs and get the selected release back?", "Return to Batches"],
+    ["Where is the recorded timeline for the accepted workflow attempt I opened from Batches?", "when the dispatch was accepted"],
+  ])("cites the exact Batches release logs guide for %s", (question, statement) => {
+    const answer = answerQuestion(index, question);
+    expect(answer.status).toBe("answered");
+    expect(answer.sources[0]?.href).toBe("/docs/surfaces#batch-release-logs");
     expect(answer.answer).toContain(statement);
   });
 
@@ -187,6 +222,17 @@ describe("Desktop workflow map support", () => {
     const answer = answerQuestion(index, question);
     expect(answer).toMatchObject({status: "guarded", guard: "workspace_specific"});
     expect(answer.sources[0]?.href).toBe("/docs/settings#desktop-workspace-access");
+  });
+
+  it.each([
+    ["How do I return to the source ticket after I open a saved release draft?", "ticket-release-draft", "Return to source ticket"],
+    ["How do I check the collection receipt after an uncertain response in Tickets?", "ticket-collection-receipt", "looks up the exact original attempt"],
+    ["Does a recovered collection receipt prove application recovery?", "ticket-collection-receipt", "does not prove application recovery"],
+  ])("cites the Tickets guide for %s", (question, section, statement) => {
+    const answer = answerQuestion(index, question);
+    expect(answer.status).toBe("answered");
+    expect(answer.sources[0]?.href).toBe(`/docs/surfaces#${section}`);
+    expect(answer.answer).toContain(statement);
   });
 
   it("keeps a production action request outside explanatory map guidance", () => {

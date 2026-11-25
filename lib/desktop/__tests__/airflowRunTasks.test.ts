@@ -1,9 +1,9 @@
 /** @vitest-environment jsdom */
 import { createElement } from "react";
 import { afterEach, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 const mock = vi.hoisted(() => ({ revision: 0, tasks: vi.fn(), releaseTasks: vi.fn() }));
-vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { getContextRevision: () => mock.revision, listAirflowTaskInstances: mock.tasks, releaseBatchTasks: mock.releaseTasks } }));
+vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { getContextRevision: () => mock.revision, subscribeContext: () => () => {}, listAirflowTaskInstances: mock.tasks, releaseBatchTasks: mock.releaseTasks } }));
 import { AirflowRunTasks } from "../../../desktop/src/components/AirflowRunTasks";
 afterEach(() => { cleanup(); vi.resetAllMocks(); mock.revision = 0; });
 it("loads only on intent, displays task identity and pages without executing", async () => {
@@ -79,7 +79,84 @@ it("shows exact release task timing in UTC and withholds an end before its start
   render(createElement(AirflowRunTasks,{dagId:"daily",runId:"run",release:{id:"release",version:2}}));
   fireEvent.click(screen.getByText("Inspect tasks"));
   expect((await screen.findByText("2026-11-17 10:05:00")).getAttribute("dateTime")).toBe("2026-11-17T10:05:00.000Z");
+  const table = within(screen.getByRole("table", {name: "Observed task states"}));
+  expect(table.getAllByRole("columnheader").map(cell => cell.textContent)).toEqual(["Task", "Status", "Try", "Timing"]);
+  const task = within(table.getByRole("row", {name: /validate/}));
+  expect(task.getByRole("rowheader", {name: "validate"})).toBeTruthy();
+  expect(task.getByRole("cell", {name: "failed"})).toBeTruthy();
+  expect(task.getByRole("cell", {name: "2"})).toBeTruthy();
   expect(screen.getByText("Ended (UTC)").nextElementSibling?.textContent).toBe("Unavailable");
   expect(mock.releaseTasks).toHaveBeenCalledExactlyOnceWith("release",2,"daily","run",0);
   expect(mock.tasks).not.toHaveBeenCalled();
+});
+
+it("offers the prior exact offset after a later task page fails", async () => {
+ const task = {taskId:"validate",mapIndex:-1,tryNumber:1,state:"success"};
+ const first = {ok:true,data:{offset:0,totalEntries:2,tasks:[task]}};
+ mock.releaseTasks.mockResolvedValueOnce(first).mockResolvedValueOnce({ok:false}).mockResolvedValueOnce(first);
+ render(createElement(AirflowRunTasks,{dagId:"daily",runId:"run",release:{id:"release",version:2}}));
+ fireEvent.click(screen.getByRole("button",{name:"Inspect tasks"}));
+ const next = await screen.findByRole("button",{name:"Next task page"});
+ next.focus();
+ fireEvent.click(next);
+ const retry = await screen.findByRole("button",{name:"Retry tasks"});
+ expect(document.activeElement).toBe(retry);
+ expect(screen.queryByRole("table", {name: "Observed task states"})).toBeNull();
+
+ const previous = screen.getByRole("button",{name:"Previous task page"});
+ previous.focus();
+ fireEvent.click(previous);
+ await screen.findByRole("rowheader", {name: "validate"});
+ expect(document.activeElement).toBe(screen.getByRole("button",{name:"Refresh tasks"}));
+ expect(mock.releaseTasks.mock.calls).toEqual([
+   ["release",2,"daily","run",0], ["release",2,"daily","run",1], ["release",2,"daily","run",0],
+ ]);
+ expect(mock.tasks).not.toHaveBeenCalled();
+});
+
+it.each([
+  {totalEntries: 1, message: "This task page is no longer available. Return to a previous page or retry this offset."},
+  {totalEntries: 3, message: "Task state could not be loaded. No execution outcome is confirmed."},
+])("withholds an empty exact task page with $totalEntries reported tasks", async ({totalEntries, message}) => {
+  const task = {taskId: "first-task", mapIndex: -1, tryNumber: 1, state: "success"};
+  mock.releaseTasks.mockResolvedValueOnce({ok: true, data: {offset: 0, totalEntries: 3, tasks: [task]}})
+    .mockResolvedValueOnce({ok: true, data: {offset: 1, totalEntries, tasks: []}})
+    .mockResolvedValueOnce({ok: true, data: {offset: 0, totalEntries: 1, tasks: [task]}});
+  render(createElement(AirflowRunTasks, {dagId: "daily", runId: "run", release: {id: "release", version: 2}}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect tasks"}));
+  const next = await screen.findByRole("button", {name: "Next task page"});
+  next.focus();
+  fireEvent.click(next);
+  expect((await screen.findByRole("alert")).textContent).toBe(message);
+  expect(screen.queryByRole("table", {name: "Observed task states"})).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole("button", {name: "Retry tasks"}));
+  expect(screen.getByRole("status").textContent).not.toMatch(/0 of/);
+  const previous = screen.getByRole("button", {name: "Previous task page"});
+  previous.focus();
+  fireEvent.click(previous);
+  await screen.findByRole("rowheader", {name: "first-task"});
+  expect(document.activeElement).toBe(screen.getByRole("button", {name: "Refresh tasks"}));
+  expect(mock.releaseTasks.mock.calls).toEqual([0, 1, 0].map(offset => ["release", 2, "daily", "run", offset]));
+});
+
+it("reports no observed tasks for a verified empty first page", async () => {
+  mock.releaseTasks.mockResolvedValueOnce({ok: true, data: {offset: 0, totalEntries: 0, tasks: []}});
+  render(createElement(AirflowRunTasks, {dagId: "daily", runId: "run", release: {id: "release", version: 2}}));
+  fireEvent.click(screen.getByRole("button", {name: "Inspect tasks"}));
+  await screen.findByText("No task instances were observed for this run.");
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(screen.queryByRole("button", {name: "Next task page"})).toBeNull();
+});
+
+it("discards task results and page offsets when the selected run changes", async () => {
+ let finish!: (value: unknown) => void;
+ mock.releaseTasks.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+ const view = render(createElement(AirflowRunTasks,{dagId:"daily",runId:"old",release:{id:"release",version:2}}));
+ fireEvent.click(screen.getByRole("button",{name:"Inspect tasks"}));
+ view.rerender(createElement(AirflowRunTasks,{dagId:"daily",runId:"new",release:{id:"release",version:2}}));
+ await act(async () => finish({ok:true,data:{offset:0,totalEntries:1,tasks:[{taskId:"old-task",mapIndex:-1,tryNumber:1,state:"success"}]}}));
+ expect(screen.queryByText(/old-task/)).toBeNull();
+ const inspect = screen.getByRole("button",{name:"Inspect tasks"});
+ fireEvent.click(inspect);
+ expect(mock.releaseTasks).toHaveBeenLastCalledWith("release",2,"daily","new",0);
 });

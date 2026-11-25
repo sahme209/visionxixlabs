@@ -146,6 +146,9 @@ html:not([data-theme="light"]) .studio-catalog-reported-status[data-read-verifie
 .studio-catalog-inspector-overview { border-top: 0; }
 .studio-catalog-inspector-section h3 { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-weight: 500; }
 .studio-catalog-inspector-section p { color: rgb(var(--neutral-zinc-400)); line-height: 1.55; }
+.studio-catalog-verified-capabilities { color: rgb(var(--neutral-zinc-400)); line-height: 1.55; }
+.studio-catalog-verified-capabilities li { display: flex; align-items: baseline; gap: 8px; }
+.studio-catalog-verified-capabilities svg { align-self: center; flex-shrink: 0; }
 .studio-catalog-inspector-facts { display: grid; gap: 10px; }
 .studio-catalog-inspector-facts dd { margin-inline-start: auto; text-align: end; }
 .studio-catalog-inspector-facts div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; }

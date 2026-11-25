@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       currentState,
       riskContext,
       tenantCharter: s(f.get("tenantCharter")) || undefined,
-    });
+    }, String(ctx.userId));
     verdict = result.verdict;
     policyDecision = result.policyDecision;
     boundaryTier = result.boundaryTier;

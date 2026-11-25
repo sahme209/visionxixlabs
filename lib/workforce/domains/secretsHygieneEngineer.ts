@@ -14,7 +14,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const SECRETS_HYGIENE_TARGET_KIND = "engineer_secrets_hygiene_candidates";
 
@@ -124,7 +124,7 @@ function fallbackRotation(c: SecretCandidate): string {
   return `Investigate ${c.title}; rotate if the credential is still in use, otherwise revoke and delete.`;
 }
 
-export async function runSecretsHygieneEngineer(organizationId: string): Promise<SecretsHygieneReport> {
+export async function runSecretsHygieneEngineer(organizationId: string, actorUserId?: string): Promise<SecretsHygieneReport> {
   const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   // Pull recent findings; we filter in-app because the secret detection
@@ -190,6 +190,7 @@ export async function runSecretsHygieneEngineer(organizationId: string): Promise
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:secrets_hygiene_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt(candidates)}`;
@@ -206,7 +207,7 @@ export async function runSecretsHygieneEngineer(organizationId: string): Promise
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const topCandidates: SecretCandidate[] = candidates.map(({ finding }) => ({

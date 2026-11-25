@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
 
       const emailContent = `
 New Contact Form Submission${safe.source === "free-review" ? " (Free Cloud & AI Review)" : ""}
-Automated resolution agent queued.
+Contact follow-up queued.
 
 Name: ${safe.name}
 Email: ${safe.email}
