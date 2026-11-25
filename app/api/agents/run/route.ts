@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const now = new Date();
     const jobs = await prisma.agentJob.findMany({
       where: {
         status: "pending",
         attempts: { lt: MAX_ATTEMPTS },
-        runAt: { lte: new Date() },
+        runAt: { lte: now },
       },
       orderBy: { runAt: "asc" },
       take: MAX_JOBS_PER_RUN,
@@ -46,10 +47,11 @@ export async function POST(req: NextRequest) {
     const results: Array<{ id: string; status: string; error?: string }> = [];
 
     for (const job of jobs) {
-      await prisma.agentJob.update({
-        where: { id: job.id },
-        data: { status: "running", attempts: job.attempts + 1, lastError: null },
+      const claimed = await prisma.agentJob.updateMany({
+        where: { id: job.id, status: "pending", attempts: job.attempts, runAt: { lte: now } },
+        data: { status: "running", attempts: { increment: 1 }, lastError: null },
       });
+      if (claimed.count !== 1) continue;
 
       try {
         if (job.type !== "CONTACT_RESOLUTION") {
@@ -70,6 +72,14 @@ export async function POST(req: NextRequest) {
           results.push({ id: job.id, status: "failed", error: "Lead not found" });
           continue;
         }
+        if (lead.source !== "contact") {
+          await prisma.agentJob.update({
+            where: { id: job.id },
+            data: { status: "failed", lastError: "Contact record unavailable" },
+          });
+          results.push({ id: job.id, status: "failed", error: "Contact record unavailable" });
+          continue;
+        }
 
         const payload = (lead.fullPayload as Record<string, unknown>) || {};
         const input = {
@@ -83,29 +93,28 @@ export async function POST(req: NextRequest) {
 
         const output = await runContactResolutionAgent(input);
 
-        await prisma.agentJob.update({
-          where: { id: job.id },
-          data: {
-            status: "completed",
-            result: output as object,
-            lastError: null,
-          },
-        });
-
-        await prisma.lead.update({
-          where: { id: lead.id },
-          data: {
-            fullPayload: {
-              ...payload,
-              agentStatus: output.status,
-              agentResolution: {
-                status: output.status,
-                actionsTaken: output.actionsTaken,
-                updatedAt: new Date().toISOString(),
+        await prisma.$transaction(async tx => {
+          const current = await tx.lead.findUnique({ where: { id: lead.id }, select: { fullPayload: true, source: true } });
+          if (current?.source !== "contact") throw new Error("Contact record unavailable");
+          await tx.lead.update({
+            where: { id: lead.id },
+            data: {
+              fullPayload: {
+                ...(current.fullPayload as Record<string, unknown>),
+                agentStatus: output.status,
+                agentResolution: {
+                  status: output.status,
+                  actionsTaken: output.actionsTaken,
+                  updatedAt: new Date().toISOString(),
+                },
               },
-            } as object,
-          },
-        });
+            },
+          });
+          await tx.agentJob.update({
+            where: { id: job.id },
+            data: { status: "completed", result: output as object, lastError: null },
+          });
+        }, { isolationLevel: "Serializable" });
 
         await logAudit({
           leadId: lead.id,

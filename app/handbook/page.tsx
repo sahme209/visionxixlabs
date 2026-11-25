@@ -115,7 +115,7 @@ export default function HandbookPage() {
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-zinc-400 tabular-nums text-[11px]">{s.num}</span>
                 <span className="h-px w-6 bg-white/10" />
-                <span className="text-zinc-500">{s.topic}</span>
+                <span className="text-zinc-400">{s.topic}</span>
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-medium text-white leading-[1.06] tracking-[-0.035em] mb-5">
                 {s.title}
@@ -157,7 +157,7 @@ export default function HandbookPage() {
               href="https://github.com/sahme209/axiom-releases"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[12px] text-zinc-500 hover:text-white transition-colors font-mono"
+              className="text-[12px] text-zinc-400 hover:text-white transition-colors font-mono"
             >
               github.com/sahme209/axiom-releases →
             </Link>

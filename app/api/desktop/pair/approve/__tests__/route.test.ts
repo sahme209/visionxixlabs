@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(),
   findPairing: vi.fn(),
   updateManyPairing: vi.fn(),
-  updatePairing: vi.fn(),
+  transaction: vi.fn(),
   createDesktopSession: vi.fn(),
   evaluatePairingPolicy: vi.fn(),
 }));
@@ -22,14 +22,17 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/db", () => ({
   prisma: {
+    $transaction: mocks.transaction,
     desktopPairingChallengeRecord: {
       findUnique: mocks.findPairing,
       updateMany: mocks.updateManyPairing,
-      update: mocks.updatePairing,
+
     },
   },
 }));
-vi.mock("@/lib/desktop/desktopSession", () => ({ createDesktopSession: mocks.createDesktopSession }));
+vi.mock("@/lib/desktop/privateDesktopSession", () => ({
+  createPrivateDesktopSessionService: () => ({ createDesktopSession: mocks.createDesktopSession }),
+}));
 vi.mock("@/lib/desktop/desktopAuthPolicy", () => ({ evaluatePairingPolicy: mocks.evaluatePairingPolicy }));
 
 class MemoryAuditStore implements SecureAuditStore {
@@ -65,7 +68,10 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
   let store: MemoryAuditStore;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    mocks.transaction.mockImplementation(callback => callback({
+      desktopPairingChallengeRecord: { updateMany: mocks.updateManyPairing },
+    }));
     store = new MemoryAuditStore();
     configureAuditStore(store);
     mocks.currentContext.mockResolvedValue({
@@ -81,7 +87,7 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     mocks.evaluatePairingPolicy.mockResolvedValue({ allowed: true });
     mocks.updateManyPairing.mockResolvedValue({ count: 1 });
     mocks.createDesktopSession.mockResolvedValue({ id: "sess-1" });
-    mocks.updatePairing.mockResolvedValue({});
+
 
     const { POST } = await import("../route");
     // Next.js's route-handler type plugin widens the dynamically-imported
@@ -98,6 +104,11 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     const success = store.records.find((r) => r.action === "desktop.pair" && r.outcome === "success");
     expect(success).toBeDefined();
     expect(success?.correlationId).toBeTruthy();
+    expect(mocks.transaction).toHaveBeenCalledOnce();
+    expect(mocks.updateManyPairing).toHaveBeenLastCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ status: "approving", expiresAt: { gt: expect.any(Date) } }),
+      data: expect.objectContaining({ status: "approved", sessionId: "sess-1" }),
+    }));
   });
 
   it("does not claim or create a session after policy evaluation crosses expiration", async () => {
@@ -125,6 +136,19 @@ describe("POST /api/desktop/pair/approve — audit coverage", () => {
     } finally {
       clock.mockRestore();
     }
+  });
+
+  it("refuses finalization when the claim expires while the session is being saved", async () => {
+    mocks.evaluatePairingPolicy.mockResolvedValue({ allowed: true });
+    mocks.updateManyPairing.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+    mocks.createDesktopSession.mockResolvedValue({ id: "sess-1" });
+
+    const { POST } = await import("../route");
+    const response = (await POST(postRequest()))!;
+    expect(response.status).toBe(410);
+    expect(await response.json()).toEqual({ error: "pairing_expired" });
+    expect(mocks.updateManyPairing).toHaveBeenCalledTimes(2);
+    expect(store.records.some(record => record.outcome === "success")).toBe(false);
   });
 
   it("records a blocked audit with a safe reason code when policy denies pairing", async () => {

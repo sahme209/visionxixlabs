@@ -120,7 +120,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runSchemaEngineer(organizationId: string, raw: SchemaInput): Promise<SchemaProposal> {
+export async function runSchemaEngineer(organizationId: string, raw: SchemaInput, actorUserId?: string): Promise<SchemaProposal> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const schemaFragment = raw.schemaFragment.trim().slice(0, MAX_BODY);
   const slowQueryLog = raw.slowQueryLog.trim().slice(0, MAX_BODY);
@@ -156,6 +156,7 @@ export async function runSchemaEngineer(organizationId: string, raw: SchemaInput
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:schema_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 45_000,
       maxTokens: 2000,
     });

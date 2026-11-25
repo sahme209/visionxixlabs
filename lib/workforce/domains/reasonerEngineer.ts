@@ -143,7 +143,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runReasonerEngineer(organizationId: string, raw: ReasonerInput): Promise<ReasonerHypothesis> {
+export async function runReasonerEngineer(organizationId: string, raw: ReasonerInput, actorUserId?: string): Promise<ReasonerHypothesis> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const observations = raw.observations.trim().slice(0, MAX_BODY);
   if (!title || !observations) {
@@ -178,6 +178,7 @@ export async function runReasonerEngineer(organizationId: string, raw: ReasonerI
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:reasoner_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 2500,
     });

@@ -33,7 +33,8 @@ export type GovernedAiCallError =
   | "workspace_ai_output_bound_unverified"
   | "workspace_ai_policy_unavailable"
   | "workspace_ai_credit_meter_unavailable"
-  | "workspace_ai_credit_pool_exhausted";
+  | "workspace_ai_credit_pool_exhausted"
+  | "workspace_ai_credit_budget_exceeded";
 
 export type GovernedAiCallResult =
   | {
@@ -124,7 +125,9 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
         ? admitGovernedExtract(scope, { model, text, schemaHint }, streaming?.abortSignal)
         : admitGovernedExtract(scope)).catch((error: unknown) => {
         if (error instanceof Error && error.name === "AbortError") throw error;
-        if (error instanceof AICreditAdmissionRefusal) throw new GovernedAiCallRefusal("workspace_ai_credit_pool_exhausted");
+        if (error instanceof AICreditAdmissionRefusal) {
+          throw new GovernedAiCallRefusal(error.reason === "ai_workspace_budget_exceeded" ? "workspace_ai_credit_budget_exceeded" : "workspace_ai_credit_pool_exhausted");
+        }
         throw new AgentStreamInterrupted();
       });
       // Admission can await a durable credit claim. Reread narrower caller

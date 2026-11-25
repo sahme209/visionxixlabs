@@ -15,7 +15,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const IMPROVEMENT_TARGET_KIND = "engineer_improvement_proposals";
 
@@ -141,7 +141,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runImprovementEngineer(organizationId: string): Promise<ImprovementReport> {
+export async function runImprovementEngineer(organizationId: string, actorUserId?: string): Promise<ImprovementReport> {
   const since14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
   let auditOutcomes: Array<{ outcome: string; _count: { _all: number } }> = [];
@@ -244,6 +244,7 @@ export async function runImprovementEngineer(organizationId: string): Promise<Im
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:improvement_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
       maxTokens: 2000,
     });
@@ -261,7 +262,7 @@ export async function runImprovementEngineer(organizationId: string): Promise<Im
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const proposals: ImprovementProposal[] = candidates.map((c) => {

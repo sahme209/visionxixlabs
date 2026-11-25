@@ -101,7 +101,7 @@ sudo rpm -i ./V19-0.1.24-1.x86_64.rpm`}</pre>
         </Step>
       </DocSection>
 
-      <DocSection id="updates" title="Desktop installer updates, website deployments and release notes" kicker="06">
+      <DocSection id="updates" focusHeading title="Desktop installer updates, website deployments and release notes" kicker="06">
         <p>A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer.</p>
         <p>In releases that include <strong>About this app</strong>, open <strong>Settings → General</strong> and check <strong>Installed version</strong>. This value comes from the installed app. <strong>Unavailable</strong> means it could not be read, not that a newer version is installed. Older releases may not have this section.</p>
         <p><strong>Review releases</strong> opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer&apos;s verification details.</p>

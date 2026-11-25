@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       prompt,
       workspaceContext: s(f.get("workspaceContext")) || undefined,
       conversationHistory: s(f.get("conversationHistory")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistOperatorAssistantReply(org, reply);
   } catch (err) {
     console.warn("[operator_assistant/run-domain] hard failure:", err instanceof Error ? err.message : err);

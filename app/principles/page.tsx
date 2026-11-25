@@ -97,7 +97,7 @@ export default function PrinciplesPage() {
           lead={<>
           Eight principles &mdash; the rules behind every page, every component,
           every animation. Companion to{" "}
-          <Link href="/manifesto" className="text-zinc-300 hover:underline">
+          <Link href="/manifesto" className="text-zinc-300 underline underline-offset-4 hover:text-zinc-100">
             our manifesto
           </Link>
           : that one is what we believe about the product; this one is how we
@@ -112,7 +112,7 @@ export default function PrinciplesPage() {
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-zinc-400 tabular-nums text-[11px]">{p.num}</span>
                 <span className="h-px w-6 bg-white/10" />
-                <span className="text-zinc-500">{p.title}</span>
+                <span className="text-zinc-400">{p.title}</span>
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-medium text-white leading-[1.06] tracking-[-0.035em] mb-5">
                 {p.rule}

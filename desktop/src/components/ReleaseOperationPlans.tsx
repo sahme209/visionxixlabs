@@ -4,7 +4,7 @@ import {ReleaseWorkflowEvidence} from './ReleaseWorkflowEvidence';
 import {ReleaseProviderMergeExecution} from './ReleaseProviderMergeExecution';
 import {ReleaseProviderMergeApproval} from './ReleaseProviderMergeApproval';
 import {ReleaseExecutionApproval} from './ReleaseExecutionApproval';
-import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
 import {isOperationPlanList,isOperationPlanMutation,isOperationPlanPreview,type OperationPlanList,type OperationPlanPreview,type ReleaseOperationPlanDto} from '../lib/releaseOperationPlanContract';
 import type {ReleaseMergeTargets,ReleaseMergeMethod} from '../lib/releaseMergeContract';
@@ -13,28 +13,46 @@ const controlledError=(message:unknown)=>message==='Update the release window be
 const statuses:Record<ReleaseOperationPlanDto['status'],string>={pending_review:'Pending independent review',reviewed:'Independently reviewed — separate execution approval required',rejected:'Rejected',stale:'Plan needs refreshing',cancelled:'Cancelled'};
 const mergeMethods:Record<ReleaseMergeMethod,string>={merge:'Merge commit',squash:'Squash',rebase:'Rebase'};
 function MergeActionSummary({plan}:{plan:ReleaseOperationPlanDto['plan']}){const pr=plan.pullRequest;return <div aria-label="Exact merge action" className="space-y-2"><dl className="grid gap-x-3 gap-y-1 text-xs sm:grid-cols-[auto_1fr]"><dt className="text-zinc-500">Action</dt><dd className="text-zinc-200">Merge pull request #{pr.number}</dd><dt className="text-zinc-500">Repository</dt><dd className="wrap-break-word text-zinc-300">{pr.repositoryFullName}</dd><dt className="text-zinc-500">Branches</dt><dd className="wrap-break-word text-zinc-300">{pr.headRef} → {pr.baseRef}</dd><dt className="text-zinc-500">Method</dt><dd className="text-zinc-300">{mergeMethods[plan.method]}</dd><dt className="text-zinc-500">Source head to enforce</dt><dd className="break-all font-mono text-zinc-400">{pr.headSha}</dd><dt className="text-zinc-500">Observed target base</dt><dd className="break-all font-mono text-zinc-400">{pr.baseSha}</dd></dl><p className="text-xs leading-5 text-zinc-500">A merge must enforce this exact source head. The target branch may advance after this observation; the base is recorded evidence, not an atomic merge condition.</p></div>}
-export function ReleaseOperationPlans({requestId,version}:{requestId:string;version:number}){
+export function ReleaseOperationPlans({requestId,version,refreshEpoch=0}:{requestId:string;version:number;refreshEpoch?:number}){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
  const config=desktopClient.config;const generation=useRef({config,key:0});if(generation.current.config!==config)generation.current={config,key:generation.current.key+1};
- return <OperationPlansSession key={JSON.stringify([requestId,version,revision,generation.current.key])} requestId={requestId} version={version}/>;
+ return <OperationPlansSession key={JSON.stringify([requestId,version,revision,generation.current.key])} requestId={requestId} version={version} refreshEpoch={refreshEpoch}/>;
 }
-function OperationPlansSession({requestId,version}:{requestId:string;version:number}){
+function OperationPlansSession({requestId,version,refreshEpoch}:{requestId:string;version:number;refreshEpoch:number}){
  const config=useRef(desktopClient.config).current,context=useRef(desktopClient.getContextRevision()).current;
- const mounted=useRef(true),flight=useRef<AbortController|null>(null);
+ const mounted=useRef(true);
+ const flight=useRef<{controller:AbortController;kind:'history'|'preview'|'mutation'}|null>(null);
+ const observedRefresh=useRef(refreshEpoch);
  const [list,setList]=useState<OperationPlanList>(),[busy,setBusy]=useState(false),[error,setError]=useState<string>(),[uncertain,setUncertain]=useState(false),[stale,setStale]=useState(false);
  const [targets,setTargets]=useState<ReleaseMergeTargets>(),[number,setNumber]=useState(''),[method,setMethod]=useState<ReleaseMergeMethod|''>(''),[preview,setPreview]=useState<OperationPlanPreview>();
  const [reviewPreview,setReviewPreview]=useState<{planId:string;version:number;preview:OperationPlanPreview}>();
- const owns=(controller:AbortController)=>mounted.current&&flight.current===controller&&!controller.signal.aborted&&desktopClient.config===config&&desktopClient.getContextRevision()===context;
- useEffect(()=>{mounted.current=true;const unsubscribe=desktopClient.subscribeContext(()=>{flight.current?.abort();flight.current=null;setStale(true);setBusy(false);setPreview(undefined);setReviewPreview(undefined)});return()=>{mounted.current=false;flight.current?.abort();flight.current=null;unsubscribe()}},[]);
- function begin(){if(flight.current||stale)return null;const controller=new AbortController();flight.current=controller;setBusy(true);setError(undefined);return controller}
- function finish(controller:AbortController){if(flight.current===controller){flight.current=null;if(mounted.current)setBusy(false)}}
- async function load(){const controller=begin();if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setTargets(undefined);setNumber('');setMethod('');try{const result=await desktopClient.releaseOperationPlans(requestId,version,controller.signal);if(!owns(controller))return;if(result.ok&&isOperationPlanList(result.data,requestId,version)){setList(result.data);setUncertain(false)}else{setList(undefined);setError(!result.ok?controlledError(result.error):recovery)}}catch{if(owns(controller)){setList(undefined);setError(recovery)}}finally{finish(controller)}}
- async function loadTargets(){if(!list?.enabled||!list.canManage||uncertain)return;const controller=begin();if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setTargets(undefined);setNumber('');setMethod('');try{const result=await desktopClient.releaseOperationTargets(requestId,version,controller.signal);if(!owns(controller))return;if(result.ok)setTargets(result.data);else setError(controlledError(result.error))}catch{if(owns(controller))setError(recovery)}finally{finish(controller)}}
+ const owns=(controller:AbortController)=>mounted.current&&flight.current?.controller===controller&&!controller.signal.aborted&&desktopClient.config===config&&desktopClient.getContextRevision()===context;
+ useEffect(()=>{mounted.current=true;const unsubscribe=desktopClient.subscribeContext(()=>{flight.current?.controller.abort();flight.current=null;setStale(true);setBusy(false);setPreview(undefined);setReviewPreview(undefined)});return()=>{mounted.current=false;flight.current?.controller.abort();flight.current=null;unsubscribe()}},[]);
+ useLayoutEffect(()=>{
+  if(observedRefresh.current===refreshEpoch)return;
+  observedRefresh.current=refreshEpoch;
+  setTargets(undefined);
+  setNumber('');
+  setMethod('');
+  setPreview(undefined);
+  setReviewPreview(undefined);
+  // A directory refresh invalidates provider observations. Let saved-plan writes settle.
+  if(flight.current?.kind==='preview'){
+   const {controller}=flight.current;
+   flight.current=null;
+   controller.abort();
+   setBusy(false);
+  }
+ },[refreshEpoch]);
+ function begin(kind:'history'|'preview'|'mutation'){if(flight.current||stale)return null;const controller=new AbortController();flight.current={controller,kind};setBusy(true);setError(undefined);return controller}
+ function finish(controller:AbortController){if(flight.current?.controller===controller){flight.current=null;if(mounted.current)setBusy(false)}}
+ async function load(){const controller=begin('history');if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setTargets(undefined);setNumber('');setMethod('');try{const result=await desktopClient.releaseOperationPlans(requestId,version,controller.signal);if(!owns(controller))return;if(result.ok&&isOperationPlanList(result.data,requestId,version)){setList(result.data);setUncertain(false)}else{setList(undefined);setError(!result.ok?controlledError(result.error):recovery)}}catch{if(owns(controller)){setList(undefined);setError(recovery)}}finally{finish(controller)}}
+ async function loadTargets(){if(!list?.enabled||!list.canManage||uncertain)return;const controller=begin('preview');if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setTargets(undefined);setNumber('');setMethod('');try{const result=await desktopClient.releaseOperationTargets(requestId,version,controller.signal);if(!owns(controller))return;if(result.ok)setTargets(result.data);else setError(controlledError(result.error))}catch{if(owns(controller))setError(recovery)}finally{finish(controller)}}
  async function read(row?:ReleaseOperationPlanDto){
   if(row&&row.requestVersion!==version){setError(recovery);setReviewPreview(undefined);return}
   const n=row?.plan.pullRequest.number??Number(number),m=row?.plan.method??method;
   if(!list?.enabled||!(row?row.canReview:list.canManage)||uncertain||!m||!row&&!targets?.targets.some(t=>t.number===n))return;
-  const controller=begin();if(!controller)return;setPreview(undefined);setReviewPreview(undefined);
+  const controller=begin('preview');if(!controller)return;setPreview(undefined);setReviewPreview(undefined);
   try{const result=await desktopClient.previewReleaseOperationPlan(requestId,version,n,m,controller.signal);if(!owns(controller))return;
    if(!result.ok||!isOperationPlanPreview(result.data,requestId,version,n,m)||Date.parse(result.data.expiresAt)<=Date.now()||row&&result.data.digest!==row.planDigest){setError(!result.ok?controlledError(result.error):recovery);return}
    if(row)setReviewPreview({planId:row.id,version:row.version,preview:result.data});else setPreview(result.data);
@@ -45,7 +63,7 @@ function OperationPlansSession({requestId,version}:{requestId:string;version:num
   const fresh=kind==='save'?preview:reviewPreview&&row&&reviewPreview.planId===row.id&&reviewPreview.version===row.version?reviewPreview.preview:undefined;
   if(kind!=='save'&&(!row||(kind==='cancel'?!row.canCancel:!row.canReview||row.requestVersion!==version)))return;
   if(kind!=='cancel'&&(!fresh||Date.parse(fresh.expiresAt)<=Date.now())){setPreview(undefined);setReviewPreview(undefined);setError(recovery);return}
-  const controller=begin();if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setUncertain(true);
+  const controller=begin('mutation');if(!controller)return;setPreview(undefined);setReviewPreview(undefined);setUncertain(true);
   try{const result=kind==='save'?await desktopClient.saveReleaseOperationPlan(requestId,{expectedVersion:version,previewToken:fresh!.previewToken},controller.signal):kind==='cancel'?await desktopClient.cancelReleaseOperationPlan(requestId,version,row!.id,{expectedPlanVersion:row!.version,clientRequestId:crypto.randomUUID()},controller.signal):await desktopClient.reviewReleaseOperationPlan(requestId,version,row!.id,{expectedPlanVersion:row!.version,previewToken:fresh!.previewToken,decision:kind,clientRequestId:crypto.randomUUID()},controller.signal);
    if(!owns(controller))return;if(result.ok&&isOperationPlanMutation(result.data,requestId,version,row?.id,kind==='cancel')&&(!row||result.data.plan.requestVersion===row.requestVersion)&&result.data.plan.planDigest===(row?.planDigest??fresh?.digest)){setList(previous=>previous?{...previous,plans:[result.data.plan,...previous.plans.filter(p=>p.id!==result.data.plan.id)].slice(0,5)}:previous);setUncertain(false)}else setError(!result.ok?controlledError(result.error):recovery);
   }catch{if(owns(controller))setError(recovery)}finally{finish(controller)}

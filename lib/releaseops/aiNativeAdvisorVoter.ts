@@ -158,7 +158,7 @@ export function parseAiVoteResponse(raw: string): { kind: RecommendationKind; co
  * the workspace's own governance settings, which is the wrong answer
  * for a vote that feeds a release-approval decision.
  */
-export function makeAiNativeVoterAsync(organizationId: string): AsyncAdvisorVoter {
+export function makeAiNativeVoterAsync(organizationId: string, actorUserId?: string | null): AsyncAdvisorVoter {
   return async function aiNativeVoterAsync(input: AdvisorInputs): Promise<CouncilVote> {
     // Cache hit?
     const key = fingerprint(organizationId, input);
@@ -174,7 +174,7 @@ export function makeAiNativeVoterAsync(organizationId: string): AsyncAdvisorVote
     const prompt = buildPrompt(input);
     let aiText: string | null = null;
     try {
-      const fetcher = makeInstrumentedFetcher({ engineName: "council_voter", organizationId });
+      const fetcher = makeInstrumentedFetcher({ engineName: "council_voter", organizationId, actorUserId });
       const res = await fetcher(prompt);
       aiText = res.text ?? null;
     } catch (err) {

@@ -53,7 +53,7 @@ it("shows dated review history only for the selected exact plan", async () => {
   fireEvent.change(screen.getByRole("combobox", {name: "Saved plan"}), {target: {value: second.id}});
   expect(history.queryByText("Independent plan review recorded")).toBeNull();
   expect(history.getByRole("status").textContent).toBe("Plan history could not be verified.");
-  const selected = within(screen.getByRole("region", {name: "Selected operation plan"}));
+  const selected = within(screen.getByRole("complementary", {name: "Saved release plan context"}));
   expect(selected.getByText("History unverified")).toBeTruthy();
   expect(selected.queryByText("Independent review recorded")).toBeNull();
   expect(m.list).toHaveBeenCalledOnce();
@@ -215,6 +215,8 @@ it("focuses the exact-plan heading on entry and preserves native select Escape",
   const heading = screen.getByRole("heading", {name: "Saved release plans"});
   expect(document.activeElement).toBe(heading);
   const selector = await screen.findByRole("combobox", {name: "Saved plan"});
+  expect(screen.getByRole("heading", {name: "Merge pull request #42", level: 2})).toBe(heading);
+  expect(screen.queryByRole("heading", {name: "Saved release plans"})).toBeNull();
   expect(document.activeElement).toBe(heading);
   expect(fireEvent.keyDown(selector, {key: "Escape"})).toBe(true);
   expect(fireEvent.keyDown(heading, {key: "Escape", isComposing: true})).toBe(true);
@@ -261,23 +263,41 @@ it("reads separate approval histories only for the selected reviewed plan and ab
   expect(screen.queryByRole("list", {name: /Recorded selected .* approval events/})).toBeNull();
 });
 
-it.each(["matched", "foreign", "ambiguous", "same-commit", "wrong-release", "wrong-plan", "wrong-digest", "truncated", "unaccepted", "failed", "queued", "failed-without-acceptance"] as const)("only projects a verified workflow commit with %s evidence", async kind => {
+it.each(["history-unavailable", "workflow-unavailable", "matched", "foreign", "ambiguous", "same-commit", "wrong-release", "wrong-plan", "wrong-digest", "truncated", "unaccepted", "no-receipt", "receipt-without-event", "wrong-run", "wrong-attempt", "wrong-workflow", "wrong-ref", "wrong-source", "wrong-connection", "wrong-connection-revision", "observation-before-dispatch", "failed", "queued", "in-progress", "failed-without-acceptance"] as const)("only projects a verified workflow observation with %s evidence", async kind => {
   const onWorkflowEvidence = vi.fn();
+  const onOpenLogs = vi.fn();
   const sourceCommit = "1".repeat(40);
+  const acceptedAt = "2026-11-17T10:27:00.000Z";
+  const receipt = {repositoryFullName: plan.pullRequest.repositoryFullName, workflowPath: ".github/workflows/deploy.yml",
+    headSha: sourceCommit, ref: "release", runId: "12345", runAttempt: 1};
   const binding = {organizationId: kind === "foreign" ? "other" : "org", releaseVersion: 3,
     releaseId: kind === "wrong-release" ? "other-release" : "release",
     planId: kind === "wrong-plan" ? "other-plan" : id,
-    planDigest: kind === "wrong-digest" ? "1".repeat(64) : digest, intakeDigest: plan.intakeDigest, repositoryFullName: plan.pullRequest.repositoryFullName, sourceCommit, runId: "12345", runAttempt: 2};
+    planDigest: kind === "wrong-digest" ? "1".repeat(64) : digest, intakeDigest: plan.intakeDigest, repositoryFullName: plan.pullRequest.repositoryFullName,
+    workflowPath: kind === "wrong-workflow" ? ".github/workflows/other.yml" : receipt.workflowPath,
+    connectionId: kind === "wrong-connection" ? "other-connection" : plan.connectionId,
+    connectionRevision: kind === "wrong-connection-revision" ? "2026-10-27T10:00:00.000Z" : plan.connectionRevision,
+    dispatchedRef: kind === "wrong-ref" ? "other" : receipt.ref,
+    sourceCommit: kind === "wrong-source" ? "2".repeat(40) : sourceCommit,
+    runId: kind === "wrong-run" ? "12346" : receipt.runId,
+    runAttempt: kind === "wrong-attempt" ? 2 : receipt.runAttempt};
   const evidence = {state: "observed", observation: {
-    status: kind === "queued" ? "queued" : "completed",
-    conclusion: kind === "queued" ? null : kind.startsWith("failed") ? "failure" : "success",
+    status: kind === "queued" ? "queued" : kind === "in-progress" ? "in_progress" : "completed",
+    conclusion: kind === "queued" || kind === "in-progress" ? null : kind.startsWith("failed") ? "failure" : "success",
+    observedAt: kind === "observation-before-dispatch" ? "2026-11-17T10:26:59.999Z" : "2026-11-17T10:28:00.000Z",
   }, binding};
-  m.deploymentHistory.mockResolvedValue({ok: true, data: {events: [{type: kind === "unaccepted" || kind === "failed-without-acceptance" ? "prepared" : "accepted"}]}});
-  m.workflowEvidence.mockResolvedValue({ok: true, data: {truncated: kind === "truncated",
+  const accepted = kind !== "unaccepted" && kind !== "failed-without-acceptance";
+  m.deploymentHistory.mockResolvedValue({ok: true, data: {
+    events: [{type: accepted && kind !== "receipt-without-event" ? "accepted" : "prepared", at: acceptedAt}],
+    receipt: accepted && kind !== "no-receipt" ? receipt : undefined,
+  }});
+  if (kind === "history-unavailable") m.deploymentHistory.mockResolvedValue({ok: false, error: "service_unavailable"});
+  m.workflowEvidence.mockResolvedValue(kind === "workflow-unavailable" ? {ok: false, error: "service_unavailable"} : {ok: true, data: {truncated: kind === "truncated",
     evidence: kind === "ambiguous" || kind === "same-commit"
       ? [evidence, {...evidence, binding: {...binding, runAttempt: 3, sourceCommit: kind === "same-commit" ? sourceCommit : "2".repeat(40)}}]
       : [evidence]}});
-  render(createElement(SelectedReleaseOperationEvidence, {requestId: "release", version: 3, workspaceId: "org", onWorkflowEvidence}));
+  const onWorkflowGap = vi.fn();
+  render(createElement(SelectedReleaseOperationEvidence, {requestId: "release", version: 3, workspaceId: "org", onWorkflowEvidence, onWorkflowGap, onOpenLogs}));
   fireEvent.click(screen.getByRole("button", {name: "Load evidence plans"}));
   fireEvent.change(await screen.findByRole("combobox", {name: "Evidence plan"}), {target: {value: id}});
   fireEvent.click(screen.getByRole("button", {name: "Read recorded workflow commit"}));
@@ -285,21 +305,102 @@ it.each(["matched", "foreign", "ambiguous", "same-commit", "wrong-release", "wro
     matched: "Recorded workflow commit shown in Overview.",
     failed: "The workflow was last recorded as failed. A successful workflow commit is unavailable.",
     queued: "The workflow was last recorded as queued. A successful workflow commit is unavailable.",
+    "in-progress": "The workflow was last recorded as in progress. A successful workflow commit is unavailable.",
   } as const;
-  await screen.findByText(kind === "matched" || kind === "failed" || kind === "queued"
-    ? expected[kind] : "A single completed workflow commit could not be verified for this release and plan.");
+  const mismatched = ["wrong-run", "wrong-attempt", "wrong-workflow", "wrong-ref", "wrong-source", "wrong-connection", "wrong-connection-revision", "observation-before-dispatch"].includes(kind);
+  await screen.findByText(kind === "matched" || kind === "failed" || kind === "queued" || kind === "in-progress"
+    ? expected[kind] : mismatched ? "The recorded workflow evidence does not match the accepted dispatch."
+      : kind.endsWith("-unavailable") ? "Workflow evidence is unavailable."
+      : kind === "truncated" ? "Workflow evidence was incomplete, so one exact attempt cannot be confirmed for this plan."
+      : kind === "no-receipt" ? "The dispatch was acknowledged, but its workflow run receipt is not recorded, so the exact attempt cannot be verified."
+      : ["unaccepted", "receipt-without-event", "failed-without-acceptance"].includes(kind) ? "No acknowledged workflow dispatch is recorded for this plan, so there is no attempt to verify."
+      : ["ambiguous", "same-commit"].includes(kind) ? "More than one workflow observation matches this plan, so the exact attempt cannot be determined."
+      : ["foreign", "wrong-release", "wrong-plan", "wrong-digest"].includes(kind) ? "No workflow observation is recorded for this exact release version and plan."
+      : "A single completed workflow commit could not be verified for this release and plan.");
   expect(m.workflowEvidence).toHaveBeenLastCalledWith("release", id, digest, expect.any(AbortSignal));
-  const run = {repository: binding.repositoryFullName, id: binding.runId, attempt: binding.runAttempt};
+  const recordedRun = kind === "matched" || kind === "failed" || kind === "queued" || kind === "in-progress";
+  const shown = screen.getByRole("region", {name: "Execution records"}).querySelector("p[role=status]")?.textContent;
+  expect(onWorkflowGap).toHaveBeenLastCalledWith(recordedRun ? undefined : shown);
+  const run = {repository: binding.repositoryFullName, id: binding.runId, attempt: binding.runAttempt,
+    acceptedAt, observedAt: evidence.observation.observedAt};
   const projections = {
     matched: {state: "success", commit: sourceCommit, run},
     failed: {state: "failure", run},
     queued: {state: "queued", run},
+    "in-progress": {state: "in_progress", run},
   } as const;
-  expect(onWorkflowEvidence).toHaveBeenLastCalledWith(kind === "matched" || kind === "failed" || kind === "queued"
+  expect(onWorkflowEvidence).toHaveBeenLastCalledWith(kind === "matched" || kind === "failed" || kind === "queued" || kind === "in-progress"
     ? projections[kind] : undefined);
+  const logs = screen.queryByRole("button", {name: "Open recorded workflow logs"});
+  if (kind === "matched" || kind === "failed" || kind === "queued" || kind === "in-progress") {
+    expect(logs).toBeTruthy();
+    fireEvent.click(logs!);
+    expect(onOpenLogs).toHaveBeenCalledOnce();
+    expect(m.workflowEvidence).toHaveBeenCalledTimes(1);
+    expect(m.deploymentHistory).toHaveBeenCalledTimes(1);
+  } else {
+    expect(logs).toBeNull();
+    expect(onOpenLogs).not.toHaveBeenCalled();
+  }
   fireEvent.change(screen.getByRole("combobox", {name: "Evidence plan"}), {target: {value: ""}});
+  expect(screen.queryByRole("button", {name: "Open recorded workflow logs"})).toBeNull();
   expect(onWorkflowEvidence).toHaveBeenLastCalledWith(undefined);
 });
+
+it.each(["same", "different digest", "different revision", "missing"] as const)(
+  "revalidates the selected saved plan after a failed refresh with %s evidence",
+  async outcome => {
+    m.deploymentHistory.mockReset();
+    const onWorkflowEvidence = vi.fn();
+    const onProviderDecision = vi.fn();
+    const onDeploymentEvent = vi.fn();
+    const current = {...row, version: 1, status: "reviewed", canReview: false};
+    const alternate = {...current, id: "release_plan_" + "e".repeat(64), planDigest: "1".repeat(64)};
+    const asList = (plans: typeof current[]) => ({...reply, data: {...reply.data, plans}});
+    m.list.mockResolvedValueOnce(asList([current, alternate]));
+    let finishPlans!: (value: unknown) => void;
+    m.list.mockImplementationOnce(() => new Promise(resolve => { finishPlans = resolve; }));
+    const refreshed = outcome === "missing" ? [alternate] : [alternate, {
+      ...current,
+      planDigest: outcome === "different digest" ? "2".repeat(64) : current.planDigest,
+      ...(outcome === "different revision" ? {version: 2, status: "stale"} : {}),
+    }];
+    m.list.mockResolvedValueOnce(asList(refreshed));
+    let finishHistory!: (value: unknown) => void;
+    m.deploymentHistory.mockImplementationOnce(() => new Promise(resolve => { finishHistory = resolve; }));
+    m.workflowEvidence.mockResolvedValueOnce({ok: false});
+
+    render(createElement(SelectedReleaseOperationEvidence, {
+      requestId: "release", version: 3, workspaceId: "org", onWorkflowEvidence, onProviderDecision, onDeploymentEvent,
+    }));
+    fireEvent.click(screen.getByRole("button", {name: "Load evidence plans"}));
+    fireEvent.change(await screen.findByRole("combobox", {name: "Evidence plan"}), {target: {value: current.id}});
+    fireEvent.click(screen.getByRole("button", {name: "Read recorded workflow commit"}));
+    const signal = m.deploymentHistory.mock.calls[0][4] as AbortSignal;
+
+    const refresh = screen.getByRole("button", {name: "Refresh evidence plans"});
+    refresh.focus();
+    fireEvent.click(refresh);
+    expect(signal.aborted).toBe(true);
+    expect(screen.queryByRole("combobox", {name: "Evidence plan"})).toBeNull();
+    await act(async () => {
+      finishHistory({ok: true, data: {events: []}});
+      finishPlans({ok: false});
+    });
+    expect(await screen.findByRole("alert")).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Read recorded workflow commit"})).toBeNull();
+    expect(onWorkflowEvidence).toHaveBeenLastCalledWith(undefined);
+    expect(onProviderDecision).toHaveBeenLastCalledWith(undefined);
+    expect(onDeploymentEvent).toHaveBeenLastCalledWith(undefined);
+    expect(document.activeElement).toBe(refresh);
+
+    fireEvent.click(refresh);
+    const picker = await screen.findByRole<HTMLSelectElement>("combobox", {name: "Evidence plan"});
+    expect(picker.value).toBe(outcome === "same" ? current.id : "");
+    expect(m.deploymentHistory).toHaveBeenCalledOnce();
+    expect(document.activeElement).toBe(refresh);
+  },
+);
 
 it("projects only the last saved provider decision and clears it before refresh or plan changes", async () => {
   const current = {...row, version: 1, status: "reviewed", canReview: false};

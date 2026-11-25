@@ -2238,6 +2238,103 @@ model TenantBillingPlan {
   @@index([tier, status])
 }
 
+/// Workspace limit for prepaid AI admission. Separate from purchase ceilings
+/// and the legacy post-use settlement configuration.
+model WorkspaceAIUsageBudget {
+  organizationId        String   @id
+  monthlyLimitCents      Int
+  warningThresholdCents Int?
+  updatedAt             DateTime @updatedAt
+}
+
+/// Automatic prepaid purchases use separate, provider-bound consent.
+model AutomaticAICreditTopUpConsent {
+  organizationId      String  @id
+  revision            Int
+  enabled             Boolean @default(false)
+  consentedByUserId   String
+  providerConsentRef  String
+  accountId           String
+  livemode            Boolean
+  thresholdCents      Int
+  sku                 String
+  amountCents         Int
+  monthlyCeilingCents Int
+}
+
+/// Durable, cancelable attempt before a provider receipt exists.
+model AutomaticAICreditSetupAttempt {
+  id              String   @id
+  organizationId  String
+  actorUserId     String
+  terms           Json
+  consentDigest   String
+  setupIntentId   String?  @unique
+  createClaimed   Boolean  @default(false)
+  state           String
+  createdAt       DateTime
+}
+
+/// A one-use Stripe setup receipt. No client secret or card details.
+model AutomaticAICreditSetupReceipt {
+  setupIntentId   String   @id
+  organizationId  String
+  consentRevision Int
+  customerId      String
+  paymentMethodId String
+  consentDigest   String
+  verifiedAt      DateTime
+
+  @@unique([organizationId, consentRevision], map: "AutomaticAICreditSetupReceipt_org_revision_key")
+}
+
+/// An intent is only local preparation. Verified payment controls fulfillment.
+model AutomaticAICreditTopUpIntent {
+  id              String @id
+  organizationId  String
+  consentRevision Int
+  periodMonth     String
+  sku             String
+  amountCents     Int
+  state           String
+  createdAt       DateTime
+
+  dispatchClaim   AutomaticAICreditDispatchClaim?
+
+  @@index([organizationId, periodMonth], map: "AutomaticAICreditTopUpIntent_org_month_idx")
+}
+
+/// Exact test-mode request for reconciliation after a one-use dispatch claim.
+model AutomaticAICreditDispatchClaim {
+  intentId       String @id
+  intent         AutomaticAICreditTopUpIntent @relation(fields: [intentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organizationId String
+  accountId      String
+  providerKey    String @unique
+  requestJson    String
+  requestDigest   String
+  claimedAt       DateTime
+  paymentIntentId String? @unique
+  providerStatus  String?
+  observedAt      DateTime?
+  refundChargeId  String?
+  refundedAmountCents Int @default(0)
+  disputeRevision Int @default(0)
+  onSessionRetryClaimed Boolean @default(false)
+  disputes        AutomaticAICreditDispute[]
+}
+
+model AutomaticAICreditDispute {
+  id          String @id
+  intentId    String
+  claim       AutomaticAICreditDispatchClaim @relation(fields: [intentId], references: [intentId], onDelete: NoAction, onUpdate: NoAction)
+  chargeId    String
+  amountCents Int
+  state       String
+
+  @@index([intentId])
+}
+
 /// Explicit opt-in for metered AI settlement.  A missing row is equivalent to
 /// disabled; this prevents a newly connected Stripe customer from being billed
 /// merely because it has generated AI usage.

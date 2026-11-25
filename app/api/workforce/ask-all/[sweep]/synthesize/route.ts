@@ -118,6 +118,7 @@ export async function POST(
     const fetcher = makeInstrumentedFetcher({
       engineName: "workforce_synthesis",
       organizationId: org,
+      actorUserId: String(ctx.userId),
       timeoutMs: 30_000,
     });
     const result = await fetcher(synthPrompt);

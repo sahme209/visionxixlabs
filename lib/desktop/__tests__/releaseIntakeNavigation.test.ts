@@ -25,13 +25,15 @@ function savedRelease(id: string, title: string, version: number) {
       ...(batchAccess && id === "release-target" && { batches: {selectedRunCount: 1} }),
       window: id === "release-target" ? releaseWindow : null, scope: {applicationCount: 1, repositoryCount: 1, targetEnvironment: 'staging',
         ...(canReviewRelease && id === 'release-target' && {githubRepositories: ['studio-fixture/payments'], changeNotApplicable: true})},
-      approval: {prStatus: 'pending', noPrRequired: false},
-      readiness: {developmentReady: false, productionReady: false, validationStepCount: 0, deferredValidation: false, approvalDecision: 'needs_attention', blockers: []},
+      approval: prRequirement,
+      readiness: {developmentReady: false, productionReady: false, validationStepCount: 0, deferredValidation: false, approvalDecision: releaseApprovalDecision, blockers: []},
       recovery: {rollbackAvailability: 'unavailable', backupRequired: false, evidenceCount: 0},
       observation: {status: 'not_connected', recordedMonitoringPlan: false},
     },
   };
 }
+let prRequirement: {prStatus: string; noPrRequired: boolean};
+let releaseApprovalDecision: "needs_attention" | "ready_for_human_approval";
 let releaseVersion: number;
 let olderReleaseLookup: "exact" | "advanced" | "wrong-shape" | "missing" | "offline" | undefined;
 let exactLookupQueries: string[];
@@ -41,12 +43,15 @@ let ticketDraftConversation: boolean;
 let linkedTicketReleaseId: string;
 let batchAccess: boolean;
 let pendingReleaseListing: Promise<void> | undefined;
+let pendingExactRelease: Promise<void> | undefined;
 let releaseWindow: {startUtc: string; endUtc: string; displayTimeZone: string} | null;
 let canReviewRelease: boolean;
 let membersAvailable: boolean;
 let auditAccess: boolean;
 let auditAvailable: boolean;
 beforeEach(()=>{
+ prRequirement = {prStatus:'pending', noPrRequired:false};
+ releaseApprovalDecision = 'needs_attention';
  releaseVersion = 3;
  olderReleaseLookup = undefined;
  exactLookupQueries = [];
@@ -56,6 +61,7 @@ beforeEach(()=>{
  linkedTicketReleaseId = "release-target";
  batchAccess = false;
  pendingReleaseListing = undefined;
+ pendingExactRelease = undefined;
  releaseWindow = null;
  canReviewRelease = false;
  membersAvailable = true;
@@ -95,7 +101,7 @@ beforeEach(()=>{
   if(url.origin!=='https://desktop-fixture.invalid')throw Error('fixture_unexpected_origin');
   if(method!=='GET'&&method!=='HEAD')throw Error('fixture_write_request_forbidden');
   if(url.pathname==='/api/desktop/access'){
-   return Response.json({ok: true, data: {identity: (ticketAccess || batchAccess) ? {...identity, capabilities:['workspace:read','pipeline:read']} : canReviewRelease ? {...identity, capabilities:['github:read']} : auditAccess ? {...identity, capabilities:['pipeline:read']} : identity, access: identity.access}});
+   return Response.json({ok: true, data: {identity: (ticketAccess || batchAccess) ? {...identity, capabilities:['workspace:read','pipeline:read',...(canReviewRelease?['github:read']:[])]} : canReviewRelease ? {...identity, capabilities:['github:read']} : auditAccess ? {...identity, capabilities:['pipeline:read']} : identity, access: identity.access}});
   }
   if (ticketDraftConversation && url.pathname === "/api/desktop/agent/conversations") {
     return Response.json({ok:true,data:{conversations:[{id:"fixture-ticket-draft",title:"Planning",turnCount:0,createdAt:"2026-11-20T00:00:00Z",updatedAt:"2026-11-20T00:00:00Z"}]}});
@@ -136,6 +142,7 @@ beforeEach(()=>{
     }
     if(url.searchParams.has('savedReleaseId')) {
       exactLookupQueries.push(url.search);
+      if (pendingExactRelease) await pendingExactRelease;
       if (olderReleaseLookup === "offline") return Response.json({ok: false, error: "network_error"}, {status: 503});
       const older = savedRelease('release-target', 'Payments staging', olderReleaseLookup === "advanced" ? 4 : 3);
       return Response.json({ok: true, data: olderReleaseLookup === "missing" ? []
@@ -281,16 +288,43 @@ it('keeps a parked ticket-first draft when cancelling navigation', async () => {
 });
 
 it.each([
-  {advanced:false, review:false},
-  {advanced:true, review:false},
-  {advanced:false, review:true},
-  {advanced:true, review:true},
-])("returns to the exact Batches dependency (review: $review, version advanced: $advanced)", async ({advanced, review}) => {
-  const opener = review ? "Review approvals" : "Open release Payments staging";
+  {prStatus:"pending",noPrRequired:true},
+  {prStatus:"not_applicable",noPrRequired:false},
+])("keeps the Batches and Deployments approval gate consistent for %j", async requirement => {
+  prRequirement = requirement;
   batchAccess = true;
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name:"Batches"}));
+  fireEvent.click(screen.getByRole("button", {name:"Release dependencies"}));
+  const gate = within(await screen.findByRole("region", {name:"Approval gate"}));
+  expect(gate.getByText("Recorded PR state").nextElementSibling?.textContent).toBe("PR not required");
+  expect(screen.queryByRole("button", {name:"Review approvals"})).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name:"Open release Payments staging"}));
+  const overview = within(await screen.findByRole("region", {name:"Recorded approvals"}));
+  expect(overview.getByText("Recorded PR state").nextElementSibling?.textContent).toBe("PR not required");
+  expect(screen.queryByRole("button", {name:"View release review"})).toBeNull();
+  expect(requests.every(request => request.method === "GET" || request.method === "HEAD")).toBe(true);
+});
+
+it.each([
+  {advanced:false, section:"release"},
+  {advanced:true, section:"release"},
+  {advanced:false, section:"review"},
+  {advanced:true, section:"review"},
+  {advanced:false, section:"logs"},
+  {advanced:true, section:"logs"},
+])("returns to the exact Batches dependency ($section, version advanced: $advanced)", async ({advanced, section}) => {
+  const opener = section === "logs" ? "Open release logs" : section === "review" ? "Review approvals" : "Open release Payments staging";
+  batchAccess = true;
+  canReviewRelease = section === "logs";
   render(createElement(App));
   fireEvent.click(await screen.findByRole("button", {name: "Batches"}));
   fireEvent.click(screen.getByRole("button", {name: "Release dependencies"}));
+  await screen.findByRole("heading", {name: "Payments staging"});
+  if (section === "logs") {
+    const nav = screen.getByRole("navigation", {name: "Release dependency sections"});
+    fireEvent.click(within(nav).getByRole("button", {name: "Logs"}));
+  }
   const open = await screen.findByRole("button", {name: opener});
   const search = screen.getByRole("searchbox", {name: "Search release dependencies"});
   fireEvent.change(search, {target: {value: "Payments"}});
@@ -301,11 +335,33 @@ it.each([
   const back = await screen.findByRole("button", {name: "Return to Batches"});
   if (advanced) expect(within(screen.getByRole("region", {name: "Saved release unavailable"})).getByRole("button", {name: "Return to Batches"})).toBe(back);
   else expect(screen.getByRole("navigation", {name: "Select a release"}).querySelector("[aria-current]")?.textContent).toContain("Payments staging");
-  if (review && !advanced) {
+  if (section === "review" && !advanced) {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("region", {name:"Merge review"})));
     expect(screen.getByRole("heading", {name:"Payments staging"})).toBeTruthy();
   }
-  if (advanced) expect(screen.queryByRole("region", {name:"Merge review"})).toBeNull();
+  if (section === "logs" && !advanced) {
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("region", {name: "Release logs"})));
+    const initiallyFocused = screen.getByRole("navigation", {name: "Release detail sections"});
+    expect(within(initiallyFocused).getByRole("button", {name: "Logs"}).getAttribute("aria-current")).toBe("location");
+    const directory = screen.getByRole("navigation", {name: "Select a release"});
+    fireEvent.click(within(directory).getByRole("button", {name: /^Inventory staging/}));
+    fireEvent.click(within(directory).getByRole("button", {name: /^Payments staging/}));
+    const navigation = screen.getByRole("navigation", {name: "Release detail sections"});
+    fireEvent.click(within(navigation).getByRole("button", {name: "Logs"}));
+    const readCount = requests.length;
+    const logs = screen.getByRole("region", {name: "Release logs"});
+    fireEvent.click(within(logs).getByRole("button", {name: "Find recorded workflow logs"}));
+    const evidence = screen.getByRole("region", {name: "Release evidence"});
+    expect(document.activeElement).toBe(evidence);
+    expect(within(evidence).getByRole("button", {name: "Load evidence plans"})).toBeTruthy();
+    expect(within(navigation).getByRole("button", {name: "Evidence"}).getAttribute("aria-current")).toBe("location");
+    expect(within(navigation).getByRole("button", {name: "Logs"}).hasAttribute("aria-current")).toBe(false);
+    expect(requests.slice(readCount).some(request => /operation-plans|workflow-evidence/.test(request.path) || request.method !== "GET")).toBe(false);
+  }
+  if (advanced) {
+    expect(screen.queryByRole("region", {name:"Merge review"})).toBeNull();
+    expect(screen.queryByRole("region", {name:"Release logs"})).toBeNull();
+  }
   back.focus();
   fireEvent.click(back);
 
@@ -320,8 +376,55 @@ it.each([
     const restored = await screen.findByRole("button", {name: opener});
     expect(document.activeElement).toBe(restored);
     expect(screen.getByText("Release version 3")).toBeTruthy();
+    const navigation = screen.getByRole("navigation", {name: "Release dependency sections"});
+    const activeSection = section === "logs" ? "Logs" : section === "review" ? "Approvals" : "Overview";
+    expect(within(navigation).getByRole("button", {name: activeSection}).getAttribute("aria-current")).toBe("location");
   }
   expect(requests.every(request => request.method === "GET" || request.method === "HEAD")).toBe(true);
+});
+
+it.each([false,true])("preserves only the exact Batches selection hidden by search (version advances: %s)", async advanced => {
+  batchAccess = true;
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name:"Batches"}));
+  fireEvent.click(screen.getByRole("button", {name:"Release dependencies"}));
+  const directory = await screen.findByRole("navigation", {name:"Select a release dependency"});
+  fireEvent.click(within(directory).getByRole("button", {name:/Payments staging/}));
+  const inspector = await screen.findByRole("article", {name:"Selected release dependency"});
+  const nav = within(inspector).getByRole("navigation", {name:"Release dependency sections"});
+  const logs = within(nav).getByRole("button", {name:"Logs"});
+  fireEvent.click(logs);
+  const disclosure = within(inspector).getByText("View logs").closest("details");
+  expect(disclosure?.open).toBe(true);
+
+  const search = screen.getByRole("searchbox", {name:"Search release dependencies"});
+  search.focus();
+  const reads = requests.length;
+  fireEvent.change(search, {target:{value:"No matching dependency"}});
+  expect(document.activeElement).toBe(search);
+  expect(screen.getByText(/Search has hidden the selected release version/)).toBeTruthy();
+  expect(screen.queryByText("No loaded dependencies match.")).toBeNull();
+  expect(screen.queryByRole("article", {name:"Selected release dependency"})).toBeNull();
+  expect(inspector.hidden).toBe(true);
+  expect(inspector.hasAttribute("inert")).toBe(true);
+
+  if (advanced) {
+    releaseVersion = 4;
+    fireEvent.click(screen.getByRole("button", {name:"Refresh dependencies"}));
+    await screen.findByText(/The selected release version is unavailable/);
+    expect(inspector.isConnected).toBe(false);
+    fireEvent.change(search, {target:{value:""}});
+    expect(screen.queryByRole("article", {name:"Selected release dependency"})).toBeNull();
+    fireEvent.click(within(screen.getByRole("navigation", {name:"Select a release dependency"})).getByRole("button", {name:/Payments staging/}));
+    expect(screen.getByText("Release version 4")).toBeTruthy();
+  } else {
+    fireEvent.change(search, {target:{value:""}});
+    expect(screen.getByRole("article", {name:"Selected release dependency"})).toBe(inspector);
+    expect(document.activeElement).toBe(search);
+    expect(disclosure?.open).toBe(true);
+    expect(logs.getAttribute("aria-current")).toBe("location");
+    expect(requests).toHaveLength(reads);
+  }
 });
 
 it.each(["current", "advanced", "outside directory", "unavailable"] as const)("opens the selected release dependency from Deployments (%s)", async scenario => {
@@ -522,15 +625,25 @@ it('shows authorized workspace roles in Settings and links to current Permission
   expect(requests.every(request => request.method === 'GET' || request.method === 'HEAD')).toBe(true);
 });
 
-it('opens the existing Settings environment and model sections without a preference or policy write', async () => {
+it('opens the named workspace configuration sections without a preference or policy write', async () => {
   render(createElement(App));
   fireEvent.click(await screen.findByRole('button', {name: /^Settings$/}));
   expect(screen.getByText('Device time zone')).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', {name: 'Review environments'}));
-  expect(screen.getByRole('heading', {name: /^Environments$/})).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', {name: /^General$/}));
-  fireEvent.click(screen.getByRole('button', {name: 'Review models'}));
-  expect(screen.getByRole('heading', {name: /^Models$/})).toBeTruthy();
+  for (const [title, button, destination] of [
+    ['Environments', 'Review environments', 'Environments'],
+    ['Models & AI', 'Review models', 'Models'],
+    ['Security', 'Review identity', 'Identity'],
+  ]) {
+    const overview = screen.getByRole('region', {name: title});
+    expect(within(overview).getByRole('heading', {name: title})).toBeTruthy();
+    fireEvent.click(within(overview).getByRole('button', {name: button}));
+    const current = screen.getByRole('region', {name: 'Current settings section'});
+    expect(within(current).getByRole('heading', {name: new RegExp(destination, "i")})).toBeTruthy();
+    expect(document.activeElement).toBe(current);
+    fireEvent.keyDown(current, {key: 'Escape'});
+    expect(document.activeElement).toBe(screen.getByRole('button', {name: destination}));
+    fireEvent.click(screen.getByRole('button', {name: /^General$/}));
+  }
   expect(requests.every(request => request.method === 'GET' || request.method === 'HEAD')).toBe(true);
 });
 
@@ -648,6 +761,22 @@ it("counts loaded release records without claiming deployment outcomes", async (
   expect(summary.queryByText(/success|health/i)).toBeNull();
 });
 
+it("filters Home recent activity by request state without another request", async () => {
+  render(createElement(App));
+  await screen.findByRole("button", {name: /Payments staging v3/});
+  const activity = screen.getByRole("region", {name: "Recent deployment activity"});
+  const filter = within(activity).getByRole("combobox", {name: "Filter recent activity by request state"});
+  const reads = requests.length;
+  fireEvent.change(filter, {target: {value: "closed"}});
+  expect(within(activity).queryByRole("button", {name: /Payments staging v3/})).toBeNull();
+  expect(within(activity).getByText("No loaded releases in this state.")).toBeTruthy();
+  fireEvent.change(filter, {target: {value: "draft"}});
+  expect(within(activity).getByRole("button", {name: /Payments staging v3/})).toBeTruthy();
+  fireEvent.change(filter, {target: {value: "all"}});
+  expect(within(activity).getByRole("button", {name: /Payments staging v3/})).toBeTruthy();
+  expect(requests.length).toBe(reads);
+});
+
 it.each([false, true])("returns from the Home next action to the refreshed exact action without losing the planner (version advances: %s)", async advances => {
   render(createElement(App));
   const actions = await screen.findByRole("region", {name:"Next actions"});
@@ -674,9 +803,9 @@ it('shows only a bounded authorized Home activity feed alongside exact saved rel
   expect(await within(activity).findByText('Recorded synthetic change review')).toBeTruthy();
   const recordedAt = new Date('2026-11-20T10:00:00.000Z');
   const fullTimestamp = recordedAt.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'});
-  const time = within(activity).getByLabelText(fullTimestamp);
-  expect(time.getAttribute('datetime')).toBe(recordedAt.toISOString());
-  expect(time.getAttribute('title')).toBe(fullTimestamp);
+  const time = within(activity).getByText(fullTimestamp).closest('time');
+  expect(time?.getAttribute('datetime')).toBe(recordedAt.toISOString());
+  expect(time?.hasAttribute('aria-label')).toBe(false);
   expect(within(activity).queryByText(/fixture-hidden/)).toBeNull();
   expect(requests.filter(request => request.path === '/api/desktop/release-audit')).toEqual([{method:'GET',path:'/api/desktop/release-audit'}]);
   fireEvent.click(await screen.findByRole('button', {name:/^Payments staging/}));
@@ -716,6 +845,7 @@ it('navigates between selected release sections without a provider action', asyn
   expect(document.activeElement).toBe(logs);
   expect(logsButton.getAttribute('aria-current')).toBe('location');
   expect(within(logs).getByText('Live logs and application health are unavailable for this request.')).toBeTruthy();
+  expect(within(logs).queryByRole("button", {name: "Find recorded workflow logs"})).toBeNull();
   fireEvent.click(overviewButton);
   expect(overviewButton.getAttribute('aria-current')).toBe('location');
   const overview = screen.getByRole('region', {name:'Release overview'});
@@ -741,11 +871,14 @@ it('navigates between selected release sections without a provider action', asyn
   expect(requests.some(request => request.method === 'POST')).toBe(false);
 });
 
-it('opens only the submitted release review and disables the shortcut during refresh', async () => {
+it('guides a ready, submitted release to review and withholds guidance during refresh', async () => {
   batchAccess = true;
+  releaseApprovalDecision = 'ready_for_human_approval';
   render(createElement(App));
   fireEvent.click(await screen.findByRole('button', {name: /^Payments staging/}));
   const overview = await screen.findByRole('region', {name:'Release overview'});
+  const nextStep = within(overview).getByRole('region', {name:'Release next step'});
+  expect(within(nextStep).getByRole('heading', {name:'View release review'})).toBeTruthy();
   const review = screen.getByRole('button', {name:'View release review'});
   expect(overview.contains(review)).toBe(false);
   expect(screen.getByRole('heading', {name:'Payments staging'})).toBeTruthy();
@@ -758,10 +891,14 @@ it('opens only the submitted release review and disables the shortcut during ref
   pendingReleaseListing = new Promise<void>(resolve => { finish = resolve; });
   fireEvent.click(screen.getByRole('button', {name:'Refresh'}));
   expect((review as HTMLButtonElement).disabled).toBe(true);
+  expect(within(nextStep).getByRole('heading', {name:'Refresh saved status'})).toBeTruthy();
+  expect(within(nextStep).getByText('Current approval requirements and decisions are unavailable.')).toBeTruthy();
+  expect(within(nextStep).queryByText(/PR approval needs review|Recorded prerequisite signals are present/)).toBeNull();
   expect(screen.queryByRole('region', {name:'Merge review'})).toBeNull();
   expect(screen.getByText('Checking the release version before merge review…')).toBeTruthy();
   await act(async () => finish());
   expect((review as HTMLButtonElement).disabled).toBe(false);
+  expect(within(nextStep).getByRole('heading', {name:'View release review'})).toBeTruthy();
   expect(screen.getByRole('region', {name:'Merge review'})).toBe(mergeReview);
 });
 
@@ -903,6 +1040,35 @@ it.each(["exact", "advanced", "wrong-shape", "missing"] as const)("handles an ol
   }
 });
 
+it("allows browsing the current directory during an older exact lookup without resetting the selection", async () => {
+  render(createElement(App));
+  const link = await screen.findByRole("button", {name: /Payments staging v3/});
+  let finishLookup!: () => void;
+  pendingExactRelease = new Promise(resolve => { finishLookup = resolve; });
+  olderReleaseLookup = "exact";
+  fireEvent.click(link);
+  const directory = within(await screen.findByRole("navigation", {name: "Select a release"}));
+  expect(screen.getByText("Checking the saved release version…")).toBeTruthy();
+  expect(directory.queryByRole("button", {name: /Payments staging/})).toBeNull();
+
+  const search = screen.getByRole("searchbox", {name: "Search loaded releases"});
+  search.focus();
+  fireEvent.change(search, {target: {value: "Recent release 1"}});
+  const row = directory.getByRole("button", {name: /^Recent release 1 Version 1/});
+  row.focus();
+  fireEvent.keyDown(row, {key: "ArrowDown"});
+  const next = directory.getByRole("button", {name: /^Recent release 10 Version 1/});
+  expect(document.activeElement).toBe(next);
+
+  await act(async () => finishLookup());
+  expect(screen.queryByText("Checking the saved release version…")).toBeNull();
+  expect(search).toHaveProperty("value", "Recent release 1");
+  expect(next.getAttribute("aria-current")).toBe("true");
+  expect(document.activeElement).toBe(next);
+  expect(directory.queryByRole("button", {name: /Payments staging/})).toBeNull();
+  expect(exactLookupQueries).toEqual(["?savedReleaseId=release-target&savedReleaseVersion=3&includeRequester=1"]);
+});
+
 it("keeps current directory rows when exact lookup fails and restores the saved version on retry", async () => {
   render(createElement(App));
   const link = await screen.findByRole("button", {name: /Payments staging v3/});
@@ -1021,4 +1187,50 @@ it("keeps text already in the Agent composer when preparing an incident draft", 
   expect(await screen.findByText("The new request is ready once you finish or clear this draft.")).toBeTruthy();
   expect(composer).toHaveProperty("value","Existing unsent request");
   expect(requests.every(entry=>entry.method==="GET"||entry.method==="HEAD")).toBe(true);
+});
+
+it("requires a new selection when a manually opened release advances on refresh", async () => {
+  canReviewRelease = true;
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: /Payments staging v3/}));
+  const directory = within(await screen.findByRole("navigation", {name: "Select a release"}));
+  fireEvent.click(directory.getByRole("button", {name: /Payments staging Version 3/}));
+  await screen.findByRole("button", {name: "Review saved plans in Agent"});
+
+  releaseVersion = 4;
+  fireEvent.click(screen.getByRole("button", {name: "Refresh"}));
+  await screen.findByText("The selected release version changed. Choose a release to review its current version.");
+  const current = directory.getByRole("button", {name: /Payments staging Version 4/});
+  expect(current.getAttribute("aria-current")).toBeNull();
+  expect(current.getAttribute("aria-expanded")).toBe("false");
+  expect(screen.queryByRole("button", {name: "Review saved plans in Agent"})).toBeNull();
+  fireEvent.click(current);
+  expect(current.getAttribute("aria-current")).toBe("true");
+  expect(current.getAttribute("aria-expanded")).toBe("true");
+  expect(document.activeElement?.textContent).toContain("Version 4");
+  expect(requests.every(request => request.method === "GET" || request.method === "HEAD")).toBe(true);
+});
+
+it("keeps the implicitly shown release version bound through a fast refresh", async () => {
+  canReviewRelease = true;
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: "Deployments"}));
+  const directory = within(await screen.findByRole("navigation", {name: "Select a release"}));
+  fireEvent.change(screen.getByRole("searchbox", {name: "Search loaded releases"}), {target: {value: "Payments"}});
+  const displayed = directory.getByRole("button", {name: /Payments staging Version 3/});
+  expect(displayed.getAttribute("aria-expanded")).toBe("true");
+
+  releaseVersion = 4;
+  const refresh = screen.getByRole("button", {name: "Refresh"});
+  refresh.focus();
+  fireEvent.click(refresh);
+  await screen.findByText("The selected release version changed. Choose a release to review its current version.");
+  const current = directory.getByRole("button", {name: /Payments staging Version 4/});
+  expect(current.getAttribute("aria-current")).toBeNull();
+  expect(current.getAttribute("aria-expanded")).toBe("false");
+  expect(document.activeElement).toBe(refresh);
+  fireEvent.click(current);
+  expect(current.getAttribute("aria-expanded")).toBe("true");
+  expect(document.activeElement?.textContent).toContain("Version 4");
+  expect(requests.every(request => request.method === "GET" || request.method === "HEAD")).toBe(true);
 });

@@ -144,11 +144,11 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
    return{operationId:row.id,plan:structuredClone(i.plan),deploymentPlanDigest:i.planDigest,receipt:structuredClone(v.receipt!),acceptedAt:row.updatedAt.toISOString(),expiresAt:new Date(end).toISOString(),dispatchEvidenceDigest:sha256ContentHash({operationId:row.id,planDigest:i.planDigest,approvalId:i.approval.id,receipt:v.receipt,acceptedAt:row.updatedAt.toISOString()})};
   };return transaction?read(transaction):repo.$transaction(read);
  },
- async getHistory(rawScope: DeploymentScope, id: string, matches: (plan: DeploymentPlan) => boolean): Promise<DeploymentExecutionHistory['events']> {
+ async getHistory(rawScope: DeploymentScope, id: string, matches: (plan: DeploymentPlan) => boolean): Promise<Pick<DeploymentExecutionHistory, 'events' | 'receipt'>> {
   const scope = deploymentScopeSchema.parse(rawScope);
   return repo.$transaction(async tx => {
    const {row, events} = await loadRecord(tx, scope, id, true);
-   const {plan} = unpack(row, scope).i;
+   const {i: {plan}, v: {receipt}} = unpack(row, scope);
    if (!matches(plan) || events[0].occurredAt < row.createdAt || events[events.length - 1].occurredAt < row.updatedAt) refuse();
    const releases = await tx.$queryRaw<Array<{id: string; organizationId: string; version: number; requesterUserId: string; intakeJson: unknown}>>`
     SELECT "id", "organizationId", "version", "requesterUserId", "intakeJson" FROM "TauriDeploymentRequest"
@@ -157,9 +157,12 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
     || releases[0].version !== plan.releaseVersion || releases[0].requesterUserId !== plan.requesterUserId
     || sha256ContentHash({requestVersion: releases[0].version, intake: releases[0].intakeJson}) !== plan.intakeDigest) refuse();
    await authority(tx, scope);
-   return events.map(event => ({
-    type: event.eventType.slice('release_deployment.'.length) as DeploymentState, at: event.occurredAt.toISOString(),
-   }));
+   return {
+    events: events.map(event => ({
+     type: event.eventType.slice('release_deployment.'.length) as DeploymentState, at: event.occurredAt.toISOString(),
+    })),
+    ...(receipt ? {receipt} : {}),
+   };
   });
  },
  async get(rawScope:DeploymentScope,id:string){const s=deploymentScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id);await authority(tx,s);return dto(r,s)})},

@@ -1,5 +1,5 @@
 import {incidentAssignmentOptions,incidentAssignmentReceipt,matchesAssignment,type IncidentAssignmentRequest,type IncidentAssignmentReceipt} from "../../../lib/tauri/incidentAssignmentContract";
-import {incidentCollectionReceipt, incidentCollectionStatus, sameCollection, type IncidentCollectionRequest, type IncidentCollectionReceipt} from "../../../lib/tauri/incidentCollectionContract";
+import {incidentCollectionRequest, incidentCollectionReceipt, incidentCollectionStatus, sameCollection, type IncidentCollectionRequest, type IncidentCollectionReceipt} from "../../../lib/tauri/incidentCollectionContract";
 import {incidentRemediationReviewSchema} from "../../../lib/tauri/incidentRemediationReviewContract";
 import {incidentTransitionReceipt, matchesIncidentTransition, type IncidentTransitionReceipt, type IncidentTransitionRequest} from "../../../lib/tauri/incidentTransitionContract";
 import {incidentUpdateList, incidentUpdateReceipt, type IncidentUpdateList, type IncidentUpdateReceipt, type IncidentUpdateRequest} from "../../../lib/tauri/incidentUpdateContract";
@@ -139,6 +139,16 @@ export function readIncidentCollection(base: string, token: string | undefined, 
   return readTicketProjection(base,token,signal,`${incidentCollectionPath}?${new URLSearchParams({incidentId})}`,data => {
     const parsed = incidentCollectionStatus.safeParse(data);
     return parsed.success && parsed.data.incidentId === incidentId ? parsed.data : undefined;
+  });
+}
+
+export function readIncidentCollectionReceipt(base: string, token: string | undefined, signal: AbortSignal, command: IncidentCollectionRequest) {
+  if (!incidentCollectionRequest.safeParse(command).success) return;
+  const query = new URLSearchParams({incidentId: command.incidentId, attemptId: command.attemptId});
+  return readTicketProjection(base, token, signal, `${incidentCollectionPath}?${query}`, data => {
+    if (data === null) return null;
+    const parsed = incidentCollectionReceipt.safeParse(data);
+    return parsed.success && sameCollection(parsed.data, command) ? parsed.data : undefined;
   });
 }
 

@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const correlationId = `specwriter_${Date.now().toString(36)}` as CorrelationId;
   let spec;
   try {
-    spec = await runSpecWriter(org, { title, problem, audience, constraints });
+    spec = await runSpecWriter(org, { title, problem, audience, constraints }, String(ctx.userId));
     await persistWrittenSpec(org, spec);
   } catch (err) {
     console.warn("[spec_writer/run-domain] hard failure:", err instanceof Error ? err.message : err);

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   let classificationCount = 0;
   let totalAlerts = 0;
   try {
-    const report = await runAlertNoiseEngineer(org);
+    const report = await runAlertNoiseEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     classificationCount = report.classifications.length;
     totalAlerts = report.totalAlerts;

@@ -9,6 +9,7 @@ import { PageHero } from "@/components/marketing/PageHero";
 import { ControlPlaneModel } from "@/components/marketing/ControlPlaneModel";
 import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
+import { ProductDisclosure } from "@/components/marketing/ProductDisclosure";
 
 export const metadata: Metadata = {
   title: "V19 product",
@@ -65,16 +66,14 @@ export default function ProductPage() {
           </PublicFeaturePanel>
         </section>
 
-        <details id="deployment-model" className="public-model-disclosure">
-          <summary>Inspect deployment scenarios and stages</summary>
+        <ProductDisclosure id="deployment-model" title="Inspect deployment scenarios and stages">
           <p>Explore sample approved, blocked, rejected, unknown and recovery paths. This model performs no live action and does not establish production enforcement.</p>
           <GovernedDeploymentModel />
-        </details>
-        <details id="decision-records" className="public-model-disclosure">
-          <summary>Inspect the records behind a decision</summary>
+        </ProductDisclosure>
+        <ProductDisclosure id="decision-records" title="Inspect the records behind a decision">
           <p>Follow scope, proposal, independent review, separate execution and recorded evidence. These are conceptual records, not permission or a provider receipt.</p>
           <section aria-label="Inside a deployment decision" className="px-5 pb-8 sm:px-8"><GovernanceAssembly /></section>
-        </details>
+        </ProductDisclosure>
 
         <ControlPlaneModel />
 

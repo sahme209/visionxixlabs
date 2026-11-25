@@ -88,30 +88,30 @@
   {
    "href": "/docs/ask-axiom#answers",
    "title": "Answers from the docs",
-   "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to send your question to support. Follow a source link to a specific section of a guide. The chat closes and keyboard focus moves to the cited heading. Open Ask V19 again to return to the conversation. Try a plain question such as How do I set up GCP? or How do I block a GitHub Actions deploy until someone approves? The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.",
+   "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to open a support request for you to review. Follow a source link to open the guide or page. The chat closes and keyboard focus moves to the cited section or to the page heading. Open Ask V19 again to return to the conversation. Try a plain question such as How do I set up GCP? or How do I block a GitHub Actions deploy until someone approves? The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a"
+   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a"
+   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask V19 can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a"
+   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
-   "text": "It can open a pre-filled support request that you review and send, and it can record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
+   "text": "Choose Review a support request to carry the question to the contact form in the same tab. Review and edit it before you send. The question stays out of the page address, and opening the form does not submit a request. Ask V19 can also record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "f6460d70dd10d657c6bbf45279f22c0d9aab58145b2efb038c4fa3df7ec6ec6a"
+   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
   },
   {
    "href": "/docs/audit-logs#desktop-settings",
@@ -230,49 +230,49 @@
    "title": "Installer availability and download pauses",
    "text": "Check Windows availability and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file. Desktop downloads are temporarily paused means the required service storage checks are unavailable. Release status unavailable means the current installer status could not be verified. To recheck installer availability, choose Recheck release status on the download page . From the installer availability screen, choose Return to downloads . Check the release and platform details before installing.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#current-state",
    "title": "What the current desktop build delivers",
    "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#requirements",
    "title": "System requirements",
    "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Browser engine for Tailwind 4 source builds — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer. Network — HTTPS access to the configured V19 API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#install-macos",
    "title": "Install — macOS (Apple Silicon + Intel)",
    "text": "Visit /download . Choose Apple Silicon or Intel. A verified download link points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag V19 to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#install-windows",
    "title": "Install — Windows x64",
    "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch V19, and approve the desktop pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#install-linux",
    "title": "Install — Linux x64",
    "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. Run the commands for the package you verified. These examples use v0.1.24. Substitute the exact filename for the version you downloaded. chmod +x ./V19_0.1.24_amd64.AppImage ./V19_0.1.24_amd64.AppImage sudo dpkg -i ./V19_0.1.24_amd64.deb sudo rpm -i ./V19-0.1.24-1.x86_64.rpm Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/desktop-install#updates",
    "title": "Desktop installer updates, website deployments and release notes",
    "text": "A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer. In releases that include About this app , open Settings → General and check Installed version . This value comes from the installed app. Unavailable means it could not be read, not that a newer version is installed. Older releases may not have this section. Review releases opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer's verification details. The current desktop installer does not update automatically. Check the download page for a newer verified tag and install it manually. Review the public V19 release notes before upgrading.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "95e006b27169a615e419f3873c182bd8bbb45d167b9642b9b29228ce3959b8db"
+   "sourceSha256": "1e072432f839b8092c04f6dfded172cb2ecb9cf99b7e1ec0c2060a060aba6fe0"
   },
   {
    "href": "/docs/execution-plans#read",
@@ -426,63 +426,63 @@
    "title": "Before connecting a provider",
    "text": "Set the production V19 origin as NEXTAUTH_URL ; callback construction fails closed when the origin is not trusted. Register the exact HTTPS callback shown below. Wildcard callback domains are not supported. Store client secrets only in the hosting platform's encrypted secret manager—never in NEXT_PUBLIC_* , the desktop app, logs, or Git. Redeploy the service after adding credentials, then use Apps & skills or Settings → Integrations to start consent. Run the harmless validation step. V19 does not label a connection active from consent alone.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#github",
    "title": "GitHub App",
    "text": "Use this setup to grant the app access to selected repositories. GitHub account sign-in uses a separate OAuth flow. {`$ /api/integrations/github/install-callback`} Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled V19 workflows. A workspace admin reviews GitHub's installation screen and selects repositories. V19 records the installation, then verifies scoped read access before showing it as validated.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#gitlab",
    "title": "GitLab repository connection and account sign-in",
    "text": "Read-only GitLab repository setup is available only where the workspace feature is enabled. If you see Manage GitLab in Control → Integrations , open it as a workspace owner or admin and select a tracked GitLab repository. If the option is absent, setup is unavailable in that workspace. Use Register project credential to save the exact project ID, expiry date and approved read-only project credential. Pending registration alone does not enable sync. Use Verify read access with the separate verifier in the setup form. Keep tokens out of chat and support requests. Once the status is Read access validated , the bound repository can sync merge requests, releases and existing pipeline evidence. The connection cannot run GitLab CI or modify a repository. If setup is bound to another repository, select that repository to manage the existing binding. Revoke in V19 removes the stored credential and stops V19 sync for that project. Manage the original token separately in GitLab. GitLab account sign-in and linking are separate from repository consent. If your sign-in page offers GitLab, using it identifies your account. It does not connect repositories, grant GitLab CI access or authorize actions in a workspace.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#gitlab-status-recovery",
    "title": "GitLab setup status and recovery",
    "text": "If GitLab setup says V19 could not confirm the update , first check the current connection for the same repository. Use Refresh status when the connection panel is visible, or Refresh GitLab status if the setup status is unavailable. After saving, Awaiting validation means you can validate the pending project credential. Read access validated means the current repository binding has a valid read check. Revoked in V19 means V19 stopped using the stored credential. A refresh reads the current status without resending your update. If the status remains unavailable, wait for a fresh result before deciding whether to retry.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#airflow",
    "title": "Apache Airflow",
    "text": "In the desktop app, a workspace administrator opens Batches → Connection and uses the secure Airflow connection form. Use the HTTPS base address of your Airflow 3 deployment and choose username and password or an existing bearer token. Enter credentials only in the connection form. Select Validate & connect and wait for V19 to confirm the connection. Choose a DAG to inspect available runs. If validation fails or status is unavailable, check the endpoint and credentials and refresh before relying on the evidence. A validated connection gives no automatic permission to start, retry or schedule a run. For Prefect, Dagster and Argo Workflows, see the read-only batch provider guide .",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#slack",
    "title": "Slack",
    "text": "Implementation review. Customer OAuth and message delivery are not release-verified. The settings below describe operator configuration. {`$ /api/integrations/slack/callback`} SLACK_CLIENT_ID= SLACK_CLIENT_SECRET= The current workflow requests channels:read and chat:write . It does not request direct messages, private-channel history, commands, or broad message history.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#teams",
    "title": "Microsoft tenant / Teams",
    "text": "The current scope verifies tenant identity. Check your installed version and workspace state before starting consent. {`$ /api/integrations/teams/callback`} MICROSOFT_CLIENT_ID= MICROSOFT_CLIENT_SECRET= MICROSOFT_TENANT_ID= The authorization-code flow uses PKCE and currently requests openid , offline_access , and User.Read . This verifies tenant identity; it does not grant Teams messaging authority.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#linear",
    "title": "Linear",
    "text": "Planned. There is no verified customer activation path. The settings below describe operator configuration. {`$ /api/integrations/linear/callback`} LINEAR_CLIENT_ID= LINEAR_CLIENT_SECRET= Consent requests read and issues:create . Mutating Agent actions remain separately approval-gated and auditable after the connection is active.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/integration-setup#states",
    "title": "Understand connection states",
    "text": "Setup required: the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app. Awaiting validation: provider consent returned successfully, but V19 has not yet completed a live server-side check. Active / validated read-only: the scoped provider token or GitHub installation passed live validation. Needs attention / validation overdue: validation failed or is stale. Revalidate before relying on the connection for release evidence. Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the V19 audit trail before reconnecting.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e85db140b111a2c115c6e810d485daf4756e59956b9e0a8eccc67177700f7c04"
+   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
   },
   {
    "href": "/docs/mcp-tools#enable",
@@ -860,49 +860,84 @@
    "title": "Choose a desktop destination",
    "text": "Open the installed app and use its sidebar. A destination organizes work; it does not authorize a provider action. Read-only inspection, proposing a change, independent review and execution are separate concerns. {DESTINATIONS.map(item=> Next: )}",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#workflow-map",
    "title": "Follow a desktop workflow",
    "text": "In desktop versions that include it, open Documentation in the sidebar and select Workflow map . Choose Release, Tickets and recovery, or Batches. Select Fit overview to see the workflow at a glance. Choose a responsibility group to jump to it. Drag an empty part of the canvas to pan when the map extends beyond its viewport. Select a step to open its details and follow a conditional next step . Select Read the guide for the relevant instructions. If the canvas is hard to read at your current window size, use Step list to browse the same steps by group. Use Close details to return focus to the step you opened, or Back to guides to return to the guide reader. The map explains which evidence and approvals a workflow requires. Use the original workspace record to confirm the current version, result and available actions.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#workflow-map-next-steps",
    "title": "Follow conditional next steps in the workflow map",
    "text": "In desktop versions that include the workflow map, open a step and read the condition below each option in Next steps . Matching a condition is a navigation choice. Use the original release, ticket or batch record to verify which condition applies. On the Release map, Review current authority shows Run the supported operation for Current approval and authority . If approval was rejected or expired, or the saved release changed, choose Hold for review under Rejected, expired or changed . Once the missing evidence or permission is resolved, use Return to review and verify the current saved version. On the Batches map, choose Inspect the run’s tasks for Run failed or task details needed . Follow the failed-run guide from that step for the exact task read. Selecting a branch opens the destination step’s details and moves focus to its heading. Close details returns keyboard focus to the step that opened the details. Read the guide opens the selected step’s documentation. The map is read-only. Use the separate approval and execution workflow for any action.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
+  },
+  {
+   "href": "/docs/surfaces#ticket-release-draft",
+   "title": "Start, save and resume a release draft from Tickets",
+   "text": "In desktop versions with Start release draft , open a supported Jira or ServiceNow change in Tickets . Check its reference before opening the draft and review the scope before saving. To pause an unsaved draft, choose Close . During the same signed-in session, return to that ticket and select Resume release draft for followed by its reference. Other tickets keep their own drafts. Choose Save draft , then Open saved release draft to open the exact saved version in Deployments . Choose Return to source ticket to return to the original ticket. If the ticket is unavailable, V19 returns you to ticket search. Saving keeps the draft for review. Submission, approval and execution each have their own controls.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
+  },
+  {
+   "href": "/docs/surfaces#ticket-collection-receipt",
+   "title": "Check the collection receipt for incident evidence",
+   "text": "In desktop versions with Check collection receipt , open the incident in Tickets , choose Evidence and select Review linked release evidence to inspect the linked release. To record collection, an authorized operator needs a completed eligible workflow run and a verified comparison baseline. If Record evidence collection returns an uncertain result, choose Check collection receipt . This read-only check looks up the exact original attempt. If the receipt is still unavailable and Retry evidence collection is offered, that control retries the same collection attempt. A recovered receipt confirms the original collection record only. It does not prove application recovery, successful rollback or current release readiness. Use the incident overview to verify the current release and comparison baseline, and consult the release readiness guide for the remaining checks.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
+  },
+  {
+   "href": "/docs/surfaces#release-closure-evidence",
+   "title": "Read recorded closure evidence in Deployments",
+   "text": "In desktop versions with Read closure evidence , use a paired workspace session. Open Deployments and select the exact closed release version. Choose Read closure evidence below Closure recorded . V19 shows the evidence reference and reported outcome saved when that version was closed. If recording the closure returned an uncertain result, resume the closure draft and use Check closure status before attempting another write. If the evidence read is unavailable, confirm the release version and workspace, then try the read again. An unavailable receipt does not tell you that the closure failed. The receipt records a reported external outcome. Use the reference to check the original change or validation record and follow the release readiness guide for independent verification. Reading a receipt does not authorize or dispatch a deployment.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#batch-failed-run",
    "title": "Inspect a failed Airflow run in Batches release dependencies",
-   "text": "In desktop versions with Inspect failed run , open Batches , choose Release dependencies , select the exact submitted release version and select Check batches . The check requires pipeline read access and uses the Airflow runs declared on that version. If a run failed, select Inspect failed run to open the first recorded failed run’s tasks. V19 moves focus to that run’s task control. To choose another observed run, select Inspect tasks below its workflow and run. Waiting or unverified results leave readiness unresolved. The failed-run shortcut only appears after a recorded failure. If the release version changed, reopen the current release and check its declared runs again. Use Retry tasks to repeat an unavailable task read. This read shows the observed task state and attempt number. It grants no permission to retry an Airflow run or execute a deployment. For a completed check, return to the release approval workflow .",
+   "text": "In desktop versions with Inspect failed run , open Batches , choose Release dependencies , select the exact submitted release version and select Check batches . The check requires pipeline read access and uses the Airflow runs declared on that version. If a run failed, select Inspect failed run to open the first recorded failed run’s tasks. V19 moves focus to that run’s task control. To choose another observed run, select Inspect tasks below its workflow and run. Waiting or unverified results leave readiness unresolved. The failed-run shortcut only appears after a recorded failure. If the release version changed, reopen the current release and check its declared runs again. In versions with the Observed task states table, read the task’s status, try number, and start and end times in UTC. Missing times show as unavailable. V19 clears the old rows when a task page fails to load. Choose Retry tasks to reread that same page, or Previous task page to return to the previous page when the control is available. Task inspection reads provider evidence. To retry an Airflow run or execute a deployment, use the separately authorized workflow. For a completed check, return to the release approval workflow .",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
+  },
+  {
+   "href": "/docs/surfaces#batch-closed-history",
+   "title": "Find older closed releases in Batches History",
+   "text": "In desktop versions with the History action, use a paired workspace session and open Batches → Release dependencies . Choose History beside the Batches heading to load older closed releases with declared Airflow runs. The archive skips closed releases already in the recent list. Use Load more history for the next page, or Retry history if a page could not be verified. Search filters the loaded releases, including pages you opened in this visit. Select the historical row and check the saved version and recorded UTC closing time, when available. Choose Open release to view that version in Deployments, then follow the recorded closure evidence guide . Choose Return to Batches to restore the historical row. Batches History shows saved closed release records. A closure receipt records a reported outcome. Use Airflow run evidence and independent validation for provider outcomes and application health. Viewing saved history makes no Airflow request and grants no approval or execution authority.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
+  },
+  {
+   "href": "/docs/surfaces#batch-release-logs",
+   "title": "Find release logs in desktop Batches",
+   "text": "In desktop versions with Open release logs , choose Batches → Release dependencies and select the saved release. Open Logs , then choose Open release logs to open the exact release version’s Logs section in Deployments . In versions with Find recorded workflow logs , choose it to open Evidence . Load the evidence plans, choose the saved plan, and select Read recorded workflow commit . When the saved observation matches the accepted dispatch, choose Open recorded workflow logs to return to Logs. The recorded timeline shows the run and attempt, when the dispatch was accepted, and when the outcome was last observed, in UTC. Use the GitHub link to open that exact attempt. In versions with Review workflow evidence , Logs states why the exact attempt is unavailable, such as a missing run receipt or more than one matching observation. It never implies a deployment outcome. Airflow task logs and live application health are unavailable in this view. Use the failed Airflow run guide to inspect observed task state and try numbers. From Deployments → Logs , use Return to Batches to restore the selected release, open Logs section and keyboard focus. If search has hidden the selection, clear the search to show the same version again. If a refresh finds a newer version, select it explicitly before opening its logs.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#website",
    "title": "Use the website for guidance",
    "text": "Download the desktop app — inspect the current manifest-backed installer and platform-specific verification information. Public documentation — read setup, workflow and recovery references without starting an action. Illustrative demo — explore the explanation of a workflow. Demo content is not a live workspace or evidence that an action ran. Account help (sign-in required) — use the authenticated help surface when available; this public guide grants no account access. Browser sign-in and provider-consent pages support specific authentication or connection steps. Returning from a browser does not by itself prove that desktop pairing, connection validation or an operation succeeded.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#recordings",
    "title": "Watch a V19 desktop recording or scripted tour",
    "text": "The public demo is a scripted tour with sample data. An authentic desktop recording is currently unavailable. The tour explains the workflow without running a provider action. When a reviewed recording is available on the homepage, its player shows the exact V19 version, platform and build source, with a still preview, captions and a transcript. Playback starts when you choose Play.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/surfaces#next-owner",
    "title": "Know who acts next",
    "text": "The person preparing work checks its exact source, target and content. An authorized independent reviewer makes the required decision personally. Who executes next, and whether execution is a separate control, depends on the supported workflow and installed version. See Review and execution guidance . If a connection or permission is missing, use its supported setup path or ask the authorized administrator. A different screen, a catalogue entry or an old approval does not remove that requirement. Do not resend an uncertain or consumed action. Inspect the original saved record using the supported read-only history or recovery controls. A different destination is not a retry permission. Troubleshoot the current state before preparing another action.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "cb30464d2df55fafddd5301fc44c10cd098726d4dc3612106526ec525b3ad0be"
+   "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa"
   },
   {
    "href": "/docs/troubleshooting#installation",

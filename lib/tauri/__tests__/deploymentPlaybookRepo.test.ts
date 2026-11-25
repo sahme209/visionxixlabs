@@ -74,28 +74,24 @@ class FakeRepo implements PlaybookRepo {
         id: "request-01",
         organizationId: "tenant-a",
         version: 1,
+        status: "submitted",
+        closedAt: null as Date | null,
         intakeJson: validIntake(),
     }];
     readonly playbooks: PlaybookRow[] = [];
-    readonly audits: unknown[] = [];
+    readonly audits: Parameters<PlaybookRepo["tauriAuditEvent"]["create"]>[0]["data"][] = [];
 
-    tauriDeploymentRequest: PlaybookRepo["tauriDeploymentRequest"];
     tauriPlaybook: PlaybookRepo["tauriPlaybook"];
     tauriAuditEvent: PlaybookRepo["tauriAuditEvent"];
 
     constructor() {
-        this.tauriDeploymentRequest = {
-            findFirst: async ({ where }) =>
-                this.requests.find((row) =>
-                    row.id === where.id && row.organizationId === where.organizationId,
-                ) ?? null,
-        };
         this.tauriPlaybook = {
             findFirst: async ({ where }) =>
                 [...this.playbooks]
                     .filter((row) =>
                         row.deploymentRequestId === where.deploymentRequestId
-                        && row.organizationId === where.organizationId,
+                        && row.organizationId === where.organizationId
+                        && (!where.id || row.id === where.id),
                     )
                     .sort((a, b) => b.version - a.version)[0] ?? null,
             create: async ({ data }) => {
@@ -108,11 +104,19 @@ class FakeRepo implements PlaybookRepo {
             },
         };
         this.tauriAuditEvent = {
+            findMany: async ({where, take}) => this.audits.filter(event =>
+                event.organizationId === where.organizationId && event.deploymentRequestId === where.deploymentRequestId
+                && event.action === where.action && event.correlationId === where.correlationId).slice(0, take),
             create: async ({ data }) => {
                 this.audits.push(data);
                 return data;
             },
         };
+    }
+
+    async $queryRaw<T>(query: TemplateStringsArray, ...[id, organizationId]: unknown[]): Promise<T> {
+        expect(query.join("?")).toMatch(/FROM "TauriDeploymentRequest"[\s\S]*FOR UPDATE/);
+        return this.requests.filter(row => row.id === id && row.organizationId === organizationId) as T;
     }
 
     async $transaction<T>(fn: (tx: PlaybookRepo) => Promise<T>): Promise<T> {
@@ -152,6 +156,18 @@ describe("deployment playbook persistence", () => {
         expect(repo.audits).toHaveLength(0);
     });
 
+    it("refuses a changed version and a closed release without writing either record", async () => {
+        const repo = new FakeRepo();
+        repo.requests[0].version = 2;
+        await expect(persistNextPlaybook(repo, {...input(), expectedVersion: 1}))
+            .resolves.toEqual({ok: false, reason: "version_conflict"});
+        repo.requests[0].closedAt = new Date("2026-09-25T15:00:00.000Z");
+        await expect(persistNextPlaybook(repo, {...input(), expectedVersion: 2}))
+            .resolves.toEqual({ok: false, reason: "release_not_submitted"});
+        expect(repo.playbooks).toHaveLength(0);
+        expect(repo.audits).toHaveLength(0);
+    });
+
     it("atomically generates a versioned playbook and audit evidence", async () => {
         const repo = new FakeRepo();
         const result = await persistNextPlaybook(repo, input());
@@ -177,9 +193,26 @@ describe("deployment playbook persistence", () => {
                 organizationId: "tenant-a",
                 deploymentRequestId: "request-01",
                 action: "deployment_playbook.generated",
+                newValueJson: expect.objectContaining({requestVersion: 1}),
                 source: "desktop",
             }),
         ]);
+    });
+
+    it("replays the original playbook after later generations and refuses another actor or version", async () => {
+        const repo = new FakeRepo();
+        const exact = {...input(), expectedVersion: 1, attemptId: "b04419d2-017b-450c-8084-f7461afc5680"};
+        const first = await persistNextPlaybook(repo, exact);
+        expect(first).toMatchObject({ok:true, row:{version:1},requestVersion:1});
+        await persistNextPlaybook(repo, input());
+        repo.requests[0].version = 2;
+        await expect(persistNextPlaybook(repo, exact)).resolves.toEqual(first);
+        for (const changed of [{actorUserId:"another-user"}, {expectedVersion:2}]) {
+            await expect(persistNextPlaybook(repo, {...exact, ...changed}))
+                .resolves.toEqual({ok:false, reason:"playbook_attempt_conflict"});
+        }
+        expect(repo.playbooks).toHaveLength(2);
+        expect(repo.audits).toHaveLength(2);
     });
 
     it("increments the immutable playbook version", async () => {

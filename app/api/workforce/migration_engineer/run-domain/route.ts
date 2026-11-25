@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       toState,
       constraints: s(f.get("constraints")) || undefined,
       rollbackBoundaries: s(f.get("rollbackBoundaries")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistMigrationRunbook(org, runbook);
   } catch (err) {
     console.warn("[migration/run-domain] hard failure:", err instanceof Error ? err.message : err);

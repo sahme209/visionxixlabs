@@ -14,7 +14,7 @@ import headingIndex from "@/lib/docs/guide-heading-index.json";
 import docsCorpus from "./docsCorpus.json";
 import { FAQ_GROUPS } from "./faqData";
 
-export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-24.r1";
+export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-24.r6";
 
 
 export interface KnowledgeEntry {

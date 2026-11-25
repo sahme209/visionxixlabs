@@ -67,7 +67,7 @@ try:
         raise RuntimeError('owned_fixture_binding_required')
     # Synchronization is permitted only on this newly initialized empty fixture.
     own_env = dict(env, DATABASE_URL='postgresql://agent_fixture@localhost/axiom_agent_fixture?host=' + quote(str(socket), safe=''))
-    schema = subprocess.run([node, 'node_modules/prisma/build/index.js', 'db', 'push', '--schema', 'prisma/schema.prisma', '--skip-generate'], cwd=repo, env=own_env, capture_output=True, text=True, timeout=120)
+    schema = subprocess.run([node, 'node_modules/prisma/build/index.js', 'db', 'push', '--schema', 'prisma/schema.prisma'], cwd=repo, env=own_env, capture_output=True, text=True, timeout=120)
     (output / 'schema.log').write_text(schema.stdout + '\n' + schema.stderr)
     if schema.returncode:
         raise RuntimeError('owned_fixture_empty_schema_setup_failed')
@@ -88,7 +88,7 @@ try:
     session_authority = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/desktop/__tests__/desktopSessionAuthority.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'session-authority-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'session-authority-tests.log').write_text(session_authority.stdout + '\n' + session_authority.stderr)
     session_results = json.loads((output / 'session-authority-results.json').read_text())
-    if session_authority.returncode or session_results['numPassedTests'] != 10 or session_results['numFailedTests'] or session_results['numPendingTests']:
+    if session_authority.returncode or session_results['numPassedTests'] != 13 or session_results['numFailedTests'] or session_results['numPendingTests']:
         raise RuntimeError('desktop_session_authority_tests_failed_see_private_log')
     coding = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'coding-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'coding-tests.log').write_text(coding.stdout + '\n' + coding.stderr)
@@ -138,7 +138,7 @@ try:
     resolution = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/tauri/__tests__/releaseResolutionDraft.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'resolution-draft-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'resolution-draft-tests.log').write_text(resolution.stdout + '\n' + resolution.stderr)
     resolution_results = json.loads((output / 'resolution-draft-results.json').read_text())
-    if resolution.returncode or resolution_results['numPassedTests'] != 4 or resolution_results['numFailedTests'] or resolution_results['numPendingTests']:
+    if resolution.returncode or resolution_results['numPassedTests'] != 7 or resolution_results['numFailedTests'] or resolution_results['numPendingTests']:
         raise RuntimeError('resolution_draft_transactions_failed_see_private_log')
     combined_results = None
     if args.airflow_fixture:

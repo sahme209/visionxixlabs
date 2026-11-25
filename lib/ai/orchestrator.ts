@@ -1,3 +1,6 @@
+import type { LeadGenerationInvocation } from "./leadGenerationInvocation";
+import type { AITextResponse } from "./AIProvider";
+import { GenerationNotDispatchedError } from "./generationNotDispatched";
 /**
  * AI Orchestrator — task-aware Vercel AI Gateway routing.
  * Direct provider credentials and mock fallbacks are intentionally unsupported.
@@ -83,6 +86,7 @@ export interface GenerateOptions {
   responseFormat?: "text" | "json";
   userId?: string | null;
   userPlan?: UserPlan;
+  leadInvocation?: LeadGenerationInvocation;
 }
 
 export interface GenerateResponse {
@@ -112,37 +116,40 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResponse>
     ? `${baseSystem}\nReturn valid JSON only, with no Markdown fence or commentary.`
     : baseSystem;
   const prompt = opts.userPrompt ?? opts.messages?.filter((m) => m.role === "user").pop()?.content ?? "";
-  const promptPreview = prompt || system ? `${redact(system).slice(0, 100)}...${redact(prompt).slice(0, 80)}` : undefined;
+  const promptPreview = !opts.leadInvocation && (prompt || system) ? `${redact(system).slice(0, 100)}...${redact(prompt).slice(0, 80)}` : undefined;
 
-  const requestId = `ai_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  const requestId = opts.leadInvocation?.requestId ?? `ai_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   const start = Date.now();
-  if (fallbackOrder.length === 0) throw new Error("Vercel AI Gateway is not configured.");
+  if (fallbackOrder.length === 0) throw new GenerationNotDispatchedError("Vercel AI Gateway is not configured.");
+  let result: AITextResponse;
   try {
     const combinedPrompt = opts.messages?.length
       ? opts.messages.filter((message) => message.role !== "system").map((message) => `${message.role.toUpperCase()}: ${message.content}`).join("\n\n")
       : prompt;
-    const result = await withTimeout(
-      getAIProviderManager().generateText(combinedPrompt, {
-        only: "vercel_gateway",
-        system,
-        maxTokens,
-        temperature: opts.temperature,
-        correlationId: requestId,
-      }),
-      TIMEOUT_MS,
-    );
-    const latencyMs = Date.now() - start;
-    await logAIInvocation({ userId: opts.userId, taskType: task, provider, model: result.model, latencyMs, success: true,
-      tokensIn: result.usage?.promptTokens, tokensOut: result.usage?.completionTokens, promptPreview, requestId });
-    return { text: result.text, usage: result.usage ? { inputTokens: result.usage.promptTokens ?? 0, outputTokens: result.usage.completionTokens ?? 0 } : undefined,
-      provider, model: result.model, latencyMs, requestId };
+    const options = {
+      system,
+      maxTokens,
+      temperature: opts.temperature,
+      correlationId: requestId,
+    };
+    const manager = getAIProviderManager();
+    result = opts.leadInvocation
+      ? await manager.generateLeadTextOnce(combinedPrompt, { ...options, timeoutMs: TIMEOUT_MS })
+      : await withTimeout(manager.generateText(combinedPrompt, { ...options, only: "vercel_gateway" }), TIMEOUT_MS);
   } catch (error) {
     const failure = error instanceof Error ? error : new Error(String(error));
     await logAIInvocation({ userId: opts.userId, taskType: task, provider, model, latencyMs: Date.now() - start,
-      success: false, errorMessage: failure.message, promptPreview, requestId });
+      success: false, errorMessage: opts.leadInvocation ? "lead_gateway_attempt_unconfirmed" : failure.message, promptPreview, requestId });
     await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
     throw failure;
   }
+
+  const latencyMs = Date.now() - start;
+  await logAIInvocation({ userId: opts.userId, taskType: task, provider, model: result.model, latencyMs, success: true,
+    tokensIn: result.usage?.promptTokens, tokensOut: result.usage?.completionTokens, promptPreview, requestId });
+  await opts.leadInvocation?.recordGatewayGeneration(result.gatewayGenerationId);
+  return { text: result.text, usage: result.usage ? { inputTokens: result.usage.promptTokens ?? 0, outputTokens: result.usage.completionTokens ?? 0 } : undefined,
+    provider, model: result.model, latencyMs, requestId };
 }
 
 // --- Backward compatibility ---
@@ -156,6 +163,7 @@ export interface OrchestrateGenerateOptions {
   maxTokens?: number;
   temperature?: number;
   responseFormat?: "text" | "json";
+  leadInvocation?: LeadGenerationInvocation;
 }
 
 export interface OrchestrateChatOptions {
@@ -179,6 +187,7 @@ export async function orchestrateGenerate(
     maxTokens: opts.maxTokens,
     temperature: opts.temperature,
     responseFormat: opts.responseFormat,
+    leadInvocation: opts.leadInvocation,
   });
   return { text: res.text, provider: res.provider as AIProvider };
 }

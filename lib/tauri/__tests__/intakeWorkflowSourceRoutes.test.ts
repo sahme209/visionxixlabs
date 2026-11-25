@@ -1,13 +1,16 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-const mocks = vi.hoisted(() => ({ session: vi.fn(), verify: vi.fn(), create: vi.fn(), revise: vi.fn(), parse: vi.fn(), list: vi.fn(), read: vi.fn(), members: vi.fn(), users: vi.fn() }));
-vi.mock("@/lib/db", () => ({ prisma: { tauriPlaybook: { findMany: async () => [] }, orgMembership: { findMany: mocks.members }, user: { findMany: mocks.users } } }));
+const mocks = vi.hoisted(() => ({ session: vi.fn(), verify: vi.fn(), create: vi.fn(), revise: vi.fn(), parse: vi.fn(), list: vi.fn(), read: vi.fn(), members: vi.fn(), users: vi.fn(), playbook: vi.fn(), versions: vi.fn() }));
+vi.mock("@/lib/db", () => ({ prisma: { tauriPlaybook: { findMany: async () => [] }, tauriDeploymentRequestVersion: {findMany: mocks.versions}, orgMembership: { findMany: mocks.members }, user: { findMany: mocks.users } } }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.session }));
 vi.mock("@/lib/tauri/intakeWorkflowSource", () => ({ verifyIntakeWorkflowSource: mocks.verify }));
 vi.mock("@/lib/tauri/deploymentIntakeSchema", () => ({ parseDeploymentIntake: mocks.parse }));
 vi.mock("@/lib/tauri/deploymentRequestRepo", () => ({ createDeploymentRequest: mocks.create, reviseDeploymentRequest: mocks.revise, listDeploymentRequests: mocks.list, getDeploymentRequest: mocks.read }));
+vi.mock("@/lib/tauri/deploymentPlaybookRepo", () => ({persistNextPlaybook: mocks.playbook}));
+import { POST as POST_EXACT_PLAYBOOK } from "@/app/api/desktop/deployments/[id]/playbooks/generate/route";
+import { GET as GET_HISTORY } from "@/app/api/desktop/deployments/[id]/history/route";
 import { GET, POST } from "@/app/api/desktop/deployments/route";
-import { PUT } from "@/app/api/desktop/deployments/[id]/route";
+import { GET as GET_REVISION, PUT } from "@/app/api/desktop/deployments/[id]/route";
 const intake = { workflowSource: { blobSha: "a".repeat(40) }, tenantId: "tenant" };
 beforeEach(() => {
   vi.clearAllMocks(); mocks.session.mockResolvedValue({ organizationId: "tenant", userId: "actor" });
@@ -36,6 +39,144 @@ it.each(["create", "revise"])("allows %s persistence only after successful verif
   const persist = mode === "create" ? mocks.create : mocks.revise;
   expect(persist).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "tenant", intake }));
   expect(mocks.verify.mock.invocationCallOrder[0]).toBeLessThan(persist.mock.invocationCallOrder[0]);
+});
+
+it.each([
+  {version: 2, status: "submitted", closedAt: null, error: "version_conflict"},
+  {version: 1, status: "closed", closedAt: new Date("2026-11-24T00:00:00Z"), error: "closed"},
+])("withholds the revision snapshot for $error on an exact read", async ({version, status, closedAt, error}) => {
+  mocks.read.mockResolvedValueOnce({id: "request", organizationId: "tenant", version, status, closedAt, intakeJson: {title: "Sensitive intake"}});
+  const response = await GET_REVISION(new NextRequest("https://example.test/api/desktop/deployments/request?expectedVersion=1"), {params: Promise.resolve({id: "request"})});
+  expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({ok: false, error});
+});
+
+it.each(["expectedVersion=0", "expectedVersion=1&expectedVersion=1", "expectedVersion=1.5"])("rejects an ambiguous editor version before reading intake (%s)", async query => {
+  const response = await GET_REVISION(new NextRequest("https://example.test/api/desktop/deployments/request?" + query), {params: Promise.resolve({id: "request"})});
+  expect(response.status).toBe(400);
+  expect(mocks.read).not.toHaveBeenCalled();
+});
+
+it.each(["", "?expectedVersion=1"])("returns the editor snapshot for a compatible read (%s)", async query => {
+  const data = {id: "request", version: 1, intake: {title: "Exact intake"}};
+  mocks.read.mockResolvedValueOnce({...data, organizationId: "tenant", status: "submitted", closedAt: null, intakeJson: data.intake});
+  const response = await GET_REVISION(new NextRequest("https://example.test/api/desktop/deployments/request" + query), {params: Promise.resolve({id: "request"})});
+  expect(response.status).toBe(200);
+  expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+  expect(await response.json()).toEqual({ok: true, data});
+});
+
+const playbookAttempt = "b04419d2-017b-450c-8084-f7461afc5680";
+
+it.each(["", "?expectedVersion=2&expectedVersion=2", "?expectedVersion=2.5"])("requires one valid exact version before generating a playbook (%s)", async query => {
+  const result = await POST_EXACT_PLAYBOOK(new NextRequest("https://example.test/api/desktop/deployments/request/playbooks/generate" + query, {method:"POST",headers:{"x-playbook-attempt-id":playbookAttempt}}), {params:Promise.resolve({id:"request"})});
+  expect(result.status).toBe(400);
+  expect(mocks.playbook).not.toHaveBeenCalled();
+});
+
+it("requires the existing trigger scope and passes exact version conflicts to the desktop", async () => {
+  mocks.playbook.mockResolvedValueOnce({ok:false,reason:"version_conflict"});
+  const request = new NextRequest("https://example.test/api/desktop/deployments/request/playbooks/generate?expectedVersion=2", {method:"POST",headers:{"x-playbook-attempt-id":playbookAttempt}});
+  const result = await POST_EXACT_PLAYBOOK(request, {params:Promise.resolve({id:"request"})});
+  expect(result.status).toBe(409);
+  expect(await result.json()).toEqual({ok:false,error:"version_conflict"});
+  expect(mocks.session).toHaveBeenCalledWith(request,expect.objectContaining({requiredScope:"pipeline:trigger"}));
+  expect(mocks.playbook).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({organizationId:"tenant",deploymentRequestId:"request",expectedVersion:2,attemptId:playbookAttempt}));
+});
+
+it.each([undefined, "bad-attempt"])("requires a UUID attempt on the exact playbook route (%s)", async attempt => {
+  const request = new NextRequest("https://example.test/api/desktop/deployments/request/playbooks/generate?expectedVersion=2", {
+    method:"POST", headers:attempt ? {"x-playbook-attempt-id":attempt} : undefined,
+  });
+  const result = await POST_EXACT_PLAYBOOK(request, {params:Promise.resolve({id:"request"})});
+  expect(result.status).toBe(400);
+  expect(mocks.playbook).not.toHaveBeenCalled();
+});
+
+it("projects only safe history through the selected governed revision", async () => {
+  const snapshot = {version:1, createdByUserId:"actor", createdAt:new Date("2026-11-24T00:00:00Z"), intakeJson:{title:"first private value"}};
+  mocks.versions.mockResolvedValueOnce([snapshot,{...snapshot,version:2,intakeJson:{title:"second private value"}}]);
+  const response = await GET_HISTORY(new NextRequest("https://example.test/api/desktop/deployments/request/history?throughVersion=2"),{params:Promise.resolve({id:"request"})});
+  expect(response.status).toBe(200);
+  expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+  expect(mocks.versions).toHaveBeenCalledWith(expect.objectContaining({where:{organizationId:"tenant",deploymentRequestId:"request",version:{lte:2}}}));
+  const body = await response.json();
+  expect(body.data).toMatchObject([{version:2,author:"You",changes:["Request title"]},{version:1}]);
+  expect(JSON.stringify(body)).not.toContain("private value");
+});
+
+it("reports same-count governed revisions without disclosing the changed values", async () => {
+  const first = {
+    applications: ["private application one"],
+    repositoryUrls: ["https://example.test/private-repository-one"],
+    validationSteps: [{instruction: "private validation one", owner: "application_team"}],
+    rollbackAvailability: "yes",
+    rollbackSteps: [{instruction: "private rollback one", owner: "devops"}],
+  };
+  const second = {
+    ...first,
+    applications: ["private application two"],
+    repositoryUrls: ["https://example.test/private-repository-two"],
+    validationSteps: [{instruction: "private validation two", owner: "application_team"}],
+    rollbackSteps: [{instruction: "private rollback two", owner: "devops"}],
+  };
+  const equivalent = {
+    ...second,
+    validationSteps: [{owner: "application_team", instruction: "private validation two"}],
+    facts: [{value: "private unrelated detail"}],
+  };
+  const row = {createdByUserId: "actor", createdAt: new Date("2026-11-24T00:00:00.000Z")};
+  mocks.versions.mockResolvedValueOnce([first, second, equivalent].map((intakeJson, index) => ({
+    ...row, intakeJson, version: index + 1,
+  })));
+  const request = new NextRequest("https://example.test/api/desktop/deployments/request/history?throughVersion=3");
+  const response = await GET_HISTORY(request, {params: Promise.resolve({id: "request"})});
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.data).toMatchObject([
+    {version: 3, changes: ["No changes in the fields summarized here."]},
+    {version: 2, changes: ["Application scope", "Repository scope", "Validation plan", "Rollback posture"]},
+    {version: 1, changes: ["Initial governed request recorded."]},
+  ]);
+  expect(JSON.stringify(body)).not.toContain("private");
+});
+
+it("refuses to present older rows as the requested revision when its snapshot is absent", async () => {
+  mocks.versions.mockResolvedValueOnce([{version:1,createdByUserId:"actor",createdAt:new Date(),intakeJson:{}}]);
+  const response = await GET_HISTORY(new NextRequest("https://example.test/api/desktop/deployments/request/history?throughVersion=2"),{params:Promise.resolve({id:"request"})});
+  expect(response.status).toBe(404);
+  expect(await response.json()).toEqual({ok:false,error:"revision_history_not_found"});
+});
+
+it("reports validation deferral and backup changes only when the preceding snapshot exists", async () => {
+  const getRow = (version: number, intakeJson: unknown) => ({
+    version, intakeJson, createdByUserId: "actor", createdAt: new Date("2026-11-24T00:00:00.000Z"),
+  });
+  const plan = {
+    rollbackAvailability: "yes",
+    backupRequired: true,
+    backupEvidenceIds: ["private-original-backup"],
+    deferredValidation: {reason: "private original reason", trigger: "private follow-up"},
+  };
+  mocks.versions.mockResolvedValueOnce([
+    getRow(1, {applications: ["private application"]}),
+    getRow(3, plan),
+    getRow(4, {
+      ...plan,
+      backupEvidenceIds: ["private-replacement-backup"],
+      deferredValidation: {...plan.deferredValidation, reason: "private new reason"},
+    }),
+  ]);
+  const request = new NextRequest("https://example.test/api/desktop/deployments/request/history?throughVersion=4");
+  const response = await GET_HISTORY(request, {params: Promise.resolve({id: "request"})});
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.data).toMatchObject([
+    {version: 4, changes: ["Validation plan", "Recovery backup"]},
+    {version: 3, changes: ["Previous revision unavailable. Changes cannot be compared."]},
+    {version: 1, changes: ["Initial governed request recorded."]},
+  ]);
+  expect(JSON.stringify(body)).not.toContain("private");
 });
 
 it("summarizes selected batch count without exposing connection or run identities", async () => {

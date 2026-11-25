@@ -4,6 +4,15 @@
   --studio-ticket-selected: #252525;
   --studio-ticket-control: #202020;
   --studio-ticket-selection: #ccc;
+  --studio-ticket-red: #ffa48e;
+  --studio-ticket-red-surface: #3b2723;
+  --studio-ticket-amber: #f8d484;
+  --studio-ticket-amber-surface: #322a1c;
+  --studio-ticket-blue: #73b8ff;
+  --studio-ticket-blue-surface: #17283c;
+  --studio-ticket-event: #3593ff;
+  --studio-ticket-green: #a0d9aa;
+  --studio-ticket-green-surface: #1c3025;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -18,6 +27,15 @@ html[data-theme="light"] .studio-tickets {
   --studio-ticket-selected: rgb(var(--neutral-white) / .08);
   --studio-ticket-control: rgb(var(--axiom-surface));
   --studio-ticket-selection: rgb(var(--neutral-zinc-400));
+  --studio-ticket-red: #872f23;
+  --studio-ticket-red-surface: #fff0ea;
+  --studio-ticket-amber: #654600;
+  --studio-ticket-amber-surface: #fff4d6;
+  --studio-ticket-blue: #0e558d;
+  --studio-ticket-blue-surface: #e8f3ff;
+  --studio-ticket-event: #0869c2;
+  --studio-ticket-green: #255d32;
+  --studio-ticket-green-surface: #edf8ef;
   background: rgb(var(--axiom-bg));
 }
 .studio-tickets-heading, .studio-tickets-controls {
@@ -123,10 +141,27 @@ html[data-theme="light"] .studio-tickets {
 .studio-ticket-chip {
   padding: 2px 7px;
   border: 1px solid var(--studio-ticket-divider);
-  border-radius: 4px;
+  border-radius: 999px;
   color: rgb(var(--neutral-zinc-300));
   background: var(--studio-ticket-selected);
   font-size: 11px;
+}
+.studio-ticket-chip:is([data-ticket-priority="high"], [data-ticket-priority="critical"]) {
+  color: var(--studio-ticket-red);
+  background: var(--studio-ticket-red-surface);
+}
+.studio-ticket-chip[data-ticket-priority="medium"],
+.studio-ticket-chip:is([data-ticket-status="pending"], [data-ticket-status="mitigated"]) {
+  color: var(--studio-ticket-amber);
+  background: var(--studio-ticket-amber-surface);
+}
+.studio-ticket-chip:is([data-ticket-status="open"], [data-ticket-status="in_progress"]) {
+  color: var(--studio-ticket-blue);
+  background: var(--studio-ticket-blue-surface);
+}
+.studio-ticket-chip:is([data-ticket-status="resolved"], [data-ticket-status="implemented"]) {
+  color: var(--studio-ticket-green);
+  background: var(--studio-ticket-green-surface);
 }
 .studio-tickets-workbench article { min-width: 0; padding: 24px 0 24px clamp(16px, 1.7vw, 29px); overflow-wrap: anywhere; }
 .studio-tickets-workbench h2 { margin-top: 10px; font-size: 24px; font-weight: 500; letter-spacing: -.025em; }
@@ -252,14 +287,36 @@ html:not([data-theme="light"]) .studio-ticket-overview .studio-ticket-release-li
 .studio-ticket-timeline-panel { padding-top: 7px; border-top: 1px solid var(--studio-ticket-divider); }
 .studio-ticket-timeline { margin-top: 8px; padding: 0; list-style: none; }
 .studio-ticket-timeline li {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
   gap: 2px 14px;
-  padding: 7px 0;
+  padding-block: 7px;
+  padding-inline-start: 17px;
   color: rgb(var(--neutral-zinc-400));
   font-size: 12px;
+}
+.studio-ticket-timeline li::before,
+.studio-ticket-timeline li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 13px;
+}
+.studio-ticket-timeline li::before {
+  inset-inline-start: 1px;
+  z-index: 1;
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: var(--studio-ticket-event);
+}
+.studio-ticket-timeline li:not(:last-child)::after {
+  inset-inline-start: 4px;
+  inset-block-end: -13px;
+  inline-size: 1px;
+  background: var(--studio-ticket-divider);
 }
 .studio-ticket-timeline time { margin-inline-start: auto; white-space: nowrap; text-align: end; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) {

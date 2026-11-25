@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       title, sourceCode, refactorGoal,
       smellsToAddress: s(f.get("smellsToAddress")) || undefined,
       language: s(f.get("language")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistRefactorPlan(org, plan);
   } catch (err) {
     console.warn("[refactor/run-domain] hard failure:", err instanceof Error ? err.message : err);

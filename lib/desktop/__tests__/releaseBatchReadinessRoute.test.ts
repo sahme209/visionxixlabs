@@ -85,8 +85,10 @@ it("returns saved run identities only on opt-in, without turning an unavailable 
   expect((await GET(new NextRequest(path+"&includeSavedRuns=1&includeSavedRuns=1"),context)).status).toBe(400);
 });
 
-it("rechecks authority before disclosing a changed release and omits fallback declarations", async () => {
-  const changed = {ready: false, reason: "changed"};
+it.each([
+  {ready: false, reason: "changed"},
+  {ready: false, reason: "changed", closedRelease: {requestId: "release", version: 3}},
+])("rechecks authority before disclosing $reason and omits fallback declarations", async changed => {
   io.read.mockResolvedValue(changed);
   const path = "https://example.test/api?expectedVersion=3&includeSavedRuns=1";
   const response = await GET(new NextRequest(path), context);

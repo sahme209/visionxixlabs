@@ -128,8 +128,8 @@ export class AirflowClient {
     })).filter((dag) => dag.dagId);
   }
 
-  async listDagRuns(dagId: string, limit = 50): Promise<AirflowDagRun[]> {
-    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns?limit=${Math.min(100, Math.max(1, limit))}&order_by=-logical_date`);
+  async listDagRuns(dagId: string, limit = 50, signal?: AbortSignal): Promise<AirflowDagRun[]> {
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns?limit=${Math.min(100, Math.max(1, limit))}&order_by=-logical_date`, { signal });
     if (!isRecord(body) || !Array.isArray(body.dag_runs)) throw new Error("airflow_run_response_invalid");
     return body.dag_runs.map((run: unknown) => {
       if (!isRunForDag(run, dagId)) throw new Error("airflow_run_response_invalid");

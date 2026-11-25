@@ -35,9 +35,19 @@ const skillStatusLabels: Record<AgentSkillCatalogItem["status"], string> = {
 };
 
 const recordedTimestamp = z.iso.datetime();
-function recordedTime(value: string | null | undefined) {
+const checkAge = new Intl.RelativeTimeFormat(undefined, {style: "long"});
+
+/** Recorded provider checks read as "2 minutes ago" against the time the status was loaded, as in Design 08. */
+function recordedTime(value: string | null | undefined, observedAt?: number) {
   const timestamp = recordedTimestamp.safeParse(value);
-  return timestamp.success ? <time dateTime={timestamp.data}>{new Date(timestamp.data).toLocaleString()}</time> : null;
+  if (!timestamp.success) return null;
+  const at = new Date(timestamp.data), full = at.toLocaleString();
+  const minutes = observedAt === undefined ? NaN : Math.floor((observedAt - at.getTime()) / 60_000);
+  const relative = minutes >= 0 && minutes < 60 ? (minutes === 0 ? "Just now" : checkAge.format(-minutes, "minute"))
+    : minutes >= 60 && minutes < 24 * 60 ? checkAge.format(-Math.floor(minutes / 60), "hour") : undefined;
+  return <time dateTime={timestamp.data} title={relative ? full : undefined}>
+    {relative ? <><span aria-hidden="true">{relative}</span><span className="sr-only">{full}</span></> : full}
+  </time>;
 }
 
 function isRecordedGitHubInstallation(state: string) {
@@ -49,15 +59,16 @@ const TRUSTED_CONSENT_HOSTS: Record<BrowserProvider, readonly string[]> = {
   github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
 };
 
-interface PluginsSkillsProps { initialFilter?:"all"|"plugins";onReturnToBot?:()=>void;onOpenSettings: () => void; onOpenAirflow: () => void; canManage?: boolean; onUseSkill?: (skillId: string) => void }
+interface PluginsSkillsProps { initialFilter?:"all"|"plugins";onReturnToBot?:()=>void;onOpenSettings: () => void; onOpenAirflow: () => void; canManage?: boolean; workspaceRole?: string; onUseSkill?: (skillId: string) => void }
 export function PluginsSkillsView(props: PluginsSkillsProps) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
   return <PluginsSkillsSession key={revision} {...props} revision={revision} />;
 }
-function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings, onOpenAirflow, onUseSkill, canManage = false, revision }: PluginsSkillsProps & { revision: number }) {
+function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings, onOpenAirflow, onUseSkill, canManage = false, workspaceRole, revision }: PluginsSkillsProps & { revision: number }) {
   const validationRecovery=useSyncExternalStore(desktopClient.subscribeIntegrationValidationRecovery??(()=>()=>{}),desktopClient.integrationValidationRecoverySnapshot??(()=>''),()=> '');
   const [skills, setSkills] = useState<AgentSkillCatalogItem[] | null>(null);
   const [integrations, setIntegrations] = useState<DesktopIntegrationStatus | null>(null);
+  const [statusObservedAt, setStatusObservedAt] = useState<number>();
   const [airflow, setAirflow] = useState<{ status: string; recordedValidation?: string | null }>();
   const [slackManager,setSlackManager]=useState(false);
   const [outlookManager,setOutlookManager]=useState(false);
@@ -109,6 +120,7 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
       const result = await Promise.resolve().then(() => desktopClient.integrationStatus()).catch(() => null);
       if (!current()) return;
       setIntegrations(result?.ok ? result.data : null);
+      setStatusObservedAt(result?.ok ? Date.now() : undefined);
       setIntegrationIssue(result?.ok ? null : "Integration status is unavailable. Existing connections are unchanged; retry to verify them.");
     };
     const loadAirflow = async () => {
@@ -208,7 +220,7 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
   };
   function providerEvidence(id: ProviderId, state: string) {
     if (id === "airflow") return {
-      recordedCheck: airflow?.recordedValidation === undefined ? undefined : recordedTime(airflow.recordedValidation),
+      recordedCheck: airflow?.recordedValidation === undefined ? undefined : recordedTime(airflow.recordedValidation, statusObservedAt),
     };
     if (!integrations) return {};
     if (id === "github") {
@@ -217,15 +229,15 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
       return {
         repositoryAccess: recordedInstallation && repositorySelection === "all" ? "All repositories"
           : recordedInstallation && repositorySelection === "selected" ? "Selected repositories" : undefined,
-        recordedCheck: recordedInstallation && state !== "installation_recorded" ? recordedTime(lastSeenAt) : undefined,
+        recordedCheck: recordedInstallation && state !== "installation_recorded" ? recordedTime(lastSeenAt, statusObservedAt) : undefined,
       };
     }
     if (id === "aws" || id === "azure" || id === "gcp") {
       const row = integrations.cloud.find(item => item.provider === id);
-      return {recordedCheck: state === "read_only_connected" ? recordedTime(row?.lastTransitionAt) : undefined};
+      return {recordedCheck: state === "read_only_connected" ? recordedTime(row?.lastTransitionAt, statusObservedAt) : undefined};
     }
     const row = integrations.collaboration.find(item => item.provider === id);
-    return {recordedCheck: row ? recordedTime(row.lastValidatedAt) : undefined};
+    return {recordedCheck: row ? recordedTime(row.lastValidatedAt, statusObservedAt) : undefined};
   }
 
   const isConfigured = (id: ProviderId) => id === "aws" || id === "azure" || id === "gcp" || id === "airflow"
@@ -249,6 +261,13 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
     && !integrations.collaboration.some(item => item.status === "unavailable")
     ? observedProviderStates.filter(state => state === "validation_overdue").length
     : null;
+  // Active access summary: only recorded facts (viewer role and verified provider states); no inferred provider roles.
+  const activeAccess = connectionCount === null ? null : PROVIDERS.flatMap(provider => {
+    const state = providerState(provider.id);
+    return ["active", "connected", "read_only_connected", "validated_read_only", "validation_overdue"].includes(state)
+      ? [`${provider.name}: ${providerStatusLabel(provider.id, state).toLowerCase()}`] : [];
+  });
+  const roleLabel = workspaceRole ? workspaceRole.replaceAll("_", " ").replace(/^./, c => c.toUpperCase()) : undefined;
   const normalizedQuery = query.trim().toLowerCase();
   const showOutlook=["all","plugins"].includes(filter)&&(!normalizedQuery||"outlook microsoft email mail calendar collaboration".includes(normalizedQuery));
   const visibleSkills = useMemo(() => (skills ?? []).filter((skill) => {
@@ -289,7 +308,7 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
   const inspectedEvidence = inspectedProvider && inspectedProviderState
     ? providerEvidence(inspectedProvider.id, inspectedProviderState) : undefined;
   const hasRecordedSkill = inspectedSkill && !catalogIssue && inspectedSkill.status !== "not_installed";
-  const recordedCheckLabel = inspectedProvider?.id === "github" ? "Recorded installation check" : "Recorded validation";
+  const recordedCheckLabel = inspectedProvider?.id === "github" ? "Last checked" : "Recorded validation";
   const inspectedGitHubInstallation = inspectedProvider?.id === "github" &&
     inspectedProviderState !== undefined && isRecordedGitHubInstallation(inspectedProviderState);
   const canVerifyInspectedGitHub = inspectedGitHubInstallation && canManage &&
@@ -325,6 +344,10 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
           </div>)}
         </dl>
 
+        <p className="studio-catalog-access mt-3 text-xs text-zinc-500" aria-label="Active access">
+          {roleLabel ? <>Role: <span className="text-zinc-300">{roleLabel}</span> · {canManage ? "manages skills and consent" : "inspection only"}</> : "Role unavailable"}
+          {" · "}{activeAccess === null ? "connection access unavailable" : activeAccess.length ? activeAccess.join(" · ") : "no active provider access"}
+        </p>
         {!canManage && <p role="status" className="mt-4 text-xs text-zinc-400">A workspace administrator manages skill installation and provider consent. You can inspect available capabilities.</p>}
         {integrationIssue && <p role="status" className="mt-4 text-xs text-amber-300">{integrationIssue}</p>}
         <div role="group" aria-label="Choose catalogue view" aria-describedby="catalogue-view-help" className="studio-catalog-filters">
@@ -494,6 +517,12 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
               {inspectedSkill.toolNames.length > 0
                 ? <ul className="mt-2 space-y-1 font-mono">{inspectedSkill.toolNames.map(tool => <li key={tool}>{tool}</li>)}</ul>
                 : <p>No tools declared.</p>}
+            </section>}
+            {inspectorTab !== "Activity" && inspectedReadVerified && <section className="studio-catalog-inspector-section" aria-label="Verified capabilities">
+              <h3>Verified capabilities</h3>
+              <ul className="studio-catalog-verified-capabilities">
+                <li><Check aria-hidden="true" size={13}/> List repositories in this installation</li>
+              </ul>
             </section>}
             {inspectorTab !== "Activity" && <section className="studio-catalog-inspector-section" aria-label="Execution boundary">
               <h3><LockKeyhole aria-hidden="true" size={13}/> Execution boundary</h3>

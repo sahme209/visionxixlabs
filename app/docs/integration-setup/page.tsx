@@ -48,7 +48,7 @@ export default function IntegrationSetupPage() {
         </Step>
       </DocSection>
 
-      <DocSection id="gitlab" title="GitLab repository connection and account sign-in" kicker="Limited availability">
+      <DocSection id="gitlab" focusHeading title="GitLab repository connection and account sign-in" kicker="Limited availability">
         <p>Read-only GitLab repository setup is available only where the workspace feature is enabled. If you see <strong>Manage GitLab</strong> in <Link href="/control/integrations">Control → Integrations</Link>, open it as a workspace owner or admin and select a tracked GitLab repository. If the option is absent, setup is unavailable in that workspace.</p>
         <p>Use <strong>Register project credential</strong> to save the exact project ID, expiry date and approved read-only project credential. Pending registration alone does not enable sync. Use <strong>Verify read access</strong> with the separate verifier in the setup form. Keep tokens out of chat and support requests.</p>
         <p>Once the status is <strong>Read access validated</strong>, the bound repository can sync merge requests, releases and existing pipeline evidence. The connection cannot run GitLab CI or modify a repository. If setup is bound to another repository, select that repository to manage the existing binding.</p>

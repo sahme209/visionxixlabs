@@ -62,8 +62,16 @@ it("opens the selected draft's version history from the summary without saving e
  const editor=await screen.findByDisplayValue(saved.instruction);
  fireEvent.change(editor,{target:{value:'Unsent history review'}});
  expect(m.history).not.toHaveBeenCalled();
- fireEvent.click(screen.getByRole('button',{name:'View saved versions'}));
- await screen.findByText('Version 0');
+ const opener=screen.getByRole('button',{name:'View saved versions'});
+ vi.spyOn(opener,'getClientRects').mockReturnValue({length:1} as DOMRectList);
+ fireEvent.click(opener);
+ const history=within(screen.getByRole('region',{name:'Saved draft history'}));
+ const heading=history.getByRole('heading',{name:'Version history'});
+ expect(document.activeElement).toBe(heading);
+ await history.findByText('Version 0');
+ expect(document.activeElement).toBe(heading);
+ fireEvent.keyDown(heading,{key:'Escape'});
+ expect(document.activeElement).toBe(opener);
  expect(m.history).toHaveBeenCalledExactlyOnceWith(id,undefined,expect.any(AbortSignal));
  expect(editor).toHaveProperty('value','Unsent history review');
  expect(m.update).not.toHaveBeenCalled();
@@ -283,7 +291,7 @@ it('summarizes the selected draft without granting shared access or replacing un
   render(createElement(Host));
   fireEvent.click(await screen.findByRole('button', {name: 'Open saved task Saved example'}));
   const instruction = await screen.findByDisplayValue(saved.instruction);
-  const summary = within(screen.getByRole('complementary', {name: 'Task draft summary'}));
+  const summary = within(screen.getByRole('region', {name: 'Task draft summary'}));
 
   expect(summary.getByText('Creator only')).toBeTruthy();
   expect(summary.getByText('All changes saved')).toBeTruthy();

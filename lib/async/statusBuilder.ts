@@ -1,3 +1,4 @@
+import { leadGenerationRecovery } from "./generationRecovery";
 import type { Lead } from "@/lib/prismaClient";
 import {
   canDownloadConfigs,
@@ -50,6 +51,7 @@ export function buildEngineStatusResponse({
     (payload.outputStatus as string) ||
     (engine.outputStatus as string) ||
     "pending";
+  const generationRecovery = leadGenerationRecovery(lead.status, payload);
 
   if (engineType === "operator") {
     const resolvedTier =
@@ -165,6 +167,7 @@ export function buildEngineStatusResponse({
 
     const base: Record<string, unknown> = {
       outputStatus,
+      generationRecovery,
       tier: resolvedTier,
       canViewTechnicalOutputs: canViewTechnicalOutputs(resolvedTier),
       canDownloadConfigs: canDownloadConfigs(resolvedTier),
@@ -251,6 +254,7 @@ export function buildEngineStatusResponse({
 
     const base: Record<string, unknown> = {
       outputStatus,
+      generationRecovery,
       serviceType: payload.serviceType,
       tier: resolvedTier,
       canViewFullOutput: canViewFullOutput(resolvedTier),
@@ -297,6 +301,7 @@ export function buildEngineStatusResponse({
 
   return {
     outputStatus,
+    generationRecovery,
     previewUrl: previewUrl || null,
     deployStatus: deployStatus || null,
     packageReady:

@@ -57,6 +57,20 @@ describe("Ask Axiom answers", () => {
     expect(guard("How does deployment work?")).toBeNull();
   });
 
+  it("routes private closure evidence and closure requests to the signed-in app", () => {
+    expect(ask("Could you close my release now?").guard).toBe("action_request");
+    expect(ask("Please close the production deployment request").guard).toBe("action_request");
+    expect(ask("Can you read my release closure receipt?").guard).toBe("workspace_specific");
+    expect(guard("How do I read recorded closure evidence in Deployments?")).toBeNull();
+    expect(guard("Close the guide")).toBeNull();
+  });
+
+  it("guards private Batches history lookup and keeps general guidance available", () => {
+    expect(ask("Show me my Batches History").guard).toBe("workspace_specific");
+    expect(ask("Can you read our closed release history in Batches?").guard).toBe("workspace_specific");
+    expect(guard("How do I load older closed releases in desktop Batches?")).toBeNull();
+  });
+
   it("normalises synonyms and plurals", () => {
     expect(tokenize("Prices and deploys")).toEqual(["pricing", "deployment"]);
   });
@@ -76,7 +90,7 @@ describe("V19 display name and legacy support compatibility", () => {
     expect(tokenize("V19")).toEqual(tokenize("Axiom Agent"));
   });
   it("retains stable version format, IDs and public-only retrieval eligibility", () => {
-    expect(KNOWLEDGE_VERSION).toBe("ask-axiom-kb-2026-11-24.r1");
+    expect(KNOWLEDGE_VERSION).toBe("ask-axiom-kb-2026-11-24.r6");
     for (const entry of knowledgeEntries()) {
       expect(entry.href).toMatch(/^\/(?:docs(?:\/|#|$)|product#|integrations$|plans$|contact$|security$|trust$)/);
       expect(entry.href).not.toContain("/recovery/");

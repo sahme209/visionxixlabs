@@ -181,7 +181,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runApproverEngineer(organizationId: string, raw: ApproverInput): Promise<ApprovalPacket> {
+export async function runApproverEngineer(organizationId: string, raw: ApproverInput, actorUserId?: string): Promise<ApprovalPacket> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const proposalDescription = raw.proposalDescription.trim().slice(0, MAX_BODY);
   const riskContext = raw.riskContext.trim().slice(0, MAX_BODY);
@@ -219,6 +219,7 @@ export async function runApproverEngineer(organizationId: string, raw: ApproverI
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:approver_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 2500,
     });

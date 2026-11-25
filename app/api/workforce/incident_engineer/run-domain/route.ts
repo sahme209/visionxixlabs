@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let triagedCount = 0;
   try {
-    const report = await runIncidentEngineer(org);
+    const report = await runIncidentEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     triagedCount = report.topIncidents.length;
     await persistIncidentReport(org, report);

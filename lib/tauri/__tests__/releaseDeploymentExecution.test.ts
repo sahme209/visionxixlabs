@@ -125,9 +125,12 @@ it('reads the original session’s dated deployment chain with a locked current 
  await f.store.claim(f.scope, prepared.id);
  await f.store.finish(f.scope, prepared.id, {state:'accepted',receipt:f.receipt});
  const matches = (plan: DeploymentPlan) => sha256ContentHash(plan) === sha256ContentHash(f.plan);
- expect(await f.store.getHistory(f.scope, prepared.id, matches)).toEqual(f.events.map((event, index) => ({
-  type: ['prepared','dispatching','accepted'][index], at: event.occurredAt.toISOString(),
- })));
+ expect(await f.store.getHistory(f.scope, prepared.id, matches)).toEqual({
+  events: f.events.map((event, index) => ({
+   type: ['prepared','dispatching','accepted'][index], at: event.occurredAt.toISOString(),
+  })),
+  receipt: f.receipt,
+ });
  await expect(f.store.getHistory({...f.scope, sessionId:'other'}, prepared.id, matches)).rejects.toThrow();
  f.events[2].occurredAt = new Date(f.rows[0].createdAt.getTime()-1000);
  await expect(f.store.getHistory(f.scope, prepared.id, matches)).rejects.toThrow();

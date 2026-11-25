@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { orchestrateChat } from "@/lib/ai/orchestrator";
 import { getPlanLimits } from "@/lib/planLimits";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 
 export const runtime = "nodejs";
 
@@ -23,6 +24,13 @@ export async function POST(req: NextRequest): Promise<Response> {
       { error: "Too many requests. Please try again in a minute." },
       { status: 429 }
     );
+  }
+  // A legacy bot ID and owner do not bind anonymous usage to a prepaid workspace.
+  if (publicBillingPolicyEnabled()) {
+    return NextResponse.json({
+      error: "Chat is unavailable until this bot has verified prepaid access.",
+      code: "ai.public_admission_unavailable",
+    }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
   try {
     if ((!process.env.AI_GATEWAY_API_KEY?.trim() && !process.env.VERCEL_OIDC_TOKEN?.trim()) || !process.env.AI_GATEWAY_MODEL?.trim()) {

@@ -154,7 +154,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runMigrationEngineer(organizationId: string, raw: MigrationInput): Promise<MigrationRunbook> {
+export async function runMigrationEngineer(organizationId: string, raw: MigrationInput, actorUserId?: string): Promise<MigrationRunbook> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const fromState = raw.fromState.trim().slice(0, MAX_BODY);
   const toState = raw.toState.trim().slice(0, MAX_BODY);
@@ -189,6 +189,7 @@ export async function runMigrationEngineer(organizationId: string, raw: Migratio
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:migration_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 3500,
     });

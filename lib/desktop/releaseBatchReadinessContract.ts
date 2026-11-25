@@ -38,7 +38,8 @@ export function isReleaseBatchDeclarations(value: unknown, requestId: string | u
 
 export type ReleaseBatchReadiness = (
   | { ready: true; requestVersion: number }
-  | { ready: false; reason: "unavailable" | "changed" | "waiting" }
+  | { ready: false; reason: "unavailable" | "waiting" }
+  | { ready: false; reason: "changed"; closedRelease?: z.infer<typeof runBinding> }
 ) & { observations?: z.infer<typeof observationsSchema>; declarations?: ReleaseBatchDeclarations };
 
 export function isReleaseBatchReadiness(value: unknown, expectedVersion: number, requestId?: string): value is ReleaseBatchReadiness {
@@ -47,6 +48,11 @@ export function isReleaseBatchReadiness(value: unknown, expectedVersion: number,
   const validAggregate = result.ready === true ? result.requestVersion === expectedVersion : result.ready === false
     && (result.reason === "unavailable" || result.reason === "changed" || result.reason === "waiting");
   if (!validAggregate) return false;
+  if (result.closedRelease !== undefined) {
+    if (result.ready !== false || result.reason !== "changed" || result.observations !== undefined || result.declarations !== undefined) return false;
+    const closed = runBinding.safeParse(result.closedRelease);
+    return closed.success && closed.data.requestId === requestId && closed.data.version === expectedVersion;
+  }
   if (result.declarations !== undefined) {
     if (result.ready !== false || result.reason !== "unavailable" || result.observations !== undefined) return false;
     return isReleaseBatchDeclarations(result.declarations, requestId, expectedVersion);

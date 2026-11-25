@@ -3,8 +3,9 @@ import {afterAll,beforeAll,beforeEach,describe,expect,it} from "vitest";
 import {realpathSync,statSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {PrismaClient} from "@/lib/prismaClient";
+import {persistNextPlaybook,type PlaybookRepo} from "../deploymentPlaybookRepo";
 import {createReleaseResolutionDraft} from "../releaseResolutionDraft";
-import {reviseDeploymentRequest,type DeploymentRequestRepo} from "../deploymentRequestRepo";
+import {closeDeploymentRequest,reviseDeploymentRequest,type DeploymentRequestRepo} from "../deploymentRequestRepo";
 import type {DeploymentIntake} from "../deploymentOperations";
 const socket=process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 function intake(): DeploymentIntake {
@@ -96,6 +97,136 @@ describe.skipIf(!socket)("ticket resolution drafts on owned PostgreSQL",()=>{
   expect(results.filter(r=>r.ok)).toHaveLength(1);expect(results.filter(r=>!r.ok)).toHaveLength(1);
   const stored=await db.tauriDeploymentRequest.findUniqueOrThrow({where:{id:request.draft.id}});expect(stored).toMatchObject({status:"submitted",version:2,submittedAt:expect.any(Date)});
   const versions=await db.tauriDeploymentRequestVersion.findMany({where:{deploymentRequestId:stored.id},orderBy:{version:"asc"}});expect(versions).toHaveLength(2);expect(versions[1].intakeJson).toMatchObject({workflowSource:complete.workflowSource});expect(stored.intakeJson).toMatchObject({workflowSource:complete.workflowSource});expect(versions[0].intakeJson).toMatchObject({kind:"resolution_draft",requestDetails:"Resolve the owning repository."});
+ });
+ const closeInput = (requestId: string, expectedVersion: number) => ({
+  organizationId: org, requesterUserId: "owned_user", actorRole: "requester", correlationId: "closure",
+  requestId, expectedVersion, closureEvidenceId: "reported-validation",
+  closureSummary: "External validation was reported.", closedAtUtc: "2030-01-02T00:00:00.000Z",
+ });
+ it("refuses closure of a saved resolution draft without changing its snapshot or audit", async () => {
+  const request = input();
+  const repo = db as unknown as DeploymentRequestRepo;
+  await createReleaseResolutionDraft(repo, request);
+  await expect(closeDeploymentRequest(repo, closeInput(request.draft.id, 1)))
+   .resolves.toEqual({ok:false, reason:"request_not_submitted"});
+  const key = {deploymentRequestId: request.draft.id, organizationId: org};
+  expect(await db.tauriDeploymentRequest.findUniqueOrThrow({where:{id:request.draft.id}}))
+   .toMatchObject({status:"draft",version:1,closedAt:null});
+  expect(await db.tauriDeploymentRequestVersion.count({where:key})).toBe(1);
+  expect(await db.tauriAuditEvent.count({where:key})).toBe(1);
+ });
+ it.each(["closure","revision"] as const)("keeps closure and revision mutually exclusive when %s wins", async winner => {
+  const request = input();
+  const repo = db as unknown as DeploymentRequestRepo;
+  await createReleaseResolutionDraft(repo, request);
+  const submitted = {organizationId:org,requesterUserId:"owned_user",actorRole:"requester",correlationId:"complete",
+   requestId:request.draft.id,expectedVersion:1,intake:{...intake(),id:request.draft.id,tenantId:org}};
+  expect(await reviseDeploymentRequest(repo, submitted)).toMatchObject({ok:true,request:{version:2,status:"submitted"}});
+  const revision = {...submitted,correlationId:"concurrent-revision",expectedVersion:2,intake:{...submitted.intake,title:"Revised release"}};
+  const closure = closeInput(request.draft.id, 2);
+  // Pause the losing transaction after it has read the saved row but before
+  // its write predicate runs. The competing transaction commits independently.
+  const interleaved: DeploymentRequestRepo = {
+   tauriDeploymentRequest: repo.tauriDeploymentRequest,
+   tauriDeploymentRequestVersion: repo.tauriDeploymentRequestVersion,
+   tauriPlaybook: repo.tauriPlaybook,
+   tauriAuditEvent: repo.tauriAuditEvent,
+   $transaction: fn => repo.$transaction(tx => fn({
+    tauriDeploymentRequestVersion: tx.tauriDeploymentRequestVersion,
+    tauriPlaybook: tx.tauriPlaybook,
+    tauriAuditEvent: tx.tauriAuditEvent,
+    $transaction: tx.$transaction,
+    tauriDeploymentRequest: {
+     ...tx.tauriDeploymentRequest,
+     async updateMany(args) {
+      const result = winner === "closure" ? await closeDeploymentRequest(repo, closure) : await reviseDeploymentRequest(repo, revision);
+      expect(result.ok).toBe(true);
+      return tx.tauriDeploymentRequest.updateMany(args);
+     },
+    },
+   })),
+  };
+  const loser = winner === "closure"
+   ? await reviseDeploymentRequest(interleaved, revision)
+   : await closeDeploymentRequest(interleaved, closure);
+  expect(loser).toMatchObject({ok:false,reason:"version_conflict"});
+  const row = await db.tauriDeploymentRequest.findUniqueOrThrow({where:{id:request.draft.id}});
+  const key = {deploymentRequestId:row.id,organizationId:org};
+  const snapshots = await db.tauriDeploymentRequestVersion.findMany({where:key,orderBy:{version:"asc"}});
+  const audits = await db.tauriAuditEvent.findMany({where:key});
+  if (winner === "closure") {
+   expect(row).toMatchObject({status:"closed",version:2,title:submitted.intake.title,closedAt:new Date(closure.closedAtUtc)});
+   expect(snapshots.map(snapshot => snapshot.version)).toEqual([1,2]);
+   expect(audits.filter(event => event.action === "deployment_request.closed")).toEqual([expect.objectContaining({
+    evidenceLink:closure.closureEvidenceId,newValueJson:expect.objectContaining({version:2,status:"closed"}),
+   })]);
+   expect(audits.some(event => event.action === "deployment_request.revised")).toBe(false);
+  } else {
+   expect(row).toMatchObject({status:"submitted",version:3,title:revision.intake.title,closedAt:null});
+   expect(snapshots.map(snapshot => snapshot.version)).toEqual([1,2,3]);
+   expect(audits.some(event => event.action === "deployment_request.closed")).toBe(false);
+   expect(audits.filter(event => event.action === "deployment_request.revised")).toHaveLength(1);
+  }
+ });
+ it("waits on the release row and refuses a playbook for the prior version after the revision commits", async () => {
+  const draft = input();
+  const repo = db as unknown as DeploymentRequestRepo;
+  await createReleaseResolutionDraft(repo, draft);
+  const saved = {id:draft.draft.id,tenantId:org};
+  const revision = {organizationId:org,requesterUserId:"owned_user",actorRole:"requester",correlationId:"submit",
+   requestId:saved.id,expectedVersion:1,intake:{...intake(),...saved}};
+  expect(await reviseDeploymentRequest(repo, revision)).toMatchObject({ok:true,request:{version:2,status:"submitted"}});
+
+  let signalRowLocked!: () => void;
+  const rowLocked = new Promise<void>(resolve => {signalRowLocked = resolve;});
+  let allowCommit!: () => void;
+  const commit = new Promise<void>(resolve => {allowCommit = resolve;});
+  const advancing: DeploymentRequestRepo = {...repo, $transaction: fn => repo.$transaction(tx => fn({
+   tauriDeploymentRequestVersion: tx.tauriDeploymentRequestVersion,
+   tauriPlaybook: tx.tauriPlaybook,
+   tauriAuditEvent: tx.tauriAuditEvent,
+   $transaction: tx.$transaction,
+   tauriDeploymentRequest: {...tx.tauriDeploymentRequest, async updateMany(args) {
+    const result = await tx.tauriDeploymentRequest.updateMany(args);
+    signalRowLocked();
+    await commit;
+    return result;
+   }},
+  }))};
+  const advance = reviseDeploymentRequest(advancing, {...revision, expectedVersion:2,correlationId:"advance",
+   intake:{...revision.intake,title:"New exact release"}});
+  await rowLocked;
+  const playbooks = db as unknown as PlaybookRepo;
+  const generate = {organizationId:org,deploymentRequestId:saved.id,expectedVersion:2,actorUserId:"owned_user",
+   actorRole:"requester",correlationId:"playbook",generatedAtUtc:"2026-11-24T00:00:00.000Z"};
+  const pending = persistNextPlaybook(playbooks, generate);
+  let waiting = false;
+  try {
+   for (let attempt=0; attempt<80 && !waiting; attempt++) {
+    const [activity] = await db.$queryRaw<Array<{waiting:boolean}>>`
+     SELECT EXISTS (SELECT FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'
+      AND query LIKE '%FROM "TauriDeploymentRequest"%' AND query LIKE '%FOR UPDATE%') AS waiting`;
+    waiting = activity.waiting;
+    if (!waiting) await new Promise(resolve=>setTimeout(resolve,15));
+   }
+  } finally {allowCommit();}
+  expect(await advance).toMatchObject({ok:true,request:{version:3}});
+  expect(await pending).toEqual({ok:false,reason:"version_conflict"});
+  expect(waiting).toBe(true);
+  const where = {deploymentRequestId:saved.id,organizationId:org};
+  expect(await db.tauriPlaybook.count({where})).toBe(0);
+  expect(await db.tauriAuditEvent.count({where:{...where,action:"deployment_playbook.generated"}})).toBe(0);
+  const exactAttempt = {...generate,expectedVersion:3,attemptId:randomUUID()};
+  const [exact, replay] = await Promise.all([
+   persistNextPlaybook(playbooks, exactAttempt),
+   persistNextPlaybook(playbooks, exactAttempt),
+  ]);
+  expect(exact).toMatchObject({ok:true,requestVersion:3,row:{version:1}});
+  expect(replay).toEqual(exact);
+  expect(await db.tauriPlaybook.count({where})).toBe(1);
+  expect(await db.tauriAuditEvent.count({where:{...where,action:"deployment_playbook.generated"}})).toBe(1);
+  expect(await db.tauriAuditEvent.findFirst({where:{...where,action:"deployment_playbook.generated"}}))
+   .toMatchObject({newValueJson:{requestVersion:3,version:1,attemptId:exactAttempt.attemptId}});
  });
  it("refuses another workspace before any storage mutation",async()=>{
   expect(await createReleaseResolutionDraft(db as unknown as DeploymentRequestRepo,{...input(),organizationId:"another_org"})).toMatchObject({ok:false,reason:"tenant_mismatch"});expect(await db.tauriDeploymentRequest.count({where:{organizationId:org}})).toBe(0);

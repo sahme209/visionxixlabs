@@ -27,6 +27,7 @@ const columns = [
     links: [
       ["API keys", "/docs/api-keys"],
       ["MCP tools", "/docs/mcp-tools"],
+      ["GitLab setup guide", "/docs/integration-setup#gitlab"],
     ],
   },
   {
@@ -73,7 +74,11 @@ export function Footer({showCta = true}: {showCta?: boolean} = {}) {
                 <h2 className="mb-1 text-sm font-medium text-zinc-200">{column.title}</h2>
                 <ul>
                   {column.links.map(([label, href]) => (
-                    <li key={href}><Link href={href} prefetch={false} className={footerLink}>{label}</Link></li>
+                    <li key={href}>
+                      {/* A native fragment link lets the browser focus the destination heading. */}
+                      {href.includes("#") ? <a href={href} className={footerLink}>{label}</a>
+                        : <Link href={href} prefetch={false} className={footerLink}>{label}</Link>}
+                    </li>
                   ))}
                 </ul>
                 {column.title === "Company" && <p className="mt-2 max-w-[19ch] text-xs leading-relaxed text-zinc-400">We also build iOS applications.</p>}

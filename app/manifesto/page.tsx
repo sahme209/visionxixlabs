@@ -90,7 +90,7 @@ export default function ManifestoPage() {
               <p className="mono-label mb-6 inline-flex items-center gap-3">
                 <span className="text-zinc-400 tabular-nums text-[11px]">{tenet.num}</span>
                 <span className="h-px w-6 bg-white/10" />
-                <span className="text-zinc-500">of 07</span>
+                <span className="text-zinc-400">of 07</span>
               </p>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-white leading-[1.04] tracking-[-0.035em] mb-6">
                 {tenet.short}
@@ -108,7 +108,7 @@ export default function ManifestoPage() {
           <p className="font-display text-2xl md:text-3xl font-medium text-white leading-tight mb-2 tracking-tight">
             Designed and built<br className="sm:hidden" /> in New York.
           </p>
-          <p className="text-[13px] text-zinc-500 max-w-md mx-auto mb-10">
+          <p className="text-[13px] text-zinc-400 max-w-md mx-auto mb-10">
             By a small team that thinks production AI deserves the same rigor
             as production software.
           </p>
@@ -122,7 +122,7 @@ export default function ManifestoPage() {
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] sm:gap-6 font-mono uppercase tracking-[0.22em] text-zinc-500">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] sm:gap-6 font-mono uppercase tracking-[0.22em] text-zinc-400">
             <Link href="/docs/desktop-install#updates" className="hover:text-white transition-colors">Desktop updates</Link>
             <span aria-hidden="true" className="hidden text-zinc-700 sm:inline">·</span>
             <Link href="/trust" className="hover:text-white transition-colors">Trust</Link>

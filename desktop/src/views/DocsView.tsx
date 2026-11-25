@@ -242,15 +242,15 @@ export function DocsView({ onNavigate, onAskAboutPage, active = true }: {
             <input type="text" readOnly value={section.source} onFocus={event => event.target.select()} aria-label="Guide link" />
           </div>}
         </div>
-        <div id="release-governance-overview" tabIndex={-1}>
+        <section id="release-governance-overview" aria-labelledby="release-governance-title" tabIndex={-1}>
           <h2 id="release-governance-title">Release governance</h2>
           <p className="studio-docs-edition">Included with {DESKTOP_PRODUCT_NAME} Desktop {DESKTOP_VERSION}</p>
           <p className="studio-docs-intro">Move from repository scope to a reviewed deployment with validation evidence and a recovery plan.</p>
-          <aside className="studio-docs-callout">
+          <div role="note" className="studio-docs-callout">
             <h3><ShieldCheck size={16} aria-hidden />Check the installed version and stated availability</h3>
             <p>{GOVERNED_JOURNEY_AVAILABILITY}</p>
-          </aside>
-        </div>
+          </div>
+        </section>
         <section id="release-lifecycle" tabIndex={-1} aria-labelledby="release-lifecycle-title" className="studio-docs-section">
           <h3 id="release-lifecycle-title">Release lifecycle</h3>
           <ol className="studio-docs-lifecycle">
@@ -264,18 +264,21 @@ export function DocsView({ onNavigate, onAskAboutPage, active = true }: {
         <section id="prepare-release" tabIndex={-1} aria-labelledby="prepare-release-title" className="studio-docs-section">
           <h3 id="prepare-release-title">Prepare a governed release</h3>
           <ol className="studio-docs-steps">
-            {GOVERNED_JOURNEY.map((stage, index) => <li key={stage.id} id={governedJourneyStageAnchor(stage)} tabIndex={-1}>
-              <span aria-hidden="true" className="studio-docs-step-number">{index + 1}</span>
-              <div className="studio-docs-step-content">
-                <h4>{stage.title}</h4>
-                <p>{readerSteps[stage.id]}</p>
-                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={event => {
-                  selectSection(journeySection(stage));
-                  returnFocus.current = event.currentTarget;
-                  onNavigate(stage.destination);
-                }}>{stage.cta}<ChevronRight size={14} aria-hidden /></button>
-              </div>
-            </li>)}
+            {GOVERNED_JOURNEY.map((stage, index) => {
+              const step = journeySection(stage);
+              return <li key={stage.id} id={step.id} aria-labelledby={`${step.id}-title`} tabIndex={-1}>
+                <span aria-hidden="true" className="studio-docs-step-number">{index + 1}</span>
+                <div className="studio-docs-step-content">
+                  <h4 id={`${step.id}-title`}>{step.title}</h4>
+                  <p>{readerSteps[stage.id]}</p>
+                  <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={event => {
+                    selectSection(step);
+                    returnFocus.current = event.currentTarget;
+                    onNavigate(stage.destination);
+                  }}>{stage.cta}<ChevronRight size={14} aria-hidden /></button>
+                </div>
+              </li>;
+            })}
           </ol>
         </section>
         <section id="example-plan-metadata" tabIndex={-1} aria-labelledby="example-plan-metadata-title" className="studio-docs-section">
@@ -296,7 +299,7 @@ export function DocsView({ onNavigate, onAskAboutPage, active = true }: {
               </pre>}
         </section>
       </article>
-      <aside className="studio-docs-outline">
+      <div className="studio-docs-outline">
         <section className="studio-docs-source">
           <h2>Page details</h2>
           <dl className="studio-docs-source-facts">
@@ -316,7 +319,7 @@ export function DocsView({ onNavigate, onAskAboutPage, active = true }: {
             <ChevronRight size={14} aria-hidden />
           </ExternalLink>)}
         </section>
-      </aside>
+      </div>
     </div>
   </ViewShell>;
 }

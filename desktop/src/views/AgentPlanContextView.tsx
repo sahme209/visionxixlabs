@@ -81,7 +81,14 @@ export function AgentPlanContextView({release, workspaceId, ownerConfig, revisio
   }}>
     <div className="studio-agent-plan-main">
       <header>
-        <div><h2 ref={heading} tabIndex={-1}>Saved release plans</h2><p>Release version {release.version} · Read-only context</p></div>
+        <div className="studio-agent-plan-title">
+          {row && <div className="studio-agent-plan-record-meta">
+            <p>Release version {row.requestVersion} · Plan version {row.version}{row.requestVersion !== release.version ? " · Earlier release version" : ""}</p>
+            <span className="studio-agent-plan-state">{planState(row)}</span>
+          </div>}
+          <h2 ref={heading} tabIndex={-1}>{pr ? `Merge pull request #${pr.number}` : "Saved release plans"}</h2>
+          {!row && <p>Release version {release.version} · Read-only context</p>}
+        </div>
         <button type="button" className="btn-secondary" onClick={onClose}>Close plan context</button>
       </header>
       {list === undefined && <p role="status">Loading saved plans…</p>}
@@ -91,12 +98,7 @@ export function AgentPlanContextView({release, workspaceId, ownerConfig, revisio
       {list?.plans.length === 0 && <p role="status">No saved plans were returned for this release.</p>}
       {list && selected && !row && <p role="status">The selected plan version is no longer available. Choose a current plan if one is listed.</p>}
       {row && pr && <section className="studio-agent-plan-record" aria-label="Selected operation plan">
-        <div className="studio-agent-plan-record-meta">
-          <p>Release version {row.requestVersion} · Plan version {row.version}{row.requestVersion !== release.version ? " · Earlier release version" : ""}</p>
-          <span className="studio-agent-plan-state">{planState(row)}</span>
-        </div>
-        <h3>Merge pull request #{pr.number}</h3>
-        <h4 className="studio-agent-plan-facts-heading"><span>Plan details</span></h4>
+        <h3 className="studio-agent-plan-facts-heading"><span>Plan details</span></h3>
         <dl>
           <div><dt>Repository</dt><dd>{pr.repositoryFullName}</dd></div>
           <div><dt>Merge method</dt><dd>{row.plan.method}</dd></div>
@@ -104,15 +106,15 @@ export function AgentPlanContextView({release, workspaceId, ownerConfig, revisio
         <ol className="studio-agent-plan-steps" aria-label="Saved merge plan details">
           <li>
             <span aria-hidden="true">1</span>
-            <div><h5>Recorded source head</h5><p>{pr.headRef} · <code>{pr.headSha}</code></p></div>
+            <div><h4>Recorded source head</h4><p>{pr.headRef} · <code>{pr.headSha}</code></p></div>
           </li>
           <li>
             <span aria-hidden="true">2</span>
-            <div><h5>Observed target base</h5><p>{pr.baseRef} · <code>{pr.baseSha}</code></p></div>
+            <div><h4>Observed target base</h4><p>{pr.baseRef} · <code>{pr.baseSha}</code></p></div>
           </li>
           <li>
             <span aria-hidden="true">3</span>
-            <div><h5>Recorded window</h5><p>
+            <div><h4>Recorded window</h4><p>
               <time dateTime={row.plan.window.startUtc}>{new Date(row.plan.window.startUtc).toLocaleString()}</time>
               {" – "}
               <time dateTime={row.plan.window.endUtc}>{new Date(row.plan.window.endUtc).toLocaleString()}</time>

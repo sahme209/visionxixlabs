@@ -7,13 +7,14 @@
  * before pinning. This is a DRAFT generator only — Axiom never applies
  * a workflow on its own. (Approval-only-no-execution.)
  *
- * Pure orchestration around extractStructuredData. Never throws.
+ * Uses a single funded model call. Returns a typed outcome on failure.
  */
 
 import "server-only";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
-import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 
 const ALLOWED_TRIGGER_KINDS = [
   "telemetry_signal", "cloud_inventory_change", "schedule", "manual",
@@ -64,7 +65,10 @@ const isValidTrigger = (t: unknown): t is { kind: string; selector: string } =>
   && typeof (t as { kind?: unknown }).kind === "string"
   && typeof (t as { selector?: unknown }).selector === "string";
 
-export async function translateWorkflowIntent(intent: string, organizationId: string): Promise<TranslateResult> {
+export async function translateWorkflowIntent(
+  intent: string,
+  actor: { organizationId: string; userId: string; correlationId: string; idempotencyKey: string },
+): Promise<TranslateResult> {
   const fallback: TranslateResult = {
     draft: null, aiUsed: false, provider: null, model: null, latencyMs: 0,
     rejectionReason: "ai_unavailable_or_mock",
@@ -74,51 +78,31 @@ export async function translateWorkflowIntent(intent: string, organizationId: st
   }
   try {
     const mgr = getAIProviderManager();
-    // This workflow-drafting call previously went straight to the AI
-    // manager with no workspace scoping at all — not even an
-    // organizationId. A workspace could have a provider explicitly
-    // disallowed in its own AI settings and this call would still use
-    // whatever the service has configured, unmetered and unaudited.
-    // Load and enforce the workspace's policy the same way
-    // /api/ai/generate and lib/insights/tenantInsightsSynthesizer do;
-    // fail closed (same as "only mock available") when the policy
-    // can't be resolved, is disabled, has no allowed providers, or the
-    // workspace's AI budget is exhausted.
-    const serviceEnabled = mgr.status()
-      .filter((provider) => provider.configured && provider.provider !== "mock")
-      .map((provider) => provider.provider);
-    const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(organizationId).catch(() => null);
-    if (!loadedPolicy || loadedPolicy.storageState !== "ready") {
-      return { ...fallback, rejectionReason: "workspace_ai_policy_unavailable" };
+    const { organizationId, userId, correlationId, idempotencyKey } = actor;
+    const gateway = mgr.status().find(provider => provider.configured && provider.provider === "vercel_gateway");
+    const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(organizationId);
+    if (loadedPolicy.storageState !== "ready") return { ...fallback, rejectionReason: "workspace_ai_policy_unavailable" };
+    if (!gateway) return fallback;
+    const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled: ["vercel_gateway"] });
+    const defaultModel = gateway.defaultModel;
+    const model = effectiveGatewayModel({ defaultModel, modelSelection: policy.modelSelections.vercel_gateway });
+    if (!policy.enabled || !policy.allowedProviders.includes("vercel_gateway") || !gatewayModelOutputBoundVerified(model)) return fallback;
+    const system = `${SYSTEM} Schema: ${SCHEMA_HINT}`;
+    const admitted = await admitAIText({
+      organizationId, userId, correlationId, idempotencyKey, source: "workflow_translator",
+      textPolicy: { provider: "vercel_gateway", model, defaultModel },
+    }, { prompt: intent, system });
+    if (!admitted.ok) return { ...fallback, rejectionReason: admitted.error };
+    const r = await mgr.generateTextWithAdmission(intent, {
+      system, temperature: 0, maxTokens: 2048, timeoutMs: 15_000,
+      organizationId, correlationId, only: "vercel_gateway", model,
+    }, admitted.admission);
+    let data: Partial<WorkflowDraft> | null;
+    try {
+      data = JSON.parse(r.text);
+    } catch {
+      return { ...fallback, provider: r.provider, model: r.model, latencyMs: r.latencyMs, rejectionReason: "model_returned_invalid_json" };
     }
-    const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
-    if (!policy.enabled || policy.allowedProviders.length === 0) {
-      return { ...fallback, rejectionReason: "ai_unavailable_or_mock" };
-    }
-    const creditDecision = await checkWorkspaceAICredits(
-      organizationId,
-      0,
-      { failClosedOnUsageReadError: true },
-    ).catch(() => null);
-    if (!creditDecision || creditDecision.kind === "block") {
-      return { ...fallback, rejectionReason: "workspace_ai_credit_unavailable" };
-    }
-    const r = await mgr.extractStructuredData<unknown>(
-      intent,
-      SCHEMA_HINT,
-      {
-        system: SYSTEM,
-        temperature: 0,
-        maxTokens: 4096,
-        timeoutMs: 15_000,
-        organizationId,
-        allowedProviders: policy.allowedProviders,
-        modelSelections: policy.modelSelections,
-        fallbackOrder: policy.fallbackOrder,
-      },
-    );
-    if (r.provider === "mock") return { ...fallback, latencyMs: r.latencyMs };
-    const data = r.data as Partial<WorkflowDraft> | null;
     if (!data || typeof data !== "object") {
       return { ...fallback, provider: r.provider, model: r.model, latencyMs: r.latencyMs, rejectionReason: "model_returned_non_object" };
     }

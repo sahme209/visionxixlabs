@@ -33,3 +33,40 @@ it('retains execution-approval recovery on a stale previously reviewed plan',asy
 it('shows exact merge action/target/head/method with truthful observed-base limitation and no provider execute control',async()=>{m.list.mockResolvedValue({ok:true,data:{enabled:true,canManage:true,plans:[row],truncated:false}});render(createElement(ReleaseOperationPlans,{requestId:'release',version:3}));fireEvent.click(screen.getByRole('button',{name:'Load saved plans'}));await screen.findByText('Merge pull request #42');expect(screen.getByText('team/service')).toBeTruthy();expect(screen.getByText('release/demo → main')).toBeTruthy();expect(screen.getByText('Squash')).toBeTruthy();expect(screen.getByText('Source head to enforce')).toBeTruthy();expect(screen.getByText(plan.pullRequest.headSha)).toBeTruthy();expect(screen.getByText('Observed target base')).toBeTruthy();expect(screen.getByText(plan.pullRequest.baseSha)).toBeTruthy();expect(screen.getByText(/base is recorded evidence, not an atomic merge condition/)).toBeTruthy();expect(screen.getByText(/Saving or reviewing a plan does not authorize execution/)).toBeTruthy();expect(screen.getByText('Plan history')).toBeTruthy();expect(screen.queryByRole('button',{name:/execute|merge now|run merge/i})).toBeNull();expect(m.preview).not.toHaveBeenCalled();expect(m.review).not.toHaveBeenCalled()});
 it('uses the same exact read-only merge summary for a fresh preview without offering provider execution',async()=>{render(createElement(ReleaseOperationPlans,{requestId:'release',version:3}));await read();expect(screen.getByText('Merge pull request #42')).toBeTruthy();expect(screen.getByText('Source head to enforce')).toBeTruthy();expect(screen.getByText('Observed target base')).toBeTruthy();expect(screen.getByRole('button',{name:'Save exact plan'})).toBeTruthy();expect(screen.queryByRole('button',{name:/execute|merge now/i})).toBeNull()});
 it('keeps provider-purpose approval below separate simulation approval without fetching or executing either on mount',async()=>{m.list.mockResolvedValue({ok:true,data:{enabled:true,canManage:true,plans:[{...row,version:1,status:'reviewed',canReview:false}],truncated:false}});render(createElement(ReleaseOperationPlans,{requestId:'release',version:3}));fireEvent.click(screen.getByRole('button',{name:'Load saved plans'}));const simulation=await screen.findByRole('region',{name:'Independent execution approval'}),provider=screen.getByRole('region',{name:'Provider merge approval'});expect(simulation.compareDocumentPosition(provider)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(screen.getByText(/Simulation approval cannot authorize it/)).toBeTruthy();expect(screen.getByRole('button',{name:'Reload execution approval'})).toBeTruthy();expect(screen.getByRole('button',{name:'Reload provider merge approval'})).toBeTruthy();expect(screen.queryByRole('button',{name:/^execute/i})).toBeNull();expect(screen.getByText('Plan history')).toBeTruthy()});
+it('invalidates review previews at the same release version while retaining saved history',async()=>{
+ m.list.mockResolvedValue({ok:true,data:{enabled:true,canManage:true,plans:[row],truncated:false}});
+ const view=render(createElement(ReleaseOperationPlans,{requestId:'release',version:3,refreshEpoch:1}));
+ fireEvent.click(screen.getByRole('button',{name:'Load saved plans'}));
+ fireEvent.click(await screen.findByRole('button',{name:'Read fresh review preview'}));
+ const review=screen.getByRole('button',{name:'Record independent review'});
+ await waitFor(()=>expect(review).toHaveProperty('disabled',false));
+
+ view.rerender(createElement(ReleaseOperationPlans,{requestId:'release',version:3,refreshEpoch:2}));
+ expect(review).toHaveProperty('disabled',true);
+ expect(screen.getByText('Plan history')).toBeTruthy();
+ expect(m.list).toHaveBeenCalledTimes(1);
+
+ let resolve!:(v:unknown)=>void;
+ m.preview.mockReturnValueOnce(new Promise(r=>{resolve=r}));
+ fireEvent.click(screen.getByRole('button',{name:'Read fresh review preview'}));
+ view.rerender(createElement(ReleaseOperationPlans,{requestId:'release',version:3,refreshEpoch:3}));
+ expect(m.preview.mock.calls[1][4].aborted).toBe(true);
+ await act(async()=>resolve({ok:true,data:preview}));
+ expect(review).toHaveProperty('disabled',true);
+ expect(m.review).not.toHaveBeenCalled();
+});
+
+it('keeps the exact saved-plan mutation in flight during a release refresh',async()=>{
+ m.list.mockResolvedValue({ok:true,data:{enabled:true,canManage:true,plans:[row],truncated:false}});
+ let resolve!:(v:unknown)=>void;
+ m.cancel.mockReturnValueOnce(new Promise(r=>{resolve=r}));
+ const view=render(createElement(ReleaseOperationPlans,{requestId:'release',version:3,refreshEpoch:1}));
+ fireEvent.click(screen.getByRole('button',{name:'Load saved plans'}));
+ fireEvent.click(await screen.findByRole('button',{name:'Cancel saved plan'}));
+
+ view.rerender(createElement(ReleaseOperationPlans,{requestId:'release',version:3,refreshEpoch:2}));
+ expect(m.cancel.mock.calls[0][4].aborted).toBe(false);
+ await act(async()=>resolve({ok:true,data:{enabled:true,plan:{...row,version:1,status:'cancelled',canReview:false,canCancel:false}}}));
+ expect(screen.getByText('Cancelled')).toBeTruthy();
+ expect(m.cancel).toHaveBeenCalledTimes(1);
+});

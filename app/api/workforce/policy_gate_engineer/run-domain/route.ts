@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       proposedAction,
       tenantCharter,
       policyOverrides: s(f.get("policyOverrides")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistPolicyClassification(org, classification);
   } catch (err) {
     console.warn("[policy_gate/run-domain] hard failure:", err instanceof Error ? err.message : err);

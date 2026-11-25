@@ -1,7 +1,7 @@
 "use client";
 
 import { websiteDeploymentAwaitingProvider } from "@/lib/deploy/websiteDeploymentState";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   DocumentTextIcon,
   CloudArrowUpIcon,
@@ -24,11 +24,27 @@ type Lead = {
   fullPayload: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
+  generationRevision: string;
   agentStatus?: string;
   actionsTaken?: string[];
   lastEmailSent?: { subject: string; sentAt: string } | null;
   executionLogIds?: string[];
 };
+
+type GenerationAttempt = { requestId: string; revision: string };
+
+function storedGenerationAttempt(key: string): GenerationAttempt | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const value = JSON.parse(raw) as Partial<GenerationAttempt> | null;
+    return typeof value?.requestId === "string" && typeof value.revision === "string"
+      ? { requestId: value.requestId, revision: value.revision }
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -39,6 +55,7 @@ export default function AdminLeadsPage() {
   const [sourceFilter, setSourceFilter] = useState<"website-request" | "contact" | "all">("website-request");
   const [runningAgent, setRunningAgent] = useState(false);
   const [refreshing, setRefreshing] = useState<Record<string, boolean>>({});
+  const generationAttempts = useRef(new Map<string, GenerationAttempt>());
   const [deploymentErrors, setDeploymentErrors] = useState<Record<string, string>>({});
 
   const loadLeads = () =>
@@ -51,7 +68,9 @@ export default function AdminLeadsPage() {
     loadLeads();
   }, [sourceFilter]);
 
-  const runAction = async (leadId: string, action: "generate" | "deploy" | "publish") => {
+  const runAction = async (lead: Lead, action: "generate" | "deploy" | "publish") => {
+    const leadId = lead.id;
+    const storageKey = `v19:lead-generation:${leadId}`;
     setActioning(leadId);
     try {
       const endpoint =
@@ -60,15 +79,36 @@ export default function AdminLeadsPage() {
           : action === "deploy"
           ? `/api/leads/${leadId}/deploy-preview`
           : `/api/leads/${leadId}/publish`;
-      const res = await fetch(endpoint, { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        await loadLeads();
-      } else {
-        alert(data.error || "Action failed");
+      let attempt: GenerationAttempt | undefined;
+      if (action === "generate") {
+        attempt = generationAttempts.current.get(leadId) ?? storedGenerationAttempt(storageKey) ?? {
+          requestId: crypto.randomUUID(),
+          revision: lead.generationRevision,
+        };
+        generationAttempts.current.set(leadId, attempt);
+        try { sessionStorage.setItem(storageKey, JSON.stringify(attempt)); } catch { /* in-memory retry remains available */ }
       }
-    } catch (e) {
-      alert("Action failed");
+      const res = await fetch(endpoint, {
+        method: "POST",
+        ...(attempt ? { headers: { "idempotency-key": attempt.requestId, "x-v19-lead-revision": attempt.revision } } : {}),
+      });
+      const data = await res.json();
+      const confirmed = attempt && data.requestId === attempt.requestId;
+      const stale = res.status === 409 && confirmed && data.code === "lead_revision_changed";
+      if (attempt && ((res.ok && confirmed && data.success === true) || stale)) {
+        generationAttempts.current.delete(leadId);
+        try { sessionStorage.removeItem(storageKey); } catch { /* storage unavailable */ }
+      }
+      if (res.ok && (!attempt || (confirmed && data.success === true))) {
+        await loadLeads();
+      } else if (stale) {
+        await loadLeads();
+        alert(data.error);
+      } else {
+        alert(data.error || (attempt ? "Generation could not be confirmed. Use Regenerate package to check the same request." : "Action failed"));
+      }
+    } catch {
+      alert(action === "generate" ? "Generation could not be confirmed. Use Regenerate package to check the same request." : "Action failed");
     } finally {
       setActioning(null);
     }
@@ -259,7 +299,7 @@ export default function AdminLeadsPage() {
                         </button>
                       )}
                       <button
-                        onClick={() => runAction(lead.id, "generate")}
+                        onClick={() => runAction(lead, "generate")}
                         disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/6 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/10 disabled:opacity-50 transition-colors"
                       >
@@ -267,7 +307,7 @@ export default function AdminLeadsPage() {
                         Regenerate package
                       </button>
                       <button
-                        onClick={() => runAction(lead.id, "deploy")}
+                        onClick={() => runAction(lead, "deploy")}
                         disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
                       >
@@ -275,7 +315,7 @@ export default function AdminLeadsPage() {
                         Regenerate preview
                       </button>
                       <button
-                        onClick={() => runAction(lead.id, "publish")}
+                        onClick={() => runAction(lead, "publish")}
                         disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
                       >

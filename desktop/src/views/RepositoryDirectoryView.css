@@ -139,6 +139,12 @@ html[data-theme="light"] .studio-repository-directory {
 .studio-repository-workflow small, .studio-repository-name small { display: block; margin-top: 4px; color: rgb(var(--neutral-zinc-400)); font-size: 11px; }
 .studio-repository-workflow small { display: flex; align-items: flex-start; gap: 5px; }
 .studio-repository-workflow small svg { flex: none; margin-top: 2px; }
+.studio-repository-workflow-outcome { display: flex; align-items: baseline; gap: 5px; }
+.studio-repository-workflow-outcome svg { flex: none; align-self: center; }
+.studio-repository-workflow-outcome[data-outcome="passed"] { color: #9db7a6; }
+.studio-repository-workflow-outcome[data-outcome="failed"] { color: #d2a09b; }
+html[data-theme="light"] .studio-repository-workflow-outcome[data-outcome="passed"] { color: #166044; }
+html[data-theme="light"] .studio-repository-workflow-outcome[data-outcome="failed"] { color: #94372f; }
 .studio-repository-page-row {
   display: flex;
   flex-wrap: wrap;

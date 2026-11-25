@@ -36,6 +36,28 @@ it("never presents a mismatched ready version as completed", async () => {
   fireEvent.click(screen.getByText("Check batches")); await screen.findByText("Batch completion could not be verified.");
 });
 
+it("keeps focus and retires reads after receiving closure of the exact selected version", async () => {
+  const binding = {requestId:"release", version:3};
+  io.declarations.mockResolvedValue({ok:true,data:{...binding,runs:[{dagId:"daily",dagRunId:"selected"}]}});
+  io.read.mockResolvedValueOnce({ok:true,data:{ready:false,reason:"changed",closedRelease:{...binding,version:4}}})
+    .mockResolvedValueOnce({ok:true,data:{ready:false,reason:"changed",closedRelease:binding}});
+  render(createElement(ReleaseBatchReadiness,{...binding,count:1,inspectTasks:true}));
+  await screen.findByRole("table",{name:"Saved Airflow runs"});
+  const check = screen.getByRole("button",{name:"Check batches"});
+  check.focus();
+  fireEvent.click(check);
+  await screen.findByText("Release or connection changed. Reopen release details.");
+  expect(check.getAttribute("aria-disabled")).toBe("false");
+  fireEvent.click(check);
+  await screen.findByText("This saved release was closed. Refresh the release list to open its recorded closure.");
+  expect(screen.queryByRole("table",{name:"Saved Airflow runs"})).toBeNull();
+  expect(screen.queryByRole("table",{name:"Observed Airflow runs"})).toBeNull();
+  expect(check.getAttribute("aria-disabled")).toBe("true");
+  expect(document.activeElement).toBe(check);
+  fireEvent.click(check);
+  expect(io.read).toHaveBeenCalledTimes(2);
+});
+
 it("shows only observed UTC times and preserves missing timing in the selected run", async () => {
   io.read.mockResolvedValue({ ok: true, data: { ready: false, reason: "waiting", observations: {
     requestId: "release", version: 3, runs: [{ dagId: "daily", dagRunId: "selected", state: "running",
@@ -52,6 +74,9 @@ it("shows only observed UTC times and preserves missing timing in the selected r
 });
 
 it("reads tasks only on demand for an observed run on the selected release version", async () => {
+  io.declarations.mockResolvedValue({ok: true, data: {
+    requestId: "release", version: 3, runs: [{dagId: "daily", dagRunId: "selected"}],
+  }});
   io.read.mockResolvedValue({ok:true,data:{ready:false,reason:"unavailable",observations:{
     requestId:"release",version:3,runs:[{dagId:"daily",dagRunId:"selected",state:"failed"}],
   }}});
@@ -63,11 +88,11 @@ it("reads tasks only on demand for an observed run on the selected release versi
   expect(io.tasks).not.toHaveBeenCalled();
   inspect.focus();
   fireEvent.click(inspect);
-  expect(await screen.findByText(/reconcile · failed · try 2/)).toBeTruthy();
+  expect(await screen.findByRole("row", {name: /reconcile failed 2/})).toBeTruthy();
   expect(io.tasks).toHaveBeenCalledExactlyOnceWith("release",3,"daily","selected",0);
   expect(document.activeElement).toBe(inspect);
   view.rerender(createElement(ReleaseBatchReadiness,{...props,version:4}));
-  expect(screen.queryByText(/reconcile · failed/)).toBeNull();
+  expect(screen.queryByRole("table", {name: "Observed task states"})).toBeNull();
 });
 
 it("shows saved identities as unverified, with no provider task entry or old-version carryover", async () => {
@@ -166,4 +191,109 @@ it("retries the exact saved selection without a provider check and moves focus t
   expect(screen.getByText("recovered")).toBeTruthy();
   expect(screen.getByText("Unverified")).toBeTruthy();
   expect(screen.queryByRole("button", {name: "Retry saved runs"})).toBeNull();
+});
+
+it("withholds provider evidence when its exact saved run identities disagree", async () => {
+  const saved = {requestId: "release", version: 3, runs: [{dagId: "daily", dagRunId: "declared"}]};
+  io.declarations.mockResolvedValue({ok: true, data: saved});
+  io.read.mockResolvedValueOnce({ok: true, data: {ready: true, requestVersion: 3, observations: {
+    ...saved, runs: [{dagId: "daily", dagRunId: "different-run", state: "success"}],
+  }}}).mockResolvedValueOnce({ok: true, data: {ready: true, requestVersion: 3, observations: {
+    ...saved, runs: [{...saved.runs[0], state: "success"}],
+  }}});
+  render(createElement(ReleaseBatchReadiness, {requestId: "release", version: 3, count: 1, inspectTasks: true}));
+  await screen.findByText("declared");
+
+  const check = screen.getByRole("button", {name: "Check batches"});
+  check.focus();
+  fireEvent.click(check);
+  await screen.findByText("Observed runs do not match the saved release runs. Check again or reopen release details.");
+  expect(screen.queryByText("different-run")).toBeNull();
+  expect(screen.queryByRole("button", {name: "Inspect tasks"})).toBeNull();
+  expect(screen.getByText("declared")).toBeTruthy();
+  expect(document.activeElement).toBe(check);
+
+  fireEvent.click(check);
+  await screen.findByRole("table", {name: "Observed Airflow runs"});
+  expect(screen.getByText("Succeeded")).toBeTruthy();
+  expect(io.tasks).not.toHaveBeenCalled();
+});
+
+it.each(["success", "failed"] as const)("withholds a %s observation when the declaration read fails and restores focus on an exact retry", async (state) => {
+  const saved = {requestId: "release", version: 3, runs: [{dagId: "daily", dagRunId: "selected"}]};
+  io.declarations.mockResolvedValueOnce({ok: false}).mockResolvedValueOnce({ok: true, data: saved});
+  io.read.mockResolvedValueOnce({ok: true, data: {
+    ...(state === "success" ? {ready: true, requestVersion: 3} : {ready: false, reason: "unavailable"}),
+    observations: {...saved, runs: [{...saved.runs[0], state}]},
+  }});
+  const progress = vi.fn();
+  render(createElement(ReleaseBatchReadiness, {requestId: "release", version: 3, count: 1, inspectTasks: true, renderProgress: progress}));
+  const retry = await screen.findByRole("button", {name: "Retry saved runs"});
+
+  fireEvent.click(screen.getByRole("button", {name: "Check batches"}));
+  await screen.findByText(/Last checked/);
+  expect(screen.queryByRole("table", {name: "Observed Airflow runs"})).toBeNull();
+  expect(screen.queryByRole("button", {name: "Inspect failed run"})).toBeNull();
+  expect(screen.queryByText(/\d+ failed runs?/)).toBeNull();
+  expect(progress).toHaveBeenLastCalledWith("Unverified", false);
+  expect(screen.getByRole("button", {name: "Retry saved runs"})).toBe(retry);
+
+  retry.focus();
+  fireEvent.click(retry);
+  const table = await screen.findByRole("table", {name: "Observed Airflow runs"});
+  expect(document.activeElement).toBe(table);
+  expect(progress).toHaveBeenLastCalledWith(state === "success" ? "1 / 1 completed" : "0 / 1 completed · 1 failed", state === "success");
+  expect(screen.getByText(state === "success" ? "0 failed runs" : "1 failed run")).toBeTruthy();
+  expect(io.read).toHaveBeenCalledExactlyOnceWith("release", 3, true);
+  expect(io.declarations.mock.calls).toEqual([["release", 3], ["release", 3]]);
+  expect(io.tasks).not.toHaveBeenCalled();
+});
+
+it("withholds conflicting status when the declaration read finishes after the observation", async () => {
+  let finish!: (data: unknown) => void;
+  io.declarations.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+  io.read.mockResolvedValueOnce({ok: true, data: {ready: true, requestVersion: 3, observations: {
+    requestId: "release", version: 3, runs: [{dagId: "daily", dagRunId: "different-run", state: "success"}],
+  }}});
+  render(createElement(ReleaseBatchReadiness, {requestId: "release", version: 3, count: 1, inspectTasks: true}));
+  fireEvent.click(screen.getByRole("button", {name: "Check batches"}));
+  await screen.findByText("Verifying saved run identities…");
+  expect(screen.queryByRole("table", {name: "Observed Airflow runs"})).toBeNull();
+
+  await act(async () => finish({ok: true, data: {requestId: "release", version: 3, runs: [{dagId: "daily", dagRunId: "declared"}]}}));
+  expect(await screen.findByText("Observed runs do not match the saved release runs. Check again or reopen release details.")).toBeTruthy();
+  expect(screen.queryByRole("table", {name: "Observed Airflow runs"})).toBeNull();
+  expect(screen.getByText("declared")).toBeTruthy();
+  expect(io.tasks).not.toHaveBeenCalled();
+});
+
+it.each([
+  {ready: true, requestVersion: 3},
+  {ready: false, reason: "waiting"},
+])("withholds an aggregate-only Batches result and recovers on exact observations (%j)", async result => {
+  const declared = {dagId: "daily", dagRunId: "saved-run"};
+  io.declarations.mockResolvedValue({ok: true, data: {
+    requestId: "release", version: 3, runs: [declared],
+  }});
+  io.read.mockResolvedValueOnce({ok: true, data: result}).mockResolvedValueOnce({ok: true, data: {
+    ready: true, requestVersion: 3,
+    observations: {requestId: "release", version: 3, runs: [{...declared, state: "success"}]},
+  }});
+  const progress = vi.fn();
+  render(createElement(ReleaseBatchReadiness, {requestId: "release", version: 3, count: 1, inspectTasks: true, renderProgress: progress}));
+  await screen.findByRole("table", {name: "Saved Airflow runs"});
+  const check = screen.getByRole("button", {name: "Check batches"});
+  check.focus();
+  fireEvent.click(check);
+  await screen.findByText("Run observations are missing. Check batches again to verify the saved runs.");
+  expect(progress).toHaveBeenLastCalledWith("Unverified", false);
+  expect(screen.getByRole("table", {name: "Saved Airflow runs"})).toBeTruthy();
+  expect(screen.queryByRole("table", {name: "Observed Airflow runs"})).toBeNull();
+  expect(document.activeElement).toBe(check);
+
+  fireEvent.click(check);
+  await screen.findByRole("table", {name: "Observed Airflow runs"});
+  expect(progress).toHaveBeenLastCalledWith("1 / 1 completed", true);
+  expect(io.read.mock.calls).toEqual([["release", 3, true], ["release", 3, true]]);
+  expect(io.tasks).not.toHaveBeenCalled();
 });

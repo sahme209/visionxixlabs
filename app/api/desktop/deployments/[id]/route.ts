@@ -28,16 +28,28 @@ export async function GET(
         });
         if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
         const { id } = await params;
+        const versions = request.nextUrl.searchParams.getAll("expectedVersion");
+        if (versions.length > 1 || (versions.length === 1 && !/^[1-9]\d{0,8}$/.test(versions[0]))) {
+            return NextResponse.json({ ok: false, error: "invalid_release_version" }, { status: 400 });
+        }
         const row = await getDeploymentRequest(
             prisma as unknown as DeploymentRequestRepo,
             String(session.organizationId),
             id,
         );
         if (!row) return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+        if (versions.length === 1) {
+            if (row.version !== Number(versions[0])) {
+                return NextResponse.json({ ok: false, error: "version_conflict" }, { status: 409 });
+            }
+            if (row.status === "closed" || row.closedAt) {
+                return NextResponse.json({ ok: false, error: "closed" }, { status: 409 });
+            }
+        }
         return NextResponse.json({
             ok: true,
             data: { id: row.id, version: row.version, intake: row.intakeJson },
-        });
+        }, { headers: { "Cache-Control": "private, no-store" } });
     } catch {
         return NextResponse.json({ ok: false, error: "deployment_request_load_failed" }, { status: 500 });
     }

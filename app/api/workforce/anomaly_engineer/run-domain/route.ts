@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let noticeCount = 0;
   try {
-    const report = await runAnomalyEngineer(org);
+    const report = await runAnomalyEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     noticeCount = report.notices.length;
     await persistAnomalyReport(org, report);

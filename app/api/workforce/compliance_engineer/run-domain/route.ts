@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   try {
-    const report = await runComplianceEngineer(org);
+    const report = await runComplianceEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     await persistComplianceReport(org, report);
   } catch (err) {

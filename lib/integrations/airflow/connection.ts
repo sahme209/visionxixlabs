@@ -11,7 +11,13 @@ import { AirflowClient, validateAirflowBaseUrl, type AirflowCredential,type Airf
  * current actor/rule callback. Refusal is repeated outside DB locks before
  * credentials/auth and the actual POST; it is not an atomic network/drain or
  * enrollment-coverage protocol for already in-flight provider actions. */
-export async function loadAirflowClient(organizationId: string, mutation?:AirflowMutationAuthority): Promise<{ client: AirflowClient; connectionId: string; baseUrl: string; connectionUpdatedAt: Date }> {
+export async function loadAirflowClient(organizationId: string, mutation?:AirflowMutationAuthority): Promise<{
+  client: AirflowClient;
+  connectionId: string;
+  baseUrl: string;
+  connectionUpdatedAt: Date;
+  assertCurrentConnection: (signal?: AbortSignal) => Promise<void>;
+}> {
   const authority=mutation?Object.freeze({beforeWrite:mutation.beforeWrite,signal:mutation.signal}):undefined;
   const connection = await prisma.tenantIntegrationConnection.findUnique({ where: { organizationId_provider: { organizationId, provider: "airflow" } } });
   if (!connection || connection.organizationId !== organizationId || connection.provider !== "airflow" || connection.status !== "active" || connection.revokedAt) throw new Error("airflow_not_connected");
@@ -44,5 +50,11 @@ export async function loadAirflowClient(organizationId: string, mutation?:Airflo
   if(mutationSignal)await beforeWrite(mutationSignal);
   const raw = decryptScopedCredential(connection.encryptedCredential, connectionCredentialContext({ organizationId, provider: "airflow", connectionId: connection.id }));
   const credential = JSON.parse(raw) as AirflowCredential;
-  return { client: new AirflowClient(baseUrl, credential,authority?{beforeWrite,signal:mutationSignal}:undefined), connectionId: connection.id, baseUrl, connectionUpdatedAt: new Date(observed.updatedAt) };
+  return {
+    client: new AirflowClient(baseUrl, credential, authority ? {beforeWrite, signal: mutationSignal} : undefined),
+    connectionId: connection.id,
+    baseUrl,
+    connectionUpdatedAt: new Date(observed.updatedAt),
+    assertCurrentConnection: currentConnection,
+  };
 }

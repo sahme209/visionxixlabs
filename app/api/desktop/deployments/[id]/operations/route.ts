@@ -71,7 +71,7 @@ export async function GET(
                 lastReconciledAt: row.lastReconciledAt?.toISOString() ?? null,
                 externallyReferenced: Boolean(row.externalReference),
             })),
-        });
+        }, {headers: {"Cache-Control": "private, no-store"}});
     } catch {
         return NextResponse.json({ ok: false, error: "operation_ledger_load_failed" }, { status: 500 });
     }

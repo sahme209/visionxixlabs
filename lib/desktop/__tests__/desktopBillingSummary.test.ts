@@ -17,6 +17,22 @@ describe("desktop billing response boundary",()=>{
   {...snapshot(),allowance:{...snapshot().allowance,includedRemainingCents:-1}},
   {...snapshot(),allowance:{...snapshot().allowance,heldCents:0.5}},
  ])("fails closed for a malformed present extension %#",billingSnapshot=>expect(parseDesktopUsageSummary({...usage(),billingSnapshot})).toBeNull());
+ it("keeps a verified zero cap distinct from an unset or invalid budget", () => {
+  const limit = { monthlyLimitCents: 0, remainingCents: 0, warningReached: false };
+  function parse(limitValue: typeof limit | null, canManageBilling = true) {
+    return parseDesktopUsageSummary({
+      ...usage(),
+      billingSnapshot: { ...snapshot(), canManageBilling, budget: { available: true, limit: limitValue } },
+    })?.billingSnapshot;
+  }
+  expect(parse(limit)?.budget).toEqual({ available: true, limit });
+  expect(parse(null)?.budget).toEqual({ available: true, limit: null });
+  expect(parse({ ...limit, remainingCents: 1 })).toMatchObject({
+    budget: { available: false },
+    allowance: { available: true, includedRemainingCents: 199 },
+  });
+  expect(parse(limit, false)?.budget).toBeUndefined();
+ });
  it("preserves explicit unavailability instead of synthesizing zero credit",()=>{
   const billingSnapshot={version:1,canManageBilling:false,plan:{available:false},allowance:{available:false}};
   expect(parseDesktopUsageSummary({...usage(),billingSnapshot})?.billingSnapshot).toEqual(billingSnapshot);

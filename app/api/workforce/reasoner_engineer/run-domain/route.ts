@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       observations,
       domainContext: s(f.get("domainContext")) || undefined,
       alreadyRuledOut: s(f.get("alreadyRuledOut")) || undefined,
-    });
+    }, String(ctx.userId));
     await persistReasonerHypothesis(org, hypothesis);
   } catch (err) {
     console.warn("[reasoner/run-domain] hard failure:", err instanceof Error ? err.message : err);

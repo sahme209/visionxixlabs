@@ -12,7 +12,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const INCIDENT_ENGINEER_TARGET_KIND = "engineer_incident_triage";
 
@@ -125,7 +125,7 @@ function fallbackAction(incident: TriagedIncident): string {
   return `Low-severity ${incident.incidentId} — add to the backlog unless it correlates with a higher-priority signal.`;
 }
 
-export async function runIncidentEngineer(organizationId: string): Promise<IncidentEngineerReport> {
+export async function runIncidentEngineer(organizationId: string, actorUserId?: string): Promise<IncidentEngineerReport> {
   const now = Date.now();
   const since14d = new Date(now - 14 * 24 * 60 * 60 * 1000);
 
@@ -207,6 +207,7 @@ export async function runIncidentEngineer(organizationId: string): Promise<Incid
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:incident_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
     });
     const prompt = `${buildSystemPrompt()}\n\n---\n\n${buildUserPrompt({ totals, candidates: triagedCandidates })}`;
@@ -223,7 +224,7 @@ export async function runIncidentEngineer(organizationId: string): Promise<Incid
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const topIncidents: TriagedIncident[] = triagedCandidates.map(({ incident }) => ({

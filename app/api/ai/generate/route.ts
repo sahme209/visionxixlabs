@@ -133,6 +133,9 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
       if (reservation.error === "ai_credit_pool_exhausted") {
         throw AxiomErrors.policy("ai.credit_pool_exhausted", "This workspace does not have enough available AI credit for this request.");
       }
+      if (reservation.error === "ai_workspace_budget_exceeded") {
+        throw AxiomErrors.policy("ai.workspace_budget_exceeded", "This request would exceed the workspace's monthly AI budget. No generation was run.");
+      }
       throw AxiomErrors.external("ai.credit_reservation_unavailable", "AI budget controls are temporarily unavailable. No generation was run.");
     }
     // The one-use admission was durably claimed before the manager can hand

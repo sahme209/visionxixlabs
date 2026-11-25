@@ -55,7 +55,7 @@ export interface DomainRunner {
   minIntervalMinutes: number;
   /** Runs the engineer + persists the report in a single unit so the
    *  cron sweep doesn't double-bill AI calls. */
-  runAndPersist(organizationId: string): Promise<DomainRunSummary>;
+  runAndPersist(organizationId: string, actorUserId?: string): Promise<DomainRunSummary>;
 }
 
 function summary(r: { outcome: DomainOutcome; modelHint: string | null; errorMessage: string | null }): DomainRunSummary {
@@ -80,8 +80,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "compliance_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runComplianceEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runComplianceEngineer(orgId, actorUserId);
       await persistComplianceReport(orgId, r);
       return summary(r);
     },
@@ -90,8 +90,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "detector_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runDetectorEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runDetectorEngineer(orgId, actorUserId);
       await persistDetectorReport(orgId, r);
       return summary(r);
     },
@@ -100,8 +100,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "incident_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runIncidentEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runIncidentEngineer(orgId, actorUserId);
       await persistIncidentReport(orgId, r);
       return summary(r);
     },
@@ -110,8 +110,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "secrets_hygiene_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runSecretsHygieneEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runSecretsHygieneEngineer(orgId, actorUserId);
       await persistSecretsHygieneReport(orgId, r);
       return summary(r);
     },
@@ -120,8 +120,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "finops_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runFinopsEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runFinopsEngineer(orgId, actorUserId);
       await persistFinopsReport(orgId, r);
       return summary(r);
     },
@@ -130,8 +130,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "anomaly_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 60,
-    async runAndPersist(orgId) {
-      const r = await runAnomalyEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runAnomalyEngineer(orgId, actorUserId);
       await persistAnomalyReport(orgId, r);
       return summary(r);
     },
@@ -140,8 +140,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "auditor_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 120,
-    async runAndPersist(orgId) {
-      const r = await runAuditorEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runAuditorEngineer(orgId, actorUserId);
       await persistAuditorReport(orgId, r);
       return summary(r);
     },
@@ -150,8 +150,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "alert_noise_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 60,
-    async runAndPersist(orgId) {
-      const r = await runAlertNoiseEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runAlertNoiseEngineer(orgId, actorUserId);
       await persistAlertNoiseReport(orgId, r);
       return summary(r);
     },
@@ -160,8 +160,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "verifier_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 60,
-    async runAndPersist(orgId) {
-      const r = await runVerifierEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runVerifierEngineer(orgId, actorUserId);
       await persistVerifierReport(orgId, r);
       return summary(r);
     },
@@ -170,8 +170,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     engineerId: "pipeline_repair_engineer",
     sweepPriority: 10,
     minIntervalMinutes: 60,
-    async runAndPersist(orgId) {
-      const r = await runPipelineRepairEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runPipelineRepairEngineer(orgId, actorUserId);
       await persistPipelineRepairReport(orgId, r);
       return summary(r);
     },
@@ -182,8 +182,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     // engineers but before council so council has a fresh payload.
     sweepPriority: 20,
     minIntervalMinutes: 240,
-    async runAndPersist(orgId) {
-      const r = await runMetaReasonerEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runMetaReasonerEngineer(orgId, actorUserId);
       await persistMetaReasonerReport(orgId, r);
       return summary(r);
     },
@@ -194,8 +194,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     // meta_reasoner so verdicts reflect just-computed tensions.
     sweepPriority: 21,
     minIntervalMinutes: 240,
-    async runAndPersist(orgId) {
-      const r = await runCouncilEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runCouncilEngineer(orgId, actorUserId);
       await persistCouncilReport(orgId, r);
       return summary(r);
     },
@@ -205,8 +205,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     // Reasons about platform telemetry — neutral late priority.
     sweepPriority: 22,
     minIntervalMinutes: 240,
-    async runAndPersist(orgId) {
-      const r = await runImprovementEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runImprovementEngineer(orgId, actorUserId);
       await persistImprovementReport(orgId, r);
       return summary(r);
     },
@@ -217,8 +217,8 @@ export const DOMAIN_RUNNERS: ReadonlyArray<DomainRunner> = [
     // post-tick (catches the engineers that just landed above).
     sweepPriority: 25,
     minIntervalMinutes: 240,
-    async runAndPersist(orgId) {
-      const r = await runMemoryConsolidatorEngineer(orgId);
+    async runAndPersist(orgId, actorUserId) {
+      const r = await runMemoryConsolidatorEngineer(orgId, actorUserId);
       await persistMemoryConsolidationReport(orgId, r);
       return summary(r);
     },

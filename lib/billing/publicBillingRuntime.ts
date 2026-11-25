@@ -10,6 +10,8 @@ import { createPublicCheckoutService } from "./publicCheckoutService";
 import { createPublicStripeProvider, type PublicStripeClient } from "./publicStripeProvider";
 import { stripePriceEnvKey } from "./publicPlanCatalog";
 import { reconcilePublicWebhook, type PublicLookupKind } from "./publicWebhookDispatch";
+import { recordAutomaticTopUpTestDispute } from "./automaticAICreditTopUpDispute";
+import { makeAutomaticTopUpTestPaymentNotification } from "./automaticAICreditTopUpDispatchService";
 
 /** Per-request composition. Never accepts account, key or mode from the browser.
  * Each outbound call is bounded and has no SDK retry; unknown writes stay held. */
@@ -41,5 +43,9 @@ export async function publicBillingRuntime() {
     if(url.protocol!=="https:"||url.hostname!=="billing.stripe.com"||url.username||url.password)throw Error("public_portal_url_invalid");
     return {ok:true as const,url:session.url};
   }
-  return {identity,service,portal,invoices:(customerId:string,filter:{status?:InvoiceStatus;after?:string})=>readPublicInvoicePage(stripe as unknown as InvoiceListClient,identity,customerId,filter),webhook:(event:unknown)=>reconcilePublicWebhook(event,identity,{get},service.reconcile)};
+  return {identity,service,portal,invoices:(customerId:string,filter:{status?:InvoiceStatus;after?:string})=>readPublicInvoicePage(stripe as unknown as InvoiceListClient,identity,customerId,filter),webhook:(event:unknown)=>reconcilePublicWebhook(event,identity,{get},service.reconcile,
+    {
+      recordDispute:(e,dispute,charge)=>recordAutomaticTopUpTestDispute(prisma,identity,e,dispute,charge),
+      reconcilePayment:makeAutomaticTopUpTestPaymentNotification(prisma,stripe,identity),
+    })};
 }

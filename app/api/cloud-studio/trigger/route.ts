@@ -9,7 +9,7 @@ import {
   computeInfrastructureAdvantageScore,
 } from "@/lib/axiom/scoringRegistry";
 import { insertAxiomSnapshot } from "@/lib/axiom/snapshotService";
-import { runAsyncLeadEngine } from "@/lib/async/engineRunner";
+import { LeadEngineBusyError, runAsyncLeadEngine } from "@/lib/async/engineRunner";
 import { cloudStudioTierToUnified } from "@/lib/pricing/unifiedTier";
 import { eventEngineTriggered, eventEngineCompleted, eventEngineFailed } from "@/lib/observability/events";
 import type { AxiomProfile, AxiomResult } from "@/lib/axiom/infrastructureAdvantage";
@@ -135,10 +135,8 @@ export async function POST(req: NextRequest) {
   const tierForEvent = String(payloadForTier?.tier ?? "free");
   const unifiedTier = cloudStudioTierToUnified(tierForEvent);
 
-  eventEngineTriggered({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
-
   try {
-    const { generated, payload } = await runAsyncLeadEngine<Generated>({
+    const { generated, payload, reused } = await runAsyncLeadEngine<Generated>({
       leadId,
       engineName: "cloud-studio",
       expectedSource: "cloud-studio",
@@ -163,7 +161,8 @@ export async function POST(req: NextRequest) {
           }) as AxiomResult,
         };
       },
-      async generate({ lead, tier, payload }) {
+      async generate({ payload, invocation }) {
+        eventEngineTriggered({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
         const serviceType = payload.serviceType as string;
         const form = (payload.form as Record<string, unknown>) || {};
         const tierResolved = (payload.tier as CloudStudioTier) || "free";
@@ -173,7 +172,7 @@ export async function POST(req: NextRequest) {
           form,
         } as CloudStudioForm;
 
-        const output = await generateCloudStudioOutput(request, tierResolved);
+        const output = await generateCloudStudioOutput(request, tierResolved, invocation);
         const cloudIntelligence = computeBaseCloudIntelligence(
           serviceType,
           form,
@@ -211,7 +210,7 @@ export async function POST(req: NextRequest) {
 
     const { output, axiomResult } = generated;
 
-    if (axiomResult?.scores && payload) {
+    if (!reused && axiomResult?.scores) {
       const tier = String((payload.tier as string) || "free");
       const form = (payload.form as Record<string, unknown>) || {};
       const provider = form.cloudProvider ?? null;
@@ -229,13 +228,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    eventEngineCompleted({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
+    if (!reused) {
+      eventEngineCompleted({ leadId, engineName: "cloud-studio", tier: tierForEvent, unifiedTier });
+    }
     return NextResponse.json({
       success: true,
       status: "ready",
       output,
     });
   } catch (e) {
+    if (e instanceof LeadEngineBusyError) {
+      return NextResponse.json({ error: e.message }, { status: 409 });
+    }
     eventEngineFailed({ leadId, engineName: "cloud-studio", error: e instanceof Error ? e.message : String(e), unifiedTier });
     console.error("[cloud-studio trigger]", e);
     return NextResponse.json(

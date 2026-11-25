@@ -11,6 +11,7 @@ import { _resetAIProviderManagerForTests } from '@/lib/ai/AIProviderManager';
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv('AI_GATEWAY_API_KEY', 'synthetic-not-a-credential'); vi.stubEnv('VERCEL_OIDC_TOKEN', ''); vi.stubEnv('AI_GATEWAY_MODEL', 'anthropic/claude-sonnet-5');
+  vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY', '');
   vi.stubGlobal('fetch', p.fetcher); p.fetcher.mockRejectedValue(new Error('unexpected external fetch'));
   _resetAIProviderManagerForTests();
   p.verify.mockReturnValue({ leadId: 'synthetic-lead' }); p.decrypt.mockReturnValue('synthetic-decrypted-fixture');
@@ -20,7 +21,7 @@ beforeEach(() => {
   p.sdk.mockResolvedValue({ text: JSON.stringify({ actions: [{ id: 'synthetic-action', actionType: 'github_pr', title: 'Synthetic fixture', description: 'Do not execute', files: [{ path: 'fixture.md', content: 'Synthetic inert fixture' }], approvalRequired: true }] }), finishReason: 'stop', usage: { inputTokens: 10, outputTokens: 5 }, providerMetadata: { gateway: { generationId: 'synthetic-generation' } } });
 });
 afterEach(() => { _resetAIProviderManagerForTests(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
-const request = () => new NextRequest('http://localhost/api/automation/remediate?token=synthetic-fixture', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ remediationType: 'cost_idle_resources', githubOwner: 'synthetic-owner', githubRepo: 'synthetic-repository' }) });
+const request = (body = { remediationType: 'cost_idle_resources', githubOwner: 'synthetic-owner', githubRepo: 'synthetic-repository' }) => new NextRequest('http://localhost/api/automation/remediate?token=synthetic-fixture', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 
 it('mounts the real planning callback but the real unbound GitHub writer refuses before network', async () => {
   const response = await POST(request()); const body = await response.json();
@@ -36,4 +37,19 @@ it('does not plan or contact a provider when the real observer finds no issues',
   const body = await (await POST(request())).json();
   expect(body.success).toBe(false); expect(body.actResults).toEqual([]);
   expect(p.sdk).not.toHaveBeenCalled(); expect(p.fetcher).not.toHaveBeenCalled(); expect(p.transaction).not.toHaveBeenCalled();
+});
+
+it('returns the recorded cost-review evidence without decrypting GitHub credentials or calling AI under public billing', async () => {
+  vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY', 'axiom_public_anniversary_v1');
+  const response = await POST(request({ remediationType: 'cost_idle_resources', githubOwner: '', githubRepo: '' }));
+  const body = await response.json();
+  expect(response.status).toBe(200);
+  expect(body.success).toBe(false);
+  expect(body.reports).toEqual(expect.arrayContaining([expect.objectContaining({
+    phase: 'observe', details: expect.objectContaining({ signals: ['synthetic idle fixture'] }),
+  })]));
+  expect(body.actResults).toEqual([{ success: false, actionId: 'cost-idle-review', error: expect.any(String) }]);
+  expect(p.decrypt).not.toHaveBeenCalled();
+  expect(p.sdk).not.toHaveBeenCalled();
+  expect(p.fetcher).not.toHaveBeenCalled();
 });

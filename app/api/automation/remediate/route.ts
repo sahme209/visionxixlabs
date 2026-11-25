@@ -14,6 +14,7 @@ import { resolveEffectiveOperatorTier, canViewTechnicalOutputs } from "@/lib/clo
 import { runAgentLoop } from "@/lib/automation/agentLoop";
 import { observeCostIdleResources, planCostIdleResources } from "@/lib/automation/playbooks/costIdleResources";
 import { createPullRequest } from "@/lib/connectors/githubWrite";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 import type { RemediationType } from "@/lib/automation/remediationTypes";
 
 const SUPPORTED_TYPES: RemediationType[] = ["cost_idle_resources"];
@@ -52,11 +53,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const manualOnly = publicBillingPolicyEnabled();
   const githubOwner = body.githubOwner?.trim();
   const githubRepo = body.githubRepo?.trim();
   const githubBase = body.githubBaseBranch?.trim() || "main";
 
-  if (!githubOwner || !githubRepo) {
+  if (!manualOnly && (!githubOwner || !githubRepo)) {
     return NextResponse.json(
       { error: "githubOwner and githubRepo required for GitHub PR remediation" },
       { status: 400 }
@@ -85,24 +87,25 @@ export async function POST(req: NextRequest) {
 
   const connectors = (payload.connectors as Record<string, { encryptedCredRef?: string }>) || {};
   const ghConn = connectors.github;
-  if (!ghConn?.encryptedCredRef) {
-    return NextResponse.json(
-      { error: "GitHub connector not linked. Link GitHub in Connectors tab first." },
-      { status: 400 }
-    );
-  }
-
-  let ghToken: string;
-  try {
-    ghToken = decryptCredential(ghConn.encryptedCredRef);
-  } catch {
-    return NextResponse.json({ error: "Failed to decrypt GitHub credentials" }, { status: 500 });
+  let ghToken: string | undefined;
+  if (!manualOnly && !publicBillingPolicyEnabled()) {
+    if (!ghConn?.encryptedCredRef) {
+      return NextResponse.json(
+        { error: "GitHub connector not linked. Link GitHub in Connectors tab first." },
+        { status: 400 }
+      );
+    }
+    try {
+      ghToken = decryptCredential(ghConn.encryptedCredRef);
+    } catch {
+      return NextResponse.json({ error: "Failed to decrypt GitHub credentials" }, { status: 500 });
+    }
   }
 
   const ctx: import("@/lib/automation/agentLoop").AgentContext = {
     leadId: lead.id,
     remediationType,
-    connectors: { github: { token: ghToken } },
+    connectors: ghToken ? { github: { token: ghToken } } : {},
     fullPayload: payload,
   };
 
@@ -111,13 +114,13 @@ export async function POST(req: NextRequest) {
   const { reports, actResults } = await runAgentLoop({
     context: ctx,
     observe: observeCostIdleResources,
-    plan: planCostIdleResources,
+    plan: (context, observed) => planCostIdleResources(context, observed, manualOnly),
     act: async (_ctx, planResult) => {
       const results: import("@/lib/automation/agentLoop").ActResult[] = [];
       for (let i = 0; i < planResult.actions.length; i++) {
         const action = planResult.actions[i];
         const branchName = planResult.actions.length > 1 ? `${baseBranch}-${i}` : baseBranch;
-        if (action.actionType === "github_pr" && action.files?.length) {
+        if (!publicBillingPolicyEnabled() && ghToken && githubOwner && githubRepo && action.actionType === "github_pr" && action.files?.length) {
           const prRes = await createPullRequest({
             token: ghToken,
             owner: githubOwner,

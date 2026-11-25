@@ -8,6 +8,8 @@ html:not([data-theme="light"]) .studio-batches-airflow > .workspace-view { backg
 
 .studio-batches-dependencies { min-height: 0; flex: 1; overflow: auto; padding: 28px clamp(16px, 2vw, 34px); background: #171717; }
 html[data-theme="light"] .studio-batches-dependencies { background: rgb(var(--axiom-bg)); }
+.studio-batches-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.studio-batches-heading .btn-secondary { display: inline-flex; align-items: center; gap: 8px; }
 .studio-batches-dependencies h1 { font-size: 28px; font-weight: 500; letter-spacing: -.04em; }
 .studio-batches-dependencies p { margin-top: 8px; color: rgb(var(--neutral-zinc-400)); font-size: 13px; }
 .studio-batches-dependency-controls { flex-wrap: nowrap; gap: 8px; margin-bottom: 16px; }
@@ -47,6 +49,9 @@ html[data-theme="light"] .studio-batches-detail-layout {
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+.studio-batches-history { margin-block-start: 20px; }
+.studio-batches-history .studio-batches-loaded { margin-block-end: 2px; }
+.studio-batches-history button .studio-batches-row-state { text-transform: capitalize; }
 .studio-batches-loaded span { margin-inline-start: 4px; font-variant-numeric: tabular-nums; }
 .studio-batches-dependency-list nav button {
   display: grid;
@@ -69,6 +74,7 @@ html[data-theme="light"] .studio-batches-detail-layout {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.studio-batches-detail-layout article[hidden] { display: none; }
 .studio-batches-detail-layout article header, .studio-batches-readiness { padding: 18px 24px; }
 .studio-batches-detail-layout article header { grid-column: 1; padding-block-end: 0; }
 .studio-batches-sections {
@@ -117,8 +123,43 @@ html[data-theme="light"] .studio-batches-detail-layout {
 .studio-batches-config section + section { padding-top: 14px; border-top: 1px solid var(--studio-batches-divider); }
 .studio-batches-config dl { margin-block: 14px; font-size: 12px; }
 .studio-batches-config dl div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; padding-block: 8px; }
-.studio-batches-config dl .studio-batches-window { display: grid; gap: 6px; }
-.studio-batches-window dd { overflow-wrap: anywhere; }
+.studio-batches-fact-with-icon { display: inline-flex; align-items: center; gap: 6px; }
+.studio-batches-fact-with-icon svg { flex: none; }
+.studio-batches-fact-with-icon[data-fact-tone="recorded"] svg { color: var(--release-recorded-ink); }
+.studio-batches-fact-with-icon[data-fact-tone="attention"] svg { color: var(--release-waiting-ink); }
+.studio-batches-window dd { margin-inline-start: auto; text-align: end; overflow-wrap: anywhere; }
+.studio-batches-observed-progress {
+  --batch-progress-fill: #379aff;
+  --batch-progress-track: #303238;
+  display: grid;
+  gap: 8px;
+  margin-block-start: 14px;
+  padding: 12px;
+  border: 1px solid var(--studio-batches-divider);
+  border-radius: 8px;
+  background: var(--studio-batches-config-bg);
+  font-size: 12px;
+}
+html[data-theme="light"] .studio-batches-observed-progress {
+  --batch-progress-fill: #0869c2;
+  --batch-progress-track: #dce4ee;
+}
+.studio-batches-observed-progress > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
+.studio-batches-observed-progress strong { font-weight: 600; }
+.studio-batches-observed-progress progress {
+  appearance: none;
+  display: block;
+  inline-size: 100%;
+  block-size: 6px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: var(--batch-progress-track);
+  accent-color: var(--batch-progress-fill);
+}
+.studio-batches-observed-progress progress::-webkit-progress-bar { background: var(--batch-progress-track); }
+.studio-batches-observed-progress progress::-webkit-progress-value { border-radius: 999px; background: var(--batch-progress-fill); }
+.studio-batches-observed-progress progress::-moz-progress-bar { border-radius: 999px; background: var(--batch-progress-fill); }
 .studio-batches-saved-status {
   display: flex;
   align-items: center;
@@ -142,6 +183,22 @@ html[data-theme="light"] .studio-batches-detail-layout {
   font-size: 14px;
   font-weight: 500;
 }
+.studio-batches-observed-state {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 6px;
+}
+.studio-batches-observed-state svg { flex: none; }
+.studio-batches-run-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-block: 12px;
+  border-block-start: 1px solid var(--studio-batches-divider);
+}
+.studio-batches-readiness .studio-batches-run-summary p { margin: 0; font-size: 12px; }
+
 .studio-batches-progress {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -179,10 +236,11 @@ html[data-theme="light"] .studio-batches-detail-layout {
   .studio-batches-progress li::after { display: none; }
 }
 @container batch-readiness (max-width: 430px) {
-  .studio-batches-observed-runs thead th:nth-child(1) { width: 23%; }
-  .studio-batches-observed-runs thead th:nth-child(2) { width: 27%; }
-  .studio-batches-observed-runs thead th:nth-child(3) { width: 82px; }
-  .studio-batches-observed-runs thead th:nth-child(4) { width: auto; }
+  .studio-batches-observed-runs > thead > tr > th:nth-child(1) { width: 23%; }
+  .studio-batches-observed-runs > thead > tr > th:nth-child(2) { width: 27%; }
+  .studio-batches-observed-runs > thead > tr > th:nth-child(3) { width: 116px; }
+  .studio-batches-observed-state { column-gap: 4px; padding-inline: 4px; }
+  .studio-batches-observed-runs > thead > tr > th:nth-child(4) { width: auto; }
 }
 .studio-batches-release-action { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--studio-batches-divider); }
 .studio-batches-release-action p { margin: 0 0 8px; font-size: 12px; }
@@ -206,17 +264,24 @@ html:not([data-theme="light"]) .studio-batches-release-action .btn-primary:hover
 .studio-batches-monitor-timing dd { margin-top: 2px; }
 
 @media (min-width: 1101px) {
-  .studio-batches-workspace[data-dependencies="true"] { position: relative; }
+  .studio-batches-workspace[data-dependencies="true"] {
+    --studio-batches-header-inset: clamp(16px, 2vw, 34px);
+    --studio-batches-history-space: 152px;
+    position: relative;
+    overflow: auto;
+  }
   .studio-batches-workspace[data-dependencies="true"] .studio-batches-switcher {
     position: absolute;
-    top: 38px;
-    right: clamp(16px, 2vw, 34px);
+    inset-block-start: 38px;
+    inset-inline-end: calc(var(--studio-batches-header-inset) + var(--studio-batches-history-space));
     padding: 0;
     border: 0;
   }
+  .studio-batches-dependencies { flex: none; overflow: visible; }
 }
 @media (min-width: 1221px) {
-  .studio-batches-dependencies { padding-inline: 34px; }
+  .studio-batches-workspace[data-dependencies="true"] { --studio-batches-header-inset: 34px; }
+  .studio-batches-dependencies { padding-inline: var(--studio-batches-header-inset); }
   .studio-batches-detail-layout {
     grid-template-columns: minmax(256px, calc(20.3% + 1.2px)) minmax(0, 1fr);
     min-height: min(79.1vh, 886px);

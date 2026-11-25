@@ -200,6 +200,7 @@ function parseAi(text: string): ParsedAi | null {
 export async function runDrPlannerEngineer(
   organizationId: string,
   raw: DrPlannerInput,
+  actorUserId?: string,
 ): Promise<DrPlan> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const topology = raw.topology.trim().slice(0, MAX_BODY);
@@ -240,6 +241,7 @@ export async function runDrPlannerEngineer(
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:dr_planner_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 75_000,
       maxTokens: 4500,
     });

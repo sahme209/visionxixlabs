@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   let outcome: "ai_generated" | "fallback_rules" | "error" = "fallback_rules";
   let candidateCount = 0;
   try {
-    const report = await runSecretsHygieneEngineer(org);
+    const report = await runSecretsHygieneEngineer(org, String(ctx.userId));
     outcome = report.outcome;
     candidateCount = report.candidatesTotal;
     await persistSecretsHygieneReport(org, report);

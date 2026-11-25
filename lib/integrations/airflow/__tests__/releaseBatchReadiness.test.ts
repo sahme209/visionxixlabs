@@ -2,6 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const io = vi.hoisted(() => ({ load: vi.fn(), run: vi.fn(), request: vi.fn(), connection: vi.fn(), tasks: vi.fn() }));
 vi.mock("../connection", () => ({ loadAirflowClient: io.load }));
 import { readReleaseBatchDeclarations, readReleaseBatchReadiness, readReleaseBatchTasks } from "../releaseBatchReadiness";
+import { isReleaseBatchReadiness } from "@/lib/desktop/releaseBatchReadinessContract";
 const updatedAt = new Date("2026-10-24T00:00:00.000Z");
 const dependency = { connectionId: "connection", connectionUpdatedAt: updatedAt.toISOString(), runs: [{ dagId: "daily", dagRunId: "selected", logicalDate: "2026-10-24T00:00:00.000001Z" }] };
 const row = { id: "release", organizationId: "tenant", version: 3, status: "submitted", intakeJson: { airflowDependency: dependency } };
@@ -31,6 +32,27 @@ it.each([
   expect(io.load).not.toHaveBeenCalled();
   expect(io.run).not.toHaveBeenCalled();
 });
+it.each(["before", "during"])("reports closure %s observation only for the exact desktop release", async when => {
+  const closed = {...row, status: "closed"};
+  if (when === "during") io.request.mockResolvedValueOnce(row);
+  io.request.mockResolvedValue(closed);
+  expect(await readReleaseBatchReadiness(repo, {...input, includeRuns: true})).toEqual({
+    ready: false, reason: "changed", closedRelease: {requestId: input.requestId, version: input.expectedVersion},
+  });
+  expect(io.load).toHaveBeenCalledTimes(when === "during" ? 1 : 0);
+  expect(await readReleaseBatchReadiness(repo, input)).toEqual({ready:false, reason:"unavailable"});
+});
+
+it("validates a closure binding only for the exact desktop request without other evidence", () => {
+  const closing = {ready:false, reason:"changed", closedRelease:{requestId:input.requestId, version:3}};
+  expect(isReleaseBatchReadiness(closing, 3, input.requestId)).toBe(true);
+  expect(isReleaseBatchReadiness(closing, 4, input.requestId)).toBe(false);
+  expect(isReleaseBatchReadiness(closing, 3, "other")).toBe(false);
+  expect(isReleaseBatchReadiness({...closing, ready:true, requestVersion:3}, 3, input.requestId)).toBe(false);
+  expect(isReleaseBatchReadiness({...closing, observations:{}}, 3, input.requestId)).toBe(false);
+  expect(isReleaseBatchReadiness({...closing, declarations:{}}, 3, input.requestId)).toBe(false);
+});
+
 it("rejects a changed connection before reading any run", async () => {
   io.load.mockResolvedValue({ connectionId: "other", connectionUpdatedAt: updatedAt, client: { getDagRun: io.run } });
   expect((await readReleaseBatchReadiness(repo, input)).ready).toBe(false); expect(io.run).not.toHaveBeenCalled();
@@ -148,4 +170,28 @@ it("returns only saved identities without loading an Airflow credential or readi
     io.request.mockResolvedValue(invalid);
     expect(await readReleaseBatchDeclarations(repo, input)).toBeUndefined();
   }
+});
+
+it.each([
+  {change: "changed state", transition: {state: "running", endedAt: null}},
+  {change: "new attempt with the same state", transition: {startedAt: "2026-10-24T00:00:00.000002Z"}},
+  {change: "changed end", transition: {endedAt: "2026-10-24T00:15:00Z"}},
+])("withholds a task page after $change and allows a steady retry", async ({transition}) => {
+  const before = {...dependency.runs[0], state: "failed", startedAt: "2026-10-24T00:00:00.000001Z", endedAt: "2026-10-24T00:10:00Z"};
+  const after = {...before, ...transition};
+  const selection = {...input, dagId: "daily", dagRunId: "selected", offset: 10};
+  let resolveOldPage!: (page: unknown) => void;
+  io.run.mockResolvedValue(before);
+  io.tasks.mockImplementationOnce(() => new Promise(resolve => { resolveOldPage = resolve; }));
+  const pending = readReleaseBatchTasks(repo, selection);
+  await vi.waitFor(() => expect(io.tasks).toHaveBeenCalledTimes(1));
+  io.run.mockResolvedValue(after);
+  resolveOldPage({tasks: [{taskId: "old evidence"}], totalEntries: 11, offset: 10});
+
+  expect(await pending).toBeUndefined();
+
+  const page = {tasks: [{taskId: "current evidence"}], totalEntries: 11, offset: 10};
+  io.tasks.mockResolvedValueOnce(page);
+  expect(await readReleaseBatchTasks(repo, selection)).toEqual({...page, requestId: "release", version: 3, dagId: "daily", dagRunId: "selected"});
+  expect(io.tasks.mock.calls).toEqual([["daily", "selected", 10, undefined], ["daily", "selected", 10, undefined]]);
 });

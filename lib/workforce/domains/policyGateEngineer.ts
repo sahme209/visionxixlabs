@@ -151,7 +151,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runPolicyGateEngineer(organizationId: string, raw: PolicyInput): Promise<PolicyClassification> {
+export async function runPolicyGateEngineer(organizationId: string, raw: PolicyInput, actorUserId?: string): Promise<PolicyClassification> {
   const title = raw.title.trim().slice(0, MAX_TITLE);
   const proposedAction = raw.proposedAction.trim().slice(0, MAX_BODY);
   const tenantCharter = raw.tenantCharter.trim().slice(0, MAX_BODY);
@@ -187,6 +187,7 @@ export async function runPolicyGateEngineer(organizationId: string, raw: PolicyI
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:policy_gate_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 60_000,
       maxTokens: 2500,
     });

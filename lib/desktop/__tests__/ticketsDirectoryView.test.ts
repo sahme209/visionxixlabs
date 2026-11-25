@@ -3,10 +3,10 @@ import {createElement} from "react";
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 
-const m = vi.hoisted(() => ({readAssignment:vi.fn(), saveAssignment:vi.fn(), readCollection: vi.fn(), saveCollection: vi.fn(), remediationReview: vi.fn(), transition: vi.fn(), updates: vi.fn(), saveUpdate: vi.fn(), createDraft: vi.fn(), exportCsv: vi.fn(), report: vi.fn(), reportReleases: vi.fn(), read: vi.fn(), activity: vi.fn(), triage: vi.fn(), releases: vi.fn(), links: vi.fn(), client: {config: {apiBase: "https://fixture.invalid", sessionToken: "axm.desk.synthetic"}, getContextRevision: () => 1, subscribeContext: () => () => {}, createReleaseResolutionDraft: (...args: unknown[]) => m.createDraft(...args)}}));
+const m = vi.hoisted(() => ({readAssignment:vi.fn(), saveAssignment:vi.fn(), readCollection: vi.fn(), readCollectionReceipt: vi.fn(), saveCollection: vi.fn(), remediationReview: vi.fn(), transition: vi.fn(), updates: vi.fn(), saveUpdate: vi.fn(), createDraft: vi.fn(), exportCsv: vi.fn(), report: vi.fn(), reportReleases: vi.fn(), read: vi.fn(), activity: vi.fn(), triage: vi.fn(), releases: vi.fn(), links: vi.fn(), client: {config: {apiBase: "https://fixture.invalid", sessionToken: "axm.desk.synthetic"}, getContextRevision: () => 1, subscribeContext: () => () => {}, createReleaseResolutionDraft: (...args: unknown[]) => m.createDraft(...args)}}));
 vi.mock("@tauri-apps/api/core", () => ({invoke: m.exportCsv}));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({desktopClient: m.client}));
-vi.mock("../../../desktop/src/lib/ticketDirectoryClient", () => ({readIncidentAssignment:m.readAssignment, saveIncidentAssignment:m.saveAssignment, readIncidentCollection:m.readCollection, saveIncidentCollection:m.saveCollection, readIncidentRemediationReview: m.remediationReview, changeIncidentStatus: m.transition, readTicketDirectory: m.read, readIncidentUpdates: m.updates, saveIncidentUpdate: m.saveUpdate, readIncidentReportReleases: m.reportReleases, reportDeploymentIncident: m.report, readIncidentActivity: m.activity, readIncidentTriage: m.triage, readTicketReleaseLinks: m.links, readIncidentRelease: m.releases}));
+vi.mock("../../../desktop/src/lib/ticketDirectoryClient", () => ({readIncidentAssignment:m.readAssignment, saveIncidentAssignment:m.saveAssignment, readIncidentCollection:m.readCollection, readIncidentCollectionReceipt:m.readCollectionReceipt, saveIncidentCollection:m.saveCollection, readIncidentRemediationReview: m.remediationReview, changeIncidentStatus: m.transition, readTicketDirectory: m.read, readIncidentUpdates: m.updates, saveIncidentUpdate: m.saveUpdate, readIncidentReportReleases: m.reportReleases, reportDeploymentIncident: m.report, readIncidentActivity: m.activity, readIncidentTriage: m.triage, readTicketReleaseLinks: m.links, readIncidentRelease: m.releases}));
 import {TicketsDirectoryView} from "../../../desktop/src/views/TicketsDirectoryView";
 import type {VerifiedDesktopIdentity} from "../../../desktop/src/lib/desktopClient";
 
@@ -48,6 +48,29 @@ it("keeps keyboard focus on retry and starts one read while tickets refresh", as
   expect(refresh.getAttribute("aria-disabled")).toBe("false");
   expect(document.activeElement).toBe(refresh);
   expect(screen.getByRole("heading", {name: "Fixture incident"})).toBeTruthy();
+});
+
+it.each([false,true])("leaves the inspector empty when its ticket is absent after refresh (explicit: %s)", async explicit => {
+  m.read.mockResolvedValueOnce(data).mockResolvedValue({...data, records:[data.records[1]]});
+  show();
+  const directory = within(await screen.findByRole("navigation",{name:"Select a ticket"}));
+  if (explicit) fireEvent.click(directory.getByRole("button",{name:/Fixture incident/}));
+  expect(screen.getByRole("heading",{name:"Fixture incident"})).toBeTruthy();
+
+  const refresh = screen.getByRole("button",{name:"Refresh tickets"});
+  refresh.focus();
+  fireEvent.click(refresh);
+  expect(await screen.findByText(/The selected ticket could not be verified in the loaded records/)).toBeTruthy();
+  expect(document.activeElement).toBe(refresh);
+  expect(screen.queryByRole("article",{name:"Selected ticket details"})).toBeNull();
+  const other = within(screen.getByRole("navigation",{name:"Select a ticket"})).getByRole<HTMLButtonElement>("button",{name:/Fixture change/});
+  expect(other.tabIndex).toBe(0);
+  expect(other.getAttribute("aria-controls")).toBeNull();
+  expect(other.getAttribute("aria-current")).toBeNull();
+  fireEvent.click(other);
+  const inspector = screen.getByRole("article",{name:"Selected ticket details"});
+  expect(within(inspector).getByRole("heading",{name:"Fixture change"})).toBeTruthy();
+  expect(document.activeElement).toBe(inspector);
 });
 
 it("opens exact source records with colliding ids and keeps Releases reachable", async () => {
@@ -495,6 +518,73 @@ it("keeps unsent fields when the source draft closes and opens only the exact sa
   expect(onOpenSavedDraft).toHaveBeenCalledExactlyOnceWith({id:"saved-draft",version:1});
 });
 
+it.each([true,false])("restores focus when returning from the saved release (source available: %s)", async sourceAvailable => {
+  const onOpenSavedDraft = vi.fn();
+  const props = {identity:scopedIdentity,revision:1,onOpenReleases:vi.fn(),onOpenSavedDraft};
+  m.createDraft.mockImplementation(async (_body, correlationId) => ({
+    ok:true,data:{id:"saved-draft",version:1,status:"draft",correlationId},
+  }));
+  const view = render(createElement(TicketsDirectoryView,props));
+  await screen.findByRole("heading",{name:"Fixture incident"});
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  fireEvent.click(screen.getByRole("button",{name:"Start release draft"}));
+  fireEvent.change(screen.getByLabelText("Applications"),{target:{value:"Inventory"}});
+  fireEvent.change(screen.getByLabelText("What needs to be released?"),{target:{value:"Update staging"}});
+  fireEvent.click(screen.getByRole("button",{name:"Save draft"}));
+  fireEvent.click(await screen.findByRole("button",{name:"Open saved release draft"}));
+  expect(onOpenSavedDraft).toHaveBeenCalledExactlyOnceWith({id:"saved-draft",version:1});
+
+  view.rerender(createElement(TicketsDirectoryView,{...props,active:false}));
+  if (!sourceAvailable) m.read.mockResolvedValue({...data,records:[data.records[0]]});
+  view.rerender(createElement(TicketsDirectoryView,props));
+  const target = sourceAvailable ? await screen.findByRole("button",{name:/Fixture change/})
+    : screen.getByRole("searchbox",{name:"Search tickets"});
+  await waitFor(() => expect(document.activeElement).toBe(target));
+  if (!sourceAvailable) expect(screen.queryByRole("button",{name:/Fixture change/})).toBeNull();
+});
+
+it("parks independent draft fields for two change tickets and saves the selected source", async () => {
+  m.read.mockResolvedValue({...data,records:[...data.records,{
+    ...data.records[1],id:"other-change",provider:"servicenow",reference:"CHG-20",title:"Other change",
+  }]});
+  m.createDraft.mockImplementation(async (_body, correlationId) => ({
+    ok:true,data:{id:"saved-draft",version:1,status:"draft",correlationId},
+  }));
+  show(scopedIdentity);
+  await screen.findByRole("heading",{name:"Fixture incident"});
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  const choose = (name: string) => fireEvent.click(screen.getByRole("button",{name:new RegExp(name)}));
+  const enter = (value: string) => {
+    fireEvent.change(screen.getByLabelText("Applications"),{target:{value:"Checkout"}});
+    fireEvent.change(screen.getByLabelText("What needs to be released?"),{target:{value}});
+  };
+  choose("^Start release draft$");
+  enter("Jira work in progress");
+  choose("^Close$");
+  choose("Other change");
+  choose("^Start release draft$");
+  expect(screen.getByText("Source ticket CHG-20 · ServiceNow")).toBeTruthy();
+  expect(screen.getByLabelText("What needs to be released?")).toHaveProperty("value","");
+  enter("ServiceNow work in progress");
+  choose("^Close$");
+  choose("Fixture change");
+  choose("Resume release draft for CHG-10");
+  expect(screen.getByDisplayValue("Jira work in progress")).toBeTruthy();
+  choose("^Close$");
+  choose("Other change");
+  choose("Resume release draft for CHG-20");
+  expect(screen.getByDisplayValue("ServiceNow work in progress")).toBeTruthy();
+  choose("^Save draft$");
+  await screen.findByText(/Draft saved/);
+  expect(m.createDraft).toHaveBeenCalledExactlyOnceWith({
+    title:"Other change",applications:["Checkout"],requestDetails:"ServiceNow work in progress",sourceChangeTicketId:"other-change",
+  },expect.any(String));
+  choose("^Close$");
+  choose("Fixture change");
+  choose("Resume release draft for CHG-10");
+  expect(screen.getByDisplayValue("Jira work in progress")).toBeTruthy();
+});
+
 it("keeps an interrupted update bound to the same incident and attempt", async () => {
   m.updates.mockResolvedValueOnce({workspaceId:identity.organizationId, actorId:identity.userId,
     incidentId:"same-id",releaseId:"release-1",canWrite:true,limited:false,notes:[]});
@@ -678,7 +768,7 @@ it("records only a current remediation decision for the selected incident revisi
   expect(screen.getByText("Recovery unverified")).toBeTruthy();
 });
 
-it("records collection only after attestation and displays the durable checklist state", async () => {
+it.each([true,false])("recovers the exact collection attempt and reloads the checklist (receipt found: %s)", async receiptFound => {
   const commit = "a".repeat(40);
   const baseline = "c".repeat(40);
   const scope = {workspaceId:identity.organizationId,actorId:identity.userId,incidentId:"same-id",releaseId:"release-1",incidentRevision:instant};
@@ -699,9 +789,23 @@ it("records collection only after attestation and displays the durable checklist
   expect(m.saveCollection).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("checkbox",{name:/I collected the selected workflow logs/}));
   fireEvent.click(submit);
-  fireEvent.click(await screen.findByRole("button",{name:"Retry evidence collection"}));
-  expect(await screen.findByText("Evidence collection recorded.")).toBeTruthy();
-  expect(m.saveCollection.mock.calls[0][3]).toEqual(m.saveCollection.mock.calls[1][3]);
+  const check = await screen.findByRole("button",{name:"Check collection receipt"});
+  m.readCollectionReceipt.mockResolvedValueOnce(receiptFound ? {} : null);
+  check.focus();
+  fireEvent.click(check);
+  if (receiptFound) {
+    const receipt = await screen.findByText("The original collection was recorded. Review current evidence separately.");
+    expect(document.activeElement).toBe(receipt);
+    expect(m.saveCollection).toHaveBeenCalledTimes(1);
+  } else {
+    expect(await screen.findByText("No receipt was found for this attempt.")).toBeTruthy();
+    expect(document.activeElement).toBe(check);
+    expect(m.saveCollection).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button",{name:"Retry evidence collection"}));
+    expect(await screen.findByText("Evidence collection recorded.")).toBeTruthy();
+    expect(m.saveCollection.mock.calls[0][3]).toEqual(m.saveCollection.mock.calls[1][3]);
+  }
+  expect(m.readCollectionReceipt.mock.calls[0][3]).toEqual(m.saveCollection.mock.calls[0][3]);
   expect(m.saveCollection.mock.calls[0][3]).toMatchObject({...scope,repository:"fixture-owner/inventory",commit,
     baselineCommit:baseline,runId:"17",observedAt:instant});
   fireEvent.click(screen.getByRole("tab",{name:"Overview"}));

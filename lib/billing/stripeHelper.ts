@@ -229,22 +229,29 @@ function hostedCreditCheckoutUrl(value: string | null): string | null {
   }
 }
 
+type AddOnCheckoutBinding = Pick<CreateAddOnCheckoutInput, "purchaseId" | "organizationId" | "sku" | "priceCents">;
+const testCheckoutSessionId = /^cs_test_[A-Za-z0-9_]+$/;
+
+function boundCreditCheckoutUrl(session: import("stripe").Stripe.Checkout.Session, input: AddOnCheckoutBinding): string | null {
+  const metadata = session.metadata;
+  if (typeof session.id !== "string" || !testCheckoutSessionId.test(session.id)
+    || session.livemode !== false || session.mode !== "payment"
+    || session.status !== "open" || session.payment_status !== "unpaid"
+    || !Number.isSafeInteger(session.expires_at) || session.expires_at * 1000 <= Date.now()
+    || session.currency !== "usd" || session.amount_total !== input.priceCents
+    || session.client_reference_id !== input.organizationId
+    || metadata?.purpose !== "axiom_ai_credit_add_on" || metadata.addOnPurchaseId !== input.purchaseId
+    || metadata.organizationId !== input.organizationId || metadata.sku !== input.sku) return null;
+  return hostedCreditCheckoutUrl(session.url);
+}
+
 /** Read only the original saved session. The signed webhook owns fulfillment. */
-export async function recoverAddOnCheckoutSession(input: Pick<CreateAddOnCheckoutInput,
-  "purchaseId" | "organizationId" | "sku" | "priceCents"> & {sessionId: string}): Promise<string | null> {
-  if (resolveStripeMode() !== "test" || !/^cs_test_[A-Za-z0-9_]+$/.test(input.sessionId)) return null;
+export async function recoverAddOnCheckoutSession(input: AddOnCheckoutBinding & {sessionId: string}): Promise<string | null> {
+  if (resolveStripeMode() !== "test" || !testCheckoutSessionId.test(input.sessionId)) return null;
   try {
     const stripe = await testCreditStripe();
     const session = await stripe.checkout.sessions.retrieve(input.sessionId);
-    const metadata = session.metadata;
-    if (session.id !== input.sessionId || session.livemode !== false || session.mode !== "payment"
-      || session.status !== "open" || session.payment_status !== "unpaid"
-      || !Number.isSafeInteger(session.expires_at) || session.expires_at * 1000 <= Date.now()
-      || session.currency !== "usd" || session.amount_total !== input.priceCents
-      || session.client_reference_id !== input.organizationId
-      || metadata?.purpose !== "axiom_ai_credit_add_on" || metadata.addOnPurchaseId !== input.purchaseId
-      || metadata.organizationId !== input.organizationId || metadata.sku !== input.sku) return null;
-    return hostedCreditCheckoutUrl(session.url);
+    return session.id === input.sessionId ? boundCreditCheckoutUrl(session, input) : null;
   } catch {
     return null;
   }
@@ -289,8 +296,8 @@ export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput
       metadata,
       payment_intent_data: { metadata },
     }, { idempotencyKey: input.idempotencyKey });
-    const url = hostedCreditCheckoutUrl(session.url);
-    if (!url || !/^cs_test_[A-Za-z0-9_]+$/.test(session.id)) {
+    const url = boundCreditCheckoutUrl(session, input);
+    if (!url) {
       return { ok: false, outcome: "unknown", reason: "Stripe did not return a verified test checkout URL." };
     }
     return { ok: true, url, sessionId: session.id };

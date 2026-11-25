@@ -6,17 +6,22 @@ const mocks = vi.hoisted(() => ({
   aggregate: vi.fn(),
   readBilling: vi.fn(),
   readAllowance: vi.fn(),
+  budgetEnabled: vi.fn(),
+  readBudget: vi.fn(),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
   resolveRequestDesktopSession: mocks.resolveRequestDesktopSession,
 }));
 vi.mock("@/lib/db", () => ({
-  prisma: { usageEvent: { aggregate: mocks.aggregate } },
+  prisma: { usageEvent: { aggregate: mocks.aggregate }, $transaction: (run: (tx: object) => unknown) => run({}) },
 }));
 
 vi.mock("@/lib/billing/tenantBillingStore", () => ({ readBillingPlanWithAvailability: mocks.readBilling }));
 vi.mock("@/lib/billing/currentAIAllowance", () => ({ readCurrentAIAllowance: mocks.readAllowance }));
+
+vi.mock("@/lib/billing/workspaceAIUsageBudget", () => ({ workspaceAIUsageBudgetsEnabled: mocks.budgetEnabled }));
+vi.mock("@/lib/billing/workspaceAIUsageBudgetSettings", () => ({ readWorkspaceBudgetSettings: mocks.readBudget }));
 
 function request() {
   return new NextRequest("https://visionxixlabs.com/api/desktop/usage-summary", { method: "GET" });
@@ -26,7 +31,8 @@ const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", role:
 
 describe("GET /api/desktop/usage-summary", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    mocks.budgetEnabled.mockReturnValue(false);
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.aggregate.mockResolvedValue({_sum:{inputTokens:0,outputTokens:0,costCents:0},_count:{_all:0}});
     mocks.readBilling.mockResolvedValue({available:true,plan:{publicPlanId:"free",pricingPlanAvailable:true,pricingPlan:{displayName:"Free"},spec:{label:"Trial"},status:"active",stripeCustomerId:"cus_private",stripeSubscriptionId:"sub_private"}});
@@ -70,6 +76,38 @@ describe("GET /api/desktop/usage-summary", () => {
     const {GET}=await import("../route");
     expect((await (await GET(request())).json()).data.billingSnapshot.canManageBilling).toBe(false);
   });
+  it("returns only the budget display fields for the current workspace billing manager", async () => {
+    mocks.budgetEnabled.mockReturnValue(true);
+    mocks.readBudget.mockResolvedValue({ kind: "ok", data: {
+      revision: "private-revision",
+      budget: { monthlyLimitCents: 5000, remainingCents: 600, warningReached: true, warningThresholdCents: 4000 },
+    } });
+    const { GET } = await import("../route");
+    const body = await (await GET(request())).json();
+    expect(mocks.readBudget).toHaveBeenCalledWith(expect.anything(), { organizationId: "org-1", userId: "user-1" });
+    expect(body.data.billingSnapshot.budget).toEqual({ available: true, limit: { monthlyLimitCents: 5000, remainingCents: 600, warningReached: true } });
+  });
+
+  it("keeps the verified allowance when the budget read is forbidden or unavailable", async () => {
+    mocks.budgetEnabled.mockReturnValue(true);
+    mocks.readBudget.mockResolvedValueOnce({ kind: "forbidden" }).mockRejectedValueOnce(new Error("private"));
+    const { GET } = await import("../route");
+    for (const expected of [1, 2]) {
+      const body = await (await GET(request())).json();
+      expect(mocks.readBudget).toHaveBeenCalledTimes(expected);
+      expect(body.data.billingSnapshot).toMatchObject({ budget: { available: false }, allowance: { available: true } });
+    }
+  });
+
+  it("does not read or disclose a budget with the flag off or to a non-manager", async () => {
+    const { GET } = await import("../route");
+    expect((await (await GET(request())).json()).data.billingSnapshot).not.toHaveProperty("budget");
+    mocks.budgetEnabled.mockReturnValue(true);
+    mocks.resolveRequestDesktopSession.mockResolvedValue({ ...session, role: "operator" });
+    expect((await (await GET(request())).json()).data.billingSnapshot).not.toHaveProperty("budget");
+    expect(mocks.readBudget).not.toHaveBeenCalled();
+  });
+
   it("keeps unavailable plan and allowance distinct from a Free plan or zero credit",async()=>{
     mocks.readBilling.mockRejectedValue(new Error("private storage detail"));
     mocks.readAllowance.mockRejectedValue(new Error("private storage detail"));

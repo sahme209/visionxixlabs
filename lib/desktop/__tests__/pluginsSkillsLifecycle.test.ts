@@ -352,8 +352,10 @@ it("shows only a reported GitHub selection and keeps inspection read-only", asyn
   expect(within(inspect.closest("tr")!).getByText("Read access verified").hasAttribute("data-read-verified")).toBe(true);
   expect(details.getByText("Read access verified").hasAttribute("data-read-verified")).toBe(true);
   expect(details.getByText("Authentication").nextElementSibling?.textContent).toBe("GitHub App");
+  expect(within(details.getByRole("region", {name: "Verified capabilities"})).getByRole("listitem").textContent?.trim())
+    .toBe("List repositories in this installation");
   expect(details.queryByRole("button", {name: "Verify read access"})).toBeNull();
-  expect(details.getByText("Recorded installation check").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
+  expect(details.getByText("Last checked").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
   expect(document.activeElement).toBe(details.getByRole("button", {name: "Close details"}));
   expect(fireEvent.keyDown(details.getByRole("button", {name: "Close details"}), {key: "/"})).toBe(true);
   expect(document.activeElement).toBe(details.getByRole("button", {name: "Close details"}));
@@ -364,8 +366,9 @@ it("shows only a reported GitHub selection and keeps inspection read-only", asyn
   }));
   fireEvent(window, new Event("focus"));
   await waitFor(() => expect(details.queryByText("Reported repository access")).toBeNull());
-  expect(details.queryByText("Recorded installation check")).toBeNull();
+  expect(details.queryByText("Last checked")).toBeNull();
   expect(details.queryByText("Read access verified")).toBeNull();
+  expect(details.queryByRole("region", {name: "Verified capabilities"})).toBeNull();
   expect(details.queryByText("GitHub App")).toBeNull();
   expect(inspect.closest("tr")?.querySelector("time")).toBeNull();
   fireEvent.click(details.getByRole("button", {name: "Close details"}));
@@ -387,6 +390,7 @@ it("requires a recorded GitHub check time for the verified cue", async () => {
   fireEvent.click(inspect);
   const details = within(screen.getByRole("dialog", {name: "Details for GitHub"}));
   expect(details.getByText("Read check unconfirmed").hasAttribute("data-read-verified")).toBe(false);
+  expect(details.queryByRole("region", {name: "Verified capabilities"})).toBeNull();
   expect(details.getByText("Selected repositories")).toBeTruthy();
 });
 
@@ -550,7 +554,7 @@ it("checks GitHub from the inspector once, keeps focus and announces the result"
   }));
   await act(async () => pending.resolve(ok({status: "validated_read_only"})));
   expect(details.getByRole("status").textContent).toBe("GitHub read access is verified for this workspace.");
-  expect(details.getByText("Recorded installation check").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
+  expect(details.getByText("Last checked").nextElementSibling?.querySelector("time")?.dateTime).toBe(recordedCheck);
   expect(document.activeElement).toBe(verify);
   m.client.integrationStatus.mockResolvedValue(ok({
     configuration: {github: true}, github: {status: "revoked", repositorySelection: "selected"},
@@ -587,6 +591,7 @@ it("navigates reported scope and recorded activity without starting a provider a
   const permissions = details.getByRole("tab", {name: "Permissions"});
   expect(document.activeElement).toBe(permissions);
   expect(within(details.getByRole("tabpanel", {name: "Permissions"})).getByText("Selected repositories")).toBeTruthy();
+  expect(details.getByRole("region", {name: "Verified capabilities"})).toBeTruthy();
   expect(details.getByRole("region", {name: "Execution boundary"})).toBeTruthy();
 
   fireEvent.keyDown(permissions, {key: "End"});
@@ -597,4 +602,47 @@ it("navigates reported scope and recorded activity without starting a provider a
   expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
   fireEvent.keyDown(activity, {key: "Escape"});
   expect(document.activeElement).toBe(inspect);
+});
+
+it("summarizes active access from the viewer role and recorded provider states only", async () => {
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true, slack: true, teams: true, linear: true},
+    github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: "2026-11-24T08:00:00.000Z"},
+    cloud: [{provider: "azure", status: "read_only_connected", lastTransitionAt: "2026-11-24T08:00:00.000Z"}],
+    collaboration: [],
+  }));
+  m.client.airflowConnection.mockResolvedValue(ok({connected: false, status: "not_connected"}));
+  render(createElement(PluginsSkillsView, {onOpenSettings() {}, onOpenAirflow() {}, canManage: false, workspaceRole: "security_reviewer"}));
+  const access = await screen.findByLabelText("Active access");
+  await waitFor(() => expect(access.textContent).toContain("GitHub: read access verified"));
+  expect(access.textContent).toContain("Role: Security reviewer · inspection only");
+  expect(access.textContent).toContain("Microsoft Azure: read-only connected");
+  expect(access.textContent).not.toMatch(/least privilege|V19-Deploy/i);
+});
+
+it("withholds the active access summary while any provider state is unavailable", async () => {
+  m.client.airflowConnection.mockRejectedValueOnce(new Error("unavailable"));
+  render(createElement(PluginsSkillsView, {onOpenSettings() {}, onOpenAirflow() {}, canManage: true, workspaceRole: "admin"}));
+  const access = await screen.findByLabelText("Active access");
+  await waitFor(() => expect(access.textContent).toContain("connection access unavailable"));
+  expect(access.textContent).toContain("Role: Admin · manages skills and consent");
+});
+
+it("reads recent provider checks as relative times and keeps the full recorded time for assistive technology", async () => {
+  const checked = new Date(Date.now() - 2 * 60_000 - 5_000).toISOString();
+  m.client.integrationStatus.mockResolvedValue(ok({
+    configuration: {github: true, slack: true, teams: true, linear: true},
+    github: {status: "validated_read_only", repositorySelection: "selected", lastSeenAt: checked},
+    cloud: [], collaboration: [],
+  }));
+  m.client.airflowConnection.mockResolvedValue(ok({connected: false, status: "not_connected"}));
+  show();
+  const time = await waitFor(() => {
+    const found = document.querySelector(`time[datetime="${checked}"]`);
+    expect(found).toBeTruthy();
+    return found!;
+  });
+  expect(time.querySelector('[aria-hidden="true"]')?.textContent).toBe("2 minutes ago");
+  expect(time.querySelector(".sr-only")?.textContent).toBe(new Date(checked).toLocaleString());
+  expect(time.getAttribute("title")).toBe(new Date(checked).toLocaleString());
 });

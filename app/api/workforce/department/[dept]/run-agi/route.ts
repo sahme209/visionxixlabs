@@ -66,7 +66,7 @@ export async function POST(
       break;
     }
     try {
-      const result = await runEngineerAgi(engineer, org);
+      const result = await runEngineerAgi(engineer, org, String(ctx.userId));
       await persistEngineerAgiResult(engineer, org, result);
       counts[result.outcome] += 1;
     } catch (err) {

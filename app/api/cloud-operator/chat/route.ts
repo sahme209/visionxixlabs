@@ -13,6 +13,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { redactSecrets } from "@/lib/security/secretRedaction";
 import { createConversation } from "@/lib/axiomChat/storage";
 import { runAxiomAssistantAgent } from "@/lib/agents/axiomAssistantAgent";
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 
 function getClientIp(req: NextRequest): string {
   return (
@@ -95,6 +96,15 @@ export async function POST(req: NextRequest) {
       { error: "Too many requests. Please try again in a minute." },
       { status: 429 }
     );
+  }
+
+  // The lead token authorizes lead access. It does not identify a workspace
+  // and an accepted billing actor for a prepaid AI reservation.
+  if (publicBillingPolicyEnabled()) {
+    return NextResponse.json({
+      error: "Cloud Operator chat is unavailable without verified workspace AI access.",
+      code: "ai.workspace_admission_required",
+    }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId.trim() : null;

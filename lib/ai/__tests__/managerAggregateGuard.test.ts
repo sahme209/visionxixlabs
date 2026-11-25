@@ -70,4 +70,20 @@ describe("manager aggregate output boundary", () => {
     await new AIProviderManager().generateText("p", { model: "service-default" });
     expect(calls).toHaveBeenCalledWith("p", expect.objectContaining({ model: "vendor/safe" }));
   });
+
+  it("blocks raw workspace generation under public prepaid billing and preserves admitted generation", async () => {
+    vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1");
+    vi.stubEnv("AI_GATEWAY_MODEL", "vendor/safe");
+    const options = { organizationId: "org_fixture", model: "vendor/safe" };
+    const mgr = new AIProviderManager();
+    for (const run of [paths.generate, paths.summarize, paths.classify, paths.extract]) {
+      await expect(run(mgr, options)).rejects.toThrow("Workspace AI requires prepaid admission.");
+    }
+    const chunks = [];
+    for await (const chunk of mgr.streamText("p", options)) chunks.push(chunk);
+    expect(chunks).toEqual([{ text: "", done: true, finishReason: "error" }]);
+    expect(calls).not.toHaveBeenCalled();
+    await paths.admittedGenerate(mgr, options);
+    expect(calls).toHaveBeenCalledTimes(1);
+  });
 });

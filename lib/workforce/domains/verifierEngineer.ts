@@ -16,7 +16,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
+import { isRuleFallbackReason, makeInstrumentedFetcher } from "@/lib/releaseops/instrumentedAiFetcher";
 
 export const VERIFIER_TARGET_KIND = "engineer_verifier_verdicts";
 
@@ -182,7 +182,7 @@ function parseAi(text: string): ParsedAi | null {
   }
 }
 
-export async function runVerifierEngineer(organizationId: string): Promise<VerifierReport> {
+export async function runVerifierEngineer(organizationId: string, actorUserId?: string): Promise<VerifierReport> {
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   let totalCalls = 0;
@@ -256,6 +256,7 @@ export async function runVerifierEngineer(organizationId: string): Promise<Verif
     const fetcher = makeInstrumentedFetcher({
       engineName: "engineer_domain:verifier_engineer",
       organizationId,
+      actorUserId,
       timeoutMs: 30_000,
       // Phase 593: bulk-classification workload — route to OpenAI's
       // cheaper model when available.
@@ -275,7 +276,7 @@ export async function runVerifierEngineer(organizationId: string): Promise<Verif
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     errorMessage = msg;
-    outcome = msg.startsWith("circuit_open_") ? "fallback_rules" : "error";
+    outcome = isRuleFallbackReason(msg) ? "fallback_rules" : "error";
   }
 
   const findings: VerifierFinding[] = candidates.map((c) => {
