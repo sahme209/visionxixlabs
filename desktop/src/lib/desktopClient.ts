@@ -38,7 +38,7 @@ import {isBotAiEvidenceContext,isBotAiCapabilities,isBotAiRunList,isBotAiRunResp
 import {readinessReportRequest} from './readinessReportTransport';
 import {isReadinessCapabilities,isReadinessRunList,isReadinessRunResponse,isReadinessReportResponse,isReadinessRunId,type ReadinessCapabilitiesDto,type ReadinessRunListDto,type ReadinessRunResponseDto,type ReadinessReportResponseDto,type ReadinessStartDto} from '../../../lib/axiom/bot/readinessRunDto';
 import {savedBotTaskRequest} from "./savedBotTaskTransport";
-import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskHistory,type SavedBotTaskResult,type SavedBotTaskListDto,type SavedBotTaskDetailDto,type SavedBotTaskHistoryDto,type SavedBotTaskCreateDto,type SavedBotTaskUpdateDto} from "../../../lib/axiom/bot/savedTaskContract";
+import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskHistory,isSavedBotTaskLastRuns,type SavedBotTaskLastRunsDto,type SavedBotTaskResult,type SavedBotTaskListDto,type SavedBotTaskDetailDto,type SavedBotTaskHistoryDto,type SavedBotTaskCreateDto,type SavedBotTaskUpdateDto} from "../../../lib/axiom/bot/savedTaskContract";
 import { isCloudOnboardingReadiness, type CloudOnboardingReadiness } from '../../../lib/cloud/onboardingReadinessContract';
 import {isReleaseMergeTargets,isReleaseMergePlanEvidence,type ReleaseMergeTargets,type ReleaseMergePlanEvidence,type ReleaseMergeMethod} from "./releaseMergeContract";
 import { isReleaseBatchWait, isReleaseBatchWaitState, type ReleaseBatchWait, type ReleaseBatchWaitState } from "./releaseBatchWaitContract";
@@ -595,6 +595,10 @@ export class DesktopClient {
   }
   listSavedBotTasks(cursor?:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskListDto>> {
     return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks${cursor?`?cursor=${encodeURIComponent(cursor)}`:""}`,undefined,isSavedBotTaskList,signal);
+  }
+  listSavedBotTaskLastRuns(ids:readonly string[],signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskLastRunsDto>> {
+    if(ids.length===0||ids.length>25||!ids.every(isSavedBotTaskId)||new Set(ids).size!==ids.length)return Promise.resolve({ok:false,error:"Invalid saved tasks.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/last-runs?ids=${ids.join(",")}`,undefined,(value):value is SavedBotTaskLastRunsDto=>isSavedBotTaskLastRuns(value,ids),signal);
   }
   getSavedBotTask(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskDetailDto>> {
     if(!isSavedBotTaskId(id))return Promise.resolve({ok:false,error:"Invalid saved task.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});

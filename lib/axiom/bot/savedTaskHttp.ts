@@ -5,6 +5,7 @@ import {prisma} from "@/lib/db";
 import {resolveRequestDesktopSession} from "@/lib/desktop/resolveRequestDesktopSession";
 import {consumeToken} from "@/lib/api/rateLimiter";
 import {parseSavedBotTaskCreate,parseSavedBotTaskUpdate} from "./savedTaskSchema";
+import {listSavedTaskLastRuns,parseSavedTaskIds,type SavedTaskLastRunRepo} from "./savedTaskLastRun";
 import {createSavedBotTask,updateSavedBotTask,getSavedBotTask,listSavedBotTasks,listSavedBotTaskHistory,SavedBotTaskConflictError,SavedBotTaskNotFoundError,type SavedBotTaskRepo,type SavedBotTaskRow,type SavedBotTaskSummary,type SavedBotTaskScope} from "./savedTaskRepo";
 const db=prisma as unknown as SavedBotTaskRepo;
 const idPattern=/^bot_[a-f0-9]{64}$/;
@@ -77,5 +78,15 @@ export async function handleSavedBotTaskHistory(request:NextRequest,id:string):P
   if(!allowed(scope,false))return fail("saved_task_rate_limited",429);
   const page=await listSavedBotTaskHistory(db,scope,id,raw===null?undefined:Number(raw));
   return reply({ok:true,data:{taskId:id,events:page.events.map(event=>({version:event.version,eventType:event.eventType,content:event.contentJson,occurredAt:event.occurredAt.toISOString()})),nextBeforeVersion:page.nextBeforeVersion}});
+ }catch(error){return failure(error)}
+}
+export async function handleSavedBotTaskLastRuns(request:NextRequest):Promise<NextResponse>{
+ try{
+  const scope=await principal(request);if(!scope)return fail("desktop_session_required",401);
+  if(request.method!=="GET")return fail("method_not_allowed",405);
+  const ids=parseSavedTaskIds(query(request,["ids"]).get("ids"));if(!ids)throw new Invalid();
+  if(!allowed(scope,false))return fail("saved_task_rate_limited",429);
+  const runs=await listSavedTaskLastRuns(prisma as unknown as SavedTaskLastRunRepo,scope,ids);
+  return reply({ok:true,data:{runs:runs.map(run=>({taskId:run.taskId,family:run.family,status:run.status,recordedAt:run.recordedAt.toISOString()}))}});
  }catch(error){return failure(error)}
 }
