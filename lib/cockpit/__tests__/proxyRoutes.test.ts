@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
-import { proxy } from "@/proxy";
+import { NextRequest, type NextResponse } from "next/server";
+import { proxy as routeProxy } from "@/proxy";
+
+// Only GET/HEAD / is asynchronous (it reads the session token); these paths return synchronously.
+const proxy = (input: NextRequest) => routeProxy(input) as NextResponse;
 describe("cockpit route compatibility",()=>{
  it("keeps old team form return notices inside the cockpit",()=>{
   const response=proxy(new NextRequest("https://visionxixlabs.com/dashboard/team?notice=role_updated"));
