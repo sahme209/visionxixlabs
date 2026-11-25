@@ -58,7 +58,7 @@
     "@google-cloud/container": "7.3.0",
     "@google-cloud/resource-manager": "7.2.0",
     "@google-cloud/security-center": "10.3.0",
-    "@google-cloud/storage": "8.4.0",
+    "@google-cloud/storage": "9.0.0",
     "@google/genai": "3.3.0",
     "@heroicons/react": "^2.2.0",
     "@modelcontextprotocol/sdk": "1.32.2",
