@@ -411,3 +411,7 @@ html:not([data-theme="light"]) .studio-ticket-overview .studio-ticket-release-li
 .studio-ticket-owner select { display: block; width: 100%; max-width: 240px; margin-top: 4px; }
 
 .studio-ticket-response-source { display: block; margin-top: 3px; color: rgb(var(--neutral-zinc-400)); font-size: 11px; }
+
+.studio-ticket-linked-release { padding-top: 0; }
+.studio-ticket-linked-release button { font-size: 13px; line-height: 20px; }
+.studio-ticket-linked-release-id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; color: var(--app-secondary, inherit); margin: 4px 0 8px; overflow-wrap: anywhere; }

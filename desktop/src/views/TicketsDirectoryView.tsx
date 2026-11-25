@@ -627,6 +627,15 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
                 </section>}
               </div>
               <div className="space-y-4">
+                {record.releaseId && <section className="studio-ticket-summary studio-ticket-linked-release" aria-label="Linked release">
+                  <h3>Linked release</h3>
+                  <p className="studio-ticket-linked-release-id">{record.releaseId}</p>
+                  {canReadLinkedReleases
+                    ? <IncidentReleaseLink key={JSON.stringify(["linked-card", record.id, record.releaseId, revision])}
+                        incident={record} identity={identity} revision={revision} active={active && canRead}
+                        collectionAttempts={collectionAttempts.current} label="Open linked release" />
+                    : <p className="text-xs text-zinc-400">Your role cannot open linked releases.</p>}
+                </section>}
                 {incidentTimeline}
                 <IncidentResolutionChecklist key={JSON.stringify([updatesOwner,record.id,record.releaseId,record.revision])}
                   incident={record} identity={identity} revision={revision} active={active && canReadLinkedReleases}
