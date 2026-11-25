@@ -89,12 +89,12 @@ export default function DesktopInstallPage() {
           <p>When a matching detached <code>.asc</code> signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release.</p>
         </Step>
         <Step number={3} title="Install or run">
-          <p>Run the commands for the package you verified. These examples use v0.1.24. Substitute the exact filename for the version you downloaded.</p>
-          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`chmod +x ./V19_0.1.24_amd64.AppImage
-./V19_0.1.24_amd64.AppImage
+          <p>Run the commands for the package you verified. These examples use v0.1.25. Substitute the exact filename for the version you downloaded.</p>
+          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`chmod +x ./V19_0.1.25_amd64.AppImage
+./V19_0.1.25_amd64.AppImage
 
-sudo dpkg -i ./V19_0.1.24_amd64.deb
-sudo rpm -i ./V19-0.1.24-1.x86_64.rpm`}</pre>
+sudo dpkg -i ./V19_0.1.25_amd64.deb
+sudo rpm -i ./V19-0.1.25-1.x86_64.rpm`}</pre>
         </Step>
         <Step number={4} title="Sign in">
           <p>Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.</p>
