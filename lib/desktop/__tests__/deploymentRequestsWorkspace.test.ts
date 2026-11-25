@@ -638,7 +638,7 @@ it('clears batch evidence and controls during an unsuccessful refresh and binds 
   const check = await screen.findByRole('button', {name: 'Check batches'});
   expect(m.batchReadiness).toHaveBeenCalledExactlyOnceWith('request-A', 1);
   fireEvent.click(check);
-  await screen.findByText('Selected batches are not ready. Refresh to check again.');
+  await screen.findByText('Selected batches have not all completed yet. This is normal while they run; check again later.');
   expect(m.batchReadiness).toHaveBeenLastCalledWith('request-A', 2);
 });
 

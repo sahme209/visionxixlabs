@@ -148,7 +148,7 @@ export function ReleaseBatchReadiness({ requestId, version, count, inspectTasks 
         }
         else if (!result.data.ready && result.data.reason === "waiting") {
           waiting = true;
-          message = "Selected batches are not ready. Refresh to check again.";
+          message = "Selected batches have not all completed yet. This is normal while they run; check again later.";
         }
         else if (!result.data.ready && result.data.reason === "changed") {
           selectionChanged = true;
@@ -157,7 +157,7 @@ export function ReleaseBatchReadiness({ requestId, version, count, inspectTasks 
             ? "This saved release was closed. Refresh the release list to open its recorded closure."
             : "Release or connection changed. Reopen release details.";
         }
-        else if (runs?.some(run => run.state === "failed")) message = "A declared run failed. Review its status in Airflow.";
+        else if (runs?.some(run => run.state === "failed")) message = "A declared run failed, so batch completion is not verified. Review the run in Airflow, then check batches again.";
       }
     } catch { /* Keep the safe unavailable message. */ }
     finally { if (flight.current === operation) flight.current = null; }
