@@ -90,28 +90,28 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to open a support request for you to review. Follow a source link to open the guide or page. The chat closes and keyboard focus moves to the cited section or to the page heading. Open Ask V19 again to return to the conversation. Try a plain question such as How do I set up GCP? or How do I block a GitHub Actions deploy until someone approves? The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
+   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
+   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask V19 can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
+   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
    "text": "Choose Review a support request to carry the question to the contact form in the same tab. Review and edit it before you send. The question stays out of the page address, and opening the form does not submit a request. Ask V19 can also record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db"
+   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
   },
   {
    "href": "/docs/audit-logs#desktop-settings",
@@ -538,84 +538,84 @@
    "title": "Overview",
    "text": "Create an OAuth application with the provider (Google Cloud Console / GitHub OAuth Apps). Register the callback URL pointing at your V19 host. Set the resulting Client ID + Client Secret on your host as environment variables. The sign-in page checks /api/auth/providers on load. A provider appears only when that response includes it. The appearance of a sign-in option confirms registration. Verify that the callback succeeds with a test account.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/oauth-setup#host-base",
    "title": "1. Base NextAuth env",
    "text": "# Required for every deployment NEXTAUTH_URL=https://your-domain.example.com NEXTAUTH_SECRET= NEXTAUTH_URL must exactly match the public origin (no trailing slash). On Vercel set it under Project → Settings → Environment Variables for Production + Preview environments.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/oauth-setup#google",
    "title": "2. Google sign-in",
    "text": "Open the Google Cloud Console → APIs & Services → Credentials . Click Create Credentials → OAuth client ID → Web application . Under Authorized redirect URIs , add: https://your-domain.example.com/api/auth/callback/google For local development add http://localhost:3000/api/auth/callback/google as well. Google shows a Client ID + Client Secret. Treat the secret as you would an API key. GOOGLE_CLIENT_ID=1234567890-abc.apps.googleusercontent.com GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxx Google's OAuth consent screen needs at least one scope ( openid email profile is the NextAuth default). For external apps you'll need to publish the consent screen to leave test mode and accept non-test users.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/oauth-setup#github",
    "title": "3. GitHub sign-in",
    "text": "Open GitHub → Settings → Developer settings → OAuth Apps and click New OAuth App . Homepage URL: https://your-domain.example.com Authorization callback URL: https://your-domain.example.com/api/auth/callback/github After saving, click Generate a new client secret . GitHub shows the secret once — copy it immediately. GITHUB_CLIENT_ID=Iv1.xxxxxxxxxxxxxxxx GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx For an organization-restricted app, create the OAuth app under the org's settings and enable the SSO requirement so only org members can sign in.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/oauth-setup#verify",
    "title": "4. Verify it works",
    "text": "Redeploy after setting the env vars (env changes don't auto-rebuild on most hosts). Open the sign-in page in an incognito window. Confirm the configured options appear. GitHub appears below email sign-in. Complete the provider flow and confirm that the browser returns to V19 Control or the page that requested sign-in. To connect the installed app, complete desktop pairing and approve the requested connection. If you see error=Configuration after the OAuth round-trip, check the host configuration, provider credentials, and registered callback URL.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/oauth-setup#troubleshooting",
    "title": "Troubleshooting",
    "text": "A provider option is missing Check whether the host has both credentials for that provider, then verify that the provider appears in the sign-in page's provider response. Redirect URI mismatch The exact callback URL registered with the provider must match the one NextAuth requests. For a preview deployment, configure that exact callback URL with the provider or restrict OAuth sign-in to your configured production origin. Works locally but not in production NEXTAUTH_URL not set or doesn't match the production origin. NextAuth uses this to construct callback URLs.",
    "source": "app/docs/oauth-setup/page.tsx",
-   "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a"
+   "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821"
   },
   {
    "href": "/docs/offline-ai#operations",
    "title": "Offline AI operations and cloud fallback",
    "text": "The v1 model path supports structured Agent decisions through the OpenAI-compatible chat-completions APIs of vLLM, Ollama and LM Studio. V19 does not bundle, install or run a model server. Native server-specific APIs are outside v1. Agent decisions: locally implemented with current membership and policy checks, token reservation, one dispatch and recorded outcomes. Real server acceptance is still required. Bot AI, generic cloud text/coding calls and image generation: unavailable offline in this v1 path. Older local adapters cannot bypass token admission. Cloud fallback and Gateway discovery: refused offline. Online installations cannot select customer-hosted models. Tools and deployments: retain their own connections, permissions and approval gates. The offline AI setting does not make external tools local or certify that the entire application has no external network traffic.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/offline-ai#budgets",
    "title": "Offline customer-hosted models and operator token budgets",
    "text": "The deployment operator sets each workspace's token cap and explicit start/end window. There is no automatic token allowance; a missing, unreadable, expired or not-yet-started budget blocks calls. A workspace role named Operator cannot edit the installation's cap. Before dispatch, V19 reserves the full accepted input limit plus output limit, not a guess based on text bytes. Concurrent requests share the durable workspace ledger. Verified usage settles the reservation. Pending, uncertain and overrun liabilities survive configuration and budget-window changes; changing a window does not erase them. Usage is marked customer_hosted_unpriced , not a zero-dollar Gateway bill. Hardware, model licensing and operation can still cost money. If a server misreports usage or violates its accepted limits, V19 records the failure or larger liability; this is not evidence of an inviolable token cap.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/offline-ai#operator",
    "title": "What the deployment operator prepares",
    "text": "The operator supplies AXIOM_LOCAL_MODEL_CONFIG : installation/revision, exact private server URL and host allowlist, approved model IDs, input/output bounds, input byte bound and explicit per-workspace budget windows. These are installation settings, never model output or workspace form fields. AXIOM_OFFLINE_MODE=true selects offline AI; malformed mode settings refuse instead of silently choosing online. Separate protected acceptance records bind the exact configuration and model to real isolated-test evidence, operator review, enforced input/output limits, verified usage and expiry. A hash or a JSON flag alone does not prove server behavior. Source tests use simulated records; no live eligible record is created automatically. The current protected-file reader has a conservative macOS root-owned, non-writable, no-ACL path profile. Other host profiles are not qualified and refuse. Actual provisioning and filesystem/platform qualification remain separate gates; do not weaken ownership or permissions to make setup pass. Offline sign-in, licensing and enterprise custody are separate on-prem requirements.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/offline-ai#select",
    "title": "Choose an accepted local model",
    "text": "Once an installation is separately qualified, an authorized workspace owner or admin can use AI & Agents → Configuration → Customer-hosted model . Choose an explicitly listed model, then Save model policy . No model is selected automatically. The server rechecks the current accepted model and Governance policy; an enrolled workspace cannot widen AI reach. Desktop Settings → Models offers the same accepted models. Enabling one local model replaces local selection without adding a cloud fallback. The Agent composer sends the exact selected model preference; a changed workspace policy is rechecked by the server. Endpoint and cap changes stay with the deployment operator. Offline · setup required means no accepted model can currently be offered. Ask the deployment operator to inspect the budget, configuration and acceptance expiry. Disable workspace AI remains available to authorized administrators even if no accepted model is listed.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/offline-ai#network",
    "title": "Private transport and data boundaries",
    "text": "Prompts and schema text are redacted and byte-bounded before use. Host resolution must produce only allowed private addresses; HTTP is restricted to actual loopback, and HTTPS retains hostname/certificate verification. V19 pins the selected address, checks the actual peer and rechecks current admission before sending prompt bytes. One bounded request has a deadline and cancellation. Redirects, public or mixed DNS answers, unexpected models, tool-call responses, missing usage and oversized or malformed responses refuse. No automatic retry or alternate model is used. Your own model-server logging, retention and infrastructure security still need review.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/offline-ai#recovery",
    "title": "Inspect outcomes before recovery",
    "text": "Token transitions and a content-free audit record identify the configured model, usage and outcome. Prompt content is not an accounting field. A response lost after dispatch remains uncertain and retains its allowance; a timeout is not proof that nothing happened. Do not repeatedly resend to clear an unknown result or edit a ledger row. Preserve the original history and have the deployment operator inspect server evidence and current policy. Live recovery, independently required approvals and production changes keep their separate review requirements.",
    "source": "app/docs/offline-ai/page.tsx",
-   "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7"
+   "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe"
   },
   {
    "href": "/docs/permissions-model#roles",
@@ -699,7 +699,7 @@
    "title": "Revocation and revalidation",
    "text": "Workspace owners can revoke V19's recorded use of a connection from the governed connection record. Provider-side removal remains the source of truth: remove the GitHub App or revoke the OAuth grant in the provider when access must end there too. Validation timestamps distinguish a recorded consent from an active, reachable integration. Do not treat a webhook, browser success screen, or cached status as proof of a live connection.",
    "source": "app/docs/releaseops/connectors/page.tsx",
-   "sourceSha256": "3009e5f09f12fcb0b110ca4cfb3385b8e54fe3525eb234ef0949e242e0cb79c3"
+   "sourceSha256": "502d64cde49c0055a749c50796f98284d74d28f25e1453a00251534c75c16c9b"
   },
   {
    "href": "/docs/releaseops/readiness#dimensions",
@@ -748,49 +748,49 @@
    "title": "Desktop authentication",
    "text": "The installed application uses a browser approval handoff and scoped application session. The website is not a customer sign-in product. A packaged PKCE, expiry, logout, replay, recovery, and OS-keychain journey still requires exact-build verification.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#connectors",
    "title": "Connector permissions",
    "text": "A connector's code status is not its live availability status. GitHub access is installation- and repository-scoped. AWS ECS deployment requires a configured environment target, tenant workflow, and OIDC role. Azure and GCP production deployment paths are not released. Repository visibility, pull-request approval, merge authority, workflow dispatch, environment approval, release publication, and change management are distinct permissions. Each server-side action must enforce its own authorization.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#secrets",
    "title": "Secret handling",
    "text": "Secret-redaction utilities protect supported contact, logging, and operational paths. They do not prove that every field, connector, backup, export, or third-party system is safe for confidential data. Operators must use tenant policy and provider-specific credential guidance.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#tenants",
    "title": "Tenant boundaries",
    "text": "Organization identifiers and tenant checks exist across core repositories and services. “Tenant isolated” is not treated as globally verified until every query, cache, background job, export, backup, restore, and administrator path has been exercised against a configured deployment.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#audit",
    "title": "Audit and evidence",
    "text": "Supported workflows can record actor, action, rationale, timestamp, and outcome data. Hash and export utilities exist, but coverage varies by workflow. An audit record is product evidence; it is not an independent auditor's attestation or proof that a customer is compliant.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#retention",
    "title": "Retention, deletion, and recovery",
    "text": "Consistent customer-configurable retention, deletion, backup, and restore behavior is not yet verified across every store. Do not rely on an informal retention period or deletion promise; confirm the configured deployment and record the result in the verification report.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/security-model#compliance",
    "title": "Compliance posture",
    "text": "No SOC 2, ISO 27001, HIPAA, or other independent certification is currently claimed. Control-mapping code is a product feature, not a certification or active audit. No BAA, DPA, data-residency, SSO entitlement, or commercial tier is promised without approved documentation. Customers remain responsible for their own legal, risk, and compliance decisions.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8"
+   "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15"
   },
   {
    "href": "/docs/settings#profile",
@@ -832,28 +832,28 @@
    "title": "Local files on your computer",
    "text": "In Repositories, the Local strip identifies the selected checkout and its branch. Open Clone or refresh repositories to inspect the source controls. The Local repositories folder lists the local checkouts V19 can discover there; choose the intended repository before opening a file. The editor can contain unsaved changes. A local selection is not a verified GitHub snapshot, and a saved folder selection is navigation metadata, not permission to access a different repository or execute a command. Check the folder, checkout, branch and changed-file count. Use Refresh after changing the folder. If the expected checkout is missing, inspect the folder rather than assuming the selected remote repository is already cloned. Review an edit before Save. Saving a local file does not commit, push, open a pull request or deploy. A check receipt describes that check's recorded result; changed files can make it stale. Inspect the current file and result before relying on it.",
    "source": "app/docs/source-modes/page.tsx",
-   "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452"
+   "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac"
   },
   {
    "href": "/docs/source-modes#connected-github",
    "title": "Connected GitHub repository",
    "text": "Clone source · GitHub selects a repository from the workspace's GitHub App access. Refresh connected repositories updates that catalog. Entering another owner/repository does not grant access to it; the provider and server still decide whether that repository is authorized. Local repositories folder is the destination parent folder for Clone. Clone requests a local checkout; selecting a connected repository does not synchronize an existing checkout automatically. Check the local branch and working tree separately before editing or publishing. A connected installation or a repository name is not proof that the current branch, file bytes, pull request or deployment evidence has been verified. Supported actions perform their own checks. Repository reads and provider changes have separate authority boundaries. If the app reports GitHub access is unavailable, Existing local files remain usable. Open Settings → Integrations to review the recorded connection and supported validation controls before cloning or syncing. See integration setup and the permissions model .",
    "source": "app/docs/source-modes/page.tsx",
-   "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452"
+   "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac"
   },
   {
    "href": "/docs/source-modes#ai-context",
    "title": "Preparing context is not sending it",
    "text": "Ask Agent prepares an explicitly confirmed selection as an unsent Agent draft. Preparing that draft does not save a file, run a check or send code to a model. Choosing Send later shares the prompt with the approved provider; review it for credentials and private data first. The local selection control limits excerpts and refuses recognized sensitive paths. These controls do not guarantee that an otherwise permitted excerpt contains no secrets. Confirm what is in the draft, which provider is selected and whether sending is enabled for the workspace. AI context does not approve a repository change.",
    "source": "app/docs/source-modes/page.tsx",
-   "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452"
+   "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac"
   },
   {
    "href": "/docs/source-modes#evidence-labels",
    "title": "Preview, live and recorded evidence",
    "text": "Preview can be illustrative data. It is not evidence that a provider action ran. Live or connected describes the data or connection state shown by that view. It does not certify every integration, the current repository revision or deployment success. Recorded results describe an observation at its recorded time and scope. Local files, remote branches and permissions may have changed since then. Do not resend an uncertain or consumed action. Inspect the saved operation and use its supported read-only recovery path. A refresh, old check or previously successful connection cannot supply missing execution evidence. Once the source and intended target are clear, follow the approval workflow . Approval, execution and verified outcome remain separate steps.",
    "source": "app/docs/source-modes/page.tsx",
-   "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452"
+   "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac"
   },
   {
    "href": "/docs/surfaces#desktop",

@@ -45,7 +45,7 @@
     {
       "href": "/docs/source-modes",
       "source": "app/docs/source-modes/page.tsx",
-      "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452",
+      "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac",
       "fields": [
         "Know which source you are using.",
         "A file on your computer, a connected GitHub repository and a recorded result are different sources. Check the source and target before asking for an explanation or preparing a change.",
@@ -187,7 +187,7 @@
     {
       "href": "/docs/releaseops/connectors",
       "source": "app/docs/releaseops/connectors/page.tsx",
-      "sourceSha256": "3009e5f09f12fcb0b110ca4cfb3385b8e54fe3525eb234ef0949e242e0cb79c3",
+      "sourceSha256": "502d64cde49c0055a749c50796f98284d74d28f25e1453a00251534c75c16c9b",
       "fields": [
         "Integration boundaries.",
         "What V19 can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
@@ -251,7 +251,7 @@
     {
       "href": "/docs/security-model",
       "source": "app/docs/security-model/page.tsx",
-      "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8",
+      "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15",
       "fields": [
         "The current V19 security model.",
         "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",
@@ -284,7 +284,7 @@
     {
       "href": "/docs/oauth-setup",
       "source": "app/docs/oauth-setup/page.tsx",
-      "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a",
+      "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821",
       "fields": [
         "Enable Google + GitHub sign-in",
         "V19 uses NextAuth. Google and GitHub sign-in options appear when the browser confirms that the host registered those providers.",
@@ -313,7 +313,7 @@
     {
       "href": "/docs/offline-ai",
       "source": "app/docs/offline-ai/page.tsx",
-      "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7",
+      "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe",
       "fields": [
         "Keep model calls inside your private environment.",
         "Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback.",
@@ -368,7 +368,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db",
+      "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304",
       "fields": [
         "Ask V19.",
         "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Ask V19 — V19 Documentation",
  description: "How the Ask V19 support chat answers, what it can see, and what it can do for you.",
@@ -10,6 +10,7 @@ export default function AskAxiomDocsPage() {
   <DocHeader kicker="Support" title="Ask V19."
    summary="The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in." />
   <Callout variant="warning" title="Never share secrets">Do not paste passwords, API keys or tokens into the chat. Messages that look like secrets are refused and removed from the chat history in your browser. If you shared a real secret, rotate it.</Callout>
+  <DocFigure src="/docs/website-ask-v19.webp" alt="The Ask V19 assistant open on a documentation page" caption="Ask V19 answers from public documentation with sources. It does not see your workspace, and you should never share passwords or keys." width={1600} height={1000} />
   <DocSection id="answers" kicker="01" title="Answers from the docs">
    <p>Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to open a support request for you to review.</p>
    <p>Follow a source link to open the guide or page. The chat closes and keyboard focus moves to the cited section or to the page heading. Open Ask V19 again to return to the conversation.</p>

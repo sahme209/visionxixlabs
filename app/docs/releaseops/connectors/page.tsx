@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
+import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Integration boundaries — ReleaseOps Documentation",
@@ -50,6 +50,8 @@ export default function ReleaseOpsConnectorsPage() {
       <Callout variant="safe" title="The model: consent is not proof">
         A browser return or stored credential never makes an integration look healthy by itself. V19 binds consent to a tenant, expires and consumes it once, encrypts service credentials, and requires a server-side validation before marking a connection active. Browser pages never receive provider credentials.
       </Callout>
+
+      <DocFigure src="/docs/cockpit/integrations.webp" alt="The Integrations page in the V19 cockpit" caption="Release connectors are connected from Integrations. Shown for a new synthetic workspace." width={1600} height={1000} />
 
       {CONNECTORS.map((c) => (
         <DocSection key={c.name} id={c.name.toLowerCase().replace(/\s+/g, "-")} title={c.name}>

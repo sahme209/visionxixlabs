@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocHeader, DocSection, Step, Callout, CodeBlock, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
+import { DocHeader, DocSection, Step, Callout, CodeBlock, DocFooterNav, DocFeedback, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "OAuth setup (Google + GitHub) — V19 Documentation",
@@ -17,6 +17,7 @@ export default function OAuthSetupPage() {
         summary="V19 uses NextAuth. Google and GitHub sign-in options appear when the browser confirms that the host registered those providers."
       />
 
+      <DocFigure src="/docs/cockpit/integrations.webp" alt="The Integrations page in the V19 cockpit" caption="Integrations in the cockpit, where provider connections start. Shown for a new synthetic workspace." width={1600} height={1000} />
       <DocSection id="overview" title="Overview" kicker="Three things to configure for each provider">
         <ol className="list-decimal list-inside space-y-1 text-zinc-300 text-sm">
           <li>Create an OAuth application with the provider (Google Cloud Console / GitHub OAuth Apps).</li>
