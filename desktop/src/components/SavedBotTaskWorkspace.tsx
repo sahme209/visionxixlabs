@@ -47,6 +47,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const [jiraOpen,setJiraOpen]=useState<string|null>(null);
  const [selectedEvidence,setSelectedEvidence]=useState<SelectedBotEvidence|null>(null);
  const latestDraft=useRef(draft);latestDraft.current=draft;
+ const [runsRequest,setRunsRequest]=useState(0);
  const [inspectorTab,setInspectorTab]=useState<"Details"|"Library"|"Computer">("Details"),[inspectorOpen,setInspectorOpen]=useState(false),[tasksOpen,setTasksOpen]=useState(false),[filter,setFilter]=useState("");
  const [detailsTarget,setDetailsTarget]=useState<HTMLDivElement|null>(null);
  const replacePrompt=useRef<HTMLElement>(null),replaceOpener=useRef<HTMLButtonElement|null>(null);
@@ -320,6 +321,14 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     <h3 id={`bot-task-changes-${ownerKey}`}>Changes</h3>
     <p>{pending?"Save outcome unconfirmed":busy==="save"?"Saving task draft…":dirty?"Unsaved changes":selected?"All changes saved":"Not saved yet"}</p>
    </section>
+   {selected&&<section aria-labelledby={`bot-task-runs-summary-${ownerKey}`}>
+    <h3 id={`bot-task-runs-summary-${ownerKey}`}>Run history</h3>
+    <button type="button" className="studio-task-history" aria-controls={`bot-task-inspector-${ownerKey}`} onClick={event=>{if(!owns())return;inspectorOpener.current=event.currentTarget;setInspectorTab("Details");setInspectorOpen(true);setTasksOpen(false);setRunsRequest(value=>value+1)}}>
+     <History aria-hidden="true" size={15}/>
+     <span><strong>Open runs</strong><span>Results recorded for this task</span></span>
+     <ChevronDown aria-hidden="true" size={13}/>
+    </button>
+   </section>}
    {selected&&<section aria-labelledby={`bot-task-version-history-${ownerKey}`}>
     <h3 id={`bot-task-version-history-${ownerKey}`}>Version history</h3>
     <button data-help-id="bot.workspace.summary-history" type="button" className="studio-task-history" aria-label="View saved versions" aria-controls={`bot-task-inspector-${ownerKey}`} disabled={historyLocked} onClick={event=>openVersionHistory(event.currentTarget)}>
@@ -381,7 +390,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
      {history&&history.nextBeforeVersion!==null&&<button ref={olderHistory} data-help-id="bot.workspace.history-older" type="button"
       className="btn-secondary" aria-disabled={historyLocked} onClick={()=>{if(!historyLocked&&history.nextBeforeVersion!==null)void loadHistory(history.nextBeforeVersion)}}>Older history</button>}
     </section>}
-    {selected&&<SavedTaskRunHistory key={`runs:${selected.id}`} taskId={selected.id} version={selected.version}/>}
+    {selected&&<SavedTaskRunHistory key={`runs:${selected.id}`} taskId={selected.id} version={selected.version} loadSignal={runsRequest}/>}
     <BotPullRequestEvidencePanel key={`pr:${selected?.id??"new"}:${selected?.version??0}`} ownerKey={ownerKey} task={selected} dirty={dirty} active={active&&inspectorOpen&&inspectorTab==="Details"} selectionDisabled={locked} onSelectEvidence={value=>{if(owns()&&!dirty&&!locked&&selected&&value.taskId===selected.id&&value.taskVersion===selected.version)setSelectedEvidence(value)}}/>
    </div>
    <div role="tabpanel" id={`bot-panel-${ownerKey}-Library`} aria-labelledby={`bot-tab-${ownerKey}-Library`} hidden={inspectorTab!=="Library"} className="pt-6"><BotReadinessReportPanel key={`${selected?.id??"new"}:${selected?.version??0}`} task={selected} dirty={dirty} active={active&&inspectorOpen&&inspectorTab==="Library"}/></div>
@@ -432,17 +441,19 @@ function RunHealthStrip({runs}:{runs:SavedBotTaskRunHistoryDto["runs"]}){
  </div>;
 }
 
-function SavedTaskRunHistory({taskId,version}:{taskId:string;version:number}){
+function SavedTaskRunHistory({taskId,version,loadSignal=0}:{taskId:string;version:number;loadSignal?:number}){
  const [state,setState]=useState<{runs?:SavedBotTaskRunHistoryDto["runs"];error?:string;busy:boolean}>({busy:false});
  const read=useRef<AbortController|null>(null);
  useEffect(()=>()=>read.current?.abort(),[]);
+ const section=useRef<HTMLElement>(null);
+ useEffect(()=>{if(loadSignal>0){void load();section.current?.scrollIntoView?.({block:"nearest"})}},[loadSignal]);// eslint-disable-line react-hooks/exhaustive-deps
  async function load(){
   read.current?.abort();const controller=new AbortController();read.current=controller;setState(previous=>({...previous,busy:true,error:undefined}));
   try{const result=await desktopClient.savedBotTaskRunHistory(taskId,controller.signal);if(controller.signal.aborted)return;
    setState(result.ok?{runs:result.data.runs,busy:false}:{busy:false,error:"Recorded runs could not be verified. Retry to check again."});
   }catch{if(!controller.signal.aborted)setState({busy:false,error:"Recorded runs could not be verified. Retry to check again."})}
  }
- return <section aria-label="Recorded runs" className="studio-task-history-panel">
+ return <section ref={section} aria-label="Recorded runs" className="studio-task-history-panel">
   <h2>Recorded runs</h2>
   <p>AI tasks, readiness runs and pull request evidence recorded for this task, newest first.</p>
   <button data-help-id="bot.workspace.runs-open" type="button" className="btn-secondary" aria-disabled={state.busy} onClick={()=>{if(!state.busy)void load()}}>{state.runs?"Refresh runs":state.error?"Retry runs":"Show runs"}</button>

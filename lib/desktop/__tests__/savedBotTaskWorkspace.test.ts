@@ -359,3 +359,14 @@ it("shows a selected task's recorded runs only when asked, with stored status an
  expect(within(section).getByText("Readiness run · this version")).toBeTruthy();
  expect(m.runs).toHaveBeenCalledWith(id,expect.any(AbortSignal));
 });
+
+it("opens and loads the recorded runs from the summary column in one step",async()=>{
+ m.runs.mockResolvedValueOnce({ok:true,data:{taskId:id,runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole("button",{name:"Open saved task Saved example"}));
+ const summary=await screen.findByRole("region",{name:"Run history"});
+ fireEvent.click(within(summary).getByRole("button",{name:/Open runs/}));
+ const section=await screen.findByRole("region",{name:"Recorded runs"});
+ expect(await within(section).findByText("completed")).toBeTruthy();
+ expect(m.runs).toHaveBeenCalledTimes(1);
+});
