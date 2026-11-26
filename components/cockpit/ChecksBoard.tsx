@@ -109,6 +109,7 @@ export function ChecksBoard() {
       {board.canEdit ? (
         <form className="rounded-xl border border-white/8 bg-[#111111] p-5" onSubmit={(e) => { e.preventDefault(); void send("POST", { check: { key: draft.key.trim(), name: draft.name.trim(), kind: draft.kind, stage: draft.stage, mode: draft.mode, spec: specFrom(draft) }, enabled: draft.enabled, ...(editing ? { expectedVersion: draft.expectedVersion } : {}) }); }}>
           <h2 className="text-base font-medium">{editing ? `Edit ${draft.name}` : "Add a check"}</h2>
+          {!editing && <DraftWithAi onDraft={(d) => setDraft({ key: d.key, name: d.name, kind: d.kind, stage: d.stage, mode: d.mode, enabled: true, fields: fieldsFrom({ ...d, enabled: true, version: 1 } as Check) })} />}
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-xs text-zinc-400">Name<input required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={input} /></label>
             <label className="text-xs text-zinc-400">Key<input required value={draft.key} readOnly={editing} onChange={(e) => setDraft({ ...draft, key: e.target.value.toLowerCase() })} placeholder="health-probe" className={`${input} font-mono`} /></label>
@@ -196,5 +197,30 @@ function ConfirmChecklist({ check, onRecorded }: { check: Check; onRecorded: () 
       <label className="mt-2 block text-zinc-400">Commit SHA (40 characters)<input value={sha} onChange={(e) => setSha(e.target.value.toLowerCase())} spellCheck={false} className="mt-1 block w-full max-w-md rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-xs text-zinc-100" /></label>
       <button type="button" disabled={!ready || state.kind === "busy"} onClick={() => void confirm()} className="mt-2 inline-flex min-h-8 items-center rounded-lg bg-zinc-100 px-3 text-xs font-medium text-zinc-950 disabled:opacity-50">{state.kind === "busy" ? "Recording…" : "Confirm all items"}</button>
       <span aria-live="polite" className="ml-2">{state.kind === "done" ? "Recorded for this commit." : state.kind === "error" ? <span className="text-amber-300">{state.message}</span> : null}</span>
+    </details>);
+}
+
+function DraftWithAi({ onDraft }: { onDraft: (d: Omit<Check, "enabled" | "version">) => void }) {
+  const [text, setText] = useState("");
+  const [state, setState] = useState<{ kind: "idle" | "busy" | "filled" } | { kind: "error"; message: string }>({ kind: "idle" });
+  async function draft() {
+    setState({ kind: "busy" });
+    try {
+      const res = await fetch("/api/control/checks/draft", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ description: text.trim() }) });
+      const body = await res.json().catch(() => null) as { ok?: boolean; error?: string; draft?: Omit<Check, "enabled" | "version"> } | null;
+      if (body?.ok && body.draft) { onDraft(body.draft); setState({ kind: "filled" }); return; }
+      setState({ kind: "error", message: body?.error === "draft_invalid" ? "The AI draft did not pass validation. Fill the form yourself or try a clearer description." : body?.error === "workspace_admin_required" ? "Only owners and admins can draft checks." : "AI drafting is not available for this workspace right now. Fill the form yourself." });
+    } catch { setState({ kind: "error", message: "AI drafting could not be reached. Fill the form yourself." }); }
+  }
+  return (
+    <details className="mt-3 rounded-lg border border-white/8 p-3 text-sm">
+      <summary className="cursor-pointer text-zinc-300">Draft with AI</summary>
+      <label className="mt-2 block text-xs text-zinc-400">Describe the check
+        <textarea rows={2} value={text} onChange={(e) => setText(e.target.value)} placeholder="Fail the release if /health on staging is slower than 500 ms" className="mt-1 block w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-100" />
+      </label>
+      <div className="mt-2 flex items-center gap-3">
+        <button type="button" disabled={!text.trim() || state.kind === "busy"} onClick={() => void draft()} className="inline-flex min-h-8 items-center rounded-lg border border-white/12 px-3 text-xs text-zinc-200 disabled:opacity-50">{state.kind === "busy" ? "Drafting…" : "Fill the form"}</button>
+        <span aria-live="polite" className={`text-xs ${state.kind === "error" ? "text-amber-300" : "text-zinc-400"}`}>{state.kind === "filled" ? "Draft filled below. Review it, then add the check." : state.kind === "error" ? state.message : "Uses your workspace's governed AI. Nothing is saved until you add the check."}</span>
+      </div>
     </details>);
 }
