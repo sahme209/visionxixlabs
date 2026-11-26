@@ -54,6 +54,8 @@ interface ChatTurn {
 interface Proposal {
   id: string;
   requiresIndependentReviewer?: boolean;
+  /** Change passport recorded when the Agent proposed this action. */
+  passport?: { agent: string; model: string | null; tools: string[]; digest: string } | null;
   toolName: string;
   argsJson: unknown;
   riskLevel: string;
@@ -1687,6 +1689,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <button type="button" disabled={deciding} onClick={() => onReviewLocally(localEdit, localEdits.length > 1 ? localEdits : undefined)} className="underline disabled:opacity-50">Review in local editor</button>
         <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
       </div>}
+      {proposal.passport && <p className="mb-3 text-[11px] text-zinc-400">Change passport: {proposal.passport.agent} agent · model {proposal.passport.model ?? "workspace default"} · {proposal.passport.tools.length ? `tools ${proposal.passport.tools.join(", ")}` : "no tools"} · <span className="font-mono">{proposal.passport.digest.slice(0, 12)}</span></p>}
       {proposal.requiresIndependentReviewer && <p className="mb-3 text-xs text-amber-200">Another authorized reviewer must approve this action. You can cancel your proposal without running it.</p>}
       <p className="mb-3 text-xs text-zinc-400">Approval records this exact review only. The original requester executes separately with current access.</p>
       <div className="flex items-center gap-3">
