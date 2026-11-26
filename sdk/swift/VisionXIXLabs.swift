@@ -73,6 +73,12 @@ public struct VisionXIXLabs {
         try await get("/api/v1/release-gate")
     }
 
+    /// GET /api/v1/environments/{slug}/variables — resolved configuration and fingerprint.
+    /// Required scope: `pipeline:read`.
+    public func environmentVariables(slug: String) async throws -> EnvironmentVariablesResponse {
+        try await get("/api/v1/environments/\(slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug)/variables")
+    }
+
     /// GET /api/v1/pipelines/runs/{id} — poll a pipeline run's status.
     public func pipelineRun(id: String) async throws -> PipelineRunResponse {
         try await get("/api/v1/pipelines/runs/\(id)")
@@ -276,6 +282,18 @@ public struct WhoamiResponse: Decodable {
         public let ratio: Double?
         public let nearLimit: Bool
     }
+}
+
+public struct EnvironmentVariablesResponse: Decodable {
+    public struct Environment: Decodable { public let slug: String; public let name: String }
+    public let ok: Bool
+    public let environment: Environment
+    /// Resolved plain configuration. Never secrets.
+    public let variables: [String: String]
+    public let sources: [String: String]
+    /// SHA-256 fingerprint of the resolved set.
+    public let digest: String
+    public let count: Int
 }
 
 public struct ReleaseGateResponse: Decodable {

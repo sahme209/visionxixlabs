@@ -32,7 +32,14 @@ export async function GET() {
       prisma.environment.findMany({ where: { organizationId: ctx.organizationId }, orderBy: [{ displayOrder: "asc" }, { name: "asc" }], select: { id: true, name: true, slug: true, tier: true } }),
       prisma.configVariable.findMany({ where: { organizationId: ctx.organizationId }, orderBy: [{ key: "asc" }], take: MAX_VARIABLES_PER_WORKSPACE, select: { key: true, value: true, scopeKey: true, description: true, version: true, updatedAt: true } }),
     ]);
-    const resolved = environments.map((e) => { const r = resolveVariables(variables, e.id); return { environmentId: e.id, variables: r, digest: resolvedDigest(r) }; });
+    // Latest recorded deployment fingerprint per environment; optional evidence, so a read failure only hides it.
+    const deployed = await prisma.deploymentExecution.findMany({ where: { organizationId: ctx.organizationId, configDigest: { not: null } }, orderBy: { createdAt: "desc" }, take: 200, select: { environmentId: true, configDigest: true, createdAt: true } }).catch(() => null);
+    const lastDeployed = new Map<string, { digest: string; at: string }>();
+    for (const d of deployed ?? []) if (d.configDigest && !lastDeployed.has(d.environmentId)) lastDeployed.set(d.environmentId, { digest: d.configDigest, at: d.createdAt.toISOString() });
+    const resolved = environments.map((e) => {
+      const r = resolveVariables(variables, e.id); const digest = resolvedDigest(r); const last = lastDeployed.get(e.id) ?? null;
+      return { environmentId: e.id, variables: r, digest, lastDeployment: deployed === null ? "unavailable" as const : last ? { digest: last.digest, at: last.at, changedSince: last.digest !== digest } : null };
+    });
     return NextResponse.json({ ok: true, data: { canEdit: ctx.isAdmin, environments, variables, resolved, gaps: partialKeys(variables, environments.map((e) => e.id)) } }, { headers: noStore });
   } catch {
     return fail("variables_unavailable", 503);

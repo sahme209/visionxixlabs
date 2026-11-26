@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { partialKeys, resolveVariables, resolvedDigest, scopeKeyFor, validateVariable } from "../scopedVariables";
+import { compareResolved, partialKeys, resolveVariables, resolvedDigest, scopeKeyFor, validateVariable } from "../scopedVariables";
 
 const ok = (key: string, value = "x", scopeKey = "workspace") => validateVariable({ key, value, scopeKey });
 describe("scoped variables", () => {
@@ -42,5 +42,9 @@ describe("scoped variables", () => {
     expect(a).toBe(resolvedDigest([{ key: "A", value: "1", source: "environment" }]));
     expect(a).not.toBe(resolvedDigest([{ key: "A", value: "2", source: "workspace" }]));
     expect(a).toMatch(/^[0-9a-f]{64}$/);
+  });
+  it("compares two environments' resolved configuration", () => {
+    const r = (o: Record<string, string>) => Object.entries(o).map(([key, value]) => ({ key, value, source: "workspace" as const }));
+    expect(compareResolved(r({ A: "1", B: "2", C: "3" }), r({ B: "2", C: "4", D: "5" }))).toEqual({ onlyInFrom: ["A"], onlyInTo: ["D"], changed: [{ key: "C", from: "3", to: "4" }], same: 1 });
   });
 });

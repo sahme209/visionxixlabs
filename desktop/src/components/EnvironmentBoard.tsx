@@ -36,7 +36,7 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
               const tone = runResultTone(cell.status, cell.conclusion);
               return <div className="environment-board-cell" data-tone={tone.tone}>
                 <StatusIconChip tone={tone.tone} shape={tone.shape} size={12}/>
-                <span><code>{cell.commit ?? "no commit"}</code>{cell.ref && <small>{cell.ref}</small>}</span>
+                <span><code>{cell.commit ?? "no commit"}</code>{cell.ref && <small>{cell.ref}</small>}{cell.config && <small title="Configuration fingerprint recorded when this run was dispatched">config {cell.config}</small>}</span>
                 <time dateTime={cell.at}>{new Date(cell.at).toLocaleDateString([], { month: "short", day: "numeric" })}</time>
               </div>;
             })() : <span className="environment-board-empty">No recorded run</span>}</td>)}

@@ -89,6 +89,13 @@ class VisionXIXLabs:
         """GET /api/v1/release-gate — current release-gate verdict."""
         return self._get("/api/v1/release-gate")
 
+    def environment_variables(self, slug: str) -> Dict[str, Any]:
+        """GET /api/v1/environments/{slug}/variables — resolved configuration and fingerprint.
+
+        Required scope: pipeline:read. Values are plain configuration, never secrets.
+        """
+        return self._get(f"/api/v1/environments/{quote(slug, safe='')}/variables")
+
     def pipeline_run(self, run_id: str) -> Dict[str, Any]:
         """GET /api/v1/pipelines/runs/{id} — poll a run's status."""
         return self._get(f"/api/v1/pipelines/runs/{run_id}")

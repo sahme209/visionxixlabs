@@ -32,3 +32,8 @@ it("flags a later environment that trails a newer successful commit, and nothing
   expect(gaps["org/web"]).toEqual([]);
   expect(gaps["org/same"]).toEqual([]);
 });
+it("shows a short configuration fingerprint when the run recorded one", () => {
+  const board = buildEnvironmentBoard([env("s", "staging", 1)], [{ ...run("1", "s", "org/api", "2026-11-20T10:00:00Z"), configDigest: "9f8e7d6c5b4a3210" }, run("2", "s", "org/web", "2026-11-20T10:00:00Z")]);
+  expect(board.rows[0].cells[0]?.config).toBe("9f8e7d6");
+  expect(board.rows[1].cells[0]?.config).toBeNull();
+});

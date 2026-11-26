@@ -70,6 +70,8 @@ export function resolvedDigest(resolved: readonly ResolvedVariable[]): string {
   return createHash("sha256").update(canonical).digest("hex");
 }
 
+export { compareResolved, type ResolvedComparison } from "./scopedVariableCompare";
+
 /** Keys set for some environments but with no workspace default: environments without an override will not see them. */
 export function partialKeys(variables: readonly StoredVariable[], environmentIds: readonly string[]): Array<{ key: string; missingIn: string[] }> {
   const defaults = new Set(variables.filter((v) => v.scopeKey === WORKSPACE_SCOPE).map((v) => v.key));

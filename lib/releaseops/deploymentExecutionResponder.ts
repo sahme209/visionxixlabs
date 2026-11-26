@@ -24,6 +24,8 @@ export interface DeploymentExecutionRow {
   completedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** Fingerprint of the environment configuration recorded at dispatch; absent on older rows. */
+  configDigest?: string | null;
 }
 
 export interface DeploymentExecutionRepo {
@@ -96,5 +98,6 @@ export function serializeDeploymentExecution(row: DeploymentExecutionRow) {
     completedAt: row.completedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    configDigest: row.configDigest ?? null,
   };
 }

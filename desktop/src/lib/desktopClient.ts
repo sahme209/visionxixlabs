@@ -190,6 +190,8 @@ export interface DeploymentExecution {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Configuration fingerprint recorded at dispatch; null or absent when not recorded. */
+  configDigest?: string | null;
 }
 
 interface LegacyApiErrorBody {

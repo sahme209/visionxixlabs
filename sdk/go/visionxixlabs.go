@@ -94,6 +94,19 @@ type QuotaInfo struct {
 	NearLimit    bool     `json:"nearLimit"`
 }
 
+// EnvironmentVariablesResponse is the resolved configuration for one environment.
+type EnvironmentVariablesResponse struct {
+	OK          bool `json:"ok"`
+	Environment struct {
+		Slug string `json:"slug"`
+		Name string `json:"name"`
+	} `json:"environment"`
+	Variables map[string]string `json:"variables"`
+	Sources   map[string]string `json:"sources"`
+	Digest    string            `json:"digest"`
+	Count     int               `json:"count"`
+}
+
 type ReleaseGateResponse struct {
 	OK               bool        `json:"ok"`
 	HasRun           bool        `json:"hasRun"`
@@ -203,6 +216,15 @@ func (c *Client) Whoami(ctx context.Context) (*WhoamiResponse, error) {
 func (c *Client) ReleaseGate(ctx context.Context) (*ReleaseGateResponse, error) {
 	var out ReleaseGateResponse
 	if err := c.do(ctx, "GET", "/api/v1/release-gate", nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// EnvironmentVariables reads GET /api/v1/environments/{slug}/variables. Required scope: pipeline:read.
+func (c *Client) EnvironmentVariables(ctx context.Context, slug string) (*EnvironmentVariablesResponse, error) {
+	var out EnvironmentVariablesResponse
+	if err := c.do(ctx, "GET", "/api/v1/environments/"+url.PathEscape(slug)+"/variables", nil, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

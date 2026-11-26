@@ -1,10 +1,11 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { VARIABLE_ERROR_TEXT, type VariableInputError } from "@/lib/releaseops/scopedVariableMessages";
+import { compareResolved } from "@/lib/releaseops/scopedVariableCompare";
 
 interface Env { id: string; name: string; slug: string; tier: string }
 interface Stored { key: string; value: string; scopeKey: string; description: string | null; version: number }
-interface Board { canEdit: boolean; environments: Env[]; variables: Stored[]; resolved: Array<{ environmentId: string; digest: string }>; gaps: Array<{ key: string; missingIn: string[] }> }
+interface Board { canEdit: boolean; environments: Env[]; variables: Stored[]; resolved: Array<{ environmentId: string; digest: string; variables: Array<{ key: string; value: string }>; lastDeployment?: { digest: string; at: string; changedSince: boolean } | "unavailable" | null }>; gaps: Array<{ key: string; missingIn: string[] }> }
 type Draft = { key: string; environmentId: string; value: string; description: string; expectedVersion?: number };
 const EMPTY: Draft = { key: "", environmentId: "", value: "", description: "" };
 
@@ -22,6 +23,7 @@ export function VariablesBoard() {
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [messages, setMessages] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [compare, setCompare] = useState<{ from: string; to: string }>({ from: "", to: "" });
 
   const load = useCallback(async () => {
     try {
@@ -85,9 +87,11 @@ export function VariablesBoard() {
 
       {board.resolved.length > 0 && <div>
         <h2 className="text-base font-medium">Resolved fingerprints</h2>
-        <p className="mt-1 text-sm text-zinc-400">A short fingerprint of what each environment resolves to. It changes whenever any value that environment sees changes, so it can be compared with a release record.</p>
-        <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{board.resolved.map((r) => <div key={r.environmentId} className="rounded-xl border border-white/8 bg-[#111111] p-4"><dt className="text-xs text-zinc-400">{board.environments.find((e) => e.id === r.environmentId)?.name}</dt><dd className="mt-2 font-mono text-sm text-zinc-200">{r.digest.slice(0, 12)}</dd></div>)}</dl>
+        <p className="mt-1 text-sm text-zinc-400">A short fingerprint of what each environment resolves to. Each deployment from the desktop app records the fingerprint it was dispatched with, so you can see when configuration has changed since an environment was last deployed.</p>
+        <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{board.resolved.map((r) => <div key={r.environmentId} className="rounded-xl border border-white/8 bg-[#111111] p-4"><dt className="text-xs text-zinc-400">{board.environments.find((e) => e.id === r.environmentId)?.name}</dt><dd className="mt-2 font-mono text-sm text-zinc-200">{r.digest.slice(0, 12)}</dd><dd className="mt-2 text-xs"><DeployedNote last={r.lastDeployment} /></dd></div>)}</dl>
       </div>}
+
+      {board.environments.length >= 2 && <ComparePanel board={board} compare={compare} setCompare={setCompare} />}
 
       {board.canEdit ? (
         <form className="rounded-xl border border-white/8 bg-[#111111] p-5" onSubmit={(e) => { e.preventDefault(); void send("POST", { key: draft.key.trim(), value: draft.value, environmentId: draft.environmentId || null, description: draft.description.trim() || null, ...(editing ? { expectedVersion: draft.expectedVersion } : {}) }); }}>
@@ -106,7 +110,44 @@ export function VariablesBoard() {
           <div aria-live="polite">{messages.length > 0 && <ul className="mt-3 list-disc pl-5 text-sm text-amber-300">{messages.map((m) => <li key={m}>{m}</li>)}</ul>}</div>
         </form>
       ) : <p className="text-sm text-zinc-400">Only workspace owners and admins can change variables.</p>}
-      <p className="text-xs leading-5 text-zinc-400">Variables are recorded configuration. Passing them into deployment workflows is a separate step that is not yet connected; this page does not change any running service.</p>
+      <p className="text-xs leading-5 text-zinc-400">Variables are recorded configuration. Desktop deployments record which fingerprint they were dispatched with; passing the values into deployment workflows is not connected yet, so this page does not change any running service.</p>
     </div>
   );
+}
+
+function ComparePanel({ board, compare, setCompare }: { board: Board; compare: { from: string; to: string }; setCompare: (c: { from: string; to: string }) => void }) {
+  const envs = board.environments;
+  const from = compare.from || envs[envs.length - 2].id, to = compare.to || envs[envs.length - 1].id;
+  const pick = (id: string) => board.resolved.find((r) => r.environmentId === id)?.variables ?? [];
+  const name = (id: string) => envs.find((e) => e.id === id)?.name ?? id;
+  const diff = compareResolved(pick(from), pick(to));
+  const nothing = !diff.changed.length && !diff.onlyInFrom.length && !diff.onlyInTo.length;
+  const select = (label: string, value: string, key: "from" | "to") => (
+    <label className="text-xs text-zinc-400">{label}<select value={value} onChange={(e) => setCompare({ from, to, [key]: e.target.value })} className="mt-1 block w-48 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-100">
+      {envs.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select></label>);
+  return (
+    <section aria-labelledby="variables-compare-heading">
+      <h2 id="variables-compare-heading" className="text-base font-medium">Compare before promoting</h2>
+      <p className="mt-1 text-sm text-zinc-400">What configuration changes when a release moves from one environment to the next.</p>
+      <div className="mt-3 flex flex-wrap items-end gap-4">{select("From", from, "from")}<span aria-hidden="true" className="pb-2 text-zinc-500">→</span>{select("To", to, "to")}</div>
+      <div aria-live="polite" className="mt-4 text-sm">
+        {from === to ? <p className="text-zinc-400">Choose two different environments.</p>
+          : nothing ? <p className="text-zinc-300">{name(from)} and {name(to)} resolve to the same configuration ({diff.same} {diff.same === 1 ? "variable" : "variables"}).</p>
+          : <ul className="space-y-1.5 font-mono text-xs text-zinc-200">
+              {diff.changed.map((c) => <li key={c.key}><span className="text-zinc-400">changes</span> {c.key}: {JSON.stringify(c.from)} → {JSON.stringify(c.to)}</li>)}
+              {diff.onlyInTo.map((k) => <li key={k}><span className="text-zinc-400">only in {name(to)}</span> {k}</li>)}
+              {diff.onlyInFrom.map((k) => <li key={k} className="text-amber-200"><span className="text-amber-300/80">missing in {name(to)}</span> {k}</li>)}
+              {diff.same > 0 && <li className="font-sans text-zinc-400">{diff.same} unchanged</li>}
+            </ul>}
+      </div>
+    </section>);
+}
+
+function DeployedNote({ last }: { last: { digest: string; at: string; changedSince: boolean } | "unavailable" | null | undefined }) {
+  if (last === "unavailable") return <span className="text-zinc-400">Last deployment could not be read.</span>;
+  if (!last) return <span className="text-zinc-400">No deployment recorded with a fingerprint yet.</span>;
+  const when = new Date(last.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return last.changedSince
+    ? <span className="text-amber-300">Changed since the last deployment ({when}, {last.digest.slice(0, 12)}).</span>
+    : <span className="text-zinc-300">Matches the last deployment ({when}).</span>;
 }
