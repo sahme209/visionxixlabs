@@ -1,19 +1,20 @@
 import type {Metadata} from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import {Callout,DocFooterNav,DocHeader,DocSection} from '@/components/docs/DocPrimitives';
 
 export const metadata:Metadata={title:'Product surfaces — V19 Documentation',description:'Choose the right V19 desktop workspace or public guide, and distinguish browsing, review, execution and help.',alternates:{canonical:'/docs/surfaces'}};
 
 const DESTINATIONS=[
- {name:'Tickets',purpose:'Inspect recorded deployment incidents and change tickets in the workspace.',next:'Open the selected record. Use the source ticket and exact release version to confirm what the available action applies to.'},
- {name:'Agent',purpose:'Work with code, local files and research through the Agent conversation.',next:'Inspect the proposed tool and its scope. For a change, follow the exact review and execution controls available in your version.'},
- {name:'Saved Tasks',purpose:'Describe an outcome, keep a saved task, request an AI response or open reviewed app actions.',next:'Check which task owns the response or action. In versions that show it, each task in the list shows its last recorded run (AI task, readiness run or pull request evidence), with the stored status, whether it ran on the current version or an earlier one, and the date, or No recorded runs. Saving a task or receiving an AI response does not authorize a provider action.'},
- {name:'Deployments',purpose:'Find release requests, their plans, exact action reviews and available outcome evidence.',next:'Start with the request’s next required step. The authorized requester and independent reviewer have different responsibilities; a dispatch acknowledgment is not application-health evidence.'},
- {name:'Repositories',purpose:'Select and inspect repository context and use the available local or connected repository controls.',next:'Check the repository, branch and file before editing or proposing a write. Viewing code does not grant commit, push or merge authority.'},
- {name:'Batches',purpose:'Inspect supported Airflow workflows, runs and their available automation controls.',next:'Check the configured connection and source run first. The Batches label does not imply that other orchestration services are connected or supported.'},
- {name:'Apps & Skills',purpose:'Browse connected-app entries and reusable skills, and open the relevant setup or workflow.',next:'Separate a catalogue entry from a validated connection. A skill is reusable guidance, not a permission grant. Setup may require a workspace administrator.'},
- {name:'Documentation',purpose:'Read operating guides and explore the workflow map in the desktop Documentation view.',next:'Choose the guide for your installed version and task. Reading documentation does not change a workspace or run an operation.'},
- {name:'Settings',purpose:'Manage the settings and connection controls available to your current account.',next:'Read the exact scope and required permission before changing a setting or starting provider consent. Ask the authorized administrator when setup is blocked.'},
+ {name:'Tickets',image:'/docs/desktop/tickets.webp',purpose:'Inspect recorded deployment incidents and change tickets in the workspace.',next:'Open the selected record. Use the source ticket and exact release version to confirm what the available action applies to.'},
+ {name:'Agent',image:'/docs/desktop/agent.webp',purpose:'Work with code, local files and research through the Agent conversation.',next:'Inspect the proposed tool and its scope. For a change, follow the exact review and execution controls available in your version.'},
+ {name:'Saved Tasks',image:'/docs/desktop/saved-tasks.webp',purpose:'Describe an outcome, keep a saved task, request an AI response or open reviewed app actions.',next:'Check which task owns the response or action. In versions that show it, each task in the list shows its last recorded run (AI task, readiness run or pull request evidence), with the stored status, whether it ran on the current version or an earlier one, and the date, or No recorded runs. Saving a task or receiving an AI response does not authorize a provider action.'},
+ {name:'Deployments',image:'/docs/desktop/deployments.webp',purpose:'Find release requests, their plans, exact action reviews and available outcome evidence.',next:'Start with the request’s next required step. The authorized requester and independent reviewer have different responsibilities; a dispatch acknowledgment is not application-health evidence.'},
+ {name:'Repositories',image:'/docs/desktop/repositories.webp',purpose:'Select and inspect repository context and use the available local or connected repository controls.',next:'Check the repository, branch and file before editing or proposing a write. Viewing code does not grant commit, push or merge authority.'},
+ {name:'Batches',image:'/docs/desktop/batches.webp',purpose:'Inspect supported Airflow workflows, runs and their available automation controls.',next:'Check the configured connection and source run first. The Batches label does not imply that other orchestration services are connected or supported.'},
+ {name:'Apps & Skills',image:'/docs/desktop/apps-and-skills.webp',purpose:'Browse connected-app entries and reusable skills, and open the relevant setup or workflow.',next:'Separate a catalogue entry from a validated connection. A skill is reusable guidance, not a permission grant. Setup may require a workspace administrator.'},
+ {name:'Documentation',image:'/docs/desktop/documentation.webp',purpose:'Read operating guides and explore the workflow map in the desktop Documentation view.',next:'Choose the guide for your installed version and task. Reading documentation does not change a workspace or run an operation.'},
+ {name:'Settings',image:'/docs/desktop/settings.webp',purpose:'Manage the settings and connection controls available to your current account.',next:'Read the exact scope and required permission before changing a setting or starting provider consent. Ask the authorized administrator when setup is blocked.'},
 ] as const;
 
 export default function SurfacesPage(){return <>
@@ -26,6 +27,10 @@ export default function SurfacesPage(){return <>
   <div className="space-y-6">{DESTINATIONS.map(item=><section key={item.name} aria-labelledby={`surface-${item.name.toLowerCase().replace(/[^a-z]+/g,'-')}`}>
    <h3 id={`surface-${item.name.toLowerCase().replace(/[^a-z]+/g,'-')}`} className="font-semibold text-white">{item.name}</h3>
    <p>{item.purpose}</p><p><strong>Next:</strong> {item.next}</p>
+   <figure className="mt-3">
+    <Image src={item.image} width={1600} height={1067} sizes="(min-width: 1024px) 760px, 100vw" className="h-auto w-full rounded-lg border border-white/10" alt={`${item.name} in the V19 desktop app, shown with synthetic example records`}/>
+    <figcaption className="mt-2 text-xs text-zinc-400">{item.name} with synthetic example records. Your workspace shows your own records and the controls your role allows.</figcaption>
+   </figure>
   </section>)}</div>
  </DocSection>
  <DocSection id="workflow-map" title="Follow a desktop workflow">
