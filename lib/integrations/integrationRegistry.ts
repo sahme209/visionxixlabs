@@ -275,6 +275,17 @@ export const INTEGRATIONS: ReadonlyArray<Integration> = [
     writeAccess: "none",
   },
   {
+    id: "unleash",
+    name: "Unleash",
+    blurb: "Read-only flag state for one environment through the client API.",
+    category: "orchestration",
+    activation: "manual_paste",
+    status: "beta",
+    cta: "Connect read-only",
+    permissionsSummary: "Client token · flag configuration read only · no toggles or strategy changes",
+    writeAccess: "none",
+  },
+  {
     id: "opsgenie",
     name: "Opsgenie",
     blurb: "Read-only open alerts, shown as context beside deployments.",

@@ -2382,6 +2382,6 @@ export interface ReleaseSignalsDto {
   unavailable: string[];
   verification: { verdict: "healthy" | "investigate" | "unhealthy" | "no_signals"; reasons: string[]; missing: string[] };
 }
-export type SignalProviderId = "argo_cd" | "flux" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly";
+export type SignalProviderId = "argo_cd" | "flux" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly" | "unleash";
 export interface SignalConnectionState { provider: SignalProviderId; label?: string; connected?: boolean; status: string; settings?: Record<string, string | number>; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
 export interface BatchConnectionState { provider: BatchProviderId; label?: string; connected?: boolean; status: string; baseUrl?: string | null; namespace?: string | null; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }

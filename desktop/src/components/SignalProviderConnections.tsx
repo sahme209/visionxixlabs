@@ -18,6 +18,7 @@ export const SIGNAL_PROVIDER_FORMS: ReadonlyArray<{ id: SignalProviderId; label:
   { id: "sentry", label: "Sentry", purpose: "New errors first seen in a release", fields: [{ name: "org", label: "Organization slug", placeholder: "acme" }, { name: "project", label: "Project slug", placeholder: "web" }, { name: "region", label: "Region", options: REGION }, { name: "token", label: "Token (project:read, event:read)", secret: true }] },
   { id: "datadog", label: "Datadog", purpose: "Monitor states for a service", fields: [{ name: "site", label: "Site", options: ["datadoghq.com", "us3.datadoghq.com", "us5.datadoghq.com", "datadoghq.eu", "ap1.datadoghq.com", "ddog-gov.com"].map((v) => ({ value: v, label: v })) }, { name: "tag", label: "Monitor tag", placeholder: "service:checkout" }, { name: "apiKey", label: "API key", secret: true }, { name: "appKey", label: "Application key (monitors_read)", secret: true }] },
   { id: "launchdarkly", label: "LaunchDarkly", purpose: "Flag state beside each release", fields: [{ name: "project", label: "Project key", placeholder: "default" }, { name: "environment", label: "Environment key", placeholder: "production" }, { name: "token", label: "Reader access token", secret: true }] },
+  { id: "unleash", label: "Unleash", purpose: "Flag state for one environment", fields: [{ name: "baseUrl", label: "Unleash API URL", placeholder: "https://flags.example.com/api" }, { name: "token", label: "Client token", secret: true }] },
 ];
 
 export function SignalProviderConnections() {

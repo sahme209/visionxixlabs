@@ -12,7 +12,7 @@ describe("SignalProviderConnections", () => {
     m.get.mockImplementation(async (provider: string) => ({ ok: true, data: provider === "pagerduty" ? { provider, connected: true, status: "active", settings: { region: "eu" }, authority: "observation_only" } : { provider, connected: false, status: "not_connected", authority: "observation_only" } }));
     m.save.mockResolvedValue({ ok: true, data: { provider: "datadog", connected: true, status: "active", inventoryCount: 5, authority: "observation_only" } });
     render(createElement(SignalProviderConnections));
-    for (const name of ["Argo CD", "Flux", "PagerDuty", "Opsgenie", "Sentry", "Datadog", "LaunchDarkly"]) expect(screen.getByRole("article", { name })).toBeTruthy();
+    for (const name of ["Argo CD", "Flux", "PagerDuty", "Opsgenie", "Sentry", "Datadog", "LaunchDarkly", "Unleash"]) expect(screen.getByRole("article", { name })).toBeTruthy();
     await waitFor(() => expect(within(screen.getByRole("article", { name: "PagerDuty" })).getByText("Connected · read-only")).toBeTruthy());
     const card = within(screen.getByRole("article", { name: "Datadog" }));
     const connect = card.getByRole("button", { name: "Connect read-only" }) as HTMLButtonElement;

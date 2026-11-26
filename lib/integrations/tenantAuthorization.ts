@@ -61,7 +61,7 @@ export function authorizationCredentialContext(input: {
 /** Stored ticket credentials can use the vault before OAuth setup is registered.
  * This type does not advertise an integration or grant any provider scope. */
 /** Read-only Batches providers store credentials here too; they are not OAuth providers. */
-export type TenantCredentialProvider = TenantIntegrationProvider | "gitlab" | "jira" | "servicenow" | "outlook" | "prefect" | "dagster" | "argo_workflows" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly" | "argo_cd" | "flux";
+export type TenantCredentialProvider = TenantIntegrationProvider | "gitlab" | "jira" | "servicenow" | "outlook" | "prefect" | "dagster" | "argo_workflows" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly" | "argo_cd" | "flux" | "unleash";
 
 /** Binds a persisted credential to its immutable connection record. */
 export function connectionCredentialContext(input: {
