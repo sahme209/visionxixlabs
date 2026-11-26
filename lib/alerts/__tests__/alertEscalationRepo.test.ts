@@ -266,3 +266,32 @@ describe("isKnownAlertStatus", () => {
     for (const s of ["", "FIRED", "pending", "alerting"]) expect(isKnownAlertStatus(s)).toBe(false);
   });
 });
+
+describe("applyAlertEscalationEvent — concurrent writers", () => {
+  it("re-reads and applies against the latest status when another writer changed it first", async () => {
+    const repo = makeRepo();
+    const ref = "connector_setup:aws:org_race";
+    await applyAlertEscalationEvent(repo, { organizationId: "o", signalRef: ref, event: { kind: "signal_fired", signalRef: ref }, actor: { systemLabel: "t" }, now: repo._now() });
+    let interfere = true;
+    (repo.alertEscalationSession as { updateMany?: unknown }).updateMany = async ({ where, data }: { where: { id: string; status: string }; data: Record<string, unknown> }) => {
+      const row = repo._sessions.find((s) => s.id === where.id)!;
+      if (interfere) { interfere = false; row.status = "acknowledged"; return { count: 0 }; } // a human acknowledged in between
+      if (row.status !== where.status) return { count: 0 };
+      Object.assign(row, data); return { count: 1 };
+    };
+    const r = await applyAlertEscalationEvent(repo, { organizationId: "o", signalRef: ref, event: { kind: "operator_resolved", operatorUserId: "u1" }, actor: { userId: "u1" }, now: repo._now() });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.previousStatus).toBe("acknowledged");
+    const logged = repo._transitions.filter((t) => t.eventKind === "operator_resolved");
+    expect(logged).toHaveLength(1);
+    expect(logged[0].fromStatus).toBe("acknowledged");
+  });
+  it("gives up after three concurrent changes instead of looping", async () => {
+    const repo = makeRepo();
+    const ref = "connector_setup:aws:org_busy";
+    await applyAlertEscalationEvent(repo, { organizationId: "o", signalRef: ref, event: { kind: "signal_fired", signalRef: ref }, actor: { systemLabel: "t" }, now: repo._now() });
+    (repo.alertEscalationSession as { updateMany?: unknown }).updateMany = async () => ({ count: 0 });
+    await expect(applyAlertEscalationEvent(repo, { organizationId: "o", signalRef: ref, event: { kind: "operator_acknowledged", operatorUserId: "u1" }, actor: { userId: "u1" }, now: repo._now() })).rejects.toThrow("alert_escalation_concurrent_change");
+  });
+});
