@@ -2938,6 +2938,31 @@ model Environment {
   @@index([tier])
 }
 
+/// A deployment step check attached to one release stage. V19 never runs it:
+/// checks execute in the customer's CI or runners and results come back as evidence.
+model DeploymentCheck {
+  id              String   @id @default(cuid())
+  organizationId  String
+  key             String
+  name            String
+  /// smoke_test | health_check | migration_dry_run | custom_script | manual_checklist
+  kind            String
+  /// plan | validate | approve | deploy | verify | recover
+  stage           String
+  /// blocking | advisory
+  mode            String
+  spec            Json
+  enabled         Boolean  @default(true)
+  /// Increments on every edit so releases can record the exact check version they used.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
 /// Plain configuration variable, either a workspace default (scopeKey
 /// "workspace") or an override for one Environment (scopeKey "env:<id>").
 /// Secrets never live here; the application refuses credential-like values.
