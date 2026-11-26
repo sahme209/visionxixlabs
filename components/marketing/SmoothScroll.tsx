@@ -21,6 +21,7 @@ function wantsOwnScroll(target: EventTarget | null, deltaY: number): boolean {
  */
 export function SmoothScroll() {
   useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     if (!smoothScrollAllowed({ reducedMotion: reduce.matches, finePointer: fine.matches })) return;
