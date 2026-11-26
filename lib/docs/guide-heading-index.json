@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "ca79600b3d57bdded1db4e8da0a80efc51e9b6b11a43af04a8b3df4a6a398b36",
+      "sourceSha256": "2cdc28d1c2fcdae54ec3bf48560bbb5ee109ec38962ede6e0f97b332efdd4541",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -481,7 +481,7 @@
     {
       "href": "/docs/troubleshooting",
       "source": "app/docs/troubleshooting/page.tsx",
-      "sourceSha256": "ffe466d8fb93f90026f59d6f983538fb752978802ad9a1177ddcc3bf6229ca3a",
+      "sourceSha256": "628ee02bb87da9c127b61b7ff05f3a9e48646e626ccf49d0e685487aea25e436",
       "fields": [
         "Troubleshooting",
         "Start with the visible problem. Installation, connection readiness, approval, and execution are separate checks.",

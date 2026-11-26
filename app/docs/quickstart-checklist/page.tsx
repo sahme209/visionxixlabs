@@ -8,7 +8,7 @@ import {
     CpuChipIcon,
     ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import { Callout, DocFeedback, DocHeader } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFigure, DocHeader } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "Quickstart Checklist — V19",
@@ -82,6 +82,8 @@ export default function QuickstartChecklistPage() {
                 title="Install, configure, and verify your first workflow."
                 summary="Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope."
             />
+            <DocFigure src="/docs/website-download.webp" alt="The V19 download page listing installers by operating system" caption="Step 1 starts on the download page. Check the signing status shown for your installer before you open it." />
+            <DocFigure src="/docs/desktop/home.webp" alt="The V19 desktop Home screen after sign-in" caption="After you sign in, Home shows your requests, recent activity and next actions. Shown with synthetic example records." />
 
             <Callout variant="safe" title="Use a non-production environment first">
                 This checklist does not authorize production changes. Use dedicated test accounts and least-privilege credentials. The website sandbox is isolated sample data; the installed app must display actual connection and operation results.
