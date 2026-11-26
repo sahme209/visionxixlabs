@@ -313,7 +313,7 @@
     {
       "href": "/docs/offline-ai",
       "source": "app/docs/offline-ai/page.tsx",
-      "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe",
+      "sourceSha256": "4d09b15622dd2817041ebda10150cdfac496fabc665c5a6af198ca7746c43f4f",
       "fields": [
         "Keep model calls inside your private environment.",
         "Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback.",

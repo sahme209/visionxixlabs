@@ -1,10 +1,12 @@
 import type {Metadata} from 'next';
 import {Callout,DocFooterNav,DocHeader,DocSection, DocFigure } from '@/components/docs/DocPrimitives';
+import {DataBoundaryDiagram} from '@/components/docs/DataBoundaryDiagram';
 export const metadata:Metadata={title:'Offline AI — V19 Documentation',description:'Customer-hosted model boundaries, operator token budgets and offline operation limits.',alternates:{canonical:'/docs/offline-ai'}};
 export default function OfflineAIGuide(){return <>
  <DocHeader kicker="Agents · Offline AI" title="Keep model calls inside your private environment." summary="Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback." />
  <Callout variant="warning" title="Source preview, not an enabled service">This guide describes the local v1 implementation. Production deployment, protected-resource provisioning, real model qualification and disconnected-installation acceptance are not complete. Do not treat test results or this guide as permission to enable an installation.</Callout>
  <DocFigure src="/docs/cockpit/ai-agents.webp" alt="The AI and Agents page in the V19 cockpit" caption="AI & Agents in the cockpit, shown for a new synthetic workspace." width={1600} height={1000} />
+ <DataBoundaryDiagram />
  <DocSection id="operations" kicker="01" title="Offline AI operations and cloud fallback">
   <p>The v1 model path supports structured Agent decisions through the OpenAI-compatible chat-completions APIs of vLLM, Ollama and LM Studio. V19 does not bundle, install or run a model server. Native server-specific APIs are outside v1.</p>
   <ul><li><strong>Agent decisions:</strong> locally implemented with current membership and policy checks, token reservation, one dispatch and recorded outcomes. Real server acceptance is still required.</li><li><strong>Bot AI, generic cloud text/coding calls and image generation:</strong> unavailable offline in this v1 path. Older local adapters cannot bypass token admission.</li><li><strong>Cloud fallback and Gateway discovery:</strong> refused offline. Online installations cannot select customer-hosted models.</li><li><strong>Tools and deployments:</strong> retain their own connections, permissions and approval gates. The offline AI setting does not make external tools local or certify that the entire application has no external network traffic.</li></ul>
