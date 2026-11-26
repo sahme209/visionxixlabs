@@ -6,7 +6,7 @@ export async function policyAdminContext() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.userId) return null;
   if (!isAdminOrOwner({ email: context.email, roles: context.roles })) return null;
-  return { organizationId: String(context.organizationId) };
+  return { organizationId: String(context.organizationId), userId: String(context.userId) };
 }
 
 export function readPolicyRules(organizationId: string) {

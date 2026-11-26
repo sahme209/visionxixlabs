@@ -2940,6 +2940,27 @@ model Environment {
   @@index([tier])
 }
 
+/// A reviewed change to the workspace's policy rules, proposed as a policy file. Applied only after a
+/// different owner or admin approves it, and only if the rules still match the digest it was reviewed against.
+model PolicyChangeRequest {
+  id              String    @id @default(cuid())
+  organizationId  String
+  /// Canonical policy document JSON as proposed.
+  documentJson    Json
+  /// Digest of the rules the diff was computed against.
+  baseDigest      String
+  diffJson        Json
+  loosens         Boolean
+  /// pending | applied | rejected | stale
+  status          String    @default("pending")
+  proposedByUserId String
+  decidedByUserId String?
+  decidedAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([organizationId, status, createdAt])
+}
+
 /// A deployment step check attached to one release stage. V19 never runs it:
 /// checks execute in the customer's CI or runners and results come back as evidence.
 model DeploymentCheck {

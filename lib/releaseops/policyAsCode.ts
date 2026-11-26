@@ -91,3 +91,29 @@ export function diffPolicy(current: readonly StoredRule[], proposed: PolicyDocum
   diff.removed.sort();
   return diff;
 }
+
+/** Step 2: SHA-256 of the canonical export, so a request can be applied only to the rules it was reviewed against. */
+export async function policyDigest(rules: readonly StoredRule[]): Promise<string> {
+  const { createHash } = await import("node:crypto");
+  return createHash("sha256").update(exportPolicyDocument(rules)).digest("hex");
+}
+
+export type PolicyApplyOp =
+  | { op: "upsert"; rule: PolicyRuleSpec }
+  | { op: "disable"; key: string };
+
+/**
+ * The writes that make the current rules match a reviewed document. Removed rules are disabled,
+ * not deleted, so their history and any recorded violations remain.
+ */
+export function planPolicyApply(current: readonly StoredRule[], proposed: PolicyDocument): PolicyApplyOp[] {
+  const diff = diffPolicy(current, proposed);
+  const changedKeys = new Set(diff.changed.map((c) => c.key));
+  const byKey = new Map(proposed.rules.map((r) => [r.key, r]));
+  const ops: PolicyApplyOp[] = [
+    ...diff.added.map((rule) => ({ op: "upsert" as const, rule })),
+    ...[...changedKeys].sort().map((key) => ({ op: "upsert" as const, rule: byKey.get(key)! })),
+    ...diff.removed.filter((key) => current.find((r) => r.key === key)?.enabled).map((key) => ({ op: "disable" as const, key })),
+  ];
+  return ops;
+}
