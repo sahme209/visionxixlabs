@@ -1,5 +1,13 @@
 import {ReadableTime} from "../components/ReadableTime";
-import { StatusBadge, releaseRequestTone } from "../components/StatusBadge";
+import { StatusBadge, StatusIconChip, releaseRequestTone, type StatusShape, type StatusTone } from "../components/StatusBadge";
+
+/** Recorded audit outcomes only; unknown keeps the neutral history glyph. */
+function auditOutcomeTone(outcome: string): {tone: StatusTone; shape: StatusShape} | null {
+  if (outcome === "ok") return {tone: "green", shape: "success"};
+  if (outcome === "rejected" || outcome === "error") return {tone: "red", shape: "failure"};
+  if (outcome === "skipped") return {tone: "neutral", shape: "dot"};
+  return null;
+}
 import { ArrowRight, Box, ChevronRight, GitBranch, History, Layers, ListChecks, Sparkles, SquareStack } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -104,7 +112,7 @@ function HomeReleaseAudit({config, active}: {config: typeof desktopClient.config
         ? occurred.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
         : fullTimestamp;
       return <li key={event.id}>
-        <History aria-hidden size={15}/>
+        {(() => { const t = auditOutcomeTone(event.outcome); return t ? <StatusIconChip tone={t.tone} shape={t.shape} size={12}/> : <History aria-hidden size={15}/>; })()}
         <div><p>{event.summary}</p><small>{event.outcome === "unknown" ? "Outcome unavailable" : `Outcome: ${event.outcome}`}</small></div>
         <ReadableTime dateTime={event.createdAtIso} fullText={fullTimestamp} displayText={timestamp}/>
       </li>;

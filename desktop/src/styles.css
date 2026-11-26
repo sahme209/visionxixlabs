@@ -1609,3 +1609,4 @@ html[data-theme="light"] {
 .status-icon-chip[data-tone="red"] { color: var(--status-red); background: var(--status-red-surface); }
 .studio-release-summary .status-icon-chip { order: -2; align-self: center; width: 24px; height: 24px; }
 .status-icon-chip:has(svg[width="11"]) { width: 18px; height: 18px; }
+.status-icon-chip:has(svg[width="12"]) { width: 22px; height: 22px; }
