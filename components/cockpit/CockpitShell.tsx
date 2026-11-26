@@ -5,13 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, ShieldCheck, Bot, Plug, CreditCard, Users, Settings, ScrollText, BookOpen, LayoutGrid, Workflow, LogOut, LineChart, SlidersHorizontal, ListChecks } from "lucide-react";
+import { Home, ShieldCheck, Bot, Plug, CreditCard, Users, Settings, ScrollText, BookOpen, LayoutGrid, Workflow, LogOut, LineChart, SlidersHorizontal, ListChecks, Boxes } from "lucide-react";
 
 const groups = [
   { label: "Workspace", items: [
     { href: "/control", label: "Overview", icon: Home },
     { href: "/control/governance", label: "Governance", icon: ShieldCheck },
     { href: "/control/insights", label: "Insights", icon: LineChart },
+    { href: "/control/services", label: "Services", icon: Boxes },
     { href: "/control/variables", label: "Variables", icon: SlidersHorizontal },
     { href: "/control/checks", label: "Checks", icon: ListChecks },
     { href: "/control/ai-agents", label: "AI & Agents", icon: Bot },

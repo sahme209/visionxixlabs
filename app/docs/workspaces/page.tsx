@@ -29,6 +29,9 @@ export default function WorkspacesGuide() {
    <p>When the desktop app dispatches a deployment to an environment, V19 records that environment's fingerprint and resolved values with the deployment. Each fingerprint card then says whether the configuration still matches the last recorded deployment or has changed since. <strong>Feature switches</strong> shows every variable named <code>FEATURE_…</code> as on, off or its value in each environment, so staged exposure is visible at a glance. <strong>Compare before promoting</strong> lists the values that differ between two environments, and names that exist in only one of them. If the snapshot cannot be recorded, the deployment still runs and the card says no fingerprint was recorded.</p>
    <p>To load configuration in your own CI, call <code>GET /api/v1/environments/{"{slug}"}/variables</code> with an API key that has the <code>pipeline:read</code> scope. It returns the environment&apos;s resolved variables and fingerprint, so your pipeline can export them and record which configuration it deployed. Every SDK has a matching method.</p>
   </DocSection>
+  <DocSection id="services" kicker="06" title="Service catalog">
+   <p>In the cockpit, <strong>Services</strong> lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository&apos;s last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/mcp-tools",label:"MCP tools"}} next={{href:"/docs/members",label:"Members and roles"}} />
  </>;
 }
