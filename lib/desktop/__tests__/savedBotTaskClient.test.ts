@@ -27,3 +27,16 @@ it("accepts only versions strictly older than the requested history cursor",asyn
   wire.mockResolvedValueOnce(response({taskId:id,events:[older],nextBeforeVersion:null}));
   expect(await client.savedBotTaskHistory(id,1)).toMatchObject({ok:true,data:{events:[older]}});
 });
+it("reads last recorded runs through the paired transport for bounded task ids",async()=>{
+ const other="bot_"+"b".repeat(64);
+ wire.mockResolvedValue(response({runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}));
+ const result=await client.listSavedBotTaskLastRuns([id,other]);
+ expect(result).toEqual({ok:true,data:{runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
+ expect(wire).toHaveBeenCalledWith(`https://axiom.test/api/desktop/bot/tasks/last-runs?ids=${id},${other}`,expect.objectContaining({method:"GET",credentials:"omit"}));
+});
+it("refuses last-run reads for invalid ids and rejects runs for tasks it did not ask about",async()=>{
+ expect((await client.listSavedBotTaskLastRuns(["bot_x"])).ok).toBe(false);
+ expect(wire).not.toHaveBeenCalled();
+ wire.mockResolvedValue(response({runs:[{taskId:"bot_"+"c".repeat(64),taskVersion:0,family:"ai_task",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}));
+ expect((await client.listSavedBotTaskLastRuns([id])).ok).toBe(false);
+});
