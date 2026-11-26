@@ -160,7 +160,6 @@ function WorkflowPreview({ revision }: { revision: string }) {
 }
 
 function LatestResultLine({ check, latest }: { check: Check; latest: LatestResult | "unavailable" | undefined }) {
-  if (check.kind === "health_check") return null;
   if (latest === "unavailable") return <p className="mt-1 text-xs text-zinc-400">Results could not be read.</p>;
   if (!latest) return <p className="mt-1 text-xs text-zinc-400">No result recorded yet.</p>;
   const when = new Date(latest.reportedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });

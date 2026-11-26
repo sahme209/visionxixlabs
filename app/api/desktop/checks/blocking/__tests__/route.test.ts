@@ -8,11 +8,11 @@ import { GET } from "../route";
 const call = () => GET(new NextRequest("http://localhost/api/desktop/checks/blocking"));
 beforeEach(() => { vi.clearAllMocks(); m.session.mockResolvedValue({ organizationId: "org1" }); });
 describe("GET /api/desktop/checks/blocking", () => {
-  it("lists enabled blocking checks before Deploy in stage order, marking health checks as not enforced", async () => {
+  it("lists enabled blocking checks before Deploy in stage order", async () => {
     m.findMany.mockResolvedValue([{ key: "z", name: "Z", kind: "manual_checklist", stage: "approve" }, { key: "a", name: "A", kind: "health_check", stage: "validate" }, { key: "b", name: "B", kind: "smoke_test", stage: "plan" }]);
     const body = await (await call()).json();
     expect(body.data.checks.map((c: { key: string }) => c.key)).toEqual(["b", "a", "z"]);
-    expect(body.data.checks[1].enforced).toBe(false);
+    expect(body.data.checks.every((c: { enforced: boolean }) => c.enforced)).toBe(true);
     expect(m.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { organizationId: "org1", enabled: true, mode: "blocking", stage: { in: ["plan", "validate", "approve"] } } }));
   });
   it("requires a desktop session and reports storage failure", async () => {

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const before = CHECK_STAGES.slice(0, CHECK_STAGES.indexOf("deploy")) as string[];
     const rows = await prisma.deploymentCheck.findMany({ where: { organizationId: String(session.organizationId), enabled: true, mode: "blocking", stage: { in: before } }, take: MAX_CHECKS_PER_WORKSPACE, select: { key: true, name: true, kind: true, stage: true } });
     const checks = rows.sort((a, b) => before.indexOf(a.stage) - before.indexOf(b.stage) || a.key.localeCompare(b.key))
-      .map((c) => ({ ...c, enforced: c.kind !== "health_check" }));
+      .map((c) => ({ ...c, enforced: true }));
     return NextResponse.json({ ok: true, data: { checks } }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({ ok: false, error: "deployment_checks_unavailable" }, { status: 503 });
