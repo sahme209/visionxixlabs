@@ -49,7 +49,9 @@ export type WebhookEventKind =
   // Ask Axiom access requests (admins decide on Members)
   | "workspace.access_requested"
   // Release gates refused a deployment (change window, freeze, checks, rings, stability warning)
-  | "deployment.blocked";
+  | "deployment.blocked"
+  // A test delivery an admin sends from the Webhooks page; sent once, never retried
+  | "webhook.ping";
 
 const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "release_gate.passed",
@@ -78,6 +80,7 @@ const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "audit.integrity_failed",
   "workspace.access_requested",
   "deployment.blocked",
+  "webhook.ping",
 ]);
 
 /** True when `s` is a recognized event kind. */

@@ -52,6 +52,8 @@ export function WebhooksBoard() {
   const [created, setCreated] = useState<{ name: string; secret: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  const [testMessage, setTestMessage] = useState<string | null>(null);
+  const [deliveriesVersion, setDeliveriesVersion] = useState(0);
   const load = useCallback(async () => {
     try { const res = await fetch("/api/control/webhooks", { cache: "no-store" }); const body = await res.json(); setData(res.ok && body.ok ? body.data : "error"); } catch { setData("error"); }
   }, []);
@@ -66,6 +68,17 @@ export function WebhooksBoard() {
     } catch { setMessage("The request could not be reached. Try again."); }
     finally { setBusy(false); }
   }
+  async function sendTest(id: string, endpointName: string) {
+    setBusy(true); setTestMessage(null);
+    try {
+      const res = await fetch(`/api/control/webhooks/${encodeURIComponent(id)}/test`, { method: "POST" });
+      const body = await res.json().catch(() => null) as { ok?: boolean; error?: string; data?: { status: string; httpStatus: number | null } } | null;
+      if (res.ok && body?.data) setTestMessage(body.data.status === "delivered" ? `Test delivery to ${endpointName} succeeded (HTTP ${body.data.httpStatus}).` : `Test delivery to ${endpointName} failed${body.data.httpStatus ? ` (HTTP ${body.data.httpStatus})` : ": no response"}. It will not be retried.`);
+      else setTestMessage(body?.error === "ping_rate_limited" ? "One test delivery per webhook per minute. Try again shortly." : body?.error === "governance_enrolled_delivery_paused" ? "Governance enrollment is active, so test deliveries are paused." : "The test delivery could not be sent. Try again.");
+      setDeliveriesVersion((v) => v + 1);
+    } catch { setTestMessage("The request could not be reached. Try again."); }
+    finally { setBusy(false); }
+  }
   async function revoke(id: string) {
     setBusy(true); setMessage(null);
     try { const res = await fetch("/api/control/webhooks", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); if (!res.ok) setMessage("The webhook could not be revoked. Try again."); await load(); }
@@ -75,12 +88,14 @@ export function WebhooksBoard() {
   if (!data) return <p className="mt-8 text-sm text-zinc-400">Loading webhooks…</p>;
   return (
     <div className="mt-8 space-y-8">
+      <p aria-live="polite" className="text-sm text-zinc-300">{testMessage}</p>
       {data.endpoints.length === 0 ? <p className="text-sm text-zinc-400">No webhooks yet.</p> : (
         <ul aria-label="Webhooks" className="divide-y divide-white/[0.07] rounded-xl border border-white/8">{data.endpoints.map((e) => (
           <li key={e.id} className="flex flex-wrap items-start gap-3 px-4 py-3 text-sm">
             <div className="min-w-0 flex-1"><p className="text-zinc-100">{e.name}</p><p className="break-all font-mono text-xs text-zinc-400">{e.url}</p><p className="mt-1 text-xs text-zinc-400">{e.subscribedEvents.join(", ")}{e.consecutiveFailures > 0 ? <span className="text-amber-300"> · {e.consecutiveFailures} failed deliveries in a row</span> : null}</p>
               <button type="button" aria-expanded={open === e.id} onClick={() => setOpen(open === e.id ? null : e.id)} className="mt-1 text-xs text-zinc-300 underline underline-offset-2">{open === e.id ? "Hide recent deliveries" : "Show recent deliveries"}</button>
-              {open === e.id && <RecentDeliveries endpointId={e.id} name={e.name} />}</div>
+              {open === e.id && <RecentDeliveries key={deliveriesVersion} endpointId={e.id} name={e.name} />}</div>
+            {data.canEdit && <button type="button" disabled={busy} onClick={() => void sendTest(e.id, e.name)} aria-label={`Send test delivery to ${e.name}`} className="text-xs text-zinc-300 underline underline-offset-2">Send test</button>}
             {data.canEdit && <button type="button" disabled={busy} onClick={() => void revoke(e.id)} aria-label={`Revoke webhook ${e.name}`} className="text-xs text-zinc-300 underline underline-offset-2">Revoke</button>}
           </li>))}</ul>)}
       {created && <div role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/5 p-4 text-sm"><p className="text-amber-200">Signing secret for {created.name}. Copy it into your receiver now; it will not be shown again.</p><p className="mt-2 break-all font-mono text-xs text-zinc-100">{created.secret}</p><p className="mt-2 text-xs text-zinc-400">Verify the signature header on every delivery with this secret. See the webhooks section of the SDK README.</p></div>}

@@ -353,8 +353,12 @@ coding.lint_failed                 coding.test_failed          airflow.action_pr
 airflow.automation_succeeded       airflow.automation_failed
 agent_gateway.request_pending      agent_gateway.request_decided
 agent_gateway.outcome_recorded     audit.integrity_failed
-workspace.access_requested         deployment.blocked
+workspace.access_requested         deployment.blocked          webhook.ping
 ```
+
+`webhook.ping` is the test delivery an owner or admin sends with **Send test**
+on the Webhooks page. It is sent once, never retried, and carries
+`{ webhookName, message }`. Check its signature like any other delivery.
 
 `deployment.blocked` fires when a release gate refuses a desktop deployment:
 outside the environment's change window, during a freeze, while a stability
