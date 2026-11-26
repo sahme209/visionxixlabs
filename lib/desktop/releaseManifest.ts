@@ -123,7 +123,8 @@ function frictionFor(platform: DesktopPlatform, signed: boolean, notarized: bool
     case "macos-intel":
       if (signed && notarized) return "Signed + notarized. Double-click to install.";
       if (signed)              return "Signed but not notarized — right-click → Open the first time.";
-      return "Unsigned developer build — right-click → Open the first time to bypass Gatekeeper.";
+      // Missing attestation means "not confirmed", not "unsigned": never coach people around Gatekeeper for a build that may be notarized.
+      return "Signing not yet confirmed in the release record. If macOS blocks the app, check the release notes and checksum before opening it.";
     case "windows-x64":
       if (signed) return "Signed with EV certificate. Double-click to install.";
       return "Unsigned developer build — SmartScreen will warn; click 'More info' → 'Run anyway'.";
