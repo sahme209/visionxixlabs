@@ -67,3 +67,22 @@ describe("ChecksBoard latest results", () => {
     expect(screen.getByText("No result recorded yet.")).toBeTruthy();
   });
 });
+
+describe("ChecksBoard manual checklist confirmation", () => {
+  it("enables confirmation only when every item is ticked and a full SHA is given, then records it", async () => {
+    const check = { key: "status-page", name: "Status page", kind: "manual_checklist", stage: "approve", mode: "blocking", spec: { items: ["Post update", "Notify on-call"] }, enabled: true, version: 2 };
+    const f = vi.fn().mockResolvedValueOnce(json(board(true, [check]))).mockResolvedValueOnce(json({ ok: true, recorded: true }, 201)).mockResolvedValueOnce(json(board(true, [check])));
+    vi.stubGlobal("fetch", f);
+    render(createElement(ChecksBoard));
+    await screen.findByText("Confirm for a commit");
+    const button = screen.getByRole("button", { name: "Confirm all items" }) as HTMLButtonElement;
+    fireEvent.click(screen.getByLabelText("Post update"));
+    fireEvent.change(screen.getByLabelText(/Commit SHA/), { target: { value: "A".repeat(40) } });
+    expect(button.disabled).toBe(true);
+    fireEvent.click(screen.getByLabelText("Notify on-call"));
+    expect(button.disabled).toBe(false);
+    fireEvent.click(button);
+    await waitFor(() => expect(screen.getByText("Recorded for this commit.")).toBeTruthy());
+    expect(JSON.parse(f.mock.calls[1][1].body)).toEqual({ checkKey: "status-page", checkVersion: 2, commitSha: "a".repeat(40), confirmedItems: ["Post update", "Notify on-call"] });
+  });
+});
