@@ -720,98 +720,98 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#deployment-checks",
    "title": "Deployment checks per stage",
    "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool) and resilience experiments (for example a chaos test with AWS FIS or Chaos Mesh, run under your own safeguards). Owners and admins can also describe a check in plain language under Draft with AI ; the workspace's governed AI fills the form with a draft that passes the same validation, and nothing is saved until they add it. Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V19 never runs a check. Under CI workflow for these checks , the page generates a GitHub Actions workflow ( .github/workflows/v19-deployment-checks.yml ) that runs the smoke tests and repository scripts for a chosen stage; copy or download it and add it through a pull request. Health checks, migration dry runs and manual checklists are listed with the reason they are not in that file. Each generated job ends by reporting its result to V19 when the repository has a V19_API_KEY secret (an API key with the checks:report scope, kept separate fro",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#tenant-fan-out",
    "title": "Tenants, tags and fan-out",
    "text": "In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase key:value labels such as tenant:acme , region:eu or ring:1 . Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime. Tenant fan-out preview takes a selector (all terms must match, and key:* matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals. Rings are enforced: before the desktop app dispatches to an environment tagged ring:N (N above 0), at least one environment tagged ring:N-1 must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#database-changes",
    "title": "Database changes in a deployment",
    "text": "When you check readiness for a deployment in the desktop app, V19 compares the commit with the last successful deployment of the same repository to the same environment and lists any changed migration files (for example Prisma, Rails, Alembic, Flyway, Liquibase, Supabase or Drizzle migrations). Review the migration and its rollback before dispatching. This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#change-windows",
    "title": "Change windows and freezes",
    "text": "In the desktop app, under Settings → Environments, owners and admins can give an environment a change window: the days it opens on and one or more times in UTC (for example 22:00-02:00 , which crosses midnight from the day it starts), plus freezes written as 2026-12-20 to 2027-01-02: Holiday freeze . The editor shows whether deployments are allowed right now and when the window next opens. Saving uses the governed configuration path, and an edit is refused if someone changed the window in the meantime. The desktop app refuses to dispatch outside the window or during a freeze, before any GitHub work starts. A freeze always wins over a window. A rule that cannot be read refuses deployments until it is fixed, rather than silently allowing them. The audited production emergency bypass still works. Queuing a deployment to run automatically when the window opens is not available yet; dispatch it once the window is open.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#kubernetes-templates",
    "title": "Kubernetes rolling, blue/green and canary",
    "text": "In the cockpit, Services generates a GitHub Actions workflow for a Kubernetes rolling update, a blue/green switch or a canary. Commit it to your repository and add a KUBE_CONFIG repository secret scoped to the namespace: cluster access stays in your CI, and V19 never holds it. V19 dispatches the workflow only after the environment's policy, checks, rings, change window and approvals pass. A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running so you can switch back. A canary runs the new image in a small canary Deployment, watches readiness and restarts for the minutes you choose, promotes to the main Deployment, and always scales the canary back to zero. The workflow uses only kubectl and checks the image reference before using it.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#evidence-pack",
    "title": "Release evidence pack",
    "text": "In the cockpit, Insights → Export release evidence downloads one JSON file for a repository commit: every recorded deployment of it (environment, who, when, policy, reviewed pull request, configuration fingerprint and outcome), every check result CI reported for it, and audit events on those deployments. Configuration values are not included, only their fingerprints. Missing evidence is listed under gaps rather than invented. The file carries a SHA-256 digest of its canonical JSON (sorted keys, without the export time), so exporting the same records again gives the same digest and an auditor can recompute it. Every export is recorded in the audit log.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#gitops",
    "title": "Argo CD and Flux",
    "text": "V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. Connect them under Release signals (see below); live acceptance with a real Argo CD instance or cluster is still pending.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#stability-warning",
    "title": "Stability early warning",
    "text": "V19 compares the change failure rate of releases finished in the last 7 days with the 90 days before. When at least three recent releases failed, rolled back or had an incident reported against them, and the recent rate is at least 20% and well above the earlier rate, Overview and Insights show a stability warning. While it is active, the desktop app asks for a reason before a production deployment and records that reason in the audit log. If release records cannot be read, nothing is blocked.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#serverless-templates",
    "title": "Lambda, Cloud Run and Azure Functions",
    "text": "In the cockpit, Services also generates serverless deploy workflows. For AWS Lambda, it publishes a new version, sends it a share of traffic on an alias named live , and moves all traffic back if that version reports errors. For Google Cloud Run, it deploys a revision with no traffic, sends it a share, watches readiness, then moves all traffic to it. For Azure Functions, it deploys to a staging slot, checks a health path, and swaps it into production. Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment's gates pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#verification-signals",
    "title": "Verification signals from Sentry and Datadog",
    "text": "V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. Connect them under Release signals (see below); live acceptance with real accounts is still pending.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops#release-signals",
    "title": "Connect release signals",
-   "text": "In the desktop app, under Settings, Release signals connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog and LaunchDarkly. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again. Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as monitors_read . V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time.",
+   "text": "In the desktop app, under Settings, Release signals connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog and LaunchDarkly. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again. Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as monitors_read . V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time. After a deployment, the desktop deploy form offers Check release health . Enter the release name your tools use (it starts as the deployed tag or branch). V19 then reads every connected signal at once: open PagerDuty and Opsgenie incidents, new Sentry issues first seen in that release, alerting Datadog monitors, LaunchDarkly temporary flags still on after 30 days, and Verify-stage check results for the commit. It shows one verdict with the reasons. A tool that is not connected, or does not answer, is listed as not available and never counted as healthy.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd"
+   "sourceSha256": "4b7badf99a9a924136cbf350dc16602941d4173f57be58ab86b64104a6f9b474"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",
