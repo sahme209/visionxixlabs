@@ -244,3 +244,24 @@ describe("isKnownStatus — guard for legacy rows", () => {
     for (const s of ["", "CONNECTED", "init", "active"]) expect(isKnownStatus(s)).toBe(false);
   });
 });
+
+describe("applyConnectorSetupEvent — concurrent writers", () => {
+  it("re-applies against the latest status when another writer changed the session first", async () => {
+    const repo = makeRepo();
+    await applyConnectorSetupEvent(repo, { organizationId: "org_r", provider: "aws", event: { kind: "operator_started" }, actor: { userId: "u" } });
+    let interfere = true, casCalls = 0;
+    (repo.connectorSetupSession as { updateMany?: unknown }).updateMany = async ({ where, data }: { where: { id: string; status: ConnectorSetupStatus }; data: Record<string, unknown> }) => {
+      casCalls += 1;
+      const row = repo._sessions.find((s) => s.id === where.id)!;
+      if (interfere) { interfere = false; row.status = "waiting_for_provider"; return { count: 0 }; } // a second tab opened the provider link first
+      if (row.status !== where.status) return { count: 0 };
+      Object.assign(row, data); return { count: 1 };
+    };
+    const r = await applyConnectorSetupEvent(repo, { organizationId: "org_r", provider: "aws", event: { kind: "provider_link_opened" }, actor: { userId: "u" } });
+    expect(casCalls).toBeGreaterThanOrEqual(1);
+    const logged = repo._transitions.filter((t) => t.eventKind === "provider_link_opened");
+    expect(logged).toHaveLength(1);
+    expect(logged[0].fromStatus).toBe("waiting_for_provider");
+    expect(r.ok ? r.previousStatus : r.from).toBe("waiting_for_provider");
+  });
+});
