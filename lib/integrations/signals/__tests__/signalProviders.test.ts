@@ -7,7 +7,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("signal providers", () => {
   it("is a closed set with a descriptor each", () => {
-    expect(SIGNAL_PROVIDERS).toEqual(["argo_cd", "flux", "pagerduty", "opsgenie", "sentry", "datadog", "launchdarkly", "unleash"]);
+    expect(SIGNAL_PROVIDERS).toEqual(["argo_cd", "flux", "pagerduty", "opsgenie", "sentry", "datadog", "launchdarkly", "unleash", "jenkins"]);
     expect(isSignalProvider("sentry")).toBe(true);
     expect(isSignalProvider("__proto__")).toBe(false);
     for (const p of SIGNAL_PROVIDERS) expect(SIGNAL_DESCRIPTORS[p].label).toBeTruthy();

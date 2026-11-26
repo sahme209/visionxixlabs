@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "37a2d9653c9f72dcc53cf54cb31ff56b96779f6881c4c2ce78c3cb299b78b32e",
+      "sourceSha256": "52d803ac184e5eda18c036c1a9f257f3bf2aca9a7ea8d574a5a72f9e0510f566",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",

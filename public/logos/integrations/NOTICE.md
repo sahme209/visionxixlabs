@@ -17,3 +17,5 @@ Opsgenie and LaunchDarkly: no permitted marks have been obtained, so the catalog
 Sentry and Datadog: no permitted marks have been obtained, so the catalog uses an explicitly generic monitoring symbol, not copied or invented vendor logos.
 
 Unleash: no permitted mark has been obtained, so the catalog uses the generic feature-flag symbol.
+
+Jenkins: no permitted mark has been obtained, so the catalog uses a generic CI symbol.

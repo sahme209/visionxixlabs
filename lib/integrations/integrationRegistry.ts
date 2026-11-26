@@ -275,6 +275,17 @@ export const INTEGRATIONS: ReadonlyArray<Integration> = [
     writeAccess: "none",
   },
   {
+    id: "jenkins",
+    name: "Jenkins",
+    blurb: "Read-only jobs and last build results for teams that run CI on Jenkins.",
+    category: "vcs",
+    activation: "manual_paste",
+    status: "beta",
+    cta: "Connect read-only",
+    permissionsSummary: "Overall/Read and Job/Read · no builds, aborts or configuration",
+    writeAccess: "none",
+  },
+  {
     id: "unleash",
     name: "Unleash",
     blurb: "Read-only flag state for one environment through the client API.",

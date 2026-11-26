@@ -8,13 +8,14 @@ import { SentryReadClient } from "@/lib/integrations/sentry/sentryReadClient";
 import { DatadogReadClient, DATADOG_SITES, type DatadogSite } from "@/lib/integrations/datadog/datadogReadClient";
 import { LaunchDarklyReadClient } from "@/lib/integrations/launchdarkly/launchDarklyReadClient";
 import { UnleashReadClient, validateUnleashBaseUrl } from "@/lib/integrations/unleash/unleashReadClient";
+import { JenkinsReadClient, validateJenkinsBaseUrl } from "@/lib/integrations/jenkins/jenkinsReadClient";
 
 /**
  * Read-only signal providers: GitOps controllers, incident tools, error tracking, monitoring and feature
  * flags. One closed union and one descriptor each, like the Batches providers. Connecting validates the
  * credential with one bounded read and stores it encrypted; every client is observation only.
  */
-export const SIGNAL_PROVIDERS = ["argo_cd", "flux", "pagerduty", "opsgenie", "sentry", "datadog", "launchdarkly", "unleash"] as const;
+export const SIGNAL_PROVIDERS = ["argo_cd", "flux", "pagerduty", "opsgenie", "sentry", "datadog", "launchdarkly", "unleash", "jenkins"] as const;
 export type SignalProvider = (typeof SIGNAL_PROVIDERS)[number];
 export const isSignalProvider = (v: unknown): v is SignalProvider => typeof v === "string" && (SIGNAL_PROVIDERS as readonly string[]).includes(v);
 
@@ -77,9 +78,14 @@ export const SIGNAL_DESCRIPTORS: Readonly<Record<SignalProvider, SignalDescripto
     async parse(i) { return { settings: { baseUrl: await validateUnleashBaseUrl(String(i.baseUrl ?? "").trim()) }, secret: { token: need(str(i.token, 300), "credentials_required") } }; },
     async probe(s, k) { return (await new UnleashReadClient(s.baseUrl, k.token).listFlags()).length; },
   },
+  jenkins: {
+    label: "Jenkins",
+    async parse(i) { return { settings: { baseUrl: await validateJenkinsBaseUrl(String(i.baseUrl ?? "").trim()), user: need(str(i.user, 100), "jenkins_credentials_invalid") }, secret: { token: need(str(i.token, 200), "credentials_required") } }; },
+    async probe(s, k) { return (await new JenkinsReadClient(s.baseUrl, s.user, k.token).listJobs()).length; },
+  },
 });
 
-const PREFIX: Record<SignalProvider, string> = { argo_cd: "argocd_", flux: "flux_", pagerduty: "pagerduty_", opsgenie: "opsgenie_", sentry: "sentry_", datadog: "datadog_", launchdarkly: "launchdarkly_", unleash: "unleash_" };
+const PREFIX: Record<SignalProvider, string> = { argo_cd: "argocd_", flux: "flux_", pagerduty: "pagerduty_", opsgenie: "opsgenie_", sentry: "sentry_", datadog: "datadog_", launchdarkly: "launchdarkly_", unleash: "unleash_", jenkins: "jenkins_" };
 /** Error codes safe to return; anything else collapses to a generic code so no provider text leaks. */
 export function publicSignalError(provider: SignalProvider, error: unknown): string {
   const code = error instanceof Error ? error.message.split(":")[0] : "";

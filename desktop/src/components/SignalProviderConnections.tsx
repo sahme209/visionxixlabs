@@ -19,6 +19,7 @@ export const SIGNAL_PROVIDER_FORMS: ReadonlyArray<{ id: SignalProviderId; label:
   { id: "datadog", label: "Datadog", purpose: "Monitor states for a service", fields: [{ name: "site", label: "Site", options: ["datadoghq.com", "us3.datadoghq.com", "us5.datadoghq.com", "datadoghq.eu", "ap1.datadoghq.com", "ddog-gov.com"].map((v) => ({ value: v, label: v })) }, { name: "tag", label: "Monitor tag", placeholder: "service:checkout" }, { name: "apiKey", label: "API key", secret: true }, { name: "appKey", label: "Application key (monitors_read)", secret: true }] },
   { id: "launchdarkly", label: "LaunchDarkly", purpose: "Flag state beside each release", fields: [{ name: "project", label: "Project key", placeholder: "default" }, { name: "environment", label: "Environment key", placeholder: "production" }, { name: "token", label: "Reader access token", secret: true }] },
   { id: "unleash", label: "Unleash", purpose: "Flag state for one environment", fields: [{ name: "baseUrl", label: "Unleash API URL", placeholder: "https://flags.example.com/api" }, { name: "token", label: "Client token", secret: true }] },
+  { id: "jenkins", label: "Jenkins", purpose: "Jobs and their last build", fields: [{ name: "baseUrl", label: "Jenkins URL", placeholder: "https://ci.example.com" }, { name: "user", label: "User", placeholder: "v19-reader" }, { name: "token", label: "API token (Overall/Read, Job/Read)", secret: true }] },
 ];
 
 export function SignalProviderConnections() {
