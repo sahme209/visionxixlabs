@@ -267,6 +267,30 @@ def cmd_ask(args: argparse.Namespace) -> None:
     sys.exit(EXIT_OK if request.get("mayProceed") else EXIT_COMMAND_FAILED)
 
 
+def cmd_config(args: argparse.Namespace) -> None:
+    """Print the workspace configuration as code (GET /api/v1/config). Scope: config:read."""
+    client = make_client(args.api_key, args.base_url)
+    data = handle_api_call(client.workspace_config)
+    if args.json or args.output:
+        doc = {k: data.get(k) for k in ("environments", "variableSets", "variables", "checks")}
+        text = json.dumps(doc, indent=2, sort_keys=True) + "\n"
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            print(f"Wrote {args.output}")
+            return
+        sys.stdout.write(text)
+        return
+    envs = data.get("environments") or []
+    print(color("Environments", ANSI_BOLD))
+    for e in envs:
+        tags = " ".join(e.get("tags") or [])
+        window = "change window set" if e.get("changeWindow") else "no change window"
+        print(f"  {e.get('slug')}  ({e.get('tier')})  {tags}  · {window}")
+    print()
+    print(f"{len(data.get('variableSets') or [])} variable sets · {len(data.get('variables') or [])} variables · {len((data.get('checks') or {}).get('checks') or [])} checks")
+
+
 def cmd_outcome(args: argparse.Namespace) -> None:
     """Report what happened after an allowed or approved action."""
     client = make_client(args.api_key, args.base_url)
@@ -641,6 +665,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_outcome.add_argument("outcome", choices=["succeeded", "failed", "abandoned"])
     p_outcome.add_argument("--detail", default=None)
 
+    p_config = sub.add_parser("config", help="Show the workspace configuration as code (needs config:read).")
+    p_config.add_argument("--output", "-o", default=None, help="Write the configuration as sorted JSON to this file.")
+
     p_listen = sub.add_parser(
         "listen",
         help="Run a local HTTP server that verifies inbound webhook signatures.",
@@ -675,6 +702,8 @@ def dispatch(args: argparse.Namespace) -> None:
         return cmd_ask(args)
     if args.cmd == "outcome":
         return cmd_outcome(args)
+    if args.cmd == "config":
+        return cmd_config(args)
     die(f"unknown command: {args.cmd}")
 
 

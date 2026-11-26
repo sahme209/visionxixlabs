@@ -321,3 +321,32 @@ class GatewayCliTests(unittest.TestCase):
         client = _FakeGatewayClient(_req("approved", True), [])
         self.assertEqual(self._run(["outcome", "r1", "succeeded", "--detail", "ok"], client), vxl_cli.EXIT_OK)
         self.assertEqual(client.outcomes, [("r1", "succeeded", "ok")])
+
+
+# ============================ vxl config ============================
+
+
+class _FakeConfigClient:
+    def workspace_config(self) -> Dict[str, Any]:
+        return {"ok": True, "environments": [{"slug": "prod", "tier": "prod", "tags": ["region:eu"], "changeWindow": {"utcWindows": []}}], "variableSets": [], "variables": [{"key": "A", "value": "1", "scope": "workspace", "version": 1}], "checks": {"kind": "v19.checks", "version": 1, "checks": []}}
+
+
+class ConfigCliTests(unittest.TestCase):
+    def test_prints_a_summary(self) -> None:
+        args = vxl_cli.build_parser().parse_args(["config"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=_FakeConfigClient()), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertIn("prod  (prod)  region:eu  · change window set", out.getvalue())
+        self.assertIn("0 variable sets · 1 variables · 0 checks", out.getvalue())
+
+    def test_writes_sorted_json_without_the_ok_flag(self) -> None:
+        import json, tempfile, os as _os
+        with tempfile.TemporaryDirectory() as d:
+            path = _os.path.join(d, "v19-config.json")
+            args = vxl_cli.build_parser().parse_args(["config", "--output", path])
+            with patch.object(vxl_cli, "make_client", return_value=_FakeConfigClient()), patch("sys.stdout", new_callable=StringIO):
+                vxl_cli.dispatch(args)
+            with open(path, encoding="utf-8") as fh:
+                doc = json.loads(fh.read())
+            self.assertEqual(sorted(doc.keys()), ["checks", "environments", "variableSets", "variables"])

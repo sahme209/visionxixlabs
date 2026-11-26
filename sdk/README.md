@@ -70,7 +70,9 @@ environments (tier, tags and change window), variable sets, variables with
 their scope, and deployment checks in the `v19.checks/v1` file shape. Use an
 API key with the `config:read` scope. It is read-only; change configuration in
 the cockpit, where edits are governed and compare-and-set. Every SDK exposes
-`workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)`.
+`workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)`. From a terminal, `vxl config` prints a summary and
+`vxl config -o v19-config.json` writes it as sorted JSON, ready to commit and
+diff in a pull request.
 
 ## Environment configuration at deploy time
 
