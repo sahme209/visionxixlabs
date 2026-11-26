@@ -1028,21 +1028,28 @@
    "title": "Choose an active workspace",
    "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
+   "sourceSha256": "41d64ff9f3a350d7241ce4c2e91c880c11768744ac9ed3940cc4afe58dafdc31"
   },
   {
    "href": "/docs/workspaces#recover",
    "title": "Recover unavailable workspace access",
    "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
+   "sourceSha256": "41d64ff9f3a350d7241ce4c2e91c880c11768744ac9ed3940cc4afe58dafdc31"
   },
   {
    "href": "/docs/workspaces#devices",
    "title": "Browser context and paired devices are separate",
    "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
+   "sourceSha256": "41d64ff9f3a350d7241ce4c2e91c880c11768744ac9ed3940cc4afe58dafdc31"
+  },
+  {
+   "href": "/docs/workspaces#insights",
+   "title": "Delivery insights for the workspace",
+   "text": "In the cockpit, Insights shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification.",
+   "source": "app/docs/workspaces/page.tsx",
+   "sourceSha256": "41d64ff9f3a350d7241ce4c2e91c880c11768744ac9ed3940cc4afe58dafdc31"
   }
  ]
 }

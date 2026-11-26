@@ -17,6 +17,9 @@ export default function WorkspacesGuide() {
    <p>Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use <a href="/docs/settings">Settings and sessions</a> to inspect your paired devices for the current workspace.</p>
    <Callout variant="warning" title="Selection is not authorization">Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else&apos;s request.</Callout>
   </DocSection>
+  <DocSection id="insights" kicker="04" title="Delivery insights for the workspace">
+   <p>In the cockpit, <strong>Insights</strong> shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/mcp-tools",label:"MCP tools"}} next={{href:"/docs/members",label:"Members and roles"}} />
  </>;
 }
