@@ -1,3 +1,4 @@
+import { readDatabaseChangeEvidence, type LastDeploymentRepo } from "@/lib/releaseops/databaseChangeEvidence";
 import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Read-only deployment readiness check. It resolves the same tenant-scoped
@@ -108,10 +109,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: decision.error, policyId: decision.policyId ?? null }, { status: 409 });
   }
 
+  // Advisory evidence only; it never changes readiness.
+  const databaseChanges = await readDatabaseChangeEvidence(prisma as unknown as LastDeploymentRepo, { organizationId, environmentId, owner: parsed.owner, repo: parsed.repo, commitSha: decision.sourceCommitSha, installationToken: token.token });
+
   return NextResponse.json({
     ok: true,
     data: {
       ready: true,
+      databaseChanges,
       evidence: deploymentEvidence("service_restart"),
       policyId: decision.policyId,
       sourceCommitSha: decision.sourceCommitSha,

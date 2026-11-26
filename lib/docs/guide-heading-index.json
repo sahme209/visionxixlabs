@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "5b2f8c74c917754daeee8c9e87c14cf2d1a64ab3680e1feac141958e6ff6a425",
+      "sourceSha256": "47853fe7e287891e3d739b72d3714b4d97855d2db881d53745ea06cb4d31df83",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -183,7 +183,8 @@
         "Availability rules",
         "Trust questions",
         "Deployment checks per stage",
-        "Tenants, tags and fan-out"
+        "Tenants, tags and fan-out",
+        "Database changes in a deployment"
       ]
     },
     {
@@ -411,7 +412,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "9f37049690505b6b88e8f36204ea316b3239ed1d7c42fd8070bd8d4662c84fa4",
+      "sourceSha256": "9d28beecc444b1b9ffdb1e3cbea39ff1c67e0ac37ab02b2ccb83289383df5ac2",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -420,7 +421,8 @@
         "Browser context and paired devices are separate",
         "Selection is not authorization",
         "Delivery insights for the workspace",
-        "Configuration variables per environment"
+        "Configuration variables per environment",
+        "Service catalog"
       ]
     },
     {
@@ -440,7 +442,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "b5bfe2d7b4b0559e64a5059abdd28c2cdeba677b975e99fdf01409945a0f58f5",
+      "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",

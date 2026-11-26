@@ -116,6 +116,18 @@ jobs:
 
       # Validate production compilation in GitHub without deploying or loading
       # Vercel production credentials. Git-triggered Vercel builds are disabled.
+      # The production build runs the webpack worker (heap up to 8 GB) alongside Next's own
+      # type check (about 4 GB). On the 16 GB hosted runner that exhausted memory and the runner
+      # was shut down mid-build (PRs 368, 370, 371); a 6 GB heap ran out instead. Extra swap
+      # gives headroom without weakening the build or its type checks.
+      - name: Add swap headroom for the production build
+        run: |
+          sudo fallocate -l 8G /mnt/v19-build.swap
+          sudo chmod 600 /mnt/v19-build.swap
+          sudo mkswap /mnt/v19-build.swap
+          sudo swapon /mnt/v19-build.swap
+          free -m
+
       - name: Build production website (no deployment)
         env:
           NODE_OPTIONS: --max-old-space-size=8192

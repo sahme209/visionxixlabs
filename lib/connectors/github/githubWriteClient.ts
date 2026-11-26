@@ -569,6 +569,19 @@ export async function resolveGitReference(input: {
   return { ok: true, data: { kind: input.kind, ref: input.ref, commitSha } };
 }
 
+/** Read-only: files changed between two commits (GitHub compare). GitHub lists at most 300 files. */
+export async function compareCommitFiles(input: { owner: string; repo: string; base: string; head: string; installationToken: string; signal?: AbortSignal }): Promise<GithubWriteResult<{ files: string[]; truncated: boolean; status: string }>> {
+  if (!/^[a-f0-9]{40}$/.test(input.base) || !/^[a-f0-9]{40}$/.test(input.head)) return { ok: false, error: "invalid_commit" };
+  const result = await gh<{ status?: unknown; files?: Array<{ filename?: unknown }>; total_commits?: unknown }>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/compare/${input.base}...${input.head}?per_page=300`,
+    input.installationToken,
+    { signal: input.signal },
+  );
+  if (!result.ok) return { ok: false, error: `compare_unavailable: ${result.error}` };
+  const files = Array.isArray(result.data.files) ? result.data.files.map((f) => f.filename).filter((f): f is string => typeof f === "string").slice(0, 300) : [];
+  return { ok: true, data: { files, truncated: files.length >= 300, status: typeof result.data.status === "string" ? result.data.status : "unknown" } };
+}
+
 export interface PullRequestGovernanceEvidence {
   number: number;
   state: string;
