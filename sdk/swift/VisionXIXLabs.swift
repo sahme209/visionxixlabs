@@ -75,6 +75,11 @@ public struct VisionXIXLabs {
 
     /// GET /api/v1/environments/{slug}/variables — resolved configuration and fingerprint.
     /// Required scope: `pipeline:read`.
+    /// GET /api/v1/config — environments, variable sets, variables and checks as code. Scope: config:read.
+    public func workspaceConfig() async throws -> WorkspaceConfigResponse {
+        try await get("/api/v1/config")
+    }
+
     public func environmentVariables(slug: String) async throws -> EnvironmentVariablesResponse {
         try await get("/api/v1/environments/\(slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug)/variables")
     }
@@ -295,6 +300,16 @@ public struct WhoamiResponse: Decodable {
         public let ratio: Double?
         public let nearLimit: Bool
     }
+}
+
+public struct WorkspaceConfigResponse: Decodable {
+    public struct Environment: Decodable { public let slug: String; public let name: String; public let tier: String; public let tags: [String] }
+    public struct VariableSet: Decodable { public let slug: String; public let name: String; public let selector: String; public let version: Int }
+    public struct Variable: Decodable { public let key: String; public let value: String; public let version: Int; public let scope: String; public let set: String?; public let environment: String? }
+    public let ok: Bool
+    public let environments: [Environment]
+    public let variableSets: [VariableSet]
+    public let variables: [Variable]
 }
 
 public struct EnvironmentVariablesResponse: Decodable {

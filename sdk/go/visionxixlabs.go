@@ -264,6 +264,16 @@ func (c *Client) EnvironmentVariables(ctx context.Context, slug string) (*Enviro
 	return &out, nil
 }
 
+// WorkspaceConfig reads GET /api/v1/config: environments, variable sets, variables and checks as code.
+// Required scope: config:read. The response is returned as raw JSON fields for forward compatibility.
+func (c *Client) WorkspaceConfig(ctx context.Context) (map[string]any, error) {
+	var out map[string]any
+	if err := c.do(ctx, "GET", "/api/v1/config", nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReportCheckResult posts one deployment check run to /api/v1/checks/results. Required scope: checks:report.
 func (c *Client) ReportCheckResult(ctx context.Context, in CheckResultInput) (*CheckResultResponse, error) {
 	var out CheckResultResponse

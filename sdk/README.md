@@ -63,6 +63,15 @@ curl -fsS -H "Authorization: Bearer $VXL_API_KEY" \
   | jq -e '.gate.passed' >/dev/null || exit 1
 ```
 
+## Configuration as code (read)
+
+`GET /api/v1/config` returns the workspace's configuration in one document:
+environments (tier, tags and change window), variable sets, variables with
+their scope, and deployment checks in the `v19.checks/v1` file shape. Use an
+API key with the `config:read` scope. It is read-only; change configuration in
+the cockpit, where edits are governed and compare-and-set. Every SDK exposes
+`workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)`.
+
 ## Environment configuration at deploy time
 
 Load an environment's resolved variables (workspace defaults, then variable
@@ -255,6 +264,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/whoami`             | any read-class        | `whoami()`            |
 | `GET  /api/v1/release-gate`       | `release_gate:read`   | `releaseGate()`       |
 | `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
+| `GET  /api/v1/config` | `config:read` | `workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)` |
 | `POST /api/v1/checks/results`     | `checks:report`       | `reportCheckResult()` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
