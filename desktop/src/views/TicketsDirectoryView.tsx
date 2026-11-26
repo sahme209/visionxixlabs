@@ -1,3 +1,5 @@
+import { incidentRecoveryMetrics } from "../../../lib/desktop/incidentRecoveryMetrics";
+import { formatRunElapsed } from "../components/DeploymentWorkflowEvidence";
 import {ReadableTime} from "../components/ReadableTime";
 import {useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type Ref} from "react";
 import {invoke} from "@tauri-apps/api/core";
@@ -164,6 +166,8 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     && matchesTicketFacets(record,facets)
     && (!classification || classification === classificationKey(record))
     && ticketSearchText(record).includes(needle));
+  const loadedIncidents = (data?.records ?? []).flatMap(record => record.kind === "incident" ? [record] : []);
+  const recovery = loadedIncidents.length ? incidentRecoveryMetrics(loadedIncidents) : null;
   const severityMix = incidentSeverities.map(severity => ({severity, count: (data?.records ?? []).filter(record => record.kind === "incident" && record.severity === severity
     && inFilter(record,filter,identity.userId) && matchesTicketFacets(record,facets) && ticketSearchText(record).includes(needle)).length})).filter(part => part.count > 0);
   useLayoutEffect(() => {
@@ -491,6 +495,12 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     })}
     {selectionUnavailable && <p role="status">The selected ticket could not be verified in the loaded records. Refresh or select another ticket.</p>}
     {showNoRows && !selectionUnavailable && <p role="status">{data.records.length ? "No loaded tickets match." : "No records from the available sources."}</p>}
+    {recovery && <dl className="studio-ticket-recovery" aria-label="Recovery from loaded incidents">
+      <div><dt>Open incidents</dt><dd>{recovery.open}</dd></div>
+      <div><dt>Median time to mitigate</dt><dd>{recovery.mitigate.medianSeconds === null ? "—" : formatRunElapsed(new Date(0), new Date(recovery.mitigate.medianSeconds * 1000))}<small>{recovery.mitigate.count} mitigated</small></dd></div>
+      <div><dt>Median time to resolve</dt><dd>{recovery.resolve.medianSeconds === null ? "—" : formatRunElapsed(new Date(0), new Date(recovery.resolve.medianSeconds * 1000))}<small>{recovery.resolve.count} resolved</small></dd></div>
+      <p>From reported to recorded mitigation or resolution, across loaded incidents only.</p>
+    </dl>}
     {severityMix.length > 0 && <div className="studio-ticket-severity-mix" role="group" aria-label="Loaded incidents by severity">
       <div className="studio-ticket-severity-bar" aria-hidden="true">{severityMix.map(part => <span key={part.severity} data-ticket-priority={part.severity}
         data-active={classification === `incident:${part.severity}` ? "true" : classification ? "false" : undefined} style={{flexGrow: part.count}}/>)}</div>
