@@ -31,16 +31,11 @@ function makeRepo(): Stub {
         }).sort((a, b) => b.generatedAt.getTime() - a.generatedAt.getTime());
         return take ? out.slice(0, take) : out;
       },
-      async updateMany({ where, data }) {
+      async updateMany({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) {
         let count = 0;
         for (const r of stub._rows) {
-          if (r.organizationId === where.organizationId
-              && r.releaseId === where.releaseId
-              && r.operatorDecision === where.operatorDecision) {
-            r.operatorDecision = data.operatorDecision;
-            r.updatedAt = new Date();
-            count += 1;
-          }
+          const row = r as unknown as Record<string, unknown>;
+          if (Object.entries(where).every(([k, v]) => row[k] === v)) { Object.assign(row, data, { updatedAt: new Date() }); count += 1; }
         }
         return { count };
       },

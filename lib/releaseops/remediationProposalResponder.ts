@@ -102,6 +102,8 @@ export interface RemediationRepo {
       orderBy: { generatedAt: "desc" };
       take?: number;
     }): Promise<RemediationRow[]>;
+    /** Conditional decision transition (also used to claim a decision atomically). */
+    updateMany(args: { where: { id: string; organizationId: string; operatorDecision: string }; data: Record<string, unknown> }): Promise<{ count: number }>;
     updateMany(args: {
       where: { organizationId: string; incidentId: string; operatorDecision: "pending" };
       data: { operatorDecision: "dismissed" };
@@ -448,8 +450,9 @@ export async function buildRemediationDecisionResponse(
       };
     }
     const now = opts.now ?? new Date();
-    await repo.remediationProposal.update({
-      where: { id: existing.id },
+    // Claim the transition from the decision that was read, so a concurrent decision cannot overwrite it.
+    const claimed = await repo.remediationProposal.updateMany({
+      where: { id: existing.id, organizationId: input.organizationId, operatorDecision: existing.operatorDecision },
       data: {
         operatorDecision: plan.next,
         decidedByUserId: input.actorUserId,
@@ -458,6 +461,9 @@ export async function buildRemediationDecisionResponse(
         linkedManualFixId: input.action === "implement" ? (input.linkedManualFixId ?? null) : null,
       },
     });
+    if (claimed.count !== 1) {
+      return { status: 409, body: { ok: false, error: "illegal_transition", hint: "This item changed while you were deciding. Reload it." } };
+    }
     return {
       status: 200,
       body: {
