@@ -13,6 +13,17 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
     }).catch(() => { if (live) setEnvironments(null); });
     return () => { live = false; };
   }, []);
+  const [checks, setChecks] = useState<Record<string, { total: number; passed: number; failed: number; missing: number }>>({});
+  const shaKey = [...new Set(executions.map(e => e.sourceCommitSha).filter((s): s is string => typeof s === "string" && /^[0-9a-f]{40}$/.test(s)))].slice(0, 50).join(",");
+  useEffect(() => {
+    if (!shaKey) return;
+    let live = true;
+    // Optional evidence: unavailable leaves cells without a checks note.
+    Promise.resolve().then(() => desktopClient.summarizeCommitChecks(shaKey.split(","))).then(result => {
+      if (live && result.ok && result.data?.commits) setChecks(result.data.commits);
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [shaKey]);
   if (!environments?.length || !executions.length) return null;
   const board = buildEnvironmentBoard(environments, executions);
   if (!board.rows.length) return null;
@@ -36,7 +47,7 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
               const tone = runResultTone(cell.status, cell.conclusion);
               return <div className="environment-board-cell" data-tone={tone.tone}>
                 <StatusIconChip tone={tone.tone} shape={tone.shape} size={12}/>
-                <span><code>{cell.commit ?? "no commit"}</code>{cell.ref && <small>{cell.ref}</small>}{cell.config && <small title="Configuration fingerprint recorded when this run was dispatched">config {cell.config}</small>}</span>
+                <span><code>{cell.commit ?? "no commit"}</code>{cell.ref && <small>{cell.ref}</small>}{cell.config && <small title="Configuration fingerprint recorded when this run was dispatched">config {cell.config}</small>}{cell.sha && checks[cell.sha] && checks[cell.sha].total > 0 && <small title="Blocking deployment checks reported for this commit">{checks[cell.sha].failed ? `checks ${checks[cell.sha].failed} failed` : checks[cell.sha].missing ? `checks ${checks[cell.sha].passed}/${checks[cell.sha].total}` : "checks passed"}</small>}</span>
                 <time dateTime={cell.at}>{new Date(cell.at).toLocaleDateString([], { month: "short", day: "numeric" })}</time>
               </div>;
             })() : <span className="environment-board-empty">No recorded run</span>}</td>)}

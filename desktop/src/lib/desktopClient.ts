@@ -1313,6 +1313,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/github/workflows?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}`);
   }
 
+  /** Per commit: how many blocking checks passed, failed or have no result. */
+  summarizeCommitChecks(commits: string[]): Promise<ApiResult<{ commits: Record<string, { total: number; passed: number; failed: number; missing: number }> }>> {
+    return this.get(`/api/desktop/checks/results?commits=${encodeURIComponent(commits.join(","))}`);
+  }
+
   /** Blocking deployment checks that must have passed for a commit before a deployment is dispatched. */
   listBlockingDeploymentChecks(): Promise<ApiResult<{ checks: Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> }>> {
     return this.get("/api/desktop/checks/blocking");

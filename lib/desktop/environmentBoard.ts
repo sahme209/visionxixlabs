@@ -1,7 +1,7 @@
 /** Octopus-style environment board from recorded workflow runs: one row per repository, one column per environment. */
 export interface BoardEnvironment { id: string; name: string; tier: string; displayOrder: number }
 export interface BoardExecution { id: string; environmentId: string; repositoryFullName: string; sourceRef: string | null; sourceCommitSha: string | null; status: string; conclusion: string | null; createdAt: string; completedAt: string | null; configDigest?: string | null }
-export interface BoardCell { executionId: string; ref: string | null; commit: string | null; status: string; conclusion: string | null; at: string; config?: string | null }
+export interface BoardCell { executionId: string; ref: string | null; commit: string | null; status: string; conclusion: string | null; at: string; config?: string | null; sha?: string | null }
 export interface PromotionGap { from: string; to: string; commit: string | null }
 export interface EnvironmentBoard { environments: BoardEnvironment[]; rows: Array<{ repository: string; cells: Array<BoardCell | null>; gaps: PromotionGap[] }>; unplaced: number }
 
@@ -22,7 +22,7 @@ export function buildEnvironmentBoard(environments: readonly BoardEnvironment[],
     repository,
     cells: columns.map((env) => {
       const run = latest.get(JSON.stringify([repository, env.id]));
-      return run ? { executionId: run.id, ref: run.sourceRef, commit: run.sourceCommitSha ? run.sourceCommitSha.slice(0, 7) : null, status: run.status, conclusion: run.conclusion, at: run.completedAt ?? run.createdAt, config: run.configDigest ? run.configDigest.slice(0, 7) : null } : null;
+      return run ? { executionId: run.id, ref: run.sourceRef, commit: run.sourceCommitSha ? run.sourceCommitSha.slice(0, 7) : null, status: run.status, conclusion: run.conclusion, at: run.completedAt ?? run.createdAt, config: run.configDigest ? run.configDigest.slice(0, 7) : null, sha: run.sourceCommitSha } : null;
     }),
   })).map((row) => ({ ...row, gaps: promotionGaps(row.cells, columns) }));
   return { environments: columns, rows, unplaced };
