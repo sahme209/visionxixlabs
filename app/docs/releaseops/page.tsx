@@ -77,7 +77,7 @@ export default function ReleaseOpsDocOverviewPage() {
             <DocSection id="tenant-fan-out" title="Tenants, tags and fan-out" kicker="06">
               <p>In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase <code>key:value</code> labels such as <code>tenant:acme</code>, <code>region:eu</code> or <code>ring:1</code>. Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime.</p>
               <p><em>Tenant fan-out preview</em> takes a selector (all terms must match, and <code>key:*</code> matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals.</p>
-              <p>Rings are enforced: before the desktop app dispatches to an environment tagged <code>ring:N</code> (N above 0), at least one environment tagged <code>ring:N-1</code> must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.
+              <p>Rings are enforced: before the desktop app dispatches to an environment tagged <code>ring:N</code> (N above 0), at least one environment tagged <code>ring:N-1</code> must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.</p>
             </DocSection>
 
             <DocFooterNav
