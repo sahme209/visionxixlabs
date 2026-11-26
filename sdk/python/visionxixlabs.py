@@ -89,6 +89,13 @@ class VisionXIXLabs:
         """GET /api/v1/release-gate — current release-gate verdict."""
         return self._get("/api/v1/release-gate")
 
+    def workspace_config(self) -> Dict[str, Any]:
+        """GET /api/v1/config — environments, variable sets, variables and checks as code.
+
+        Required scope: config:read. Read-only; secret references are returned unresolved.
+        """
+        return self._get("/api/v1/config")
+
     def environment_variables(self, slug: str) -> Dict[str, Any]:
         """GET /api/v1/environments/{slug}/variables — resolved configuration and fingerprint.
 

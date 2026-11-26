@@ -35,6 +35,8 @@ const RAW: ReadonlyArray<Omit<IntegrationLogo, "status" | "onHome"> & { statusId
   { id: "datadog", name: "Datadog", logo: null, group: "signals" },
   { id: "opsgenie", name: "Opsgenie", logo: null, group: "signals" },
   { id: "launchdarkly", name: "LaunchDarkly", logo: null, group: "orchestration" },
+  { id: "unleash", name: "Unleash", logo: null, group: "orchestration" },
+  { id: "jenkins", name: "Jenkins", logo: null, group: "source" },
   { id: "postgres", name: "PostgreSQL", logo: L("postgresql"), group: "data" },
   { id: "mysql", name: "MySQL", logo: L("mysql"), group: "data" },
   { id: "slack", name: "Slack", logo: L("slack"), group: "work" },

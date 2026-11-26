@@ -21,12 +21,12 @@ describe("readReleaseSignals", () => {
     expect(r.incidents).toEqual({ pagerduty: 1, opsgenie: null });
     expect(r.newIssues).toEqual([{ title: "TypeError", level: "error", count: 5, url: "https://acme.sentry.io/issues/1/" }]);
     expect(r.monitors).toEqual({ alerting: 1, warning: 0, ok: 0, noData: 0 });
-    expect(r.unavailable).toEqual(["launchdarkly", "opsgenie"]);
+    expect(r.unavailable).toEqual(["launchdarkly", "opsgenie", "unleash"]);
     expect(r.verification.verdict).toBe("unhealthy");
   });
   it("reports no signals when nothing is connected", async () => {
     const r = await readReleaseSignals(async (p) => { throw new Error(`${p}_not_connected`); }, { release: "1.0", verifyChecks: null, now: new Date() });
     expect(r.verification.verdict).toBe("no_signals");
-    expect(r.unavailable).toHaveLength(5);
+    expect(r.unavailable).toHaveLength(6);
   });
 });

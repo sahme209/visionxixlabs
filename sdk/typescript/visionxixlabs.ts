@@ -54,6 +54,15 @@ export interface WhoamiResponse {
   serverTimeSec: number;
 }
 
+export interface WorkspaceConfigResponse {
+  ok: true;
+  environments: Array<{ slug: string; name: string; tier: string; tags: string[]; changeWindow: unknown | null }>;
+  variableSets: Array<{ slug: string; name: string; selector: string; version: number }>;
+  /** Plain configuration; secret references (secret://…) are returned unresolved. */
+  variables: Array<{ key: string; value: string; version: number; scope: "workspace" | "set" | "environment"; set?: string; environment?: string | null }>;
+  checks: { kind: "v19.checks"; version: 1; checks: Array<{ key: string; name: string; kind: string; stage: string; mode: string; enabled: boolean; spec: unknown; version: number }> };
+}
+
 export interface EnvironmentVariablesResponse {
   ok: true;
   environment: { slug: string; name: string };
@@ -233,6 +242,11 @@ export class VisionXIXLabs {
    */
   environmentVariables(slug: string): Promise<EnvironmentVariablesResponse> {
     return this.get<EnvironmentVariablesResponse>(`/api/v1/environments/${encodeURIComponent(slug)}/variables`);
+  }
+
+  /** The workspace's configuration as code: environments, variable sets, variables and checks. Required scope: config:read. */
+  workspaceConfig(): Promise<WorkspaceConfigResponse> {
+    return this.get<WorkspaceConfigResponse>("/api/v1/config");
   }
 
   /**
