@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = { title: "Workspaces — V19 Documentation", description: "Choose your active browser workspace using current accepted membership.", alternates: { canonical: "/docs/workspaces" } };
 export default function WorkspacesGuide() {
  return <>
   <DocHeader kicker="Workspace · Context" title="Choose the workspace before you act." summary="The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions." />
+  <DocFigure src="/docs/cockpit/workspaces.webp" alt="The Workspaces page in the V19 cockpit in a browser" caption="Workspaces in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="choose" kicker="01" title="Choose an active workspace">
    <p>When more than one workspace is available, use the sidebar&apos;s <em>Active workspace</em> selector, choose the intended workspace and select <em>Open workspace</em>. The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector.</p>
    <p>The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.</p>

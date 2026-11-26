@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = { title: "MCP documentation tools — V19 Documentation", description: "Check Microsoft Learn and search public documentation through the reviewed workspace MCP tool.", alternates: { canonical: "/docs/mcp-tools" } };
 export default function McpToolsGuide() {
  return <>
   <DocHeader kicker="Workspace · MCP tools" title="Search official documentation, within a fixed boundary." summary="Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers." />
+  <DocFigure src="/docs/cockpit/mcp.webp" alt="The MCP tools page in the V19 cockpit in a browser" caption="MCP tools in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="enable" kicker="01" title="Prepare Microsoft Learn documentation search">
    <p>An owner or admin opens <a href="/control/plugins?tab=mcp">Apps &amp; skills → Developer tools (MCP)</a>, chooses Microsoft Learn and confirms <em>Install</em> or <em>Enable</em>. Open <a href="/control/mcp">MCP tools</a>. Current membership and workspace access are required for requests; the saved installation must be enabled for search.</p>
    <p>Choose <em>Check connection</em> to see whether the fixed public server responds and offers documentation search. This checks availability only: it does not install the tool, grant cloud access or authorize Agent tools.</p>

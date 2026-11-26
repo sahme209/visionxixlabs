@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Trust tools — V19 Documentation",
  description: "Seal and verify the audit log, replay a draft rule over real history, and preview a change's impact before approving it.",
@@ -9,6 +9,7 @@ export default function TrustToolsDocsPage() {
  return <>
   <DocHeader kicker="Security · Governance" title="Prove, replay, preview."
    summary="Three read-only tools on Control → Trust tools. Each states its limits." />
+  <DocFigure src="/docs/cockpit/trust-tools.webp" alt="The Trust tools page in the V19 cockpit in a browser" caption="Trust tools in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="seal" kicker="01" title="Seal and verify the audit log">
    <p>Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke.</p>
    <p>Because someone who can rewrite the database could also rebuild the chain, download an <em>anchor</em> after sealing and keep it somewhere V19 cannot write, such as a ticket, a vault or an email to your auditors. The anchor holds the latest seal&apos;s fingerprint and no event content. Later, choose <em>Check a kept anchor</em>: V19 reports whether that seal still matches, is missing or was rewritten, and refuses an anchor file that was edited or belongs to another workspace.</p>

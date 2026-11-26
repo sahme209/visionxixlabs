@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Agent gateway — V19 Documentation",
  description: "Let Cursor, Claude Code, Codex or your own agent ask V19 before a consequential action, with human approval and a recorded outcome.",
@@ -11,6 +11,7 @@ export default function AgentGatewayDocsPage() {
   <DocHeader kicker="Agents · Governance" title="Govern any AI agent."
    summary="Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded." />
   <Callout title="Cooperative control point">Agents report their own actions to the gateway. It is a control point for agents that cooperate, not a sandbox: it cannot stop an agent that ignores it. Keep provider permissions least-privilege as well.</Callout>
+  <DocFigure src="/docs/cockpit/agent-gateway.webp" alt="The Agent gateway page in the V19 cockpit in a browser" caption="Agent gateway in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="connect" kicker="01" title="Connect an agent">
    <p>A workspace owner or admin creates a key on <Link href="/docs/api-keys">Control → API keys</Link> with <code>governance:read</code> and <code>governance:request</code>. Add <code>https://visionxixlabs.com/api/v1/mcp</code> to the agent as a remote MCP server with the header <code>Authorization: Bearer vxlk_live_…</code>.</p>
    <p>The agent then sees four tools: <code>axiom_check_policy</code>, <code>axiom_request_approval</code>, <code>axiom_get_approval</code> and <code>axiom_record_outcome</code>. The same operations exist as REST endpoints under <code>/api/v1/governance</code> and in the SDKs.</p>

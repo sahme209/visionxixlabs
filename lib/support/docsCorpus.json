@@ -6,49 +6,49 @@
    "title": "Connect an agent",
    "text": "A workspace owner or admin creates a key on Control → API keys with governance:read and governance:request . Add https://visionxixlabs.com/api/v1/mcp to the agent as a remote MCP server with the header Authorization: Bearer vxlk_live_… . The agent then sees four tools: axiom_check_policy , axiom_request_approval , axiom_get_approval and axiom_record_outcome . The same operations exist as REST endpoints under /api/v1/governance and in the SDKs.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231"
+   "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058"
   },
   {
    "href": "/docs/agent-gateway#decisions",
    "title": "How requests are decided",
    "text": "Allowed Low-risk work such as reading code, editing a branch or opening a pull request in development or staging. Needs approval Merges, dependency changes, infrastructure, deploys, data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval. Denied Reading production secrets and deleting production resources. These are never approvable through the gateway.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231"
+   "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058"
   },
   {
    "href": "/docs/agent-gateway#approve",
    "title": "Approve or reject",
    "text": "Pending requests appear on Control → Agent gateway , with optional webhook alerts ( agent_gateway.request_pending ). An owner or admin who did not create the agent's key decides. Approval covers the exact action and file list, and expires after 24 hours. The agent proceeds only when mayProceed is true, then reports succeeded , failed or abandoned . Each agent gets a scorecard; its trust level is evidence only and never changes what policy allows.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231"
+   "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058"
   },
   {
    "href": "/docs/agent-gateway#ci",
    "title": "Gate a CI deploy",
    "text": "Without MCP, use the CLI: vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh . It exits 0 only when the action is allowed or approved.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231"
+   "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058"
   },
   {
    "href": "/docs/api-keys#create",
    "title": "Create a key",
    "text": "Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints. Wildcard, trigger and admin permissions are not available here. The full key is shown once. V19 stores only a hash and a short prefix, so it cannot show the key again.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1"
+   "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1"
   },
   {
    "href": "/docs/api-keys#duties",
    "title": "Separation of duties",
    "text": "The person who creates a key is recorded and cannot approve agent gateway requests made with that key. Another owner or admin must decide them.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1"
+   "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1"
   },
   {
    "href": "/docs/api-keys#revoke",
    "title": "Revoke a key",
    "text": "Revoke a key from the list as soon as it may have been exposed or is no longer needed. Revocation takes effect immediately and is recorded in the audit log. A workspace can hold up to 20 active keys.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1"
+   "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1"
   },
   {
    "href": "/docs/approval-workflow#risk",
@@ -118,35 +118,35 @@
    "title": "View the audit log from desktop Settings",
    "text": "In desktop versions with this shortcut, open Settings → View audit log . V19 opens the website’s Audit & Security page for the workspace selected in the browser. A current workspace owner or administrator can review organization audit evidence. Check the browser workspace before reviewing records. Desktop and browser sign-in are separate. If the shortcut is unavailable in your installed version, sign in to the website and open the Audit & Security directly. If the browser fails to open from Settings, retry from the same button or use the website.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb"
+   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
   },
   {
    "href": "/docs/audit-logs#record",
    "title": "Review the original record",
    "text": "Open the saved request or task using the history and details controls available in that workflow. Keep its original identifier and version. Compare the displayed source, target, proposed change, actor, review decision and timestamps where those fields are available. Saved metadata is bounded product evidence, not complete provider history. A familiar target name, screenshot or status label alone cannot establish which exact change occurred. Understand execution plans before interpreting their records.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb"
+   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
   },
   {
    "href": "/docs/audit-logs#effects",
    "title": "Separate decisions from effects",
    "text": "Review evidence Who reviewed which exact saved proposal. Approval is not proof that execution was attempted or succeeded. Attempt evidence Whether the supported path recorded a claim or submission and its known result. A completed HTTP request is not by itself an external outcome. Outcome evidence The actual provider observation or readback, its target and observation time. A deployment dispatch does not prove rollback, service health or later availability. Record which evidence is missing. An audit entry is not an independent attestation that an organization is compliant. Hash or export utilities, where available, do not establish complete coverage or independent verification.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb"
+   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
   },
   {
    "href": "/docs/audit-logs#uncertain",
    "title": "Handle an uncertain result",
    "text": "A timeout does not prove that nothing happened. Do not resend an uncertain or consumed action, edit its history or treat an expired review as current permission. Use supported read-only history or recovery controls first. Keep the difference between refusal before a write, known failure, confirmed result and unknown outcome. Do not infer absence from a blank field or missing response. Recovery is workflow-specific. A readback may establish an external fact without restoring execution authority. Further consequential actions still need the supported current checks and genuine approvals. Troubleshoot an uncertain operation for the next safe inspection step.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb"
+   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
   },
   {
    "href": "/docs/audit-logs#share",
    "title": "Share evidence safely",
    "text": "Use only the approved support or export path available to your organization. Do not publish tokens, credentials, customer source, private operation identifiers or unredacted screenshots in public URLs or issue comments. Check the target audience and access before sharing. Account help (sign-in required) and the security model and limitations explain adjacent boundaries; neither grants an exception to a consumed attempt.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb"
+   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
   },
   {
    "href": "/docs/aws-setup#prepare",
@@ -384,154 +384,154 @@
    "title": "Who can decide",
    "text": "Owners, admins, operators and security reviewers can record an approval. Nobody can approve their own proposal: another authorized reviewer must. The person who proposed an action can always cancel it.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/governance-approvals#review",
    "title": "Review an action",
    "text": "Each pending action shows its tool, risk level and when it was created. Branch, file-commit and pull-request proposals include their exact changes, for example Review file changes or Review pull request . Read them before deciding. For reviewed branch, file, pull-request and AWS restart proposals, approving records your decision only. The requester runs the action separately, and the page says so.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/governance-approvals#rules",
    "title": "Approval rules",
    "text": "An approval is bound to the exact action, expires after 24 hours and is used once before the action runs. An expired proposal, or one without an integrity binding, cannot be approved: ask for a fresh proposal, because an old approval cannot restore it. Reject means nothing was executed.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/governance-approvals#limits",
    "title": "What this page shows",
    "text": "The inbox shows up to 20 pending actions. It is not a complete approval or outcome history; use the audit log for that.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/governance-approvals#scope",
    "title": "Workspace and platform approvals are different",
    "text": "This inbox is for your workspace's Agent proposals. Release, ticket and connected-app reviews belong to their own exact workflows; a decision in one does not authorize an action in another. A workspace owner or reviewer is not automatically an V19 platform administrator. V19's own deployment and issuer controls require separate platform authority. The prepared platform-control workflow remains local development work, not a control available from this inbox or proof of complete Governance enforcement.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/governance-approvals#outcomes",
    "title": "Read the result before trying again",
    "text": "Approval means a decision was recorded; it does not prove an action ran or succeeded. When execution is separate, the original requester must use the exact approved action and the service checks current permissions again. If the result is unknown or a response is lost, retain the original action or request reference and inspect its saved history. Do not automatically resend it, create a replacement, or assume that an expired review means nothing happened. A later observation can add evidence without erasing the original attempt. A provider accepting a command is not proof a deployment is healthy. A recorded issuer drain is not proof existing credentials were revoked or expired. Read the exact workflow's outcome and limitations; a historical record does not grant new permission.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6"
+   "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5"
   },
   {
    "href": "/docs/integration-setup#shared",
    "title": "Before connecting a provider",
    "text": "Set the production V19 origin as NEXTAUTH_URL ; callback construction fails closed when the origin is not trusted. Register the exact HTTPS callback shown below. Wildcard callback domains are not supported. Store client secrets only in the hosting platform's encrypted secret manager—never in NEXT_PUBLIC_* , the desktop app, logs, or Git. Redeploy the service after adding credentials, then use Apps & skills or Settings → Integrations to start consent. Run the harmless validation step. V19 does not label a connection active from consent alone.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#github",
    "title": "GitHub App",
    "text": "Use this setup to grant the app access to selected repositories. GitHub account sign-in uses a separate OAuth flow. {`$ /api/integrations/github/install-callback`} Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled V19 workflows. A workspace admin reviews GitHub's installation screen and selects repositories. V19 records the installation, then verifies scoped read access before showing it as validated.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#gitlab",
    "title": "GitLab repository connection and account sign-in",
    "text": "Read-only GitLab repository setup is available only where the workspace feature is enabled. If you see Manage GitLab in Control → Integrations , open it as a workspace owner or admin and select a tracked GitLab repository. If the option is absent, setup is unavailable in that workspace. Use Register project credential to save the exact project ID, expiry date and approved read-only project credential. Pending registration alone does not enable sync. Use Verify read access with the separate verifier in the setup form. Keep tokens out of chat and support requests. Once the status is Read access validated , the bound repository can sync merge requests, releases and existing pipeline evidence. The connection cannot run GitLab CI or modify a repository. If setup is bound to another repository, select that repository to manage the existing binding. Revoke in V19 removes the stored credential and stops V19 sync for that project. Manage the original token separately in GitLab. GitLab account sign-in and linking are separate from repository consent. If your sign-in page offers GitLab, using it identifies your account. It does not connect repositories, grant GitLab CI access or authorize actions in a workspace.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#gitlab-status-recovery",
    "title": "GitLab setup status and recovery",
    "text": "If GitLab setup says V19 could not confirm the update , first check the current connection for the same repository. Use Refresh status when the connection panel is visible, or Refresh GitLab status if the setup status is unavailable. After saving, Awaiting validation means you can validate the pending project credential. Read access validated means the current repository binding has a valid read check. Revoked in V19 means V19 stopped using the stored credential. A refresh reads the current status without resending your update. If the status remains unavailable, wait for a fresh result before deciding whether to retry.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#airflow",
    "title": "Apache Airflow",
    "text": "In the desktop app, a workspace administrator opens Batches → Connection and uses the secure Airflow connection form. Use the HTTPS base address of your Airflow 3 deployment and choose username and password or an existing bearer token. Enter credentials only in the connection form. Select Validate & connect and wait for V19 to confirm the connection. Choose a DAG to inspect available runs. If validation fails or status is unavailable, check the endpoint and credentials and refresh before relying on the evidence. A validated connection gives no automatic permission to start, retry or schedule a run. For Prefect, Dagster and Argo Workflows, see the read-only batch provider guide .",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#slack",
    "title": "Slack",
    "text": "Implementation review. Customer OAuth and message delivery are not release-verified. The settings below describe operator configuration. {`$ /api/integrations/slack/callback`} SLACK_CLIENT_ID= SLACK_CLIENT_SECRET= The current workflow requests channels:read and chat:write . It does not request direct messages, private-channel history, commands, or broad message history.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#teams",
    "title": "Microsoft tenant / Teams",
    "text": "The current scope verifies tenant identity. Check your installed version and workspace state before starting consent. {`$ /api/integrations/teams/callback`} MICROSOFT_CLIENT_ID= MICROSOFT_CLIENT_SECRET= MICROSOFT_TENANT_ID= The authorization-code flow uses PKCE and currently requests openid , offline_access , and User.Read . This verifies tenant identity; it does not grant Teams messaging authority.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#linear",
    "title": "Linear",
    "text": "Planned. There is no verified customer activation path. The settings below describe operator configuration. {`$ /api/integrations/linear/callback`} LINEAR_CLIENT_ID= LINEAR_CLIENT_SECRET= Consent requests read and issues:create . Mutating Agent actions remain separately approval-gated and auditable after the connection is active.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/integration-setup#states",
    "title": "Understand connection states",
    "text": "Setup required: the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app. Awaiting validation: provider consent returned successfully, but V19 has not yet completed a live server-side check. Active / validated read-only: the scoped provider token or GitHub installation passed live validation. Needs attention / validation overdue: validation failed or is stale. Revalidate before relying on the connection for release evidence. Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the V19 audit trail before reconnecting.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
+   "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65"
   },
   {
    "href": "/docs/mcp-tools#enable",
    "title": "Prepare Microsoft Learn documentation search",
    "text": "An owner or admin opens Apps & skills → Developer tools (MCP) , chooses Microsoft Learn and confirms Install or Enable . Open MCP tools . Current membership and workspace access are required for requests; the saved installation must be enabled for search. Choose Check connection to see whether the fixed public server responds and offers documentation search. This checks availability only: it does not install the tool, grant cloud access or authorize Agent tools.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b"
+   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
   },
   {
    "href": "/docs/mcp-tools#search",
    "title": "Search with a public technical topic",
    "text": "Enter a short topic, such as Azure App Service managed identity , then choose Search docs . Your topic is sent to Microsoft's public documentation server. Use public terms only; do not paste credentials, private code, personal information or internal incident details. Queries are limited to 300 characters; unsupported or secret-like input is refused. Results show titles, excerpts and links on learn.microsoft.com. They are external reference material, not evidence that your own deployment is configured correctly. V19 bounds request duration and response size, refuses redirects and rate-limits requests. This page lets V19 read a reviewed external documentation tool. To let an external agent request V19 governance decisions, use the separate Agent gateway guide . Neither connection grants the other's permissions.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b"
+   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
   },
   {
    "href": "/docs/mcp-tools#recover",
    "title": "If a request is unavailable",
    "text": "Check the workspace's installation state first. Unknown storage state is not an enabled connection. A rate-limit message means wait before trying again. A failed or unconfirmed request is not proof that documentation was read; V19 requires an audit record before confirming it. Do not repeatedly resend sensitive or unsupported input.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b"
+   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
   },
   {
    "href": "/docs/members#roles",
    "title": "Roles",
    "text": "Owner : full control, one per workspace; ownership moves only through an explicit handoff. Admin : manages members, billing, integrations and every engineer setting. Operator : runs scans, approves engineer actions and configures the workforce, but cannot manage billing or members. Security reviewer : reads findings, approvals and the audit trail, and can vote on approvals but not start engineer actions. Finance viewer : reads cost recommendations and panels, with no write access. Read-only : reads dashboards; no vote, run or manage.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96"
+   "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981"
   },
   {
    "href": "/docs/members#invite",
    "title": "Invite a teammate",
    "text": "Enter an email address, choose a role (Operator by default) and choose Create invitation link . V19 does not email the link: copy it and send it yourself. The owner role cannot be given by invitation. Starting in the paired app? See workspace access in desktop Settings for the account and workspace checks on the browser shortcut. Invitation links expire after 7 days. Removing a member also voids every earlier invitation for that email.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96"
+   "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981"
   },
   {
    "href": "/docs/members#change",
    "title": "Change a role or remove someone",
    "text": "Use Update or Remove on a member's row. You cannot change your own role or the owner's. If V19 cannot confirm the audit record for a change, it says so; check the member list before trying again, because the change may already have happened. If your workspace is enrolled in Governance, promotions and new invitations wait until membership changes have reviewed Governance coverage. Demoting and removing members always work, so you can reduce access at any time.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96"
+   "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981"
   },
   {
    "href": "/docs/members#requests",
    "title": "Access requests",
    "text": "Members can ask for a higher role through Ask V19. Owners and admins see requests from the last 30 days under Access requests , with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96"
+   "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981"
   },
   {
    "href": "/docs/oauth-setup#overview",
@@ -650,28 +650,28 @@
    "title": "Browse the Apps and skills catalog",
    "text": "Open Apps & skills . Choose Apps , Skills or Developer tools (MCP) , then search by name, description or listed tools. Select an entry's name to inspect its description, status and tools or scopes. Apps are built-in V19 workflows, grouped by provider. They have no separate installation to remove. Choose Manage access to review the provider in Integrations, then use an available governed workflow to prepare an action.",
    "source": "app/docs/plugins/page.tsx",
-   "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0"
+   "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e"
   },
   {
    "href": "/docs/plugins#skills",
    "title": "Install, disable or remove a skill",
    "text": "Current workspace members can browse. Owners and admins with current workspace access can choose Install , Enable , Disable or Remove on supported optional entries, then confirm the named change. Installed guidance becomes available on the Agent's next message; it does not rewrite earlier conversations. Install adds a new skill. Enable reactivates a disabled skill. If the workspace state changed before confirmation, refresh the catalog and choose the action for the current state. In desktop Agent versions with these review skills, explicitly invoke /repository-code-review , /debugging-investigation or /terraform-review to inspect repository source. These invocations use Inspect mode and offer only the skill’s listed read tools, even if Deep Ops is selected. They require the current workspace tool permissions and the relevant GitHub connection. Terraform review reads source and cannot run plan or apply. Use Deployment history review in the desktop Agent to inspect the latest recorded workflow outcomes for a selected environment. Invoke /deployment-history-review and name the environment. This review can read workspace environments and up to 20 recorded executions. Service health, artifact provenance and rollback evidence require their own checks. Installing a skill never grants credentials, changes tool risk or bypasses action approval. Built-in availability, enabled guidance and permission to execute are separate states.",
    "source": "app/docs/plugins/page.tsx",
-   "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0"
+   "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e"
   },
   {
    "href": "/docs/plugins#aws-ec2-observation",
    "title": "Use AWS EC2 observation in Agent",
    "text": "In V19 versions that include this skill, open Apps & skills , find AWS EC2 observation and install or enable it for the workspace. In the desktop Agent, send /aws-ec2-observation with one 12-digit AWS account number. Include the account number in the current request and keep tokens and credentials out of the conversation. The skill runs in Inspect mode. It resolves the selected account against the current workspace connections and reads inventory only if there is one connected, unrevoked match and current tool permissions allow it. If no account is selected or the choice is ambiguous, supply a single account number. If the connection is unavailable, review workspace AWS access in Integrations before trying again. The observation covers one page of at most five EC2 instances in one enrolled region at the recorded time. An empty page does not establish that the account has no instances. Costs, utilization, backups, other regions and other resource types remain unknown. Use separate release evidence to assess deployment readiness, service health or rollback.",
    "source": "app/docs/plugins/page.tsx",
-   "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0"
+   "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e"
   },
   {
    "href": "/docs/plugins#uncertain",
    "title": "When installation state is unknown",
    "text": "If installation storage is unavailable, V19 labels the state unknown and does not offer management controls. If an update is not confirmed, refresh the catalog and inspect the saved state before retrying: the change may have completed even if its audit or response failed. For Microsoft Learn, choose Open tools and follow the MCP documentation-search guide . Arbitrary packages and server URLs cannot be installed from this catalog.",
    "source": "app/docs/plugins/page.tsx",
-   "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0"
+   "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e"
   },
   {
    "href": "/docs/releaseops#lifecycle",
@@ -797,35 +797,35 @@
    "title": "Change your display name",
    "text": "Open Settings & sessions → Profile . Edit Display name , then choose Save profile . Names must contain 1–80 characters; the server trims surrounding whitespace and normalizes repeated spaces. This changes your own account name, not the workspace name. The profile form cannot change your sign-in email or workspace permissions. If saving is not confirmed, refresh to inspect the saved name before trying again; a failed response does not prove that the change was rolled back.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
+   "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa"
   },
   {
    "href": "/docs/settings#security",
    "title": "Understand the Security tab",
    "text": "Security shows the sign-in email and browser-session status. It is not a password, MFA or role-management form. Use Members and roles for workspace access. Signing out ends the browser session; paired desktop sessions remain independent.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
+   "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa"
   },
   {
    "href": "/docs/settings#sessions",
    "title": "Review and revoke a paired device",
    "text": "Open Sessions . V19 lists active pairings belonging to your account in the current workspace, with device label, platform, app version when available and last-seen time. It does not show bearer tokens or provider credentials. An unavailable list is not proof that no devices exist. Choose Revoke device , check the named device in the confirmation and confirm. The selected pairing loses access to protected APIs; this does not sign out your browser or revoke other devices. If the result is unconfirmed, refresh the session list before retrying. This revokes the pairing. It does not uninstall the app, erase local files, revoke an independent provider credential or prove that earlier work was cancelled.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
+   "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa"
   },
   {
    "href": "/docs/settings#desktop",
    "title": "Desktop settings have a different scope",
    "text": "This guide describes browser account settings. The desktop Agent has its own settings and saved session. Use the desktop installation guide for installation and pairing, and confirm the active account and workspace in the app before acting. For the desktop Settings shortcut and browser workspace scope, see View the audit log from desktop Settings .",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
+   "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa"
   },
   {
    "href": "/docs/settings#desktop-workspace-access",
    "title": "Find the workspace owner and members in desktop Settings",
    "text": "In paired versions that show the owner, open Settings → General and look below the workspace ID and device time zone. The Owner row uses accepted owner records from that workspace. Access & roles previews up to three accepted members. Choose View permissions to open the member and role view. If workspace members are unavailable, use Refresh members . An unavailable read does not establish that the workspace has no owner or members. Check that the app is paired to the intended workspace before relying on the result. Invite member , when available, opens Control → Members in the browser. The desktop rechecks your permission and the browser requires the same account and workspace with a current membership. If the browser asks you to return to desktop Permissions, verify the browser account and workspace, then re-open the shortcut from desktop.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
+   "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa"
   },
   {
    "href": "/docs/source-modes#local-files",
@@ -986,63 +986,63 @@
    "title": "Seal and verify the audit log",
    "text": "Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke. Because someone who can rewrite the database could also rebuild the chain, download an anchor after sealing and keep it somewhere V19 cannot write, such as a ticket, a vault or an email to your auditors. The anchor holds the latest seal's fingerprint and no event content. Later, choose Check a kept anchor : V19 reports whether that seal still matches, is missing or was rewritten, and refuses an anchor file that was edited or belongs to another workspace. Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside V19 so a rewritten chain is also detectable.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847"
+   "sourceSha256": "c0b1c70c7ce9a82d04526d7db8f8c94572d824384760cbaf71e97d9414c45dd3"
   },
   {
    "href": "/docs/trust-tools#replay",
    "title": "Replay a draft rule",
    "text": "Pick a draft rule and replay it over up to 90 days of real approval history, through the same rule engine production uses. You see how many actions it would newly block or auto-approve, and each changed action. Nothing is enabled or saved. History does not store a finding category, so rules that match on category are skipped and named rather than guessed.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847"
+   "sourceSha256": "c0b1c70c7ce9a82d04526d7db8f8c94572d824384760cbaf71e97d9414c45dd3"
   },
   {
    "href": "/docs/trust-tools#impact",
    "title": "Preview a change",
    "text": "Paste the changed file paths. The preview lists the areas touched (migrations, CI, auth, infrastructure, dependencies, secrets, API, frontend, tests, docs), the blast radius, whether a rollback plan is needed, and what a reviewer should check. It reads file names only, never contents.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847"
+   "sourceSha256": "c0b1c70c7ce9a82d04526d7db8f8c94572d824384760cbaf71e97d9414c45dd3"
   },
   {
    "href": "/docs/usage-billing#overview",
    "title": "Overview",
    "text": "Shows your plan, the AI allowance remaining, seats, counted deployments and gateway calls, plus AI usage for the current UTC month. AI cost is settled from the gateway's generation cost; calls still awaiting settlement are counted as pending, never as free. Credits increase only from payment records verified by Stripe. Buying AI credit top-ups is currently unavailable while one-time payment fulfillment, refunds and replay handling are verified. The page states this; no charge can start while it is off.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7"
+   "sourceSha256": "04ba1b8c26e54ce685e322e1e4fa3777f8bd3b005eee9b8d71814982eb3523f9"
   },
   {
    "href": "/docs/usage-billing#usage",
    "title": "Usage records",
    "text": "Every member can browse AI usage records for the last 12 months, 50 per page, filter by settled or pending, and export the current page. Times are in UTC.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7"
+   "sourceSha256": "04ba1b8c26e54ce685e322e1e4fa3777f8bd3b005eee9b8d71814982eb3523f9"
   },
   {
    "href": "/docs/usage-billing#invoices",
    "title": "Invoices and payment details",
    "text": "Owners and admins see invoices and can open the secure Stripe billing portal with Manage billing when billing is enabled for the workspace. Other members see who manages billing instead.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7"
+   "sourceSha256": "04ba1b8c26e54ce685e322e1e4fa3777f8bd3b005eee9b8d71814982eb3523f9"
   },
   {
    "href": "/docs/workspaces#choose",
    "title": "Choose an active workspace",
    "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083"
+   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
   },
   {
    "href": "/docs/workspaces#recover",
    "title": "Recover unavailable workspace access",
    "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083"
+   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
   },
   {
    "href": "/docs/workspaces#devices",
    "title": "Browser context and paired devices are separate",
    "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083"
+   "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350"
   }
  ]
 }

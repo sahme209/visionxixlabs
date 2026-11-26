@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Usage and billing — V19 Documentation",
  description: "Read AI usage, allowances, credit records and invoices on Control → Usage & billing.",
@@ -9,6 +9,7 @@ export default function UsageBillingDocsPage() {
  return <>
   <DocHeader kicker="Workspace · Billing" title="See what you used and what it cost."
    summary="Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated." />
+  <DocFigure src="/docs/cockpit/usage-billing.webp" alt="The Usage & billing page in the V19 cockpit in a browser" caption="Usage & billing in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="overview" kicker="01" title="Overview">
    <p>Shows your plan, the AI allowance remaining, seats, counted deployments and gateway calls, plus AI usage for the current UTC month. AI cost is settled from the gateway&apos;s generation cost; calls still awaiting settlement are counted as pending, never as free. Credits increase only from payment records verified by Stripe.</p>
    <Callout variant="info" title="Top-ups are paused">Buying AI credit top-ups is currently unavailable while one-time payment fulfillment, refunds and replay handling are verified. The page states this; no charge can start while it is off.</Callout>

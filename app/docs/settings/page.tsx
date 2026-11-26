@@ -4,7 +4,7 @@ export const metadata: Metadata = { title: "Settings and sessions — V19 Docume
 export default function SettingsGuide() {
  return <>
   <DocHeader kicker="Account · Settings and sessions" title="Keep your profile and devices under control." summary="Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct." />
-  <DocFigure src="/docs/desktop/settings.webp" alt="The Settings view in the V19 desktop app" caption="Settings in the desktop app, shown with synthetic example records." />
+  <DocFigure src="/docs/cockpit/settings.webp" alt="The Settings page in the V19 cockpit in a browser" caption="Settings in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="profile" kicker="01" title="Change your display name">
    <p>Open <a href="/control/settings">Settings &amp; sessions → Profile</a>. Edit <em>Display name</em>, then choose <em>Save profile</em>. Names must contain 1–80 characters; the server trims surrounding whitespace and normalizes repeated spaces. This changes your own account name, not the workspace name.</p>
    <p>The profile form cannot change your sign-in email or workspace permissions. If saving is not confirmed, refresh to inspect the saved name before trying again; a failed response does not prove that the change was rolled back.</p>

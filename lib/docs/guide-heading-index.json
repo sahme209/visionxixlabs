@@ -232,7 +232,7 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c",
+      "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65",
       "fields": [
         "Operator integration configuration",
         "Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps.",
@@ -299,7 +299,7 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231",
+      "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058",
       "fields": [
         "Govern any AI agent.",
         "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",
@@ -329,7 +329,7 @@
     {
       "href": "/docs/trust-tools",
       "source": "app/docs/trust-tools/page.tsx",
-      "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847",
+      "sourceSha256": "c0b1c70c7ce9a82d04526d7db8f8c94572d824384760cbaf71e97d9414c45dd3",
       "fields": [
         "Prove, replay, preview.",
         "Three read-only tools on Control → Trust tools. Each states its limits.",
@@ -342,7 +342,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1",
+      "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
@@ -382,7 +382,7 @@
     {
       "href": "/docs/plugins",
       "source": "app/docs/plugins/page.tsx",
-      "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0",
+      "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e",
       "fields": [
         "Find a workflow. Add guidance deliberately.",
         "Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready.",
@@ -396,7 +396,7 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b",
+      "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
@@ -409,7 +409,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083",
+      "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -422,7 +422,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96",
+      "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -436,7 +436,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6",
+      "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -453,7 +453,7 @@
     {
       "href": "/docs/usage-billing",
       "source": "app/docs/usage-billing/page.tsx",
-      "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7",
+      "sourceSha256": "04ba1b8c26e54ce685e322e1e4fa3777f8bd3b005eee9b8d71814982eb3523f9",
       "fields": [
         "See what you used and what it cost.",
         "Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated.",
@@ -466,7 +466,7 @@
     {
       "href": "/docs/settings",
       "source": "app/docs/settings/page.tsx",
-      "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1",
+      "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa",
       "fields": [
         "Keep your profile and devices under control.",
         "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
@@ -496,7 +496,7 @@
     {
       "href": "/docs/audit-logs",
       "source": "app/docs/audit-logs/page.tsx",
-      "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb",
+      "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490",
       "fields": [
         "Read the evidence, not just the status.",
         "A saved decision, an attempted action and an observed external result answer different questions.",
