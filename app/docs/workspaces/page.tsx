@@ -37,7 +37,11 @@ export default function WorkspacesGuide() {
    <DocFigure src="/docs/cockpit/services.webp" alt="The Services page listing repositories with guardrails and the latest run per environment" caption="Services for a synthetic workspace: guardrails and the latest recorded run in each environment." width={1600} height={1000} />
    <p>In the cockpit, <strong>Services</strong> lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository&apos;s last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.</p>
   </DocSection>
-  <DocSection id="cockpit-pages" kicker="07" title="Every cockpit page">
+  <DocSection id="webhooks" kicker="07" title="Webhooks">
+   <p>In the cockpit, <strong>Webhooks</strong> sends V19 events to an address you choose, for example a Slack or pager bridge. Owners and admins add a webhook with a name, a public <code>https://</code> address and the events it should receive, such as <code>deployment.blocked</code> or <code>agent_gateway.request_pending</code>. Each event in the list says when it fires.</p>
+   <p>When you add a webhook, V19 shows its signing secret once. Copy it into your receiver and check the signature on every delivery. Private and internal addresses are refused, and a webhook that keeps failing is switched off automatically. Revoke a webhook at any time; members can see the list but cannot change it.</p>
+  </DocSection>
+  <DocSection id="cockpit-pages" kicker="08" title="Every cockpit page">
    <p>The cockpit sidebar, in order, with what each page is for:</p>
    <ul className="mt-3 list-disc space-y-1 pl-5">
     <li><strong>Overview</strong>: Workspace summary and next steps.</li>
@@ -56,6 +60,7 @@ export default function WorkspacesGuide() {
     <li><strong>Usage &amp; Billing</strong>: Plan, usage and invoices. <Link href="/docs/usage-billing" className="underline underline-offset-4">Guide</Link></li>
     <li><strong>Audit &amp; Security</strong>: Audit log and security settings. <Link href="/docs/audit-logs" className="underline underline-offset-4">Guide</Link></li>
     <li><strong>API keys</strong>: Keys for CI, SDKs and agents, with scopes. <Link href="/docs/api-keys" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Webhooks</strong>: Send chosen events to Slack, a pager or your own service. <Link href="#webhooks" className="underline underline-offset-4">Guide</Link></li>
     <li><strong>Settings &amp; sessions</strong>: Your profile and signed-in devices. <Link href="/docs/settings" className="underline underline-offset-4">Guide</Link></li>
    </ul>
   </DocSection>

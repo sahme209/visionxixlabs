@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, ShieldCheck, Bot, Plug, CreditCard, Users, Settings, ScrollText, BookOpen, LayoutGrid, Workflow, LogOut, LineChart, SlidersHorizontal, ListChecks, Boxes } from "lucide-react";
+import { Home, ShieldCheck, Bot, Plug, CreditCard, Users, Settings, ScrollText, BookOpen, LayoutGrid, Workflow, LogOut, LineChart, SlidersHorizontal, ListChecks, Boxes, Webhook } from "lucide-react";
 
 const groups = [
   { label: "Workspace", items: [
@@ -29,6 +29,7 @@ const groups = [
   ] },
   { label: "Account", items: [
     { href: "/control/api-keys", label: "API keys", icon: Settings },
+    { href: "/control/webhooks", label: "Webhooks", icon: Webhook },
     { href: "/control/settings", label: "Settings & sessions", icon: Settings },
     { href: "/account/help", label: "Help", icon: BookOpen },
   ] },

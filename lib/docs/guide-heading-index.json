@@ -425,7 +425,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66",
+      "sourceSha256": "ce4c7400daa6c85ff8a367be9094e25a7276a934f88b94a81a94f0e129c96be3",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -436,6 +436,7 @@
         "Delivery insights for the workspace",
         "Configuration variables per environment",
         "Service catalog",
+        "Webhooks",
         "Every cockpit page"
       ]
     },
