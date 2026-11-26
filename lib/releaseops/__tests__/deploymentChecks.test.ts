@@ -15,6 +15,8 @@ describe("deployment checks", () => {
     expect(validateCheck({ ...base, key: "Bad Key", spec: {} }).ok).toBe(false);
     expect(validateCheck({ ...base, kind: "security_scan", spec: { tool: "Trivy", maxCritical: 0, maxHigh: 3 } }).ok).toBe(true);
     expect(validateCheck({ ...base, kind: "security_scan", spec: { tool: "Trivy", maxCritical: -1, maxHigh: 3 } }).ok).toBe(false);
+    expect(validateCheck({ ...base, kind: "supply_chain", spec: { evidence: "sbom_and_provenance", verifier: "slsa-verifier" } }).ok).toBe(true);
+    expect(validateCheck({ ...base, kind: "supply_chain", spec: { evidence: "signature", verifier: "x" } }).ok).toBe(false);
   });
   it("summarizes enabled checks per stage in lifecycle order and lists uncovered stages", () => {
     const c = (stage: string, mode: "blocking" | "advisory", enabled = true) => ({ key: stage + mode, name: "x", kind: "smoke_test" as const, stage: stage as "verify", mode, enabled, version: 1 });
