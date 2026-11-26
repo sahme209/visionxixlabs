@@ -1042,35 +1042,35 @@
    "title": "Choose an active workspace",
    "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "b687de899df11f3c6d2b0f713303b7d2dc7a98310cb8cf92ef4027b9ccaffa6d"
+   "sourceSha256": "2e5694dea709f87a3a35f633a822b16eadd5c584a02fe5abc57b271c26061987"
   },
   {
    "href": "/docs/workspaces#recover",
    "title": "Recover unavailable workspace access",
    "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "b687de899df11f3c6d2b0f713303b7d2dc7a98310cb8cf92ef4027b9ccaffa6d"
+   "sourceSha256": "2e5694dea709f87a3a35f633a822b16eadd5c584a02fe5abc57b271c26061987"
   },
   {
    "href": "/docs/workspaces#devices",
    "title": "Browser context and paired devices are separate",
    "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "b687de899df11f3c6d2b0f713303b7d2dc7a98310cb8cf92ef4027b9ccaffa6d"
+   "sourceSha256": "2e5694dea709f87a3a35f633a822b16eadd5c584a02fe5abc57b271c26061987"
   },
   {
    "href": "/docs/workspaces#insights",
    "title": "Delivery insights for the workspace",
    "text": "In the cockpit, Insights shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "b687de899df11f3c6d2b0f713303b7d2dc7a98310cb8cf92ef4027b9ccaffa6d"
+   "sourceSha256": "2e5694dea709f87a3a35f633a822b16eadd5c584a02fe5abc57b271c26061987"
   },
   {
    "href": "/docs/workspaces#variables",
    "title": "Configuration variables per environment",
-   "text": "In the cockpit, Variables holds plain configuration such as a base URL, log level or feature switch. Set a workspace default, then override it for an environment that needs a different value; environments without an override inherit the default. A notice lists names that are set for some environments but have no default, so a missing value is visible before a release. Each environment shows a short fingerprint of what it resolves to, which changes whenever any value it sees changes. Owners and admins can add, edit and remove variables. Edits carry the version you loaded, so a change made by someone else in the meantime is reported instead of overwritten. Names and values that look like credentials are refused: keep secrets in scoped credentials. Passing variables into deployment workflows is not connected yet, so this page does not change any running service. When the desktop app dispatches a deployment to an environment, V19 records that environment's fingerprint and resolved values with the deployment. Each fingerprint card then says whether the configuration still matches the last recorded deployment or has changed since. Compare before promoting lists the values that differ between two environments, and names that exist in only one of them. If the snapshot cannot be recorded, the deployment still runs and the card says no fingerprint was recorded. To load configuration in your own CI, call GET /api/v1/environments/<slug>/variables with an API key that has the pipeline:rea",
+   "text": "In the cockpit, Variables holds plain configuration such as a base URL, log level or feature switch. Set a workspace default, then override it for an environment that needs a different value; environments without an override inherit the default. A notice lists names that are set for some environments but have no default, so a missing value is visible before a release. Each environment shows a short fingerprint of what it resolves to, which changes whenever any value it sees changes. Owners and admins can add, edit and remove variables. Edits carry the version you loaded, so a change made by someone else in the meantime is reported instead of overwritten. Names and values that look like credentials are refused: keep secrets in scoped credentials. Passing variables into deployment workflows is not connected yet, so this page does not change any running service. When the desktop app dispatches a deployment to an environment, V19 records that environment's fingerprint and resolved values with the deployment. Each fingerprint card then says whether the configuration still matches the last recorded deployment or has changed since. Compare before promoting lists the values that differ between two environments, and names that exist in only one of them. If the snapshot cannot be recorded, the deployment still runs and the card says no fingerprint was recorded. To load configuration in your own CI, call GET /api/v1/environments/{\" \"}/variables with an API key that has the pipeline:read",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "b687de899df11f3c6d2b0f713303b7d2dc7a98310cb8cf92ef4027b9ccaffa6d"
+   "sourceSha256": "2e5694dea709f87a3a35f633a822b16eadd5c584a02fe5abc57b271c26061987"
   }
  ]
 }
