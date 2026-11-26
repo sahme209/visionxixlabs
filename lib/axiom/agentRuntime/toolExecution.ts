@@ -10,6 +10,7 @@ import {searchInstalledMicrosoftLearn} from "@/lib/integrations/mcp/microsoftLea
 import type {AgentSkillRepo} from "./skillCatalog";
 import { executeAirflowObservationTool } from "./airflowObservation";
 import { BATCH_OBSERVATION_TOOLS, executeBatchObservationTool, type BatchObservationTool } from "./batchObservation";
+import { executeReleaseHealthTool } from "./releaseHealthObservation";
 import { executeCloudObservationTool, type CloudObservationContext } from "./cloudObservation";
 
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
@@ -127,6 +128,7 @@ export async function executeReadOnlyTool(
     return result.ok ? {ok:true,result:{kind:"public_documentation",source:"Microsoft Learn MCP",...result.data}} : result;
   }
   if (toolName === "list_airflow_dags" || toolName === "read_airflow_runs" || toolName === "read_airflow_tasks") return executeAirflowObservationTool(organizationId, toolName, args, cloudContext);
+  if (toolName === "read_release_health") return executeReleaseHealthTool(organizationId, args, cloudContext);
   if ((BATCH_OBSERVATION_TOOLS as readonly string[]).includes(toolName)) return executeBatchObservationTool(organizationId, toolName as BatchObservationTool, args, cloudContext);
   if (toolName === "list_cloud_accounts" || toolName === "read_aws_inventory") return executeCloudObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "list_environments") {

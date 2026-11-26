@@ -3,6 +3,7 @@ import { DESKTOP_PRODUCT_NAME } from "../lib/desktopMetadata";
 import {GovernanceWorkspacePreview} from './GovernanceWorkspacePreview';
 import {OutlookIntegrationCard} from '../components/OutlookIntegrationCard';
 import { SignalProviderConnections } from "../components/SignalProviderConnections";
+import { ReleaseHealthPanel } from "../components/ReleaseHealthPanel";
 import {ProviderLogo,ProviderLogoGroup,type CatalogProvider} from "../components/CatalogIcon";
 import { browserNavigationIntentPath, parseBrowserNavigationIntent } from "../../../lib/desktop/browserNavigationIntent";
 import { Disclosure } from "../components/Disclosure";
@@ -1832,6 +1833,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
             {readiness.pullRequestUrl && <> · <button data-help-id="settings.workspace.deploy-verified-pr-link" type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
           </div>
         )}
+        {execution && execution.environmentId === environmentId && <ReleaseHealthPanel key={execution.id} defaultRelease={execution.sourceRef ?? ""} commit={execution.sourceCommitSha} />}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Workflow dispatched, but tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && execution.environmentId === environmentId && (

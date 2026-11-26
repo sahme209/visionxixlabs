@@ -1252,6 +1252,10 @@ export class DesktopClient {
 
   disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
   /** Read-only Batches providers. Connecting grants observation only. */
+  releaseSignals(release: string, commit?: string | null): Promise<ApiResult<ReleaseSignalsDto>> {
+    const q = new URLSearchParams({ release, ...(commit ? { commit } : {}) });
+    return this.get(`/api/desktop/releases/signals?${q}`);
+  }
   signalConnection(provider: SignalProviderId): Promise<ApiResult<SignalConnectionState>> { return this.get(`/api/desktop/signals/${provider}/connection`); }
   saveSignalConnection(provider: SignalProviderId, input: Record<string, string>): Promise<ApiResult<SignalConnectionState>> { return this.put(`/api/desktop/signals/${provider}/connection`, input); }
   disconnectSignalConnection(provider: SignalProviderId): Promise<ApiResult<{ provider: SignalProviderId; disconnected: boolean }>> { return this.delete(`/api/desktop/signals/${provider}/connection`); }
@@ -2369,6 +2373,15 @@ function validOperationUuid(value:string){return typeof value==='string'&&/^[a-f
 
 
 export type BatchProviderId = "prefect" | "dagster" | "argo_workflows";
+export interface ReleaseSignalsDto {
+  release: string;
+  incidents: { pagerduty: number | null; opsgenie: number | null };
+  newIssues: Array<{ title: string; level: string | null; count: number | null; url: string | null }> | null;
+  monitors: { alerting: number; warning: number; ok: number; noData: number } | null;
+  staleFlags: string[] | null;
+  unavailable: string[];
+  verification: { verdict: "healthy" | "investigate" | "unhealthy" | "no_signals"; reasons: string[]; missing: string[] };
+}
 export type SignalProviderId = "argo_cd" | "flux" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly";
 export interface SignalConnectionState { provider: SignalProviderId; label?: string; connected?: boolean; status: string; settings?: Record<string, string | number>; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
 export interface BatchConnectionState { provider: BatchProviderId; label?: string; connected?: boolean; status: string; baseUrl?: string | null; namespace?: string | null; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
