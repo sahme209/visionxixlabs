@@ -60,6 +60,21 @@ describe("executeReadOnlyTool", () => {
     expect(repo.environment.findMany).toHaveBeenCalledWith({ where: { organizationId: "org-1" } });
   });
 
+  it("list_environments says whether each environment's change window allows a deployment now", async () => {
+    const start = new Date(Date.now() - 3_600_000).toISOString(), end = new Date(Date.now() + 3_600_000).toISOString();
+    const repo = toolRepo({ environment: { findMany: vi.fn(async () => [
+      { id: "e1", slug: "prod", name: "Prod", tier: "prod", tags: ["ring:2"], changeWindowRuleJson: { freezes: [{ startUtc: start, endUtc: end, reason: "Incident 42" }] } },
+      { id: "e2", slug: "dev", name: "Dev", tier: "dev", tags: [], changeWindowRuleJson: null },
+      { id: "e3", slug: "qa", name: "QA", tier: "qa", tags: [], changeWindowRuleJson: { weekdays: [] } },
+    ]) } });
+    const result = await executeReadOnlyTool(repo, "org-1", "list_environments", {});
+    expect(result).toEqual({ ok: true, result: [
+      { id: "e1", slug: "prod", name: "Prod", tier: "prod", tags: ["ring:2"], deploymentWindow: { status: "frozen", freezeReason: "Incident 42", until: new Date(end).toISOString(), nextOpen: new Date(end).toISOString() } },
+      { id: "e2", slug: "dev", name: "Dev", tier: "dev", tags: [], deploymentWindow: { status: "open" } },
+      { id: "e3", slug: "qa", name: "QA", tier: "qa", tags: [], deploymentWindow: { status: "refused_unreadable_rule" } },
+    ] });
+  });
+
   it("list_deployment_executions scopes to the org and optional environment", async () => {
     const createdAt = new Date("2026-01-01T00:00:00.000Z");
     const findMany = vi.fn(async () => [{
