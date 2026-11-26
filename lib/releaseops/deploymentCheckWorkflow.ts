@@ -58,6 +58,8 @@ function job(c: GeneratableCheck): string[] | { skip: string } {
       return { skip: "evaluated by your monitoring; report its result with POST /api/v1/checks/results" };
     case "manual_checklist":
       return { skip: "confirmed by a person in V19, not in CI" };
+    case "security_scan":
+      return { skip: `reported by ${String(s.tool)} in your pipeline: pass when critical findings are at most ${String(s.maxCritical)} and high at most ${String(s.maxHigh)}, then report with POST /api/v1/checks/results` };
   }
 }
 

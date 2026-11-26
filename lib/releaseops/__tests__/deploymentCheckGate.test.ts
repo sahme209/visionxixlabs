@@ -28,4 +28,9 @@ describe("evaluateStageGate", () => {
     expect(run([manual], [])).toMatchObject({ ok: false, blocked: [{ key: "status-page", reason: "no_result" }] });
     expect(run([manual], [res({ checkKey: "status-page" })])).toEqual({ ok: true, satisfied: ["status-page"], notEnforceable: [] });
   });
+  it("gates security scans on a reported result like any other check", () => {
+    const scan = chk({ key: "scan", kind: "security_scan", stage: "validate" });
+    expect(run([scan], [])).toMatchObject({ ok: false, blocked: [{ key: "scan", reason: "no_result" }] });
+    expect(run([scan], [res({ checkKey: "scan" })])).toMatchObject({ ok: true, satisfied: ["scan"] });
+  });
 });
