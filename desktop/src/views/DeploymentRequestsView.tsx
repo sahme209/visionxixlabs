@@ -28,6 +28,7 @@ import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type DeploymentOutcomeSummaryDto } from "../lib/desktopClient";
+import { StatusIconChip, type StatusShape, type StatusTone } from "../components/StatusBadge";
 import { createReleaseClosureDrafts, type ReleaseClosureDraft } from "../lib/releaseClosureDrafts";
 
 interface GeneratedPlaybook {
@@ -1281,15 +1282,16 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
   const windowLabel = `Last ${outcomes?.windowDays ?? 30} days`;
   const rate = outcomes === undefined ? "…" : outcomes === null ? "Unavailable" : outcomes.successRate === null ? "—" : `${outcomes.successRate}%`;
   const median = outcomes === undefined ? "…" : outcomes === null ? "Unavailable" : outcomes.medianSeconds === null ? "—" : formatOutcomeDuration(outcomes.medianSeconds);
-  const metrics: Array<{label: string; value: string; window?: string; title?: string}> = [
+  const metrics: Array<{label: string; value: string; window?: string; title?: string; tone?: StatusTone; shape?: StatusShape}> = [
     {label: "Loaded requests", value: requests.length.toLocaleString()},
-    {label: "Submitted", value: requests.filter(request => request.status === "submitted").length.toLocaleString()},
-    {label: "Run success rate", value: rate, window: windowLabel,
+    {label: "Submitted", value: requests.filter(request => request.status === "submitted").length.toLocaleString(), tone: "amber", shape: "waiting"},
+    {label: "Run success rate", value: rate, window: windowLabel, ...(outcomes?.successRate != null ? {tone: "green" as const, shape: "success" as const} : {}),
       title: outcomes ? `${outcomes.succeeded} succeeded, ${outcomes.failed} failed of ${outcomes.recorded} recorded workflow runs${outcomes.truncated ? " (first 5,000)" : ""}` : undefined},
     {label: "Median time to complete", value: median, window: windowLabel, title: "From recorded dispatch to recorded completion, queue time included"},
   ];
   return <dl aria-label="Release request and recorded run summary" className="studio-release-summary">
-    {metrics.map(({label, value, window, title}) => <div key={label} title={title}>
+    {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title}>
+      {tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}
       <dt>{label}{window && <span className="studio-release-summary-window">{window}</span>}</dt>
       <dd>{value}</dd>
     </div>)}

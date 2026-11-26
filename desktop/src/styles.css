@@ -540,7 +540,7 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 .release-focus-item-title { display: flex; align-items: center; gap: 9px; color: rgb(var(--neutral-zinc-200)); font-size: 13px; font-weight: 500; }
 .release-focus-item-title svg { flex: none; color: rgb(var(--neutral-zinc-400)); }
 .release-focus-item-environment, .release-focus-item-updated, .release-focus-item-state, .release-focus-item-review { font-size: 12px; }
-.release-focus-state-line svg { display: inline; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; color: var(--app-secondary, currentColor); }
+.release-focus-state-line .status-badge { padding: 0 7px; line-height: 17px; }
 .release-focus-item-requester { min-inline-size: 0; font-size: 11px; }
 .release-focus-requester-avatar {
   display: inline-grid;
@@ -1575,3 +1575,37 @@ html[data-theme="light"] :is(.studio-deployments, .studio-batches-workspace) {
 }
 .studio-selected-operation-group .recorded-release-events li > span:first-child { color: rgb(var(--neutral-zinc-200)); }
 .studio-selected-operation-group .recorded-release-event-separator { display: none; }
+
+/* Shared status tones (matte palette from Tickets). Colour always pairs with a shape and a label;
+   use only for a recorded state: blue = in progress, green = recorded success, amber = waiting or needs attention, red = recorded failure. */
+:root {
+  --status-blue: #73b8ff; --status-blue-surface: #17283c;
+  --status-green: #a0d9aa; --status-green-surface: #1c3025;
+  --status-amber: #f8d484; --status-amber-surface: #322a1c;
+  --status-red: #ffa48e; --status-red-surface: #3b2723;
+  --status-neutral: rgb(var(--neutral-zinc-300)); --status-neutral-surface: rgb(var(--neutral-white) / .06);
+}
+html[data-theme="light"] {
+  --status-blue: #0e558d; --status-blue-surface: #e8f3ff;
+  --status-green: #255d32; --status-green-surface: #edf8ef;
+  --status-amber: #654600; --status-amber-surface: #fff4d6;
+  --status-red: #872f23; --status-red-surface: #fff0ea;
+  --status-neutral: rgb(var(--neutral-zinc-600)); --status-neutral-surface: rgb(0 0 0 / .05);
+}
+.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; line-height: 18px; font-weight: 500; white-space: nowrap; color: var(--status-neutral); background: var(--status-neutral-surface); }
+.status-badge svg { flex: none; }
+.status-badge[data-tone="blue"] { color: var(--status-blue); background: var(--status-blue-surface); }
+.status-badge[data-tone="green"] { color: var(--status-green); background: var(--status-green-surface); }
+.status-badge[data-tone="amber"] { color: var(--status-amber); background: var(--status-amber-surface); }
+.status-badge[data-tone="red"] { color: var(--status-red); background: var(--status-red-surface); }
+.status-text[data-tone="amber"] { color: var(--status-amber); }
+.status-text[data-tone="red"] { color: var(--status-red); }
+.status-text[data-tone="green"] { color: var(--status-green); }
+.status-text[data-tone="blue"] { color: var(--status-blue); }
+.status-icon-chip { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; color: var(--status-neutral); background: var(--status-neutral-surface); }
+.status-icon-chip[data-tone="blue"] { color: var(--status-blue); background: var(--status-blue-surface); }
+.status-icon-chip[data-tone="green"] { color: var(--status-green); background: var(--status-green-surface); }
+.status-icon-chip[data-tone="amber"] { color: var(--status-amber); background: var(--status-amber-surface); }
+.status-icon-chip[data-tone="red"] { color: var(--status-red); background: var(--status-red-surface); }
+.studio-release-summary .status-icon-chip { order: -2; align-self: center; width: 24px; height: 24px; }
+.status-icon-chip:has(svg[width="11"]) { width: 18px; height: 18px; }
