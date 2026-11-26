@@ -8,6 +8,7 @@
  * agent proceeds. Agents self-report actions, so this is a cooperative control
  * point, not a sandbox: it cannot stop an agent that ignores it.
  */
+import { normalizePassportTools } from "./changePassport";
 import { createHash } from "node:crypto";
 import { previewImpact, type ImpactPreview } from "@/lib/impact/impactKernel";
 
@@ -90,7 +91,7 @@ export function gatewayActionDigest(organizationId: string, apiKeyId: string, in
 }
 
 /** Validates untrusted agent input into a GatewayActionInput, or returns an error code. */
-export function parseGatewayAction(raw: unknown): { ok: true; value: GatewayActionInput & { agentName: string } } | { ok: false; error: string } {
+export function parseGatewayAction(raw: unknown): { ok: true; value: GatewayActionInput & { agentName: string; agentModel?: string; agentTools?: string[] } } | { ok: false; error: string } {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, error: "invalid_body" };
   const r = raw as Record<string, unknown>;
   const text = (v: unknown, max: number) => (typeof v === "string" && v.trim().length > 0 && v.length <= max && !/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(v) ? v.trim() : null);
@@ -106,7 +107,12 @@ export function parseGatewayAction(raw: unknown): { ok: true; value: GatewayActi
     if (!Array.isArray(r.changedFiles) || r.changedFiles.length > 2000 || !r.changedFiles.every((f) => typeof f === "string" && f.length > 0 && f.length <= 400)) return { ok: false, error: "invalid_changed_files" };
     changedFiles = r.changedFiles as string[];
   }
-  return { ok: true, value: { actionKind: r.actionKind, environment, target, summary, agentName, ...(changedFiles ? { changedFiles } : {}) } };
+  // Optional change-passport facts the agent reports about itself. Not part of the approval digest.
+  const agentModel = r.model === undefined ? undefined : text(r.model, 120);
+  if (agentModel === null) return { ok: false, error: "invalid_model" };
+  const agentTools = r.tools === undefined ? undefined : normalizePassportTools(r.tools);
+  if (agentTools === null) return { ok: false, error: "invalid_tools" };
+  return { ok: true, value: { actionKind: r.actionKind, environment, target, summary, agentName, ...(changedFiles ? { changedFiles } : {}), ...(agentModel ? { agentModel } : {}), ...(agentTools?.length ? { agentTools } : {}) } };
 }
 
 export const APPROVAL_TTL_MS = 24 * 60 * 60 * 1000;

@@ -30,6 +30,16 @@ export default function AgentGatewayDocsPage() {
   <DocSection id="ci" kicker="04" title="Gate a CI deploy">
    <p>Without MCP, use the CLI: <code>vxl ask deploy --target owner/repo --env production --summary &quot;Ship v2&quot; --wait 1800 &amp;&amp; ./deploy.sh</code>. It exits 0 only when the action is allowed or approved.</p>
   </DocSection>
+  <DocSection id="firewall" kicker="05" title="Agent firewall">
+   <p>The top of <strong>Control → Agent gateway</strong> lists the rules V19 always enforces for agents. Agents never receive provider credentials: their keys can only ask, and V19 runs an approved action with its own short-lived token. Writes and deployments run only after a person approves that exact action. An approved Agent deployment faces the same change window, freezes, deployment checks and rings as a person&apos;s, with no emergency bypass. Production secret reads and deletes are always refused.</p>
+   <p>Below the rules, V19 lists anything in your workspace that weakens them, each with the fix: API keys that can start pipelines without the gateway, agent keys that never expire, production environments without an approval policy, and production environments without a change window.</p>
+  </DocSection>
+  <DocSection id="passport" kicker="06" title="Change passport">
+   <p>Every agent request carries a change passport, recorded when the request arrives: which agent made it, the model it reports (V19 never guesses one), the tools it used, and the person accountable for it. For an external agent, that person is whoever created its API key; for V19&apos;s own Agent, it is the person who asked. Agents can send <code>model</code> and <code>tools</code> with a request. The passport is shown on each request with who decided it, and a digest lets you check it later. These facts are not part of what is approved, so they never change an approval.</p>
+  </DocSection>
+  <DocSection id="triage" kicker="07" title="Review lanes by blast radius">
+   <p>Each request is sorted into a review lane the moment it arrives, with a one-line reason. <em>Allowed by policy</em> needs no review. <em>Quick look</em> is a contained change outside production. <em>Careful review</em> is a production change, a high-risk action or a moderate blast radius. <em>Two approvers</em> is a production change that touches many areas, touches migrations, auth, secrets, CI or infrastructure, or is a data migration, infrastructure change or delete. In that lane the first approval is recorded and the request stays pending until a different admin approves too. Lanes only ever add review; they never remove what policy requires.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/approval-workflow",label:"Approval workflow"}} next={{href:"/docs/trust-tools",label:"Trust tools"}} />
  </>;
 }

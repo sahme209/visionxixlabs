@@ -19,6 +19,8 @@ const actionSchema = {
     summary: { type: "string", description: "One or two sentences describing the exact change." },
     agentName: { type: "string", description: "Your agent's name, e.g. cursor or claude-code." },
     changedFiles: { type: "array", items: { type: "string" }, description: "Optional: file paths the change touches. Sensitive or wide changes always need approval." },
+    model: { type: "string", description: "Optional: the model you are running as, recorded in the change passport." },
+    tools: { type: "array", items: { type: "string" }, description: "Optional: up to 20 tool names you used to prepare this change, recorded in the change passport." },
   },
   required: ["actionKind", "target", "summary"],
 } as const;

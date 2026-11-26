@@ -6,6 +6,7 @@ import { OUTCOME_ROW_LIMIT, OUTCOME_WINDOW_DAYS, summarizeDeploymentOutcomes, ty
 import { incidentRecoveryMetrics } from "@/lib/desktop/incidentRecoveryMetrics";
 import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
 import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
+import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,7 @@ export default async function InsightsPage() {
     const withIncidents = ids.length ? await prisma.deploymentIncident.findMany({ where: { organizationId, releaseId: { in: ids } }, take: 5000, select: { releaseId: true } }) : [];
     return changeFailureRate(releases, new Set(withIncidents.map((i) => i.releaseId)));
   })().catch(() => null);
+  const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, now);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
   const coverage = await (async () => {
     const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
@@ -117,6 +119,12 @@ export default async function InsightsPage() {
               <Metric label="Failed or rolled back" value={changes.byReason.failedOrRolledBack.toLocaleString()} />
               <Metric label="Deployed, then an incident" value={changes.byReason.incidentOnly.toLocaleString()} />
             </dl>}
+      </section>
+
+      <section aria-labelledby="insights-stability" className="mt-10">
+        <h2 id="insights-stability" className="text-base font-medium">Stability early warning · last 7 days against the 90 before</h2>
+        {stability === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Release records could not be read. Nothing is shown rather than an estimate.</p>
+          : <p className={`mt-3 max-w-2xl text-sm ${stability.level === "elevated" ? "text-amber-200" : "text-zinc-300"}`}>{stability.level === "elevated" ? "Elevated: " : stability.level === "steady" ? "Steady: " : ""}{stability.message}{stability.level === "elevated" ? " Production deployments ask for a reason until the rate settles." : ""}</p>}
       </section>
 
       <section aria-labelledby="insights-checks" className="mt-10">

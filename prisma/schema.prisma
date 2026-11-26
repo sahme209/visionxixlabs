@@ -1656,6 +1656,8 @@ model AgentActionProposal {
   approvalExpiresAt DateTime?
   /// SHA-256 binding the organization, conversation, proposer, tool and args.
   actionDigest      String?
+  /// Change passport: agent, model, tools and accountable owner, recorded when the change is created.
+  passport          Json?
 
   conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
@@ -5389,6 +5391,13 @@ model AgentGatewayRequest {
   outcome           String?
   outcomeDetail     String?   @db.Text
   outcomeAt         DateTime?
+  /// Change passport: agent, model, tools and accountable owner, recorded when the change is created.
+  passport          Json?
+  /// Review lane chosen on arrival by blast radius: {lane, approvalsRequired, reason}.
+  reviewTriage      Json?
+  /// First of two approvals for a two_person lane; a different admin must give the second.
+  firstApproverUserId String?
+  firstApprovedAt   DateTime?
   expiresAt         DateTime
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt

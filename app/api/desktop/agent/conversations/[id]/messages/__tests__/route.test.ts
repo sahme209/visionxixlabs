@@ -481,6 +481,8 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ status: "proposed", riskLevel: "medium" }),
     }));
+    // Change passport: V19 Agent origin, the proposed tool, and the requester as owner; the model is never guessed.
+    expect((mocks.createProposal.mock.calls.at(-1) as unknown as [{ data: { passport: unknown } }])[0].data.passport).toMatchObject({ v: 1, origin: "v19_agent", model: null, tools: ["open_github_pull_request"], digest: expect.stringMatching(/^[0-9a-f]{64}$/) });
   });
 
   it("does not persist a file action when a trustworthy review snapshot cannot be prepared", async () => {

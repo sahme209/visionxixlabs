@@ -17,6 +17,7 @@ import { randomUUID } from "node:crypto";
 import {CONVERSATION_PROMPT_LIMITS} from "@/lib/axiom/agentRuntime/conversationPromptBudget";
 import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { buildChangePassport } from "@/lib/agentGateway/changePassport";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@/lib/prismaClient";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
@@ -272,6 +273,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ? {toolName: "list_cloud_accounts", args: {}, message: "Resolve current workspace AWS connections."}
         : initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
     const initialToolCall = grounding && (profile.allowedTools === null || profile.allowedTools.includes(grounding.toolName)) ? grounding : undefined;
+    const toolsUsedThisTurn: string[] = [];
     const outcome = await runDecisionLoop({
       organizationId,
       streaming,
@@ -291,6 +293,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       agentProfile: profile.id,
       initialToolCall,
       executeReadOnlyTool: async (toolName, args) => {
+        toolsUsedThisTurn.push(toolName);
         const historyEnvironmentId = typeof args.environmentId === "string" ? args.environmentId : "";
         const historyScopeMismatch = reviewDeploymentHistory && toolName === "list_deployment_executions" &&
           (!observedEnvironmentIds.has(historyEnvironmentId) || (selectedEnvironment && selectedEnvironment.id !== historyEnvironmentId));
@@ -382,6 +385,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           toolName: outcome.toolName, argsJson: reviewed.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
           approvalExpiresAt: approvalExpiry(),
           actionDigest: agentActionDigest({ organizationId, conversationId, proposedByUserId: String(actor.userId), toolName: outcome.toolName, args: reviewed.args }),
+          // Change passport: requested model (never guessed), tools used this turn plus the proposed tool, and the requester as owner.
+          passport: buildChangePassport({ origin: "v19_agent", agent: profile.id, model: selectedModel ?? null, tools: [...toolsUsedThisTurn, outcome.toolName], ownerUserId: String(actor.userId), createdAt: new Date() }) as unknown as Prisma.InputJsonValue,
         },
       });
       return NextResponse.json({

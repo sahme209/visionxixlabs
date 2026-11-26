@@ -1549,6 +1549,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [successfulExecutions, setSuccessfulExecutions] = useState<DeploymentExecution[]>([]);
   const [emergencyBypass, setEmergencyBypass] = useState(false);
   const [bypassReason, setBypassReason] = useState("");
+  const [stabilityRequired, setStabilityRequired] = useState(false);
+  const [stabilityReason, setStabilityReason] = useState("");
   const [checkingReadiness, setCheckingReadiness] = useState(false);
   const [readinessError, setReadinessError] = useState<string | null>(null);
   const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass"; databaseChanges?: DatabaseChangeEvidence } | null>(null);
@@ -1666,8 +1668,10 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
         ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
         ...(emergencyBypass ? { emergencyBypass: true, bypassReason } : {}),
+        ...(stabilityRequired && stabilityReason.trim() ? { stabilityReason: stabilityReason.trim() } : {}),
         idempotencyKey: deployOperationRef.current.key,
       });
+      if (!result.ok && result.error === "stability_warning_active") setStabilityRequired(true);
       if (!result.ok) {
         setDeployError(result.error === "deployment_outcome_unknown"
           ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
@@ -1677,6 +1681,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               ? "Blocking deployment checks for earlier stages have not passed in CI for this commit. Run them for this commit, or review them in Control → Checks. Nothing was dispatched."
               : result.error === "previous_ring_not_deployed"
                 ? "This environment is in a later ring. Deploy this commit successfully to an environment in the previous ring first. Nothing was dispatched."
+              : result.error === "stability_warning_active"
+                ? "Recent releases are failing far more often than usual, so production deployments need a reason. Enter it below and deploy again. Nothing was dispatched."
               : result.error === "outside_change_window"
                 ? "This environment's change window is closed right now. Its next opening is shown under the environment's change window. Nothing was dispatched."
               : result.error === "deployment_freeze_active"
@@ -1792,6 +1798,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               <input data-help-id="settings.workspace.deploy-emergency-bypass" type="checkbox" checked={emergencyBypass} onChange={(event) => { setEmergencyBypass(event.target.checked); setReadiness(null); }} className="mt-0.5" />
               <span><strong>Emergency production bypass</strong><br /><span className="text-amber-200/70">Skips normal promotion evidence. Admin-only, reason required, and permanently audited.</span></span>
             </label>
+            {stabilityRequired && <textarea data-help-id="settings.workspace.deploy-stability-reason" aria-label="Reason to deploy during the stability warning" value={stabilityReason} onChange={(event) => setStabilityReason(event.target.value)} placeholder="Why this production deployment should go out now (at least 10 characters). It is recorded in the audit log." className="mt-3 min-h-16 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
             {emergencyBypass && <textarea data-help-id="settings.workspace.deploy-bypass-reason" aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
           </div>
         )}
