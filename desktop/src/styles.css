@@ -1839,3 +1839,4 @@ html[data-theme="light"] {
 .environment-board-cell time { font-size: 10.5px; color: rgb(var(--neutral-zinc-400)); font-variant-numeric: tabular-nums; }
 .environment-board-empty { font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
 .environment-board-note { margin-top: 8px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
+.environment-board-gap { display: block; margin-top: 4px; font-family: var(--font-sans); font-size: 10.5px; color: var(--status-amber); }

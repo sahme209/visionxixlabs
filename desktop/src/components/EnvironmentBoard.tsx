@@ -20,13 +20,13 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
     <section className="environment-board" aria-labelledby="environment-board-title">
       <header>
         <h2 id="environment-board-title">Environment board</h2>
-        <p>Latest recorded workflow run for each repository in each environment, in lifecycle order. This is recorded evidence, not the live deployed version.</p>
+        <p>Latest recorded workflow run for each repository in each environment, in lifecycle order. This is recorded evidence, not the live deployed version. “Trails” marks a later environment whose latest run is older than a newer successful commit before it; promotion still needs its own release and approval.</p>
       </header>
       <div className="environment-board-scroll" role="region" aria-label="Environment board table" tabIndex={0}>
         <table>
           <thead><tr><th scope="col">Repository</th>{board.environments.map(env => <th key={env.id} scope="col">{env.name}{env.tier.toLowerCase() !== env.name.toLowerCase() && <span>{env.tier}</span>}</th>)}</tr></thead>
           <tbody>{board.rows.map(row => <tr key={row.repository}>
-            <th scope="row">{row.repository}</th>
+            <th scope="row">{row.repository}{row.gaps.map(gap => <small key={gap.to} className="environment-board-gap">{gap.to} trails {gap.from} ({gap.commit})</small>)}</th>
             {row.cells.map((cell, index) => <td key={board.environments[index].id}>{cell ? (() => {
               const tone = runResultTone(cell.status, cell.conclusion);
               return <div className="environment-board-cell" data-tone={tone.tone}>

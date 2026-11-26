@@ -18,3 +18,17 @@ it("orders environments by display order and keeps the latest run per repository
   expect(board.rows[1].cells[1]).toBeNull();
   expect(board.unplaced).toBe(1);
 });
+
+it("flags a later environment that trails a newer successful commit, and nothing else", () => {
+  const board = buildEnvironmentBoard([env("s", "Staging", 1), env("p", "Production", 2)], [
+    run("1", "s", "org/api", "2026-11-21T10:00:00Z", "2222222bbbb"),
+    run("2", "p", "org/api", "2026-11-19T10:00:00Z", "1111111aaaa"),
+    run("3", "s", "org/web", "2026-11-21T10:00:00Z", "3333333cccc", "failure"),
+    run("4", "s", "org/same", "2026-11-21T10:00:00Z", "4444444dddd"),
+    run("5", "p", "org/same", "2026-11-22T10:00:00Z", "4444444dddd"),
+  ]);
+  const gaps = Object.fromEntries(board.rows.map((r) => [r.repository, r.gaps]));
+  expect(gaps["org/api"]).toEqual([{ from: "Staging", to: "Production", commit: "2222222" }]);
+  expect(gaps["org/web"]).toEqual([]);
+  expect(gaps["org/same"]).toEqual([]);
+});
