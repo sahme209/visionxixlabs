@@ -1,4 +1,5 @@
 import {ChevronDown,FileText,History,Plus,Search} from 'lucide-react';
+import { RUNBOOK_TEMPLATES, runbookTemplate } from "../../../lib/desktop/runbookTemplates";
 import {BotConnectedActionsPanel} from './BotConnectedActionsPanel';
 import {JiraTicketDiscovery} from './JiraTicketDiscovery';
 import {BotAppActionLauncher} from './BotAppActionLauncher';
@@ -173,6 +174,14 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
   try{const result=await desktopClient.getSavedBotTask(id,controller.signal);if(!current(controller))return;if(result.ok)replaceEditor(result.data.task);else setError(result.error)}
   catch{if(current(controller))setError("The saved draft could not be opened. Your current text is retained.")}finally{finish(controller)}
  }
+ function startFromRunbook(id:string){
+  const template=runbookTemplate(id);
+  if(!template||busy||pending||dirty||!owns())return;
+  setInspectorOpen(false);setTasksOpen(false);
+  replaceEditor(null);
+  onDraftChange({ownerKey,title:template.title,task:template.instruction,context:template.context});
+  focusNewInstruction.current=true;
+ }
  function requestOpen(id:string,opener:HTMLButtonElement){
   if(busy||pending||!owns())return;
   if(!dirty){void openSaved(id);return}
@@ -263,6 +272,13 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     <Search size={15} aria-hidden="true"/>
     <input data-help-id="bot.workspace.tasks-filter" ref={taskFilter} type="text" aria-label="Filter loaded tasks" aria-keyshortcuts="/" placeholder="Filter loaded tasks" value={filter} onChange={e=>setFilter(e.target.value)}/>
     <kbd aria-hidden="true">/</kbd>
+   </label>
+   <label className="studio-task-runbook mt-3 block text-xs text-zinc-400">Start from a runbook
+    <select data-help-id="bot.workspace.runbook" value="" disabled={Boolean(busy)||Boolean(pending)||aiLocked||dirty} onChange={event=>startFromRunbook(event.target.value)} aria-describedby={`bot-runbook-note-${ownerKey}`} className="mt-1 block w-full">
+     <option value="">Choose a runbook…</option>
+     {RUNBOOK_TEMPLATES.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}
+    </select>
+    <span id={`bot-runbook-note-${ownerKey}`} className="mt-1 block text-[11px] leading-4 text-zinc-500">{dirty?"Save or discard your current draft first.":"Fills a new unsaved draft. Nothing runs until you save it and an action is approved."}</span>
    </label>
    <div className="studio-task-list-heading flex items-center justify-between gap-2"><h2 className="text-sm font-semibold text-white">Tasks</h2><button data-help-id="bot.workspace.tasks-refresh" type="button" className="text-xs text-zinc-400 underline" disabled={Boolean(busy)} onClick={()=>void loadList()}>Refresh saved tasks</button></div>
    <div className="studio-task-list-results min-h-0 flex-1 overflow-y-auto">
