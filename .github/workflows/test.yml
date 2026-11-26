@@ -122,7 +122,7 @@ jobs:
       # gives headroom without weakening the build or its type checks.
       - name: Add swap headroom for the production build
         run: |
-          sudo fallocate -l 8G /mnt/v19-build.swap
+          sudo fallocate -l 10G /mnt/v19-build.swap
           sudo chmod 600 /mnt/v19-build.swap
           sudo mkswap /mnt/v19-build.swap
           sudo swapon /mnt/v19-build.swap
@@ -130,7 +130,8 @@ jobs:
 
       - name: Build production website (no deployment)
         env:
-          NODE_OPTIONS: --max-old-space-size=8192
+          # 8 GB hit the heap limit on PR 380 as the route graph grew; swap above covers the extra.
+          NODE_OPTIONS: --max-old-space-size=10240
         run: npm run build
 
       # Exercise these emitted routes before this same build can pass. Synthetic
