@@ -16,7 +16,7 @@ it("shows the latest recorded run per environment in lifecycle order and says it
   const region = await screen.findByRole("region", { name: "Environment board" });
   expect(region.textContent).toContain("not the live deployed version");
   const headers = within(region).getAllByRole("columnheader").map((h) => h.textContent);
-  expect(headers).toEqual(["Repository", "Stagingstaging", "Productionproduction"]);
+  expect(headers).toEqual(["Repository", "Staging", "Production"]);
   const cells = region.querySelectorAll(".environment-board-cell");
   expect([...cells].map((c) => c.getAttribute("data-tone"))).toEqual(["green", "red"]);
 });

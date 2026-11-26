@@ -24,7 +24,7 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
       </header>
       <div className="environment-board-scroll" role="region" aria-label="Environment board table" tabIndex={0}>
         <table>
-          <thead><tr><th scope="col">Repository</th>{board.environments.map(env => <th key={env.id} scope="col">{env.name}<span>{env.tier}</span></th>)}</tr></thead>
+          <thead><tr><th scope="col">Repository</th>{board.environments.map(env => <th key={env.id} scope="col">{env.name}{env.tier.toLowerCase() !== env.name.toLowerCase() && <span>{env.tier}</span>}</th>)}</tr></thead>
           <tbody>{board.rows.map(row => <tr key={row.repository}>
             <th scope="row">{row.repository}</th>
             {row.cells.map((cell, index) => <td key={board.environments[index].id}>{cell ? (() => {
