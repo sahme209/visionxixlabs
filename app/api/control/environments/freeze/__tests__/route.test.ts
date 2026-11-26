@@ -8,6 +8,7 @@ vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => m.sameOr
 vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
 vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: m.unenrolled }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: m.dispatch }));
+vi.mock("server-only", () => ({}));
 vi.mock("@/lib/prismaClient", () => ({ Prisma: { DbNull: "DbNull" } }));
 vi.mock("@/lib/db", () => {
   const tx = { environment: { updateMany: m.updateMany } };

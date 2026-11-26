@@ -274,6 +274,33 @@ func (c *Client) WorkspaceConfig(ctx context.Context) (map[string]any, error) {
 	return out, nil
 }
 
+// FreezeDeploymentsInput is the body for FreezeDeployments.
+type FreezeDeploymentsInput struct {
+	Scope          string `json:"scope"` // "production" or "all"
+	Hours          int    `json:"hours"` // 1 to 24
+	Reason         string `json:"reason"`
+	IdempotencyKey string `json:"idempotencyKey,omitempty"`
+}
+
+// FreezeDeploymentsResponse is the result of FreezeDeployments.
+type FreezeDeploymentsResponse struct {
+	OK           bool     `json:"ok"`
+	Environments []string `json:"environments,omitempty"`
+	Skipped      []string `json:"skipped,omitempty"`
+	EndsAt       string   `json:"endsAt,omitempty"`
+	Duplicate    bool     `json:"duplicate,omitempty"`
+}
+
+// FreezeDeployments stops deployments now via /api/v1/environments/freeze. Required scope: freeze:start.
+// It only starts a freeze; ending one early stays with workspace owners and admins.
+func (c *Client) FreezeDeployments(ctx context.Context, in FreezeDeploymentsInput) (*FreezeDeploymentsResponse, error) {
+	var out FreezeDeploymentsResponse
+	if err := c.do(ctx, "POST", "/api/v1/environments/freeze", in, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // ReportCheckResult posts one deployment check run to /api/v1/checks/results. Required scope: checks:report.
 func (c *Client) ReportCheckResult(ctx context.Context, in CheckResultInput) (*CheckResultResponse, error) {
 	var out CheckResultResponse

@@ -91,6 +91,20 @@ export interface CheckResultInput {
   idempotencyKey: string;
 }
 
+export interface FreezeDeploymentsInput {
+  /** "production" freezes environments with the prod tier; "all" freezes every environment. */
+  scope: "production" | "all";
+  /** 1 to 24 hours from now. */
+  hours: number;
+  reason: string;
+  /** Optional; a retried call with the same key within 24 hours does not freeze again. */
+  idempotencyKey?: string;
+}
+
+export type FreezeDeploymentsResponse =
+  | { ok: true; environments: string[]; skipped: string[]; endsAt: string }
+  | { ok: true; duplicate: true; summary: string };
+
 export type CheckResultResponse =
   | { ok: true; recorded: true; currentVersion: number; stale: boolean }
   | { ok: true; recorded: false; duplicate: true };
@@ -247,6 +261,14 @@ export class VisionXIXLabs {
   /** The workspace's configuration as code: environments, variable sets, variables and checks. Required scope: config:read. */
   workspaceConfig(): Promise<WorkspaceConfigResponse> {
     return this.get<WorkspaceConfigResponse>("/api/v1/config");
+  }
+
+  /**
+   * POST /api/v1/environments/freeze — stop deployments now, e.g. from an incident workflow. Only starts a
+   * freeze; ending one early stays with workspace owners and admins. Required scope: freeze:start.
+   */
+  freezeDeployments(input: FreezeDeploymentsInput): Promise<FreezeDeploymentsResponse> {
+    return this.post<FreezeDeploymentsResponse>("/api/v1/environments/freeze", input as unknown as Record<string, unknown>);
   }
 
   /**

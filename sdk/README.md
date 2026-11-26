@@ -74,6 +74,20 @@ the cockpit, where edits are governed and compare-and-set. Every SDK exposes
 `vxl config -o v19-config.json` writes it as sorted JSON, ready to commit and
 diff in a pull request.
 
+## Stop deployments from an incident (deployment freeze)
+
+`POST /api/v1/environments/freeze` freezes production (environments with the
+prod tier) or every environment from now, for 1 to 24 hours, with a reason that
+everyone who tries to deploy will see. Use an API key with the `freeze:start`
+scope, for example from a PagerDuty or Opsgenie workflow when a critical
+incident opens. A key can only start a freeze: ending one early stays with
+workspace owners and admins on the cockpit Overview. Pass an `idempotencyKey`
+(such as the incident ID plus "trigger") so a retried call within 24 hours does
+not freeze again. SDKs: `freezeDeployments()` / `freeze_deployments()` /
+`FreezeDeployments(ctx)`; CLI: `vxl freeze --reason "Incident 42" --hours 4`.
+Freezes apply to AI agents as well as people, and send the
+`deployment.freeze_started` webhook.
+
 ## Environment configuration at deploy time
 
 Load an environment's resolved variables (workspace defaults, then variable
@@ -268,6 +282,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
 | `GET  /api/v1/config` | `config:read` | `workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)` |
 | `POST /api/v1/checks/results`     | `checks:report`       | `reportCheckResult()` |
+| `POST /api/v1/environments/freeze` | `freeze:start`       | `freezeDeployments()` / `freeze_deployments()` / `FreezeDeployments(ctx)` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |

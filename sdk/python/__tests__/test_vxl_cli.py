@@ -18,7 +18,7 @@ import sys
 import time
 import unittest
 from io import StringIO
-from typing import Any, Dict
+from typing import Any, Dict, List
 from unittest.mock import patch
 
 # Make the sibling modules importable.
@@ -350,3 +350,37 @@ class ConfigCliTests(unittest.TestCase):
             with open(path, encoding="utf-8") as fh:
                 doc = json.loads(fh.read())
             self.assertEqual(sorted(doc.keys()), ["checks", "environments", "variableSets", "variables"])
+
+
+# ============================ vxl freeze ============================
+
+
+class _FakeFreezeClient:
+    def __init__(self, response: Dict[str, Any]) -> None:
+        self.response = response
+        self.calls: List[Any] = []
+
+    def freeze_deployments(self, scope: str, hours: int, reason: str, idempotency_key: Any = None) -> Dict[str, Any]:
+        self.calls.append((scope, hours, reason, idempotency_key))
+        return self.response
+
+
+class FreezeCliTests(unittest.TestCase):
+    def test_freezes_production_by_default(self) -> None:
+        client = _FakeFreezeClient({"ok": True, "environments": ["Prod"], "skipped": [], "endsAt": "2026-11-27T16:00:00.000Z"})
+        args = vxl_cli.build_parser().parse_args(["freeze", "--reason", "Incident 42", "--idempotency-key", "pd-42-trigger"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=client), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertEqual(client.calls, [("production", 4, "Incident 42", "pd-42-trigger")])
+        self.assertIn("Frozen until 2026-11-27T16:00:00.000Z: Prod", out.getvalue())
+
+    def test_reports_a_duplicate(self) -> None:
+        client = _FakeFreezeClient({"ok": True, "duplicate": True, "summary": "x"})
+        args = vxl_cli.build_parser().parse_args(["freeze", "--scope", "all", "--hours", "2", "--reason", "Incident 42"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=client), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertIn("nothing changed", out.getvalue())
+        self.assertEqual(client.calls[0][:2], ("all", 2))
+

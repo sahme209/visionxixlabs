@@ -84,6 +84,14 @@ public struct VisionXIXLabs {
         try await get("/api/v1/environments/\(slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug)/variables")
     }
 
+    /// POST /api/v1/environments/freeze — stop deployments now, e.g. from an incident workflow.
+    /// Required scope: `freeze:start`. `scope` is "production" or "all"; `hours` is 1 to 24.
+    public func freezeDeployments(scope: String, hours: Int, reason: String, idempotencyKey: String? = nil) async throws -> FreezeDeploymentsResponse {
+        var body: [String: Any] = ["scope": scope, "hours": hours, "reason": reason]
+        if let idempotencyKey { body["idempotencyKey"] = idempotencyKey }
+        return try await post("/api/v1/environments/freeze", body: body)
+    }
+
     /// POST /api/v1/checks/results — report one deployment check run from CI as evidence.
     /// Required scope: `checks:report`. Idempotent on `idempotencyKey`.
     public func reportCheckResult(checkKey: String, checkVersion: Int, stage: String, status: String, idempotencyKey: String, durationMs: Int? = nil, runUrl: String? = nil) async throws -> CheckResultResponse {
@@ -329,6 +337,14 @@ public struct EnvironmentVariablesResponse: Decodable {
     public struct SecretRef: Decodable { public let provider: String; public let path: String; public let field: String? }
     /// Variables whose value is a secret reference; V19 never resolves them.
     public let secretRefs: [String: SecretRef]?
+}
+
+public struct FreezeDeploymentsResponse: Decodable {
+    public let ok: Bool
+    public let environments: [String]?
+    public let skipped: [String]?
+    public let endsAt: String?
+    public let duplicate: Bool?
 }
 
 public struct CheckResultResponse: Decodable {

@@ -48,6 +48,9 @@ export type ApiKeyScope =
   // Configuration as code: read environments, variables, sets and checks (Terraform data sources, CI)
   | "config:read"
   | "config:*"
+  // Deployment freeze: incident tooling can start a freeze (tightens only); ending one stays with people
+  | "freeze:start"
+  | "freeze:*"
   // Catch-all (Enterprise only — admin route must verify before granting)
   | "*";
 
@@ -61,6 +64,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set<ApiKeyScope>([
   "governance:read", "governance:request", "governance:*",
   "checks:report", "checks:*",
   "config:read", "config:*",
+  "freeze:start", "freeze:*",
   "*",
 ]);
 
