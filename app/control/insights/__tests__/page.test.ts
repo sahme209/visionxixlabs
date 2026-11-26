@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn() }));
+const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn(() => { throw new Error("redirect"); }) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_insights", email: "owner@example.test", roles: ["owner"] }) }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results } } }));
 import Page from "../page";
 
 const value = (label: string) => screen.getByText(label, { selector: "dt" }).parentElement!.querySelector("dd")!.textContent!.trim();
@@ -19,6 +19,8 @@ beforeEach(() => {
     { status: "completed", conclusion: "success", createdAt: day(3), completedAt: new Date(day(3).getTime() + 900_000) },
   ]);
   io.count.mockResolvedValue(2);
+  io.checks.mockResolvedValue([]);
+  io.results.mockResolvedValue([]);
   io.incidents.mockResolvedValue([{ status: "resolved", reportedAt: day(5), mitigatedAt: new Date(day(5).getTime() + 1_800_000), resolvedAt: new Date(day(5).getTime() + 7_200_000) }, { status: "open", reportedAt: day(1), mitigatedAt: null, resolvedAt: null }]);
 });
 afterEach(cleanup);
@@ -51,4 +53,16 @@ it("explains an empty window instead of showing zero rates", async () => {
   render(await Page());
   expect(screen.getAllByRole("status")[0].textContent).toContain("No workflow runs were recorded in the last 30 days");
   expect(screen.queryByText("Runs per week")).toBeNull();
+});
+
+it("reports deployment check evidence by commit when blocking checks exist", async () => {
+  io.checks.mockResolvedValue([{ key: "smoke" }]);
+  io.runs.mockImplementation(async (args: { select: Record<string, boolean> }) => args.select.sourceCommitSha
+    ? [{ sourceCommitSha: "a" }, { sourceCommitSha: "b" }, { sourceCommitSha: null }]
+    : [{ status: "completed", conclusion: "success", createdAt: new Date(), completedAt: new Date() }]);
+  io.results.mockResolvedValue([{ checkKey: "smoke", releaseRef: "a", status: "passed" }, { checkKey: "smoke", releaseRef: "b", status: "failed" }]);
+  render(await Page());
+  expect(value("All blocking checks passed")).toBe("1 of 3");
+  expect(value("A blocking check failed")).toBe("1");
+  expect(io.results.mock.calls[0][0].where).toEqual({ organizationId: "org_insights", releaseRef: { in: ["a", "b"] } });
 });
