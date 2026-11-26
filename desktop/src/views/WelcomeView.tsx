@@ -8,7 +8,7 @@ function auditOutcomeTone(outcome: string): {tone: StatusTone; shape: StatusShap
   if (outcome === "skipped") return {tone: "neutral", shape: "dot"};
   return null;
 }
-import { ArrowRight, Box, ChevronRight, FileText, GitBranch, History, Layers, ListChecks, Play, ShieldCheck, Sparkles, SquareStack, Undo2, Users } from "lucide-react";
+import { ArrowRight, Box, ChevronRight, FileText, GitBranch, History, Layers, ListChecks, Play, ShieldCheck, Sparkles, SquareStack, Users } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { HOME_DRAFT_MAX_LENGTH, type HomePlanningContext, type HomePlanningIntent } from "../lib/agentDraftRequest";
@@ -483,10 +483,10 @@ export function UpcomingChangeWindows({rows, onOpen}: {rows?: RecentRelease[]; o
 
 const pipelineStages = [
   {label: "Plan", detail: "Scope the exact change", Icon: FileText},
+  {label: "Validate", detail: "Planned validation steps", Icon: ListChecks},
   {label: "Approve", detail: "Independent review", Icon: Users},
   {label: "Deploy", detail: "Governed execution", Icon: Play},
-  {label: "Validate", detail: "Recorded evidence", Icon: ShieldCheck},
-  {label: "Recover", detail: "Planned rollback", Icon: Undo2},
+  {label: "Verify", detail: "Recorded evidence, planned rollback", Icon: ShieldCheck},
 ] as const;
 
 /** The governed release path, as an explainer. It shows no live status. */
@@ -494,7 +494,7 @@ export function ReleasePipeline({onOpen}: {onOpen: () => void}) {
   const motionOk = useAllowMotion();
   return <section className="studio-home-pipeline" aria-labelledby="studio-home-pipeline-title">
     <div className="studio-home-pipeline-head">
-      <div><h2 id="studio-home-pipeline-title">Release pipeline</h2><p>End-to-end path from plan to recovery. Each step needs its own recorded evidence.</p></div>
+      <div><h2 id="studio-home-pipeline-title">Release pipeline</h2><p>The same five steps as each release’s lifecycle in Deployments. Each needs its own recorded evidence; recovery follows the planned rollback.</p></div>
       <button type="button" className="studio-home-pipeline-link" onClick={onOpen}>Open Deployments <ArrowRight size={14} aria-hidden="true"/></button>
     </div>
     <div className="studio-home-pipeline-track">
