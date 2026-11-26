@@ -1,4 +1,7 @@
-import { ArrowLeft, ArrowRight, Box, Search, X } from "lucide-react";
+import { Archive, ArrowLeft, ArrowRight, Box, Clock3, PencilLine, Search, X, type LucideIcon } from "lucide-react";
+
+// Neutral glyphs for the recorded request state; they carry no outcome or health meaning.
+const stateGlyph: Record<string, LucideIcon> = { draft: PencilLine, submitted: Clock3, closed: Archive };
 import { useEffectEvent, useId, useImperativeHandle, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 
@@ -212,7 +215,7 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
             <span className="release-focus-item-title"><Box size={17} aria-hidden /><span>{item.title}{item.version !== undefined && <> <small>Version {item.version}</small></>}</span></span>
             <span><span className="release-focus-item-environment">{item.environment || "Unspecified"}</span></span>
             <span className="release-focus-item-state">
-              <span className="capitalize">{item.status.replaceAll("_", " ")}{item.busy ? " · Working" : ""}</span>
+              <span className="release-focus-state-line">{(() => { const Glyph = stateGlyph[item.status]; return Glyph ? <Glyph size={12} aria-hidden="true"/> : null; })()}<span className="capitalize">{item.status.replaceAll("_", " ")}{item.busy ? " · Working" : ""}</span></span>
               <small>{item.nextStep}</small>
               {item.attention && <small className="release-focus-attention">Needs attention</small>}
             </span>

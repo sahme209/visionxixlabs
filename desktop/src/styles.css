@@ -540,6 +540,7 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 .release-focus-item-title { display: flex; align-items: center; gap: 9px; color: rgb(var(--neutral-zinc-200)); font-size: 13px; font-weight: 500; }
 .release-focus-item-title svg { flex: none; color: rgb(var(--neutral-zinc-400)); }
 .release-focus-item-environment, .release-focus-item-updated, .release-focus-item-state, .release-focus-item-review { font-size: 12px; }
+.release-focus-state-line svg { display: inline; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; color: var(--app-secondary, currentColor); }
 .release-focus-item-requester { min-inline-size: 0; font-size: 11px; }
 .release-focus-requester-avatar {
   display: inline-grid;
