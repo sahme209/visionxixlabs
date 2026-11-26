@@ -1626,3 +1626,11 @@ html[data-theme="light"] {
 .studio-home-pipeline li span { color: rgb(var(--neutral-zinc-400)); font-size: 11px; }
 .studio-home-pipeline-arrow { position: absolute; right: -22px; top: 50%; transform: translateY(-50%); color: rgb(var(--neutral-zinc-500)); }
 @media (max-width: 900px) { .studio-home-pipeline ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } .studio-home-pipeline-arrow { display: none; } }
+
+/* Recorded run timing strip (Deployments, Agent receipts, Settings). */
+.deployment-run-timing { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 6px; padding: 8px 10px; list-style: none; border: 1px solid var(--color-axiom-border-soft); border-radius: 8px; }
+.deployment-run-timing li { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.deployment-run-timing li + li::before { content: ""; width: 14px; height: 1px; margin-right: 4px; background: currentColor; opacity: .35; }
+.deployment-run-timing-label { color: var(--status-neutral); font-weight: 500; }
+.deployment-run-timing-value { color: var(--color-axiom-accent); font-variant-numeric: tabular-nums; }
+.deployment-run-timing li[data-recorded="false"] .deployment-run-timing-value { color: var(--status-neutral); }
