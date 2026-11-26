@@ -76,3 +76,11 @@ it("reports change failure rate from finished releases and their incidents", asy
   expect(document.body.textContent).toContain("2 of 4 finished releases");
   expect(value("Deployed, then an incident")).toBe("1");
 });
+
+it("offers a release evidence download through a plain GET form", async () => {
+  render(await Page());
+  const form = screen.getByRole("button", { name: "Download evidence" }).closest("form")!;
+  expect(form.getAttribute("action")).toBe("/api/control/releases/evidence-pack");
+  expect(form.getAttribute("method")).toBe("get");
+  expect((screen.getByLabelText(/Full commit SHA/) as HTMLInputElement).pattern).toBe("[0-9a-fA-F]{40}");
+});

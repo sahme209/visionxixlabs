@@ -65,8 +65,11 @@ curl -fsS -H "Authorization: Bearer $VXL_API_KEY" \
 
 ## Environment configuration at deploy time
 
-Load an environment's resolved variables (workspace defaults overridden by
-that environment) in CI, and keep the fingerprint with your deployment.
+Load an environment's resolved variables (workspace defaults, then variable
+sets whose tag selector matches the environment, then that environment's own
+overrides) in CI, and keep the fingerprint with your deployment. `sources`
+says where each value came from (`workspace`, `set` or `environment`), and
+`conflicts` appears when two matching sets define a key differently.
 Every SDK exposes `environmentVariables(slug)` / `environment_variables(slug)`
 / `EnvironmentVariables(ctx, slug)`. Required scope: `pipeline:read`.
 Values are plain configuration; secrets stay in scoped credentials.

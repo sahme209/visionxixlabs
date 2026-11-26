@@ -57,9 +57,11 @@ export interface WhoamiResponse {
 export interface EnvironmentVariablesResponse {
   ok: true;
   environment: { slug: string; name: string };
-  /** Resolved plain configuration: workspace defaults overridden by this environment. Never secrets. */
+  /** Resolved plain configuration: workspace defaults, then matching variable sets, then this environment's overrides. Never secrets. */
   variables: Record<string, string>;
-  sources: Record<string, "workspace" | "environment">;
+  sources: Record<string, "workspace" | "set" | "environment">;
+  /** Present when two matching variable sets give a key different values (the set whose slug sorts last applies). */
+  conflicts?: Array<{ key: string; sets: string[] }>;
   /** SHA-256 fingerprint of the resolved set; record it with your deployment. */
   digest: string;
   count: number;

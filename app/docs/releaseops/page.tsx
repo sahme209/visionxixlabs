@@ -85,6 +85,25 @@ export default function ReleaseOpsDocOverviewPage() {
               <p>This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.</p>
             </DocSection>
 
+            <DocSection id="change-windows" title="Change windows and freezes" kicker="08">
+              <p>In the desktop app, under Settings → Environments, owners and admins can give an environment a change window: the days it opens on and one or more times in UTC (for example <code>22:00-02:00</code>, which crosses midnight from the day it starts), plus freezes written as <code>2026-12-20 to 2027-01-02: Holiday freeze</code>. The editor shows whether deployments are allowed right now and when the window next opens. Saving uses the governed configuration path, and an edit is refused if someone changed the window in the meantime.</p>
+              <p>The desktop app refuses to dispatch outside the window or during a freeze, before any GitHub work starts. A freeze always wins over a window. A rule that cannot be read refuses deployments until it is fixed, rather than silently allowing them. The audited production emergency bypass still works. Queuing a deployment to run automatically when the window opens is not available yet; dispatch it once the window is open.</p>
+            </DocSection>
+
+            <DocSection id="kubernetes-templates" title="Kubernetes rolling, blue/green and canary" kicker="09">
+              <p>In the cockpit, <strong>Services</strong> generates a GitHub Actions workflow for a Kubernetes rolling update, a blue/green switch or a canary. Commit it to your repository and add a <code>KUBE_CONFIG</code> repository secret scoped to the namespace: cluster access stays in your CI, and V19 never holds it. V19 dispatches the workflow only after the environment&apos;s policy, checks, rings, change window and approvals pass.</p>
+              <p>A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running so you can switch back. A canary runs the new image in a small canary Deployment, watches readiness and restarts for the minutes you choose, promotes to the main Deployment, and always scales the canary back to zero. The workflow uses only kubectl and checks the image reference before using it.</p>
+            </DocSection>
+
+            <DocSection id="evidence-pack" title="Release evidence pack" kicker="10">
+              <p>In the cockpit, <strong>Insights → Export release evidence</strong> downloads one JSON file for a repository commit: every recorded deployment of it (environment, who, when, policy, reviewed pull request, configuration fingerprint and outcome), every check result CI reported for it, and audit events on those deployments. Configuration values are not included, only their fingerprints. Missing evidence is listed under <code>gaps</code> rather than invented.</p>
+              <p>The file carries a SHA-256 digest of its canonical JSON (sorted keys, without the export time), so exporting the same records again gives the same digest and an auditor can recompute it. Every export is recorded in the audit log.</p>
+            </DocSection>
+
+            <DocSection id="gitops" title="Argo CD and Flux" kicker="11">
+              <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. The connection forms and live acceptance with a real Argo CD instance or cluster are still pending.</p>
+            </DocSection>
+
             <DocFooterNav
                 prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
                 next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}

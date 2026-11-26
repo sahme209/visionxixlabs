@@ -3,6 +3,7 @@ import Link from "next/link";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
+import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
 
 export const dynamic = "force-dynamic";
 const OUTCOME: Record<string, { label: string; tone: string }> = {
@@ -54,6 +55,28 @@ export default async function ServicesPage() {
               </tbody>
             </table>
           </div>)}
+      <section aria-labelledby="k8s-templates-heading" className="mt-10">
+        <h2 id="k8s-templates-heading" className="text-base font-medium">Kubernetes rollout templates</h2>
+        <p className="mt-2 max-w-2xl text-sm text-zinc-400">Generate a GitHub Actions workflow for your repository. V19 dispatches it only after the environment&apos;s policy, checks, rings, change window and approvals pass. Cluster access stays in your CI through a KUBE_CONFIG secret.</p>
+        <ul className="mt-3 max-w-2xl space-y-1 text-xs text-zinc-400">{ROLLOUT_STRATEGIES.map((s) => <li key={s.id}><span className="text-zinc-200">{s.label}:</span> {s.summary}</li>)}</ul>
+        <form method="get" action="/api/control/templates/kubernetes" className="mt-4 flex max-w-3xl flex-wrap items-end gap-3">
+          <label className="text-xs text-zinc-400">Strategy
+            <select name="strategy" defaultValue="rolling" className="mt-1 block rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200">{ROLLOUT_STRATEGIES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select>
+          </label>
+          {[["namespace", "Namespace", "shop"], ["deployment", "Deployment", "checkout"], ["container", "Container", "web"]].map(([name, label, placeholder]) => (
+            <label key={name} className="text-xs text-zinc-400">{label}
+              <input name={name} required pattern="[a-z0-9]([\-a-z0-9]*[a-z0-9])?" maxLength={63} placeholder={placeholder} spellCheck={false} className="mt-1 block w-36 rounded-lg border border-white/10 bg-black/30 px-3 py-2 font-mono text-sm text-zinc-200" />
+            </label>))}
+          <label className="text-xs text-zinc-400">Canary pods
+            <input name="canaryReplicas" type="number" min={1} max={10} defaultValue={1} className="mt-1 block w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200" />
+          </label>
+          <label className="text-xs text-zinc-400">Watch minutes
+            <input name="observeMinutes" type="number" min={1} max={60} defaultValue={5} className="mt-1 block w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200" />
+          </label>
+          <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download workflow</button>
+        </form>
+      </section>
+
       <p className="mt-6 max-w-2xl text-xs leading-5 text-zinc-400">Owners come from components recorded in V19. Guardrails come from the repository&apos;s last scan. See <Link href="/control/checks" className="underline underline-offset-4">Checks</Link> and <Link href="/control/governance" className="underline underline-offset-4">Governance</Link> for what gates each release.</p>
     </div>
   );

@@ -93,6 +93,8 @@ class VisionXIXLabs:
         """GET /api/v1/environments/{slug}/variables — resolved configuration and fingerprint.
 
         Required scope: pipeline:read. Values are plain configuration, never secrets.
+        ``sources`` maps each key to "workspace", "set" or "environment"; ``conflicts`` is present when
+        two matching variable sets define a key differently.
         """
         return self._get(f"/api/v1/environments/{quote(slug, safe='')}/variables")
 

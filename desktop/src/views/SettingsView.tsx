@@ -41,6 +41,7 @@ import {
   Trees,
 } from "lucide-react";
 import { normalizeTags, planFanOut } from "../../../lib/releaseops/environmentTags";
+import { evaluateChangeWindow, formToRule, parseChangeWindowRule, ruleToForm, WEEKDAYS, type Weekday } from "../../../lib/releaseops/environmentChangeWindow";
 import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
@@ -1296,7 +1297,7 @@ const STANDARD_ENVIRONMENTS = [
 ];
 
 interface EnvironmentListItem {
-  id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[];
+  id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[]; changeWindowRule?: unknown;
 }
 
 function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
@@ -1375,6 +1376,7 @@ function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }
               }
             />
             {expandedId === env.id && <EnvironmentTagsEditor environment={env} onSaved={load} />}
+            {expandedId === env.id && <EnvironmentChangeWindowEditor environment={env} onSaved={load} />}
             {expandedId === env.id && <DeploymentTargetPanel environment={env} environments={environments ?? []} identity={identity} />}
           </div>
         ))}
@@ -1408,6 +1410,53 @@ export function EnvironmentTagsEditor({ environment, onSaved }: { environment: E
         <button data-help-id="settings.workspace.environment-tags-save" type="button" disabled={!normalized.ok || state.kind === "busy"} onClick={() => void save()} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/6 disabled:opacity-50">{state.kind === "busy" ? "Saving…" : "Save tags"}</button>
         <span aria-live="polite" className={state.kind === "error" ? "text-amber-300" : "text-zinc-400"}>{state.kind === "saved" ? "Saved." : state.kind === "error" ? state.message : ""}</span>
       </div>
+    </div>);
+}
+
+/** Human summary of whether deployments are allowed right now. */
+function windowStatusText(stored: unknown, now: Date): string {
+  const parsed = parseChangeWindowRule(stored);
+  if (parsed.kind === "unreadable") return "The saved rule cannot be read, so deployments here are refused until it is fixed.";
+  const d = evaluateChangeWindow(parsed, now);
+  const when = (iso: string | null) => (iso ? new Date(iso).toUTCString().replace(":00 GMT", " UTC") : "");
+  if (d.open) return d.reason === "no_rule" ? "No window set: deployments are allowed at any time." : `Open now${d.closesAt ? ` until ${when(d.closesAt)}` : ""}.`;
+  if (d.reason === "freeze") return `Frozen: ${d.freezeReason}, until ${when(d.freezeEndsAt)}.${d.nextOpen ? ` Next opening ${when(d.nextOpen.startUtc)}.` : ""}`;
+  return `Closed now.${d.nextOpen ? ` Next opening ${when(d.nextOpen.startUtc)}.` : " No opening in the next 31 days."}`;
+}
+
+/** Change windows and freezes for one environment. Deployments outside them are refused, except an audited production emergency bypass. */
+export function EnvironmentChangeWindowEditor({ environment, onSaved, now = new Date() }: { environment: EnvironmentListItem; onSaved: () => void; now?: Date }) {
+  const [form, setForm] = useState(() => ruleToForm(environment.changeWindowRule ?? null));
+  const [state, setState] = useState<{ kind: "idle" | "busy" | "saved" } | { kind: "error"; message: string }>({ kind: "idle" });
+  const candidate = formToRule(form);
+  const update = (patch: Partial<typeof form>) => { setForm({ ...form, ...patch }); setState({ kind: "idle" }); };
+  const toggleDay = (day: Weekday) => update({ weekdays: form.weekdays.includes(day) ? form.weekdays.filter((d) => d !== day) : WEEKDAYS.filter((d) => d === day || form.weekdays.includes(d)) });
+  async function save() {
+    if (!candidate.ok) return;
+    setState({ kind: "busy" });
+    const r = await desktopClient.setEnvironmentChangeWindow(environment.id, candidate.rule, environment.changeWindowRule ?? null).catch(() => ({ ok: false as const, error: "unavailable" }));
+    if (r.ok) { setState({ kind: "saved" }); onSaved(); return; }
+    setState({ kind: "error", message: r.error === "change_window_changed" ? "Someone changed this window. Reload the list and try again." : r.error === "desktop_session_required" ? "Only owners and admins can change change windows." : "The change window could not be saved. Try again." });
+  }
+  return (
+    <div className="mx-4 mb-3 rounded-lg border border-white/8 bg-white/[0.02] p-3 text-[12px]">
+      <p className="text-zinc-300">Change window</p>
+      <p className="mt-1 text-zinc-400" aria-live="polite">{windowStatusText(environment.changeWindowRule ?? null, now)}</p>
+      <fieldset className="mt-2"><legend className="text-zinc-400">Days the window starts on (UTC)</legend>
+        <div className="mt-1 flex flex-wrap gap-2">{WEEKDAYS.map((day) => <label key={day} className="inline-flex items-center gap-1 text-zinc-300"><input type="checkbox" checked={form.weekdays.includes(day)} onChange={() => toggleDay(day)} />{day}</label>)}</div>
+      </fieldset>
+      <label className="mt-2 block text-zinc-400">Windows in UTC (HH:MM-HH:MM, comma separated; leave empty for any time)
+        <input data-help-id="settings.workspace.change-window-times" value={form.windowsText} onChange={(e) => update({ windowsText: e.target.value })} placeholder="22:00-02:00" spellCheck={false} className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-[12px] text-zinc-200" />
+      </label>
+      <label className="mt-2 block text-zinc-400">Freezes (one per line: start to end: reason)
+        <textarea data-help-id="settings.workspace.change-window-freezes" value={form.freezesText} onChange={(e) => update({ freezesText: e.target.value })} rows={2} placeholder="2026-12-20 to 2027-01-02: Holiday freeze" spellCheck={false} className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-[12px] text-zinc-200" />
+      </label>
+      {!candidate.ok && <p className="mt-1 text-amber-300">{candidate.error}</p>}
+      <div className="mt-2 flex items-center gap-3">
+        <button data-help-id="settings.workspace.change-window-save" type="button" disabled={!candidate.ok || state.kind === "busy"} onClick={() => void save()} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/6 disabled:opacity-50">{state.kind === "busy" ? "Saving…" : "Save change window"}</button>
+        <span aria-live="polite" className={state.kind === "error" ? "text-amber-300" : "text-zinc-400"}>{state.kind === "saved" ? "Saved." : state.kind === "error" ? state.message : ""}</span>
+      </div>
+      <p className="mt-2 text-[11px] text-zinc-500">Deployments to this environment are refused outside the window and during a freeze. A production emergency bypass, which is audited, still works.</p>
     </div>);
 }
 
@@ -1628,6 +1677,12 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               ? "Blocking deployment checks for earlier stages have not passed in CI for this commit. Run them for this commit, or review them in Control → Checks. Nothing was dispatched."
               : result.error === "previous_ring_not_deployed"
                 ? "This environment is in a later ring. Deploy this commit successfully to an environment in the previous ring first. Nothing was dispatched."
+              : result.error === "outside_change_window"
+                ? "This environment's change window is closed right now. Its next opening is shown under the environment's change window. Nothing was dispatched."
+              : result.error === "deployment_freeze_active"
+                ? "A deployment freeze is active for this environment. Nothing was dispatched; production emergencies can use the audited bypass."
+              : result.error === "change_window_unreadable"
+                ? "This environment's change window rule cannot be read, so deployments are refused until an admin fixes it in Settings. Nothing was dispatched."
               : result.error === "ring_gate_unavailable"
                 ? "Ring tags could not be checked, so nothing was dispatched. Try again shortly."
               : result.error === "deployment_checks_unavailable"

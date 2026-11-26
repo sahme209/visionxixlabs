@@ -93,6 +93,9 @@ it('shows real catalog marks and keeps detailed limitations available through na
  for(const entry of publicCatalogEntries()){
   const card=screen.getByRole('article',{name:`${entry.name} integration`});
   if(entry.id==='vscode')expect(card.querySelector('[data-logo-kind="generic-editor"]')).not.toBeNull();
+  else if(entry.id==='flux')expect(card.querySelector('[data-logo-kind="generic-gitops"]')).not.toBeNull();
+  else if(entry.id==='opsgenie')expect(card.querySelector('[data-logo-kind="generic-alerts"]')).not.toBeNull();
+  else if(entry.id==='launchdarkly')expect(card.querySelector('[data-logo-kind="generic-flags"]')).not.toBeNull();
   else expect(card.querySelector('img')?.getAttribute('src')).toMatch(/^\/(?:logos\/integrations|brands)\//);
   const disclosure=card.querySelector('details');expect(disclosure).not.toBeNull();expect(disclosure?.open).toBe(false);
   expect(disclosure?.textContent).toContain(entry.availability.detail);

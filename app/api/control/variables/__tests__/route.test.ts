@@ -6,7 +6,7 @@ import { Prisma } from "@/lib/prismaClient";
 const m = vi.hoisted(() => ({
   ctx: vi.fn(), sameOrigin: vi.fn(() => true), audit: vi.fn(),
   envFindMany: vi.fn(), envFindFirst: vi.fn(),
-  varFindMany: vi.fn(), execFindMany: vi.fn(async () => [] as unknown[]), varCount: vi.fn(), varCreate: vi.fn(), varUpdateMany: vi.fn(), varDeleteMany: vi.fn(),
+  varFindMany: vi.fn(), setFindMany: vi.fn(async () => [] as unknown[]), setFindFirst: vi.fn(), execFindMany: vi.fn(async () => [] as unknown[]), varCount: vi.fn(), varCreate: vi.fn(), varUpdateMany: vi.fn(), varDeleteMany: vi.fn(),
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: m.ctx }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: m.sameOrigin }));
@@ -14,6 +14,7 @@ vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
 vi.mock("@/lib/db", () => ({ prisma: {
   environment: { findMany: m.envFindMany, findFirst: m.envFindFirst },
   deploymentExecution: { findMany: m.execFindMany },
+  variableSet: { findMany: m.setFindMany, findFirst: m.setFindFirst },
   configVariable: { findMany: m.varFindMany, count: m.varCount, create: m.varCreate, updateMany: m.varUpdateMany, deleteMany: m.varDeleteMany },
 } }));
 import { DELETE, GET, POST } from "../route";
@@ -84,5 +85,24 @@ describe("/api/control/variables", () => {
     const r = await POST(req("POST", { key: "REGION", value: "us", environmentId: null, expectedVersion: 1 }));
     expect(r.status).toBe(503);
     expect(JSON.stringify(await r.json())).not.toContain("10.0.0.1");
+  });
+  it("GET applies variable sets by environment tags and reports set conflicts", async () => {
+    m.envFindMany.mockResolvedValue([{ id: "eu1", name: "EU 1", slug: "eu1", tier: "prod", tags: ["region:eu", "tenant:acme"] }, { id: "us1", name: "US 1", slug: "us1", tier: "prod", tags: [] }]);
+    m.varFindMany.mockResolvedValue([{ key: "CDN", value: "eu.cdn", scopeKey: "set:eu", version: 1 }, { key: "CDN", value: "acme.cdn", scopeKey: "set:acme", version: 1 }]);
+    m.setFindMany.mockResolvedValue([{ slug: "eu", name: "EU", selector: "region:eu", description: null, version: 1 }, { slug: "acme", name: "Acme", selector: "tenant:acme", description: null, version: 1 }]);
+    const body = await (await GET()).json();
+    expect(body.data.sets).toHaveLength(2);
+    expect(body.data.resolved[0]).toMatchObject({ appliedSets: ["acme", "eu"], conflicts: [{ key: "CDN", sets: ["acme", "eu"] }], variables: [{ key: "CDN", value: "eu.cdn", source: "set", set: "eu" }] });
+    expect(body.data.resolved[1]).toMatchObject({ appliedSets: [], variables: [] });
+    expect(body.data.gaps).toEqual([{ key: "CDN", missingIn: ["us1"] }]);
+  });
+  it("POST writes into an existing set and refuses unknown sets or a set plus an environment", async () => {
+    m.setFindFirst.mockResolvedValueOnce({ slug: "eu" });
+    m.varCreate.mockResolvedValue({ key: "CDN", scopeKey: "set:eu", version: 1 });
+    expect((await POST(req("POST", { key: "CDN", value: "eu.cdn", environmentId: null, setSlug: "eu" }))).status).toBe(201);
+    expect(m.varCreate).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ scopeKey: "set:eu", environmentId: null }) }));
+    m.setFindFirst.mockResolvedValueOnce(null);
+    expect((await POST(req("POST", { key: "CDN", value: "x", environmentId: null, setSlug: "nope" }))).status).toBe(404);
+    expect((await POST(req("POST", { key: "CDN", value: "x", environmentId: "prod", setSlug: "eu" }))).status).toBe(400);
   });
 });

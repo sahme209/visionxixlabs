@@ -370,3 +370,21 @@ it("opens and loads the recorded runs from the summary column in one step",async
  expect(await within(section).findByText("completed")).toBeTruthy();
  expect(m.runs).toHaveBeenCalledTimes(1);
 });
+
+it("loads a reviewed runbook library file for this session and fills only an unsaved draft",async()=>{
+ const {container}=render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});
+ const input=container.querySelector('input[type="file"]') as HTMLInputElement;
+ const bad=new File(['{"kind":"v19.runbooks/v1","runbooks":[{"id":"x1","title":"T","summary":"S","steps":["password: hunter22"]}]}'],'leak.json',{type:'application/json'});
+ fireEvent.change(input,{target:{files:[bad]}});
+ expect(await screen.findByText(/looks like a credential/)).toBeTruthy();
+ const good=new File([JSON.stringify({kind:'v19.runbooks/v1',runbooks:[{id:'warm-cache',title:'Warm the cache',summary:'Prime caches.',steps:['List caches.','Propose warm-up.'],context:['Service']}]})],'runbooks.json',{type:'application/json'});
+ fireEvent.change(input,{target:{files:[good]}});
+ expect(await screen.findByText(/Loaded 1 runbook from runbooks\.json for this session\. Nothing was saved or run\./)).toBeTruthy();
+ const select=screen.getByRole('combobox',{name:/Start from a runbook/}) as HTMLSelectElement;
+ expect(within(select).getByRole('option',{name:'Warm the cache'})).toBeTruthy();
+ fireEvent.change(select,{target:{value:'warm-cache'}});
+ const instruction=screen.getByLabelText('What should V19 Bot help with?') as HTMLTextAreaElement;
+ expect(instruction.value).toMatch(/^Warm the cache\.\n1\. List caches\./);
+ expect(instruction.value).toMatch(/reviewed and approved in V19\.$/);
+ expect(m.create).not.toHaveBeenCalled();expect(m.update).not.toHaveBeenCalled();
+});

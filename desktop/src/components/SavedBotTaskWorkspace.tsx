@@ -1,5 +1,6 @@
 import {ChevronDown,FileText,History,Plus,Search} from 'lucide-react';
 import { RUNBOOK_TEMPLATES, runbookTemplate } from "../../../lib/desktop/runbookTemplates";
+import { parseRunbookLibrary, RUNBOOK_LIBRARY_MAX_BYTES, type LibraryRunbook } from "../../../lib/desktop/runbookLibraryFile";
 import {BotConnectedActionsPanel} from './BotConnectedActionsPanel';
 import {JiraTicketDiscovery} from './JiraTicketDiscovery';
 import {BotAppActionLauncher} from './BotAppActionLauncher';
@@ -43,6 +44,9 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const ai=useBotAiTask(ownerKey);
  const [inputSelection,setInputSelection]=useState<ComputerInputSelectionRef|null>(null);
  const [preparingSend,setPreparingSend]=useState(false);
+ const [libraryRunbooks,setLibraryRunbooks]=useState<LibraryRunbook[]>([]);
+ const [libraryNote,setLibraryNote]=useState<string|null>(null);
+ const libraryInput=useRef<HTMLInputElement>(null);
  const [actionsOpen,setActionsOpen]=useState(false);
  const [connectedProvider,setConnectedProvider]=useState<'slack'|'teams'|'linear'|null>(null);
  const [jiraOpen,setJiraOpen]=useState<string|null>(null);
@@ -175,12 +179,21 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
   catch{if(current(controller))setError("The saved draft could not be opened. Your current text is retained.")}finally{finish(controller)}
  }
  function startFromRunbook(id:string){
-  const template=runbookTemplate(id);
+  const template=runbookTemplate(id)??libraryRunbooks.find(r=>r.id===id);
   if(!template||busy||pending||dirty||!owns())return;
   setInspectorOpen(false);setTasksOpen(false);
   replaceEditor(null);
   onDraftChange({ownerKey,title:template.title,task:template.instruction,context:template.context});
   focusNewInstruction.current=true;
+ }
+ async function loadRunbookLibrary(file:File|undefined){
+  if(!file)return;
+  if(file.size>RUNBOOK_LIBRARY_MAX_BYTES){setLibraryNote("The file is larger than 64 KB.");return}
+  let raw:string;try{raw=await file.text()}catch{setLibraryNote("The file could not be read.");return}
+  const parsed=parseRunbookLibrary(raw);
+  if(!parsed.ok){setLibraryNote(parsed.error);return}
+  setLibraryRunbooks(parsed.runbooks);
+  setLibraryNote(`Loaded ${parsed.runbooks.length} ${parsed.runbooks.length===1?"runbook":"runbooks"} from ${file.name.slice(0,80)} for this session. Nothing was saved or run.`);
  }
  function requestOpen(id:string,opener:HTMLButtonElement){
   if(busy||pending||!owns())return;
@@ -276,10 +289,16 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
    <label className="studio-task-runbook mt-3 block text-xs text-zinc-400">Start from a runbook
     <select data-help-id="bot.workspace.runbook" value="" disabled={Boolean(busy)||Boolean(pending)||aiLocked||dirty} onChange={event=>startFromRunbook(event.target.value)} aria-describedby={`bot-runbook-note-${ownerKey}`} className="mt-1 block w-full">
      <option value="">Choose a runbook…</option>
-     {RUNBOOK_TEMPLATES.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}
+     <optgroup label="Built in">{RUNBOOK_TEMPLATES.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}</optgroup>
+     {libraryRunbooks.length>0&&<optgroup label="From your library file">{libraryRunbooks.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}</optgroup>}
     </select>
     <span id={`bot-runbook-note-${ownerKey}`} className="mt-1 block text-[11px] leading-4 text-zinc-500">{dirty?"Save or discard your current draft first.":"Fills a new unsaved draft. Nothing runs until you save it and an action is approved."}</span>
    </label>
+   <div className="mt-2 text-[11px] leading-4 text-zinc-500">
+    <input ref={libraryInput} type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={event=>{const file=event.target.files?.[0];event.target.value="";void loadRunbookLibrary(file)}}/>
+    <button data-help-id="bot.workspace.runbook-library" type="button" className="text-xs text-zinc-300 underline" disabled={Boolean(busy)||Boolean(pending)} onClick={()=>libraryInput.current?.click()}>Import team library file</button>
+    <span role="status" className="mt-1 block">{libraryNote??"A reviewed v19.runbooks/v1 JSON file from your repository, such as .v19/runbooks.json."}</span>
+   </div>
    <div className="studio-task-list-heading flex items-center justify-between gap-2"><h2 className="text-sm font-semibold text-white">Tasks</h2><button data-help-id="bot.workspace.tasks-refresh" type="button" className="text-xs text-zinc-400 underline" disabled={Boolean(busy)} onClick={()=>void loadList()}>Refresh saved tasks</button></div>
    <div className="studio-task-list-results min-h-0 flex-1 overflow-y-auto">
     {listState==="ready"&&rows.length===0&&<p className="text-xs leading-5 text-zinc-500">No saved task drafts yet. Save a draft when you are ready.</p>}

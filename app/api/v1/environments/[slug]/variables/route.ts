@@ -13,7 +13,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import { prisma } from "@/lib/db";
-import { MAX_VARIABLES_PER_WORKSPACE, resolveVariables, resolvedDigest } from "@/lib/releaseops/scopedVariables";
+import { MAX_VARIABLES_PER_WORKSPACE, resolvedDigest } from "@/lib/releaseops/scopedVariables";
+import { MAX_VARIABLE_SETS, resolveWithSets } from "@/lib/releaseops/variableSets";
 
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "private, no-store" };
@@ -34,10 +35,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   const { slug } = await params;
   if (!/^[a-z0-9][a-z0-9-]{0,62}$/.test(slug)) return NextResponse.json({ ok: false, error: "environment_slug_invalid" }, { status: 400, headers: noStore });
   try {
-    const environment = await prisma.environment.findFirst({ where: { organizationId: auth.organizationId, slug }, select: { id: true, slug: true, name: true } });
+    const environment = await prisma.environment.findFirst({ where: { organizationId: auth.organizationId, slug }, select: { id: true, slug: true, name: true, tags: true } });
     if (!environment) return NextResponse.json({ ok: false, error: "environment_not_found" }, { status: 404, headers: noStore });
-    const stored = await prisma.configVariable.findMany({ where: { organizationId: auth.organizationId }, take: MAX_VARIABLES_PER_WORKSPACE, select: { key: true, value: true, scopeKey: true } });
-    const resolved = resolveVariables(stored, environment.id);
+    const [stored, sets] = await Promise.all([
+      prisma.configVariable.findMany({ where: { organizationId: auth.organizationId }, take: MAX_VARIABLES_PER_WORKSPACE, select: { key: true, value: true, scopeKey: true } }),
+      prisma.variableSet.findMany({ where: { organizationId: auth.organizationId }, take: MAX_VARIABLE_SETS, select: { slug: true, name: true, selector: true } }),
+    ]);
+    const { resolved, conflicts } = resolveWithSets(stored, { id: environment.id, tags: environment.tags ?? [] }, sets);
     return NextResponse.json({
       ok: true,
       environment: { slug: environment.slug, name: environment.name },
@@ -45,6 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
       sources: Object.fromEntries(resolved.map((v) => [v.key, v.source])),
       digest: resolvedDigest(resolved),
       count: resolved.length,
+      ...(conflicts.length ? { conflicts } : {}),
     }, { headers: noStore });
   } catch {
     return NextResponse.json({ ok: false, error: "variables_unavailable" }, { status: 503, headers: noStore });

@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "28ced6d4d15fe6f9a4f43c665af9141df6373089b8f8f516eaedf9ce5e37a107",
+      "sourceSha256": "85e10b23113a2c76cdafb600367387e3345eebe49c1dcc2db3726669dfea6afd",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117",
+      "sourceSha256": "314c0c2067ba2ddd14783bdd9c39a0f06dd7a36051376399ada102c7f1c0ee5e",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -184,7 +184,11 @@
         "Trust questions",
         "Deployment checks per stage",
         "Tenants, tags and fan-out",
-        "Database changes in a deployment"
+        "Database changes in a deployment",
+        "Change windows and freezes",
+        "Kubernetes rolling, blue/green and canary",
+        "Release evidence pack",
+        "Argo CD and Flux"
       ]
     },
     {
@@ -413,7 +417,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "ceb20b0ce53e0260f6632e958f144d51d05fda8d86e695e6efaab4dccbc0e8d4",
+      "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",

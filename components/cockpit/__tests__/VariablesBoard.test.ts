@@ -62,3 +62,36 @@ describe("VariablesBoard feature switches", () => {
     expect(row.textContent).toBe("FEATURE_NEW_CHECKOUTonoff");
   });
 });
+
+describe("VariablesBoard variable sets", () => {
+  const withSets = () => { const b = board(true) as unknown as { ok: true; data: Record<string, unknown> };
+    b.data.sets = [{ slug: "eu", name: "EU region", selector: "region:eu", description: null, version: 2 }, { slug: "acme", name: "Acme", selector: "tenant:acme", description: null, version: 1 }];
+    b.data.variables = [...(b.data.variables as unknown[]), { key: "CDN", value: "eu.cdn", scopeKey: "set:eu", description: null, version: 1 }];
+    b.data.resolved = [{ environmentId: "dev", digest: "a".repeat(64), variables: [], appliedSets: [] }, { environmentId: "prod", digest: "b".repeat(64), variables: [{ key: "CDN", value: "eu.cdn", source: "set", set: "eu" }], appliedSets: ["acme", "eu"], conflicts: [{ key: "CDN", sets: ["acme", "eu"] }] }];
+    return b; };
+  it("lists sets with the environments they reach, set columns and conflicts", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => json(withSets())));
+    render(createElement(VariablesBoard));
+    await waitFor(() => expect(screen.getByText("Variable sets")).toBeTruthy());
+    expect(screen.getByRole("columnheader", { name: "Set: EU region" })).toBeTruthy();
+    expect(screen.getAllByText(/Applies to environments tagged/, { selector: "p" }).map((p) => p.textContent)).toEqual(["Applies to environments tagged region:eu: Production", "Applies to environments tagged tenant:acme: Production"]);
+    expect(screen.getByText("From set EU region")).toBeTruthy();
+    expect(screen.getByText(/has different values in sets acme and eu for Production/)).toBeTruthy();
+  });
+  it("creates, edits with the version read, and writes variables into a set", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json(withSets())).mockResolvedValueOnce(json({ ok: true, data: {} })).mockResolvedValueOnce(json(withSets())).mockResolvedValueOnce(json({ ok: true, data: {} })).mockResolvedValueOnce(json(withSets()));
+    vi.stubGlobal("fetch", f);
+    render(createElement(VariablesBoard));
+    fireEvent.click(await screen.findByRole("button", { name: "Edit set EU region" }));
+    fireEvent.change(screen.getByLabelText("Environment tags"), { target: { value: "region:eu tier:prod" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save set" }));
+    await waitFor(() => expect(f).toHaveBeenCalledTimes(3));
+    expect(f.mock.calls[1][0]).toBe("/api/control/variables/sets");
+    expect(JSON.parse(f.mock.calls[1][1].body)).toEqual({ slug: "eu", name: "EU region", selector: "region:eu tier:prod", expectedVersion: 2 });
+    fireEvent.click(await screen.findByRole("button", { name: "Edit CDN in Set: EU region" }));
+    fireEvent.change(screen.getByLabelText("Value"), { target: { value: "eu2.cdn" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save change" }));
+    await waitFor(() => expect(f).toHaveBeenCalledTimes(5));
+    expect(JSON.parse(f.mock.calls[3][1].body)).toEqual({ key: "CDN", value: "eu2.cdn", environmentId: null, setSlug: "eu", description: null, expectedVersion: 1 });
+  });
+});

@@ -3012,6 +3012,26 @@ model DeploymentCheckResult {
 /// Plain configuration variable, either a workspace default (scopeKey
 /// "workspace") or an override for one Environment (scopeKey "env:<id>").
 /// Secrets never live here; the application refuses credential-like values.
+/// Named group of configuration variables applied to every environment whose tags match `selector`
+/// (for example "region:eu"). Its variables are ConfigVariable rows with scopeKey "set:<slug>".
+model VariableSet {
+  id              String   @id @default(cuid())
+  organizationId  String
+  slug            String
+  name            String
+  /// Environment tag selector: one to five key:value terms, key:* matches any value.
+  selector        String
+  description     String?
+  /// Optimistic concurrency: writers must present the version they read.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
 model ConfigVariable {
   id              String   @id @default(cuid())
   organizationId  String
