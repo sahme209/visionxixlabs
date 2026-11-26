@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   settleDeploymentDispatch: vi.fn(),
   configSnapshot: vi.fn(async () => ({ recorded: true, digest: "d", count: 0 })),
   checkGate: vi.fn(async (): Promise<unknown> => ({ ok: true, satisfied: [], notEnforceable: [] })),
+  ringGate: vi.fn(async (): Promise<unknown> => ({ ok: true, ring: null })),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -56,6 +57,7 @@ vi.mock("@/lib/releaseops/auditEventResponder", async () => {
 });
 vi.mock("@/lib/releaseops/deploymentConfigSnapshot", () => ({ recordDeploymentConfigSnapshot: mocks.configSnapshot }));
 vi.mock("@/lib/releaseops/deploymentCheckGateStore", () => ({ readDeploymentCheckGate: mocks.checkGate }));
+vi.mock("@/lib/releaseops/ringGate", () => ({ readRingGate: mocks.ringGate }));
 vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
   reserveDeploymentDispatch: mocks.reserveDeploymentDispatch,
   releaseDeploymentDispatch: mocks.releaseDeploymentDispatch,
@@ -181,6 +183,18 @@ describe("POST /api/desktop/environments/deploy", () => {
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ error: "deployment_checks_blocking", blocked: [{ key: "health-probe", reason: "no_result" }] });
     expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled();
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("refuses a later ring until the previous ring deployed this commit", async () => {
+    mocks.ringGate.mockResolvedValueOnce({ ok: false, ring: 1, previousRing: 0, reason: "previous_ring_not_deployed" });
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: "previous_ring_not_deployed", ring: 1, previousRing: 0 });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 

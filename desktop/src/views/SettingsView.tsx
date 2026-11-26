@@ -1426,7 +1426,7 @@ export function FanOutPreview({ environments }: { environments: EnvironmentListI
             : plan.plan.matched === 0 ? <p className="text-zinc-400">No environments match.</p>
             : <ol className="space-y-1.5">{plan.plan.rings.map((r) => <li key={String(r.ring)}><span className="text-zinc-400">{r.ring === null ? "No ring (last)" : `Ring ${r.ring}`}:</span> <span className="text-zinc-200">{r.environments.map((e) => e.name).join(", ")}</span></li>)}</ol>}
         </div>
-        <p className="mt-3 text-[11px] text-zinc-500">A plan only. Each environment still deploys on its own, with its own policy, checks and approvals; later rings should wait for earlier ones to succeed.</p>
+        <p className="mt-3 text-[11px] text-zinc-500">A plan only. Each environment still deploys on its own, with its own policy, checks and approvals. A ring above 0 cannot deploy a commit until the previous ring has deployed it successfully.</p>
       </div>
     </Group>);
 }
@@ -1626,6 +1626,10 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
             ? "This deployment is still in progress or awaiting outcome verification. Its hold prevents another dispatch."
             : result.error === "deployment_checks_blocking"
               ? "Blocking deployment checks for earlier stages have not passed in CI for this commit. Run them for this commit, or review them in Control → Checks. Nothing was dispatched."
+              : result.error === "previous_ring_not_deployed"
+                ? "This environment is in a later ring. Deploy this commit successfully to an environment in the previous ring first. Nothing was dispatched."
+              : result.error === "ring_gate_unavailable"
+                ? "Ring tags could not be checked, so nothing was dispatched. Try again shortly."
               : result.error === "deployment_checks_unavailable"
                 ? "Deployment checks could not be read, so nothing was dispatched. Try again shortly."
                 : result.error);
