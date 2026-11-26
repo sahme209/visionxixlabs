@@ -25,6 +25,7 @@ import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteA
 import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { recordDeploymentConfigSnapshot, type ConfigSnapshotRepo } from "@/lib/releaseops/deploymentConfigSnapshot";
 import { readDeploymentCheckGate, type DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGateStore";
+import { readRingGate, type RingGateRepo } from "@/lib/releaseops/ringGate";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -158,6 +159,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     const gate = await readDeploymentCheckGate(prisma as unknown as DeploymentCheckGateRepo, { organizationId, commitSha: policy.sourceCommitSha, now: new Date() });
     if (gate === "unavailable") return NextResponse.json({ ok: false, error: "deployment_checks_unavailable" }, { status: 503 });
     if (!gate.ok) return NextResponse.json({ ok: false, error: "deployment_checks_blocking", blocked: gate.blocked }, { status: 409 });
+    // Ring N waits for a successful deployment of this commit in ring N-1 (environment tags).
+    const ring = await readRingGate(prisma as unknown as RingGateRepo, { organizationId, environmentId, repositoryFullName, commitSha: policy.sourceCommitSha });
+    if (ring === "unavailable") return NextResponse.json({ ok: false, error: "ring_gate_unavailable" }, { status: 503 });
+    if (!ring.ok) return NextResponse.json({ ok: false, error: "previous_ring_not_deployed", ring: ring.ring, previousRing: ring.previousRing, reason: ring.reason }, { status: 409 });
   }
 
   if (emergencyBypass) {

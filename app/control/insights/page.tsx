@@ -4,6 +4,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { OUTCOME_ROW_LIMIT, OUTCOME_WINDOW_DAYS, summarizeDeploymentOutcomes, type ExecutionOutcomeRow } from "@/lib/releaseops/deploymentOutcomeSummary";
 import { incidentRecoveryMetrics } from "@/lib/desktop/incidentRecoveryMetrics";
+import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,15 @@ export default async function InsightsPage() {
   ]);
   const outcome = runs ? summarizeDeploymentOutcomes(runs.slice(0, OUTCOME_ROW_LIMIT), runs.length > OUTCOME_ROW_LIMIT, now, previous) : null;
   const recovery = incidents ? incidentRecoveryMetrics(incidents.slice(0, INCIDENT_ROW_LIMIT).map((i) => ({ status: i.status, reportedAt: i.reportedAt.toISOString(), mitigatedAt: i.mitigatedAt?.toISOString() ?? null, resolvedAt: i.resolvedAt?.toISOString() ?? null }))) : null;
+  // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
+  const coverage = await (async () => {
+    const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
+    if (blocking.length === 0) return { none: true as const };
+    const shas = await prisma.deploymentExecution.findMany({ where: { organizationId, createdAt: { gte: since } }, orderBy: { createdAt: "desc" }, take: OUTCOME_ROW_LIMIT, select: { sourceCommitSha: true } });
+    const commits = [...new Set(shas.map((r) => r.sourceCommitSha).filter((v): v is string => Boolean(v)))];
+    const results = commits.length ? await prisma.deploymentCheckResult.findMany({ where: { organizationId, releaseRef: { in: commits.slice(0, 1000) } }, take: 5000, select: { checkKey: true, releaseRef: true, status: true } }) : [];
+    return checkEvidenceCoverage(shas.map((r) => r.sourceCommitSha), blocking.map((b) => b.key), results);
+  })().catch(() => null);
   const perWeek = outcome ? (outcome.recorded / (OUTCOME_WINDOW_DAYS / 7)).toFixed(1) : null;
   const change = outcome && typeof outcome.previousRecorded === "number" && outcome.previousRecorded > 0 ? Math.round(((outcome.recorded - outcome.previousRecorded) / outcome.previousRecorded) * 100) : null;
   return (
@@ -88,6 +98,18 @@ export default async function InsightsPage() {
           <Metric label="Median time to mitigate" value={duration(recovery.mitigate.medianSeconds)} note={`${recovery.mitigate.count} mitigated`} />
           <Metric label="Median time to resolve" value={duration(recovery.resolve.medianSeconds)} note={`${recovery.resolve.count} resolved`} />
         </dl>}
+      </section>
+
+      <section aria-labelledby="insights-checks" className="mt-10">
+        <h2 id="insights-checks" className="text-base font-medium">Deployment check evidence · last {OUTCOME_WINDOW_DAYS} days</h2>
+        {coverage === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Check evidence could not be read. Nothing is shown rather than an estimate.</p>
+          : "none" in coverage ? <p className="mt-3 text-sm text-zinc-400">No blocking deployment checks are configured. <Link href="/control/checks" className="underline underline-offset-4">Add checks</Link> to see how many deployments had passing evidence.</p>
+          : <><dl className="mt-4 grid gap-3 sm:grid-cols-3">
+              <Metric label="All blocking checks passed" value={`${coverage.allPassed} of ${coverage.deployments}`} />
+              <Metric label="A blocking check failed" value={coverage.anyFailed.toLocaleString()} />
+              <Metric label="Evidence missing" value={coverage.missing.toLocaleString()} note="Includes deployments before a check existed and emergency bypasses" />
+            </dl>
+            <p className="mt-3 max-w-2xl text-xs leading-5 text-zinc-400">Counts recorded workflow runs against today&apos;s blocking checks, by commit.</p></>}
       </section>
 
       <p className="mt-10 max-w-2xl text-xs leading-5 text-zinc-400">These are workflow and incident records, not DORA certification: a workflow failure is not always a failed change, and lead time from commit is not measured. See <Link className="underline underline-offset-4" href="/docs/releaseops">Release operations</Link>.</p>

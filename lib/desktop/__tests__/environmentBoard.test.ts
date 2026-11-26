@@ -37,3 +37,7 @@ it("shows a short configuration fingerprint when the run recorded one", () => {
   expect(board.rows[0].cells[0]?.config).toBe("9f8e7d6");
   expect(board.rows[1].cells[0]?.config).toBeNull();
 });
+it("keeps the full commit so check evidence can be matched", () => {
+  const board = buildEnvironmentBoard([env("s", "staging", 1)], [run("1", "s", "org/api", "2026-11-20T10:00:00Z", "0123456789abcdef0123456789abcdef01234567")]);
+  expect(board.rows[0].cells[0]?.sha).toBe("0123456789abcdef0123456789abcdef01234567");
+});

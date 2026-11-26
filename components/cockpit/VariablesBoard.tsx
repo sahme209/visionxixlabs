@@ -91,6 +91,8 @@ export function VariablesBoard() {
         <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{board.resolved.map((r) => <div key={r.environmentId} className="rounded-xl border border-white/8 bg-[#111111] p-4"><dt className="text-xs text-zinc-400">{board.environments.find((e) => e.id === r.environmentId)?.name}</dt><dd className="mt-2 font-mono text-sm text-zinc-200">{r.digest.slice(0, 12)}</dd><dd className="mt-2 text-xs"><DeployedNote last={r.lastDeployment} /></dd></div>)}</dl>
       </div>}
 
+      <FeatureSwitches board={board} />
+
       {board.environments.length >= 2 && <ComparePanel board={board} compare={compare} setCompare={setCompare} />}
 
       {board.canEdit ? (
@@ -150,4 +152,32 @@ function DeployedNote({ last }: { last: { digest: string; at: string; changedSin
   return last.changedSince
     ? <span className="text-amber-300">Changed since the last deployment ({when}, {last.digest.slice(0, 12)}).</span>
     : <span className="text-zinc-300">Matches the last deployment ({when}).</span>;
+}
+
+const SWITCH_ON = new Set(["on", "true", "1", "yes", "enabled"]);
+const SWITCH_OFF = new Set(["off", "false", "0", "no", "disabled"]);
+/** Variables named FEATURE_* read as switches: where each is on, off or set to something else, per environment. */
+function FeatureSwitches({ board }: { board: Board }) {
+  const keys = [...new Set(board.resolved.flatMap((r) => r.variables.map((v) => v.key)).filter((k) => k.startsWith("FEATURE_")))].sort();
+  if (keys.length === 0 || board.environments.length === 0) return null;
+  const valueOf = (envId: string, key: string) => board.resolved.find((r) => r.environmentId === envId)?.variables.find((v) => v.key === key)?.value;
+  const chip = (v: string | undefined) => {
+    if (v === undefined) return <span className="text-zinc-500">not set</span>;
+    const n = v.trim().toLowerCase();
+    if (SWITCH_ON.has(n)) return <span className="rounded-md border border-emerald-400/30 px-1.5 py-0.5 text-emerald-200">on</span>;
+    if (SWITCH_OFF.has(n)) return <span className="rounded-md border border-white/15 px-1.5 py-0.5 text-zinc-300">off</span>;
+    return <span className="font-mono text-zinc-200">{v}</span>;
+  };
+  return (
+    <section aria-labelledby="feature-switches-heading">
+      <h2 id="feature-switches-heading" className="text-base font-medium">Feature switches</h2>
+      <p className="mt-1 text-sm text-zinc-400">Variables named FEATURE_… as each environment resolves them. A switch that is on in an earlier environment and off in production is staged exposure; this view only reads the values.</p>
+      <div className="mt-3 overflow-x-auto rounded-xl border border-white/8">
+        <table className="w-full min-w-[480px] text-left text-xs">
+          <caption className="sr-only">Feature switches per environment</caption>
+          <thead className="bg-white/[0.03] text-zinc-400"><tr><th scope="col" className="px-4 py-2 font-medium">Switch</th>{board.environments.map((e) => <th key={e.id} scope="col" className="px-4 py-2 font-medium">{e.name}</th>)}</tr></thead>
+          <tbody className="divide-y divide-white/[0.07]">{keys.map((k) => <tr key={k}><th scope="row" className="px-4 py-2 font-mono font-normal text-zinc-200">{k}</th>{board.environments.map((e) => <td key={e.id} className="px-4 py-2">{chip(valueOf(e.id, k))}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    </section>);
 }

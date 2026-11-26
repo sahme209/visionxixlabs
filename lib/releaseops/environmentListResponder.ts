@@ -16,6 +16,8 @@ export interface EnvironmentRow {
   tier: string;
   displayOrder: number;
   approvalPolicyId: string | null;
+  /** Absent on stores that predate tags. */
+  tags?: string[];
   createdAt: Date;
 }
 
@@ -35,6 +37,7 @@ export interface EnvironmentListItem {
   tier: string;
   displayOrder: number;
   hasApprovalPolicy: boolean;
+  tags: string[];
   createdAtIso: string;
 }
 
@@ -66,6 +69,7 @@ export async function buildEnvironmentListResponse(
             tier: r.tier,
             displayOrder: r.displayOrder,
             hasApprovalPolicy: Boolean(r.approvalPolicyId),
+            tags: Array.isArray(r.tags) ? r.tags : [],
             createdAtIso: r.createdAt.toISOString(),
           })),
         },

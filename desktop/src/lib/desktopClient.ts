@@ -1313,6 +1313,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/github/workflows?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}`);
   }
 
+  /** Per commit: how many blocking checks passed, failed or have no result. */
+  summarizeCommitChecks(commits: string[]): Promise<ApiResult<{ commits: Record<string, { total: number; passed: number; failed: number; missing: number }> }>> {
+    return this.get(`/api/desktop/checks/results?commits=${encodeURIComponent(commits.join(","))}`);
+  }
+
   /** Blocking deployment checks that must have passed for a commit before a deployment is dispatched. */
   listBlockingDeploymentChecks(): Promise<ApiResult<{ checks: Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> }>> {
     return this.get("/api/desktop/checks/blocking");
@@ -1326,9 +1331,14 @@ export class DesktopClient {
   }
 
   listEnvironments(): Promise<ApiResult<{
-    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
+    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[]; createdAtIso: string }>;
   }>> {
     return this.get("/api/desktop/environments");
+  }
+
+  /** Replace an environment's tags; refused if they changed since `expectedTags` was read. */
+  setEnvironmentTags(environmentId: string, tags: string[], expectedTags: string[]): Promise<ApiResult<{ id: string; tags: string[] }>> {
+    return this.put(`/api/desktop/environments/${encodeURIComponent(environmentId)}/tags`, { tags, expectedTags });
   }
 
   createEnvironment(input: { slug: string; name: string; tier: string }): Promise<ApiResult<{ id: string; slug: string; name: string; tier: string; created: boolean }>> {
