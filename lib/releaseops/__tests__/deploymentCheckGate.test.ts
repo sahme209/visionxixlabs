@@ -19,8 +19,13 @@ describe("evaluateStageGate", () => {
     expect(block([res({ checkVersion: 1 })])).toBe("stale_version");
     expect(block([res({ reportedAt: new Date("2026-11-20T00:00:00Z") })])).toBe("expired");
   });
-  it("only gates blocking, enabled checks at earlier stages and lists manual and health checks as not enforceable", () => {
-    const out = run([chk({ stage: "verify" }), chk({ key: "adv", mode: "advisory" }), chk({ key: "off", enabled: false }), chk({ key: "manual", kind: "manual_checklist" }), chk({ key: "metric", kind: "health_check", stage: "plan" })], []);
-    expect(out).toEqual({ ok: true, satisfied: [], notEnforceable: ["manual", "metric"] });
+  it("only gates blocking, enabled checks at earlier stages, including reported health checks", () => {
+    expect(run([chk({ stage: "verify" }), chk({ key: "adv", mode: "advisory" }), chk({ key: "off", enabled: false })], [])).toEqual({ ok: true, satisfied: [], notEnforceable: [] });
+    expect(run([chk({ key: "metric", kind: "health_check", stage: "plan" })], [])).toMatchObject({ ok: false, blocked: [{ key: "metric", reason: "no_result" }] });
+  });
+  it("enforces manual checklists once confirmed for this commit", () => {
+    const manual = chk({ key: "status-page", kind: "manual_checklist", stage: "approve" });
+    expect(run([manual], [])).toMatchObject({ ok: false, blocked: [{ key: "status-page", reason: "no_result" }] });
+    expect(run([manual], [res({ checkKey: "status-page" })])).toEqual({ ok: true, satisfied: ["status-page"], notEnforceable: [] });
   });
 });

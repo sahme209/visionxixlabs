@@ -55,7 +55,7 @@ function job(c: GeneratableCheck): string[] | { skip: string } {
     case "migration_dry_run":
       return { skip: `runs in its own workflow (${String(s.workflowPath)}, job ${String(s.job)}) so its database access stays separate; start it there for this stage` };
     case "health_check":
-      return { skip: "needs a metric source; connect a monitoring provider to evaluate it" };
+      return { skip: "evaluated by your monitoring; report its result with POST /api/v1/checks/results" };
     case "manual_checklist":
       return { skip: "confirmed by a person in V19, not in CI" };
   }

@@ -1313,6 +1313,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/github/workflows?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}`);
   }
 
+  /** Blocking deployment checks that must have passed for a commit before a deployment is dispatched. */
+  listBlockingDeploymentChecks(): Promise<ApiResult<{ checks: Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> }>> {
+    return this.get("/api/desktop/checks/blocking");
+  }
+
   getGithubWorkflowInputs(repositoryFullName: string, ref: string, path: string): Promise<ApiResult<{
     source: { repositoryFullName: string; ref: string; path: string; blobSha: string };
     inputs: WorkflowDispatchInput[];

@@ -1455,6 +1455,12 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [readinessError, setReadinessError] = useState<string | null>(null);
   const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" } | null>(null);
   const [deploying, setDeploying] = useState(false);
+  const [blockingChecks, setBlockingChecks] = useState<Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> | "unavailable" | null>(null);
+  useEffect(() => {
+    let live = true;
+    Promise.resolve().then(() => desktopClient.listBlockingDeploymentChecks()).then((r) => { if (live) setBlockingChecks(r.ok ? r.data.checks : "unavailable"); }, () => { if (live) setBlockingChecks("unavailable"); });
+    return () => { live = false; };
+  }, []);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
   const [execution, setExecution] = useState<DeploymentExecution | null>(null);
@@ -1681,6 +1687,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
             {emergencyBypass && <textarea data-help-id="settings.workspace.deploy-bypass-reason" aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
           </div>
         )}
+        <BlockingChecksNote checks={blockingChecks} commit={readiness?.sourceCommitSha ?? null} bypass={emergencyBypass} />
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
         {readiness && (
           <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-[12px] text-emerald-200">
@@ -2417,3 +2424,15 @@ function IntegrationRow({ name, group, detail, state, action, tone }: { name: st
   return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/5 bg-white/1.5 px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-400">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button data-help-id="settings.workspace.browser-handoff" type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
+
+export function BlockingChecksNote({ checks, commit, bypass }: { checks: Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> | "unavailable" | null; commit: string | null; bypass: boolean }) {
+  if (checks === null) return null;
+  if (checks === "unavailable") return <p className="mt-3 text-[11px] text-amber-300">Deployment checks could not be read. Dispatch is refused until they can be checked.</p>;
+  if (checks.length === 0) return null;
+  const stageName = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  return (
+    <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] p-3 text-[12px] text-zinc-300" aria-label="Blocking deployment checks">
+      <p>{bypass ? "The emergency bypass skips these blocking checks; the bypass is audited." : <>Before dispatch, these blocking checks must have passed {commit ? <>for <span className="font-mono">{commit.slice(0, 12)}</span></> : "for the source commit"} within the last 72 hours:</>}</p>
+      <ul className="mt-2 space-y-1">{checks.map((c) => <li key={c.key}><span className="text-zinc-100">{c.name}</span> <span className="text-zinc-500">· {stageName(c.stage)} · {c.kind.replaceAll("_", " ")}{c.enforced ? "" : " · not enforced yet"}</span></li>)}</ul>
+    </div>);
+}

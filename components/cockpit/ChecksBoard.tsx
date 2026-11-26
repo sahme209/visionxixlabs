@@ -93,6 +93,7 @@ export function ChecksBoard() {
                 <p className="mt-1 text-xs text-zinc-400">{STAGE_LABEL[c.stage]} · {KIND_LABEL[c.kind]} · {c.mode}{c.enabled ? "" : " · disabled"}</p>
                 <p className="mt-1 break-all font-mono text-xs text-zinc-300">{summary(c)}</p>
                 <LatestResultLine check={c} latest={board.latestResults === null ? "unavailable" : board.latestResults?.[c.key]} />
+                {c.kind === "manual_checklist" && c.enabled && <ConfirmChecklist check={c} onRecorded={() => void load()} />}
               </div>
               {board.canEdit && <div className="flex gap-3 text-xs">
                 <button type="button" className="text-zinc-300 underline-offset-2 hover:underline" aria-label={`Edit ${c.name}`} onClick={() => setDraft({ key: c.key, name: c.name, kind: c.kind, stage: c.stage, mode: c.mode, fields: fieldsFrom(c), enabled: c.enabled, expectedVersion: c.version })}>Edit</button>
@@ -159,10 +160,37 @@ function WorkflowPreview({ revision }: { revision: string }) {
 }
 
 function LatestResultLine({ check, latest }: { check: Check; latest: LatestResult | "unavailable" | undefined }) {
-  if (check.kind === "manual_checklist" || check.kind === "health_check") return null;
   if (latest === "unavailable") return <p className="mt-1 text-xs text-zinc-400">Results could not be read.</p>;
   if (!latest) return <p className="mt-1 text-xs text-zinc-400">No result recorded yet.</p>;
   const when = new Date(latest.reportedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   const tone = latest.status === "passed" ? "text-emerald-300" : latest.status === "failed" ? "text-red-300" : "text-amber-300";
   return <p className="mt-1 text-xs text-zinc-400">Last result: <span className={tone}>{latest.status}</span> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}</p>;
+}
+
+function ConfirmChecklist({ check, onRecorded }: { check: Check; onRecorded: () => void }) {
+  const items = Array.isArray(check.spec.items) ? (check.spec.items as string[]) : [];
+  const [ticked, setTicked] = useState<boolean[]>(() => items.map(() => false));
+  const [sha, setSha] = useState("");
+  const [state, setState] = useState<{ kind: "idle" | "busy" | "done" } | { kind: "error"; message: string }>({ kind: "idle" });
+  const ready = ticked.every(Boolean) && /^[0-9a-f]{40}$/.test(sha.trim());
+  async function confirm() {
+    setState({ kind: "busy" });
+    try {
+      const res = await fetch("/api/control/checks/confirm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ checkKey: check.key, checkVersion: check.version, commitSha: sha.trim(), confirmedItems: items }) });
+      const body = await res.json().catch(() => null) as { ok?: boolean; error?: string } | null;
+      if (res.ok && body?.ok) { setState({ kind: "done" }); setTicked(items.map(() => false)); setSha(""); onRecorded(); return; }
+      setState({ kind: "error", message: body?.error === "approver_role_required" ? "Only owners, admins, operators and security reviewers can confirm checklists." : body?.error === "check_changed" ? "The checklist changed. Reload and confirm the current items." : "The confirmation could not be recorded. Try again." });
+    } catch { setState({ kind: "error", message: "The confirmation could not be reached. Try again." }); }
+  }
+  return (
+    <details className="mt-2 text-xs text-zinc-300">
+      <summary className="cursor-pointer py-1 text-zinc-300">Confirm for a commit</summary>
+      <fieldset className="mt-2 space-y-1.5">
+        <legend className="sr-only">Checklist items for {check.name}</legend>
+        {items.map((item, i) => <label key={i} className="flex items-start gap-2"><input type="checkbox" checked={ticked[i] ?? false} onChange={(e) => setTicked(ticked.map((t, j) => (j === i ? e.target.checked : t)))} />{item}</label>)}
+      </fieldset>
+      <label className="mt-2 block text-zinc-400">Commit SHA (40 characters)<input value={sha} onChange={(e) => setSha(e.target.value.toLowerCase())} spellCheck={false} className="mt-1 block w-full max-w-md rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-xs text-zinc-100" /></label>
+      <button type="button" disabled={!ready || state.kind === "busy"} onClick={() => void confirm()} className="mt-2 inline-flex min-h-8 items-center rounded-lg bg-zinc-100 px-3 text-xs font-medium text-zinc-950 disabled:opacity-50">{state.kind === "busy" ? "Recording…" : "Confirm all items"}</button>
+      <span aria-live="polite" className="ml-2">{state.kind === "done" ? "Recorded for this commit." : state.kind === "error" ? <span className="text-amber-300">{state.message}</span> : null}</span>
+    </details>);
 }
