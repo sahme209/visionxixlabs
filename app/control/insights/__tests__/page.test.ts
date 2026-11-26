@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn() }));
+const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn(), audit: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn(() => { throw new Error("redirect"); }) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_insights", email: "owner@example.test", roles: ["owner"] }) }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results }, auditEvent: { findMany: io.audit } } }));
 import Page from "../page";
 
 const value = (label: string) => screen.getByText(label, { selector: "dt" }).parentElement!.querySelector("dd")!.textContent!.trim();
@@ -22,6 +22,7 @@ beforeEach(() => {
   io.checks.mockResolvedValue([]);
   io.results.mockResolvedValue([]);
   io.releases.mockResolvedValue([]);
+  io.audit.mockResolvedValue([]);
   io.incidents.mockResolvedValue([{ status: "resolved", reportedAt: day(5), mitigatedAt: new Date(day(5).getTime() + 1_800_000), resolvedAt: new Date(day(5).getTime() + 7_200_000) }, { status: "open", reportedAt: day(1), mitigatedAt: null, resolvedAt: null }]);
 });
 afterEach(cleanup);
@@ -94,4 +95,11 @@ it("raises a stability early warning when recent releases fail far more often th
   render(await Page());
   const section = screen.getByRole("heading", { name: /Stability early warning/ }).parentElement!;
   expect(section.textContent).toMatch(/Elevated: 3 of 4 releases in the last 7 days .*\(75%\), against 0% before\./);
+});
+
+it("counts deployments refused by release gates by reason", async () => {
+  io.audit.mockResolvedValue([{ detailJson: { reason: "outside_change_window" } }, { detailJson: { reason: "outside_change_window" } }]);
+  render(await Page());
+  expect(value("Outside the change window")).toBe("2");
+  expect(io.audit.mock.calls[0][0].where).toMatchObject({ organizationId: "org_insights", kind: "release.gate_refused" });
 });

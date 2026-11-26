@@ -129,3 +129,15 @@ export function mayProceed(req: { status: string; policyDecision: string; expire
   if (req.status === "pending") return { proceed: false, reason: "awaiting_approval" };
   return { proceed: false, reason: req.status };
 }
+
+const FREEZE_BLOCKED: ReadonlySet<ActionKind> = new Set(["deploy", "infra_change", "data_migration", "delete_resource", "merge"]);
+/**
+ * A production freeze applies to agents too: while any production environment is frozen, an agent's
+ * production deploy, merge, infrastructure change, data migration or delete is denied with the freeze's
+ * reason. Only ever tightens the decision.
+ */
+export function applyProductionFreeze(policy: PolicyResult, input: { actionKind: ActionKind; environment: GatewayEnvironment }, freezes: ReadonlyArray<{ environment: string; reason: string; until: string }>): PolicyResult {
+  if (input.environment !== "production" || !FREEZE_BLOCKED.has(input.actionKind) || freezes.length === 0 || policy.decision === "deny") return policy;
+  const f = freezes[0];
+  return { decision: "deny", riskLevel: "high", reasons: [...policy.reasons, `${f.environment} is frozen (${f.reason}) until ${f.until}; agents cannot make production changes during a freeze.`] };
+}

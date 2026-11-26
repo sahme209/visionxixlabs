@@ -9,7 +9,7 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { gatewayAuth } from "@/lib/agentGateway/apiAuth";
-import { checkPolicy, createGatewayRequest, getGatewayRequest, recordGatewayOutcome } from "@/lib/agentGateway/gatewayService";
+import { checkPolicyForCaller, createGatewayRequest, getGatewayRequest, recordGatewayOutcome } from "@/lib/agentGateway/gatewayService";
 import { dispatchMcp, parseRpc, requiredScope } from "@/lib/agentGateway/mcpServer";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if ("response" in auth) return auth.response;
   const { caller } = auth;
   const reply = await dispatchMcp(rpc, {
-    check: (args) => checkPolicy(args),
+    check: (args) => checkPolicyForCaller(caller, args),
     request: (args) => createGatewayRequest(caller, args),
     get: async (id) => { const r = await getGatewayRequest(caller, id); return r ? { ok: true, request: r } : null; },
     outcome: async (id, args) => { const r = await recordGatewayOutcome(caller, id, args); return r.ok ? { ok: true, request: r.request } : { ok: false, error: r.error }; },

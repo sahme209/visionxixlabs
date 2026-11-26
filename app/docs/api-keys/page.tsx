@@ -11,7 +11,7 @@ export default function ApiKeysDocsPage() {
    summary="Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes." />
   <DocFigure src="/docs/cockpit/api-keys.webp" alt="The API keys page in the V19 cockpit in a browser" caption="API keys in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="create" kicker="01" title="Create a key">
-   <p>Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints, report deployment check results. Wildcard, trigger and admin permissions are not available here.</p>
+   <p>Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints, report deployment check results, read configuration as code. Wildcard, trigger and admin permissions are not available here.</p>
    <Callout variant="warning" title="Copy it once">The full key is shown once. V19 stores only a hash and a short prefix, so it cannot show the key again.</Callout>
   </DocSection>
   <DocSection id="duties" kicker="02" title="Separation of duties">

@@ -4,7 +4,7 @@ import { ALWAYS_ENFORCED, firewallPosture } from "../agentFirewallPosture";
 const now = new Date("2026-11-26T12:00:00Z");
 describe("agent firewall posture", () => {
   it("states the always-enforced rules", () => {
-    expect(ALWAYS_ENFORCED.map((r) => r.id)).toEqual(["no-agent-credentials", "approved-exact-action", "same-release-gates", "no-production-secrets"]);
+    expect(ALWAYS_ENFORCED.map((r) => r.id)).toEqual(["no-agent-credentials", "approved-exact-action", "same-release-gates", "no-production-secrets", "freeze-applies-to-agents"]);
   });
   it("is clean for a well-configured workspace", () => {
     expect(firewallPosture({ now, apiKeys: [{ name: "cursor", scopes: ["governance:read", "governance:request"], expiresAt: new Date("2027-01-01"), revokedAt: null }], environments: [{ name: "Prod", tier: "prod", changeWindowRuleJson: { utcWindows: [] }, approvalPolicyId: "p1" }] })).toEqual([]);

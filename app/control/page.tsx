@@ -11,6 +11,7 @@ import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/sc
 import { decideDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccessPolicy";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
+import { firewallPosture } from "@/lib/agentGateway/agentFirewallPosture";
 
 type Overview = {
   pendingActions: number;
@@ -35,7 +36,7 @@ async function readOverview(organizationId: string): Promise<Overview | null> {
   }
 }
 
-type GovernanceAttention = { pendingPolicyChanges: number; blockingChecks: number; checksFailingLatest: number; frozen: Array<{ name: string; reason: string; until: string }> };
+type GovernanceAttention = { pendingPolicyChanges: number; blockingChecks: number; checksFailingLatest: number; frozen: Array<{ name: string; reason: string; until: string }>; firewallWarnings: number };
 
 /** Optional release-governance signals; a read failure hides only this section. */
 async function readGovernanceAttention(organizationId: string): Promise<GovernanceAttention | null> {
@@ -43,15 +44,17 @@ async function readGovernanceAttention(organizationId: string): Promise<Governan
     const [pendingPolicyChanges, blocking, environments] = await Promise.all([
       prisma.policyChangeRequest.count({ where: { organizationId, status: "pending" } }),
       prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } }),
-      (async () => prisma.environment.findMany({ where: { organizationId }, take: 200, select: { name: true, changeWindowRuleJson: true } }))().catch(() => [] as Array<{ name: string; changeWindowRuleJson: unknown }>),
+      (async () => prisma.environment.findMany({ where: { organizationId }, take: 200, select: { name: true, tier: true, changeWindowRuleJson: true, approvalPolicyId: true } }))().catch(() => [] as Array<{ name: string; tier: string; changeWindowRuleJson: unknown; approvalPolicyId: string | null }>),
     ]);
+    const apiKeys = await (async () => prisma.apiKey.findMany({ where: { organizationId, revokedAt: null }, take: 500, select: { name: true, scopes: true, expiresAt: true, revokedAt: true } }))().catch(() => null);
+    const firewallWarnings = apiKeys ? firewallPosture({ now: new Date(), apiKeys, environments }).filter((f) => f.severity === "warning").length : 0;
     const now = new Date();
     const frozen = environments.flatMap((e) => { const d = evaluateChangeWindow(parseChangeWindowRule(e.changeWindowRuleJson), now); return !d.open && d.reason === "freeze" ? [{ name: e.name, reason: d.freezeReason, until: d.freezeEndsAt }] : []; });
     const keys = blocking.map((b) => b.key);
     const recent = keys.length ? await prisma.deploymentCheckResult.findMany({ where: { organizationId, checkKey: { in: keys } }, orderBy: { reportedAt: "desc" }, take: 500, select: { checkKey: true, status: true } }) : [];
     const latest = new Map<string, string>();
     for (const r of recent) if (!latest.has(r.checkKey)) latest.set(r.checkKey, r.status);
-    return { pendingPolicyChanges, blockingChecks: keys.length, checksFailingLatest: [...latest.values()].filter((s) => s !== "passed").length, frozen };
+    return { pendingPolicyChanges, blockingChecks: keys.length, checksFailingLatest: [...latest.values()].filter((s) => s !== "passed").length, frozen, firewallWarnings };
   } catch {
     return null;
   }
@@ -104,12 +107,13 @@ export default async function ControlOverviewPage() {
           <p className="mt-2 text-xs text-zinc-400">Production deployments ask for a reason while this warning is active. <Link href="/control/insights#insights-stability" className="underline underline-offset-4">See Insights</Link></p>
         </section>
       )}
-      {attention && (attention.pendingPolicyChanges > 0 || attention.blockingChecks > 0 || attention.frozen.length > 0) && (
+      {attention && (attention.pendingPolicyChanges > 0 || attention.blockingChecks > 0 || attention.frozen.length > 0 || attention.firewallWarnings > 0) && (
         <section aria-labelledby="release-governance-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
           <h2 id="release-governance-heading" className="text-xs font-normal text-zinc-400">Release governance</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {attention.pendingPolicyChanges > 0 && <li><Link href="/control/governance#policy-as-code-heading" className="underline underline-offset-4">{attention.pendingPolicyChanges} policy change {attention.pendingPolicyChanges === 1 ? "request awaits" : "requests await"} a second approver</Link></li>}
             {attention.blockingChecks > 0 && <li className="text-zinc-300">{attention.blockingChecks} blocking deployment {attention.blockingChecks === 1 ? "check" : "checks"}{attention.checksFailingLatest > 0 ? <>; <Link href="/control/checks" className="text-amber-300 underline underline-offset-4">{attention.checksFailingLatest} failed on {attention.checksFailingLatest === 1 ? "its" : "their"} latest reported run</Link></> : <> · <Link href="/control/checks" className="underline underline-offset-4">Review checks</Link></>}</li>}
+            {attention.firewallWarnings > 0 && <li><Link href="/control/agent-gateway#agent-firewall-heading" className="text-amber-300 underline underline-offset-4">{attention.firewallWarnings} agent firewall {attention.firewallWarnings === 1 ? "warning" : "warnings"} to review</Link></li>}
             {attention.frozen.map((f) => <li key={f.name} className="text-zinc-300">{f.name} is frozen: {f.reason}, until {new Date(f.until).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}. Deployments there are refused.</li>)}
           </ul>
         </section>

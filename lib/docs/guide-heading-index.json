@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "52d803ac184e5eda18c036c1a9f257f3bf2aca9a7ea8d574a5a72f9e0510f566",
+      "sourceSha256": "b70b056c4845ea0598244532f4f520c5011b4a848fe6966dbd807ba3cb114a31",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -311,7 +311,7 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "553b51acd90312147778862bdf010787580d42dc9af000e76b6b0f080b3b39b4",
+      "sourceSha256": "832a1687c325bf534f700eb2c357acd1deec3020ae1680a78ac93fe58e03c384",
       "fields": [
         "Govern any AI agent.",
         "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",
@@ -357,7 +357,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426",
+      "sourceSha256": "0e45c8cab5af0ffe1ce95fd2f6264cb97c91464ed4c4be721203e272b77b7a2d",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
@@ -425,7 +425,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "5f4b3b969d4c50cd668da6e47bc88794038adef0c65cec0b1c50788667358e26",
+      "sourceSha256": "2309be6fb66bc96e8c71f5621cb674eb43d1f80960bbc9b4c4afeacea10fb767",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",

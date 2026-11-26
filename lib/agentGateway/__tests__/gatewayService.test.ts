@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const db = vi.hoisted(() => ({ create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), keyFind: vi.fn(), audit: vi.fn() }));
-vi.mock("@/lib/db", () => ({ prisma: { agentGatewayRequest: { create: db.create, findFirst: db.findFirst, findMany: db.findMany, updateMany: db.updateMany }, apiKey: { findFirst: db.keyFind } } }));
+const db = vi.hoisted(() => ({ create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), keyFind: vi.fn(), audit: vi.fn(), envs: vi.fn(async () => [] as unknown[]) }));
+vi.mock("@/lib/db", () => ({ prisma: { agentGatewayRequest: { create: db.create, findFirst: db.findFirst, findMany: db.findMany, updateMany: db.updateMany }, apiKey: { findFirst: db.keyFind }, environment: { findMany: db.envs } } }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: db.audit }));
 const hooks = vi.hoisted(() => ({ dispatch: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: hooks.dispatch }));
@@ -34,6 +34,16 @@ describe("agent gateway service", () => {
     const withoutModel = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship", agentName: "claude-code", model: "x", tools: ["git"] }, NOW);
     expect(withoutModel.ok && withoutModel.request.actionDigest).toBe(r.ok && r.request.actionDigest); // passport facts never change the approval digest
     expect(await createGatewayRequest(caller, { actionKind: "read", target: "x", summary: "y", tools: "git" }, NOW)).toEqual({ ok: false, error: "invalid_tools" });
+  });
+
+  it("denies an agent's production deploy while a production environment is frozen", async () => {
+    db.envs.mockResolvedValueOnce([{ name: "Production", changeWindowRuleJson: { freezes: [{ startUtc: "2026-11-01T00:00:00Z", endUtc: "2026-12-01T00:00:00Z", reason: "Peak season" }] } }]);
+    const r = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship" }, NOW);
+    expect(r.ok && r.request).toMatchObject({ status: "rejected", mayProceed: false, policyDecision: "deny" });
+    expect(db.create.mock.calls[0][0].data.policyReasons.at(-1)).toMatch(/Production is frozen \(Peak season\)/);
+    db.envs.mockResolvedValueOnce([{ name: "Production", changeWindowRuleJson: { freezes: [{ startUtc: "2026-11-01T00:00:00Z", endUtc: "2026-12-01T00:00:00Z", reason: "Peak season" }] } }]);
+    const read = await createGatewayRequest(caller, { actionKind: "read", environment: "production", target: "acme/web", summary: "Look" }, NOW);
+    expect(read.ok && read.request.policyDecision).not.toBe("deny");
   });
 
   it("scopes reads to the calling workspace and key", async () => {

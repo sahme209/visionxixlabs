@@ -4,10 +4,11 @@ import { prisma } from "@/lib/db";
 import type { Prisma } from "@/lib/prismaClient";
 import { buildChangePassport, readChangePassport } from "./changePassport";
 import { triageRequest, type Triage } from "./reviewTriage";
+import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import {
-  APPROVAL_TTL_MS, evaluateGatewayPolicyWithImpact, gatewayActionDigest, isOutcome, mayProceed, parseGatewayAction,
+  APPROVAL_TTL_MS, applyProductionFreeze, evaluateGatewayPolicyWithImpact, gatewayActionDigest, isOutcome, mayProceed, parseGatewayAction,
   type GatewayOutcome, type PolicyResult,
 } from "./policyKernel";
 
@@ -48,6 +49,14 @@ async function audit(organizationId: string, kind: string, subjectId: string, su
 }
 
 /** Policy check only: nothing is stored. */
+/** Production environments frozen right now, for the freeze rule. Fails open to an empty list on read errors. */
+async function productionFreezes(organizationId: string, now: Date) {
+  try {
+    const envs = await prisma.environment.findMany({ where: { organizationId, tier: "prod" }, take: 100, select: { name: true, changeWindowRuleJson: true } });
+    return envs.flatMap((e) => { const d = evaluateChangeWindow(parseChangeWindowRule(e.changeWindowRuleJson), now); return !d.open && d.reason === "freeze" ? [{ environment: e.name, reason: d.freezeReason, until: d.freezeEndsAt }] : []; });
+  } catch { return []; }
+}
+
 export function checkPolicy(raw: unknown): { ok: true; policy: PolicyResult; impact: unknown } | { ok: false; error: string } {
   const parsed = parseGatewayAction(raw);
   if (!parsed.ok) return parsed;
@@ -55,11 +64,20 @@ export function checkPolicy(raw: unknown): { ok: true; policy: PolicyResult; imp
   return { ok: true, policy, impact };
 }
 
+/** Like checkPolicy, plus the workspace's production freeze, so "may I?" and the real request agree. */
+export async function checkPolicyForCaller(caller: GatewayCaller, raw: unknown, now = new Date()) {
+  const parsed = parseGatewayAction(raw);
+  if (!parsed.ok) return parsed;
+  const { impact, ...basePolicy } = evaluateGatewayPolicyWithImpact(parsed.value);
+  return { ok: true as const, policy: applyProductionFreeze(basePolicy, parsed.value, await productionFreezes(caller.organizationId, now)), impact };
+}
+
 export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, now = new Date()) {
   const parsed = parseGatewayAction(raw);
   if (!parsed.ok) return parsed;
   const { agentName, changedFiles, agentModel, agentTools, ...action } = parsed.value;
-  const { impact, ...policy } = evaluateGatewayPolicyWithImpact({ ...action, changedFiles });
+  const { impact, ...basePolicy } = evaluateGatewayPolicyWithImpact({ ...action, changedFiles });
+  const policy = applyProductionFreeze(basePolicy, action, await productionFreezes(caller.organizationId, now));
   // The key's creator is the accountable owner of what its agent asks for. Best-effort: unknown stays null.
   const ownerUserId = await (async () => (await prisma.apiKey.findFirst({ where: { id: caller.apiKeyId, organizationId: caller.organizationId }, select: { createdBy: true } }))?.createdBy ?? null)().catch(() => null);
   const triage = triageRequest({ actionKind: action.actionKind, environment: action.environment, policy, impact });
