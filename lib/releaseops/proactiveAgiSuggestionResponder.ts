@@ -91,6 +91,8 @@ export interface ProactiveSuggestionRepo {
       orderBy: { generatedAt: "desc" };
       take?: number;
     }): Promise<SuggestionRow[]>;
+    /** Conditional decision transition (also used to claim a decision atomically). */
+    updateMany(args: { where: { id: string; organizationId: string; operatorDecision: string }; data: Record<string, unknown> }): Promise<{ count: number }>;
     updateMany(args: {
       where: { organizationId: string; operatorDecision: "pending" };
       data: { operatorDecision: "dismissed" };
@@ -358,7 +360,7 @@ export async function buildSuggestionListResponse(
     }
     return {
       status: 500,
-      body: { ok: false, error: "read_failed", hint: err instanceof Error ? err.message : "unknown" },
+      body: { ok: false, error: "read_failed", hint: "The suggestion could not be read. Try again." },
     };
   }
 }
@@ -405,7 +407,7 @@ export async function buildSuggestionDecideResponse(
     }
     return {
       status: 500,
-      body: { ok: false, error: "read_failed", hint: err instanceof Error ? err.message : "unknown" },
+      body: { ok: false, error: "read_failed", hint: "The suggestion could not be read. Try again." },
     };
   }
 
@@ -427,8 +429,9 @@ export async function buildSuggestionDecideResponse(
   }
 
   try {
-    const updated = await repo.proactiveAgiSuggestion.update({
-      where: { id: input.suggestionId },
+    // Claim from the decision that was read; a concurrent decision gets 409 instead of overwriting.
+    const claimed = await repo.proactiveAgiSuggestion.updateMany({
+      where: { id: input.suggestionId, organizationId: input.organizationId, operatorDecision: row.operatorDecision },
       data: {
         operatorDecision: plan.next,
         decidedByUserId: input.decidedByUserId,
@@ -436,6 +439,10 @@ export async function buildSuggestionDecideResponse(
         ...(input.note ? { decisionNote: input.note } : {}),
       },
     });
+    const updated = claimed.count === 1 ? await repo.proactiveAgiSuggestion.findUnique({ where: { id: input.suggestionId } }) : null;
+    if (!updated) {
+      return { status: 409, body: { ok: false, error: "illegal_transition", hint: "This suggestion changed while you were deciding. Reload it." } };
+    }
     return {
       status: 200,
       body: {

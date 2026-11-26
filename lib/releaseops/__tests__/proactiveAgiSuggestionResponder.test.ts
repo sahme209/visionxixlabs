@@ -49,13 +49,11 @@ function makeRepo(): Stub {
         }).sort((a, b) => b.generatedAt.getTime() - a.generatedAt.getTime());
         return typeof take === "number" ? filtered.slice(0, take) : filtered;
       },
-      async updateMany({ where, data }) {
+      async updateMany({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) {
         let count = 0;
         for (const r of stub._rows) {
-          if (r.organizationId === where.organizationId && r.operatorDecision === where.operatorDecision) {
-            r.operatorDecision = data.operatorDecision;
-            count++;
-          }
+          const row = r as unknown as Record<string, unknown>;
+          if (Object.entries(where).every(([k, v]) => row[k] === v)) { Object.assign(row, data); count++; }
         }
         return { count };
       },
