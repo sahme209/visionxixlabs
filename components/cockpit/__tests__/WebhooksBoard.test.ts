@@ -36,3 +36,23 @@ describe("WebhooksBoard", () => {
     await waitFor(() => expect(screen.getByText(/private and internal addresses are refused/)).toBeTruthy());
   });
 });
+
+describe("WebhooksBoard recent deliveries", () => {
+  it("loads deliveries only when asked and labels outcomes", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json({ ok: true, data: { canEdit: false, endpoints: [{ id: "w1", name: "Slack", url: "https://hooks.example.com/x", subscribedEvents: ["deployment.blocked"], consecutiveFailures: 0, createdAt: "2026-11-27T00:00:00Z" }] } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { deliveries: [
+        { id: "d1", eventKind: "deployment.blocked", attemptNumber: 1, status: "delivered", httpStatus: 204, attemptedAt: "2026-11-27T10:00:00Z", nextAttemptAt: null, createdAt: "2026-11-27T10:00:00Z" },
+        { id: "d2", eventKind: "deployment.blocked", attemptNumber: 8, status: "deadletter", httpStatus: null, attemptedAt: "2026-11-27T11:00:00Z", nextAttemptAt: null, createdAt: "2026-11-27T11:00:00Z" },
+      ] } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(WebhooksBoard));
+    const toggle = await screen.findByRole("button", { name: "Show recent deliveries" });
+    expect(f).toHaveBeenCalledTimes(1);
+    fireEvent.click(toggle);
+    const table = await screen.findByRole("table", { name: "Recent deliveries for Slack" });
+    expect(f.mock.calls[1][0]).toBe("/api/control/webhooks/w1/deliveries");
+    expect(table.textContent).toContain("Delivered");
+    expect(table.textContent).toContain("Gave up");
+    expect(table.textContent).toContain("no response");
+  });
+});

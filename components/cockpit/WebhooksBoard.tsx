@@ -14,6 +14,34 @@ const ERRORS: Record<string, string> = {
   governance_enrolled_destination_increase: "Governance enrollment is active, so new outbound destinations are paused.",
 };
 const groups = [...new Set(WEBHOOK_EVENT_CATALOG.map((e) => e.group))];
+interface Delivery { id: string; eventKind: string; attemptNumber: number; status: string; httpStatus: number | null; attemptedAt: string | null; nextAttemptAt: string | null; createdAt: string }
+const STATUS_LABEL: Record<string, string> = { queued: "Queued", delivering: "Sending", delivered: "Delivered", retry: "Will retry", deadletter: "Gave up" };
+
+/** The last delivery attempts for one webhook, loaded only when asked for. */
+function RecentDeliveries({ endpointId, name }: { endpointId: string; name: string }) {
+  const [rows, setRows] = useState<Delivery[] | "error" | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(`/api/control/webhooks/${encodeURIComponent(endpointId)}/deliveries`, { cache: "no-store" })
+      .then(async (res) => { const body = await res.json(); if (live) setRows(res.ok && body.ok ? body.data.deliveries : "error"); })
+      .catch(() => { if (live) setRows("error"); });
+    return () => { live = false; };
+  }, [endpointId]);
+  if (rows === "error") return <p role="alert" className="mt-2 text-xs text-amber-300">Deliveries could not be loaded.</p>;
+  if (!rows) return <p className="mt-2 text-xs text-zinc-400">Loading deliveries…</p>;
+  if (rows.length === 0) return <p className="mt-2 text-xs text-zinc-400">No deliveries yet. A delivery appears here when a chosen event happens.</p>;
+  return (
+    <table aria-label={`Recent deliveries for ${name}`} className="mt-2 w-full text-left text-xs">
+      <thead><tr className="text-zinc-400"><th className="py-1 font-normal">Event</th><th className="py-1 font-normal">Attempt</th><th className="py-1 font-normal">Result</th><th className="py-1 font-normal">Receiver</th><th className="py-1 font-normal">When</th></tr></thead>
+      <tbody>{rows.map((d) => (
+        <tr key={d.id} className="border-t border-white/[0.06] text-zinc-300">
+          <td className="py-1 font-mono">{d.eventKind}</td><td className="py-1">{d.attemptNumber}</td>
+          <td className={d.status === "deadletter" ? "py-1 text-amber-300" : "py-1"}>{STATUS_LABEL[d.status] ?? d.status}{d.status === "retry" && d.nextAttemptAt ? ` at ${new Date(d.nextAttemptAt).toLocaleTimeString()}` : ""}</td>
+          <td className="py-1">{d.httpStatus ?? "no response"}</td>
+          <td className="py-1">{new Date(d.attemptedAt ?? d.createdAt).toLocaleString()}</td>
+        </tr>))}</tbody>
+    </table>);
+}
 
 /** Workspace webhooks: choose events, get a signing secret once, revoke at any time. */
 export function WebhooksBoard() {
@@ -23,6 +51,7 @@ export function WebhooksBoard() {
   const [message, setMessage] = useState<string | null>(null);
   const [created, setCreated] = useState<{ name: string; secret: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
   const load = useCallback(async () => {
     try { const res = await fetch("/api/control/webhooks", { cache: "no-store" }); const body = await res.json(); setData(res.ok && body.ok ? body.data : "error"); } catch { setData("error"); }
   }, []);
@@ -49,7 +78,9 @@ export function WebhooksBoard() {
       {data.endpoints.length === 0 ? <p className="text-sm text-zinc-400">No webhooks yet.</p> : (
         <ul aria-label="Webhooks" className="divide-y divide-white/[0.07] rounded-xl border border-white/8">{data.endpoints.map((e) => (
           <li key={e.id} className="flex flex-wrap items-start gap-3 px-4 py-3 text-sm">
-            <div className="min-w-0 flex-1"><p className="text-zinc-100">{e.name}</p><p className="break-all font-mono text-xs text-zinc-400">{e.url}</p><p className="mt-1 text-xs text-zinc-400">{e.subscribedEvents.join(", ")}{e.consecutiveFailures > 0 ? <span className="text-amber-300"> · {e.consecutiveFailures} failed deliveries in a row</span> : null}</p></div>
+            <div className="min-w-0 flex-1"><p className="text-zinc-100">{e.name}</p><p className="break-all font-mono text-xs text-zinc-400">{e.url}</p><p className="mt-1 text-xs text-zinc-400">{e.subscribedEvents.join(", ")}{e.consecutiveFailures > 0 ? <span className="text-amber-300"> · {e.consecutiveFailures} failed deliveries in a row</span> : null}</p>
+              <button type="button" aria-expanded={open === e.id} onClick={() => setOpen(open === e.id ? null : e.id)} className="mt-1 text-xs text-zinc-300 underline underline-offset-2">{open === e.id ? "Hide recent deliveries" : "Show recent deliveries"}</button>
+              {open === e.id && <RecentDeliveries endpointId={e.id} name={e.name} />}</div>
             {data.canEdit && <button type="button" disabled={busy} onClick={() => void revoke(e.id)} aria-label={`Revoke webhook ${e.name}`} className="text-xs text-zinc-300 underline underline-offset-2">Revoke</button>}
           </li>))}</ul>)}
       {created && <div role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/5 p-4 text-sm"><p className="text-amber-200">Signing secret for {created.name}. Copy it into your receiver now; it will not be shown again.</p><p className="mt-2 break-all font-mono text-xs text-zinc-100">{created.secret}</p><p className="mt-2 text-xs text-zinc-400">Verify the signature header on every delivery with this secret. See the webhooks section of the SDK README.</p></div>}
