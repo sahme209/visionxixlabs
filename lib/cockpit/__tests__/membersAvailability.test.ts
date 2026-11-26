@@ -19,3 +19,11 @@ it("refuses to query organization members without a current role",async()=>{
  expect(screen.getByRole("alert").textContent).toContain("membership is required");
  expect(io.members).not.toHaveBeenCalled();
 });
+it("shows what each role can do from the same capability table the desktop enforces",async()=>{
+ io.members.mockResolvedValue([]);io.users.mockResolvedValue([]);render(await MembersPage({}));
+ const table=screen.getByRole("table",{name:/What each role can do/});
+ const row=(label:string)=>[...table.querySelectorAll("tr")].find((r)=>r.querySelector("th")?.textContent===label)!;
+ expect(row("Deploy").textContent).toBe("DeployYes: Owner can deployYes: Admin can deployYes: Operator can deployNoNoNo");
+ expect(row("Emergency production bypass").textContent).toContain("Yes: Admin can emergency production bypassNoNoNoNo");
+ expect(row("Approve Agent actions").textContent).toContain("Yes: Security Reviewer can approve agent actions");
+});

@@ -19,6 +19,19 @@ import { prisma } from "@/lib/db";
 import { ROLE_LABEL, ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
 import { BROWSER_NAVIGATION_FIELDS, matchesBrowserNavigationMembership, parseBrowserNavigationArrival, parseBrowserNavigationIntent } from "@/lib/desktop/browserNavigationIntent";
 import { TeamInviteButton } from "@/components/workforce/TeamInviteButton";
+import { capabilitiesForRole, DESKTOP_CAPABILITIES, type DesktopCapability } from "@/lib/desktop/desktopAuthorization";
+
+const CAPABILITY_LABEL: Record<DesktopCapability, string> = {
+  "workspace:read": "See the workspace",
+  "github:read": "Read repositories",
+  "github:write": "Propose code changes",
+  "agent:approve": "Approve Agent actions",
+  "deploy:execute": "Deploy",
+  "deploy:production_bypass": "Emergency production bypass",
+  "policy:manage": "Change policy and environments",
+  "members:manage": "Manage members",
+  "connections:manage": "Manage connections",
+};
 
 export const dynamic = "force-dynamic";
 
@@ -286,6 +299,15 @@ export default async function TeamPage({
             </div>
           ))}
         </dl>
+        <div role="region" aria-label="What each role can do" tabIndex={0} className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-xs">
+            <caption className="sr-only">What each role can do in the desktop app and cockpit</caption>
+            <thead className="text-zinc-400"><tr><th scope="col" className="py-2 pr-3 font-medium">Can</th>{(Object.keys(ROLE_LABEL) as InviteRole[]).map((r) => <th key={r} scope="col" className="px-2 py-2 font-medium">{ROLE_LABEL[r].label}</th>)}</tr></thead>
+            <tbody className="divide-y divide-white/[0.06]">{DESKTOP_CAPABILITIES.map((cap) => (
+              <tr key={cap}><th scope="row" className="py-2 pr-3 font-normal text-zinc-300">{CAPABILITY_LABEL[cap]}</th>{(Object.keys(ROLE_LABEL) as InviteRole[]).map((r) => { const yes = capabilitiesForRole(r).includes(cap); return <td key={r} className="px-2 py-2 text-center">{yes ? <span className="text-zinc-100">Yes<span className="sr-only">: {ROLE_LABEL[r].label} can {CAPABILITY_LABEL[cap].toLowerCase()}</span></span> : <span className="text-zinc-600">No</span>}</td>; })}</tr>))}
+            </tbody>
+          </table>
+        </div>
       </details>
     </div>
   );
