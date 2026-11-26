@@ -82,6 +82,15 @@ export default function SurfacesPage(){return <>
   <p>Airflow task logs and live application health are unavailable in this view. Use the <Link href="#batch-failed-run">failed Airflow run guide</Link> to inspect observed task state and try numbers.</p>
   <p>From <strong>Deployments → Logs</strong>, use <strong>Return to Batches</strong> to restore the selected release, open Logs section and keyboard focus. If search has hidden the selection, clear the search to show the same version again. If a refresh finds a newer version, select it explicitly before opening its logs.</p>
  </DocSection>
+ <DocSection id="release-record" title="Open a release record in the browser">
+  <p>Some desktop views offer <strong>Open release record in browser</strong>. The record opens in the cockpit for your active workspace and is read-only.</p>
+  <ul className="list-disc space-y-2 pl-5">
+   <li>The heading shows the release tag, or <strong>Untagged release</strong> when none is recorded.</li>
+   <li><strong>Status</strong>, <strong>Release ID</strong> and <strong>Commit</strong> show the recorded values. <strong>Awaiting a recorded commit</strong> means no commit is stored yet.</li>
+   <li><strong>Linked change tickets</strong> lists up to 50 linked tickets, or says none are recorded.</li>
+  </ul>
+  <p>Release actions stay in V19 Studio. If the page says <strong>Release unavailable</strong>, check the workspace selector and reopen the link from the desktop app.</p>
+ </DocSection>
  <DocSection id="website" title="Use the website for guidance" kicker="02">
   <ul className="list-disc space-y-3 pl-5">
    <li><Link href="/download">Download the desktop app</Link> — inspect the current manifest-backed installer and platform-specific verification information.</li>
