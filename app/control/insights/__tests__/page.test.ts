@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn(), audit: vi.fn() }));
+const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn(), audit: vi.fn(), agentReqs: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn(() => { throw new Error("redirect"); }) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_insights", email: "owner@example.test", roles: ["owner"] }) }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results }, auditEvent: { findMany: io.audit } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results }, auditEvent: { findMany: io.audit }, agentGatewayRequest: { findMany: io.agentReqs } } }));
 import Page from "../page";
 
 const value = (label: string) => screen.getByText(label, { selector: "dt" }).parentElement!.querySelector("dd")!.textContent!.trim();
@@ -23,6 +23,7 @@ beforeEach(() => {
   io.results.mockResolvedValue([]);
   io.releases.mockResolvedValue([]);
   io.audit.mockResolvedValue([]);
+  io.agentReqs.mockResolvedValue([]);
   io.incidents.mockResolvedValue([{ status: "resolved", reportedAt: day(5), mitigatedAt: new Date(day(5).getTime() + 1_800_000), resolvedAt: new Date(day(5).getTime() + 7_200_000) }, { status: "open", reportedAt: day(1), mitigatedAt: null, resolvedAt: null }]);
 });
 afterEach(cleanup);
@@ -102,4 +103,11 @@ it("counts deployments refused by release gates by reason", async () => {
   render(await Page());
   expect(value("Outside the change window")).toBe("2");
   expect(io.audit.mock.calls[0][0].where).toMatchObject({ organizationId: "org_insights", kind: "release.gate_refused" });
+});
+
+it("summarizes AI agent requests by decision and review lane", async () => {
+  io.agentReqs.mockResolvedValue([{ status: "approved", reviewTriage: { lane: "auto" }, agentName: "cursor" }, { status: "pending", reviewTriage: { lane: "two_person" }, agentName: "claude-code" }]);
+  render(await Page());
+  expect(value("Agent requests")).toContain("2");
+  expect(screen.getByText("By review lane: Allowed by policy 1 · Two approvers 1")).toBeTruthy();
 });
