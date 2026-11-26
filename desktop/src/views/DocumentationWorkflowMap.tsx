@@ -1,5 +1,6 @@
 import { useId, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
-import { ArrowRight, Layers3, Rocket, Ticket } from "lucide-react";
+import { ArrowRight, Layers3, Network, Rocket, Ticket } from "lucide-react";
+import { DocumentationArchitectureMap } from "./DocumentationArchitectureMap";
 import { ExternalLink } from "../components/Primitives";
 import { documentationWorkflows, workflowSteps } from "./documentationWorkflow";
 import "./DocumentationWorkflowMap.css";
@@ -76,18 +77,19 @@ export function DocumentationWorkflowMap({onBack}: {onBack: () => void}) {
   const prefix = useId();
   const title = useRef<HTMLHeadingElement>(null);
   const [workflow, setWorkflow] = useState<(typeof documentationWorkflows)[number]>(documentationWorkflows[0]);
+  const [architecture, setArchitecture] = useState(false);
 
-  useLayoutEffect(() => { title.current?.focus(); }, [workflow.id]);
+  useLayoutEffect(() => { title.current?.focus(); }, [workflow.id, architecture]);
 
   return <section className="studio-flow" aria-labelledby={prefix + "-title"}>
     <header className="studio-flow-header">
       <div>
-        <h2 id={prefix + "-title"} ref={title} tabIndex={-1}>{workflow.title}</h2>
-        <p>{workflow.description}</p>
+        <h2 id={prefix + "-title"} ref={title} tabIndex={-1}>{architecture ? "How V19 fits together" : workflow.title}</h2>
+        <p>{architecture ? "Desktop, cockpit, agents, the V19 service and the providers it connects to. Select a part to read what it does." : workflow.description}</p>
       </div>
       <button data-help-id="documentation.workflow.back" type="button" className="btn-secondary" onClick={onBack}>Back to guides</button>
     </header>
-    <WorkflowCanvas key={workflow.id} workflow={workflow} onBack={onBack}/>
+    {architecture ? <DocumentationArchitectureMap/> : <WorkflowCanvas key={workflow.id} workflow={workflow} onBack={onBack}/>}
     <nav data-help-id="documentation.workflow.families" className="studio-flow-families" aria-label="Workflow maps">
       <h3>Key workflows</h3>
       <div className="studio-flow-family-cards">
@@ -95,9 +97,9 @@ export function DocumentationWorkflowMap({onBack}: {onBack: () => void}) {
           const Icon = workflowIcons[item.id];
           const label = `${prefix}-family-${item.id}`;
           return <button type="button" className="studio-flow-family-card" key={item.id} aria-labelledby={label}
-            aria-describedby={label + "-description"} aria-pressed={item.id === workflow.id} onClick={() => {
-              if (item.id === workflow.id) title.current?.focus();
-              else setWorkflow(item);
+            aria-describedby={label + "-description"} aria-pressed={!architecture && item.id === workflow.id} onClick={() => {
+              if (!architecture && item.id === workflow.id) title.current?.focus();
+              else { setArchitecture(false); setWorkflow(item); }
             }}>
             <Icon className="studio-flow-family-icon" size={20} aria-hidden="true"/>
             <strong id={label}>{item.label}</strong>
@@ -105,6 +107,13 @@ export function DocumentationWorkflowMap({onBack}: {onBack: () => void}) {
             <ArrowRight className="studio-flow-family-arrow" size={15} aria-hidden="true"/>
           </button>;
         })}
+        <button type="button" className="studio-flow-family-card" aria-labelledby={`${prefix}-family-architecture`} aria-describedby={`${prefix}-family-architecture-description`}
+          aria-pressed={architecture} onClick={() => { if (architecture) title.current?.focus(); else setArchitecture(true); }}>
+          <Network className="studio-flow-family-icon" size={20} aria-hidden="true"/>
+          <strong id={`${prefix}-family-architecture`}>Architecture</strong>
+          <small id={`${prefix}-family-architecture-description`}>How the desktop, cockpit, service and providers connect.</small>
+          <ArrowRight className="studio-flow-family-arrow" size={15} aria-hidden="true"/>
+        </button>
       </div>
     </nav>
   </section>;
