@@ -20,6 +20,10 @@ export default function ApiKeysDocsPage() {
   <DocSection id="revoke" kicker="03" title="Revoke a key">
    <p>Revoke a key from the list as soon as it may have been exposed or is no longer needed. Revocation takes effect immediately and is recorded in the audit log. A workspace can hold up to 20 active keys.</p>
   </DocSection>
+  <DocSection id="ci" kicker="04" title="Use a key in CI">
+   <p>Two endpoints are built for pipelines. With <em>read pipeline runs</em>, <code>GET /api/v1/environments/{"{slug}"}/variables</code> returns an environment&apos;s resolved configuration and its fingerprint, so a deployment can load its settings and record which configuration it used. With <em>request approvals and report outcomes</em>, <code>POST /api/v1/checks/results</code> records the result of a deployment check for a commit; the workflow generated on the Checks page uses it when the repository has a <code>V19_API_KEY</code> secret.</p>
+   <p>Store the key as a repository secret, give it only the permissions those calls need, and choose a short expiry. API calls also require an active paid plan for the workspace. Every SDK has matching methods.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/trust-tools",label:"Trust tools"}} next={{href:"/docs/troubleshooting",label:"Troubleshooting"}} />
  </>;
 }

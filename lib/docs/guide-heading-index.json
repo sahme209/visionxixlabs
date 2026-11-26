@@ -345,14 +345,15 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1",
+      "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
         "Create a key",
         "Copy it once",
         "Separation of duties",
-        "Revoke a key"
+        "Revoke a key",
+        "Use a key in CI"
       ]
     },
     {
