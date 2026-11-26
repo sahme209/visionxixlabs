@@ -25,6 +25,7 @@ import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs
 import { matchingWorkflowObservation, restoredWorkflowRef, singleGithubRepository, workflowFilePath, type WorkflowSourceObservation } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { ProgressRing } from "../components/motion/ProgressRing";
+import { ReleaseRiskRadar } from "../components/ReleaseRiskRadar";
 import { AnimatedNumber } from "../components/motion/AnimatedNumber";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
@@ -863,6 +864,7 @@ export function DeploymentRequestsView({ active = true, onIntakeOpenChange, save
                 onReviewPlans={onReviewAgentPlans && request.version > 0
                 ? () => { if (ownsView()) onReviewAgentPlans({id: request.id, version: request.version}); }
                 : undefined} />
+              <ReleaseRiskRadar context={request.releaseContext} />
               {activityWorkspace && <ReleaseActivityTimeline key={JSON.stringify([activityWorkspace, request.id, request.version])}
                 workspaceId={activityWorkspace} requestId={request.id} version={request.version} />}
             </>;

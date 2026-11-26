@@ -1741,3 +1741,31 @@ html[data-theme="light"] {
 @media (prefers-reduced-motion: reduce) { .studio-task-run-strip-cells span { animation: none; transition: none; } }
 @media (max-width: 650px) { .studio-home-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .studio-home-trend { grid-column: 1 / -1; border-inline-start: 0 !important; padding-inline-start: 0 !important; } }
 .studio-release-summary > div > .status-icon-chip { order: -2; align-self: center; }
+
+/* Release risk radar (Deployments, selected release). */
+.release-risk-radar { margin-top: 18px; padding: 16px; border: 1px solid rgb(var(--axiom-border)); border-radius: 12px; background: radial-gradient(120% 120% at 0% 0%, rgb(var(--axiom-surface) / .7), transparent 60%); }
+.release-risk-radar header h3 { font-size: 13px; font-weight: 500; color: rgb(var(--neutral-zinc-100)); }
+.release-risk-radar header p { margin-top: 2px; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
+.release-risk-radar-counts { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px !important; }
+.release-risk-radar-counts span { display: inline-flex; align-items: center; gap: 5px; color: rgb(var(--neutral-zinc-300)); font-variant-numeric: tabular-nums; }
+.release-risk-radar-counts span::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--status-neutral); }
+.release-risk-radar-counts span[data-tone="green"]::before { background: var(--status-green); }
+.release-risk-radar-counts span[data-tone="amber"]::before { background: var(--status-amber); }
+.release-risk-radar-counts span[data-tone="red"]::before { background: var(--status-red); }
+.release-risk-radar-body { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 10px; }
+.release-risk-radar-body svg { flex: none; overflow: visible; }
+.release-risk-radar-ring { fill: none; stroke: rgb(var(--axiom-border)); stroke-width: 1; }
+.release-risk-radar-spoke { stroke: rgb(var(--axiom-border)); stroke-width: 1; transition: stroke .2s; }
+.release-risk-radar-spoke[data-active] { stroke: rgb(var(--neutral-zinc-400)); }
+.release-risk-radar-shape { fill: var(--status-blue-surface); stroke: var(--status-blue); stroke-width: 1.5; stroke-linejoin: round; }
+.release-risk-radar-vertex { fill: var(--status-neutral); stroke: rgb(var(--axiom-bg)); stroke-width: 1.5; transition: r .15s; }
+.release-risk-radar-vertex[data-tone="green"] { fill: var(--status-green); }
+.release-risk-radar-vertex[data-tone="amber"] { fill: var(--status-amber); }
+.release-risk-radar-vertex[data-tone="red"] { fill: var(--status-red); }
+.release-risk-radar-label { font-size: 11px; fill: rgb(var(--neutral-zinc-500)); transition: fill .2s; }
+.release-risk-radar-label[data-active] { fill: rgb(var(--neutral-zinc-100)); }
+.release-risk-radar ul { flex: 1 1 240px; display: grid; gap: 2px; min-width: 0; }
+.release-risk-radar li { display: grid; grid-template-columns: auto minmax(84px, auto) 1fr; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; font-size: 12px; outline: none; transition: background-color .15s; }
+.release-risk-radar li[data-active], .release-risk-radar li:focus-visible { background: rgb(var(--axiom-surface)); }
+.release-risk-radar-axis { color: rgb(var(--neutral-zinc-200)); }
+.release-risk-radar-detail { min-width: 0; color: rgb(var(--neutral-zinc-400)); overflow-wrap: anywhere; }
