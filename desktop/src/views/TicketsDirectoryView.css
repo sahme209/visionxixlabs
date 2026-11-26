@@ -441,6 +441,6 @@ html:not([data-theme="light"]) .studio-ticket-overview .studio-ticket-release-li
 .studio-ticket-recovery > div + div { border-inline-start: 1px solid var(--studio-ticket-divider); }
 .studio-ticket-recovery dt { font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
 .studio-ticket-recovery dd { margin-top: 2px; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; color: rgb(var(--neutral-zinc-100)); }
-.studio-ticket-recovery dd small { margin-inline-start: 8px; font-size: 11px; font-weight: 400; color: rgb(var(--neutral-zinc-500)); }
-.studio-ticket-recovery p { grid-column: 1 / -1; margin-top: 6px; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
+.studio-ticket-recovery dd small { margin-inline-start: 8px; font-size: 11px; font-weight: 400; color: rgb(var(--neutral-zinc-400)); }
+.studio-ticket-recovery-note { margin-top: 6px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
 @media (max-width: 640px) { .studio-ticket-recovery { grid-template-columns: 1fr; gap: 6px; } .studio-ticket-recovery > div { padding-inline: 0; border: 0 !important; } }
