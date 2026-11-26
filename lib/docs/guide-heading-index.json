@@ -412,7 +412,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "9d28beecc444b1b9ffdb1e3cbea39ff1c67e0ac37ab02b2ccb83289383df5ac2",
+      "sourceSha256": "7202b8b4ea3a95bb926f832696f2fc6cde5f0e53478cdc8551e1c421215e2548",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -422,7 +422,8 @@
         "Selection is not authorization",
         "Delivery insights for the workspace",
         "Configuration variables per environment",
-        "Service catalog"
+        "Service catalog",
+        "Every cockpit page"
       ]
     },
     {
