@@ -79,6 +79,20 @@ jq -r '.variables | to_entries[] | "\(.key)<<V19EOF\n\(.value)\nV19EOF"' v19-con
 echo "V19_CONFIG_DIGEST=$(jq -r .digest v19-config.json)" >> "$GITHUB_ENV"
 ```
 
+## Deployment check results
+
+The cockpit's Checks page generates a GitHub Actions workflow that reports
+each check's outcome here; you can also report from any CI. Every SDK
+exposes `reportCheckResult()` / `report_check_result()` / `ReportCheckResult(ctx, …)`.
+Required scope: `governance:request`. Results are evidence only: V19 did not
+run the check. A retried step with the same `idempotencyKey` records once.
+
+```bash
+curl -fsS -X POST -H "Authorization: Bearer $VXL_API_KEY" -H 'Content-Type: application/json' \
+  -d '{"checkKey":"health-probe","checkVersion":2,"stage":"verify","status":"passed","idempotencyKey":"run-123-1-health-probe"}' \
+  https://visionxixlabs.com/api/v1/checks/results
+```
+
 ## Webhook signature verification
 
 When you register a webhook endpoint, the platform returns a `secret`
@@ -233,6 +247,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/whoami`             | any read-class        | `whoami()`            |
 | `GET  /api/v1/release-gate`       | `release_gate:read`   | `releaseGate()`       |
 | `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
+| `POST /api/v1/checks/results`     | `governance:request`  | `reportCheckResult()` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |

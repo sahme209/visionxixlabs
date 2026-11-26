@@ -1569,7 +1569,11 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
           : result.error === "deployment_already_in_progress"
             ? "This deployment is still in progress or awaiting outcome verification. Its hold prevents another dispatch."
-            : result.error);
+            : result.error === "deployment_checks_blocking"
+              ? "Blocking deployment checks for earlier stages have not passed in CI for this commit. Run them for this commit, or review them in Control → Checks. Nothing was dispatched."
+              : result.error === "deployment_checks_unavailable"
+                ? "Deployment checks could not be read, so nothing was dispatched. Try again shortly."
+                : result.error);
         return;
       }
       deployOperationRef.current = null;

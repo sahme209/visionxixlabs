@@ -65,6 +65,11 @@ interface SessionDelegate {
     where: { id: string };
     data: Partial<Omit<AlertEscalationSessionRow, "id" | "organizationId" | "signalRef" | "createdAt" | "updatedAt">>;
   }): Promise<AlertEscalationSessionRow>;
+  /** Compare-and-swap on the status read in this transaction (Prisma provides it; older test stubs may not). */
+  updateMany?(args: {
+    where: { id: string; status: AlertEscalationStatus };
+    data: Partial<Omit<AlertEscalationSessionRow, "id" | "organizationId" | "signalRef" | "createdAt" | "updatedAt">>;
+  }): Promise<{ count: number }>;
 }
 
 interface TransitionDelegate {
@@ -108,7 +113,30 @@ export type ApplyAlertEventResult =
       eventKind: string;
     };
 
+/** Another writer changed the session between this transaction's read and write. */
+class ConcurrentEscalationChange extends Error { constructor() { super("alert_escalation_concurrent_change"); } }
+const isUniqueViolation = (err: unknown) => typeof err === "object" && err !== null && (err as { code?: unknown }).code === "P2002";
+
+/**
+ * Apply one event exactly once against the latest status. Concurrent events for the same
+ * signal (two ticks, or a tick and a human acknowledgement) re-read and re-apply instead of
+ * overwriting each other or logging two transitions from the same status.
+ */
 export async function applyAlertEscalationEvent(
+  repo: AlertEscalationRepo,
+  input: ApplyAlertEventInput,
+): Promise<ApplyAlertEventResult> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await applyAlertEscalationEventOnce(repo, input);
+    } catch (err) {
+      if (attempt < 3 && (err instanceof ConcurrentEscalationChange || isUniqueViolation(err))) continue;
+      throw err;
+    }
+  }
+}
+
+async function applyAlertEscalationEventOnce(
   repo: AlertEscalationRepo,
   input: ApplyAlertEventInput,
 ): Promise<ApplyAlertEventResult> {
@@ -152,15 +180,15 @@ export async function applyAlertEscalationEvent(
     const now = input.now ?? new Date();
     const additive = computeAdditiveTimestamps(session, input.event, result.next, now);
 
-    const updated = await tx.alertEscalationSession.update({
-      where: { id: session.id },
-      data: {
-        status: result.next,
-        lastEventKind: input.event.kind,
-        lastTransitionAt: now,
-        ...additive,
-      },
-    });
+    const data = { status: result.next, lastEventKind: input.event.kind, lastTransitionAt: now, ...additive };
+    let updated: AlertEscalationSessionRow;
+    if (tx.alertEscalationSession.updateMany) {
+      const claim = await tx.alertEscalationSession.updateMany({ where: { id: session.id, status: session.status }, data });
+      if (claim.count !== 1) throw new ConcurrentEscalationChange();
+      updated = { ...session, ...data, updatedAt: now } as AlertEscalationSessionRow;
+    } else {
+      updated = await tx.alertEscalationSession.update({ where: { id: session.id }, data });
+    }
 
     const transition = await tx.alertEscalationTransition.create({
       data: {

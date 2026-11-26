@@ -65,6 +65,23 @@ export interface EnvironmentVariablesResponse {
   count: number;
 }
 
+export interface CheckResultInput {
+  checkKey: string;
+  checkVersion: number;
+  stage: "plan" | "validate" | "approve" | "deploy" | "verify" | "recover";
+  status: "passed" | "failed" | "error";
+  durationMs?: number;
+  runUrl?: string;
+  environmentSlug?: string;
+  releaseRef?: string;
+  /** Unique per check run, e.g. `${runId}-${attempt}-${checkKey}`; retries with the same key record once. */
+  idempotencyKey: string;
+}
+
+export type CheckResultResponse =
+  | { ok: true; recorded: true; currentVersion: number; stale: boolean }
+  | { ok: true; recorded: false; duplicate: true };
+
 export interface ReleaseGateResponse {
   ok: true;
   hasRun: boolean;
@@ -212,6 +229,14 @@ export class VisionXIXLabs {
    */
   environmentVariables(slug: string): Promise<EnvironmentVariablesResponse> {
     return this.get<EnvironmentVariablesResponse>(`/api/v1/environments/${encodeURIComponent(slug)}/variables`);
+  }
+
+  /**
+   * POST /api/v1/checks/results — report one deployment check run from your CI as evidence.
+   * Required scope: governance:request. Idempotent on `idempotencyKey`.
+   */
+  reportCheckResult(input: CheckResultInput): Promise<CheckResultResponse> {
+    return this.post<CheckResultResponse>("/api/v1/checks/results", input as unknown as Record<string, unknown>);
   }
 
   pipelineRun(runId: string): Promise<PipelineRunResponse> {

@@ -12,6 +12,7 @@ import { ProductTour } from "@/components/marketing/ProductTour";
 import { ArchitectureMap } from "@/components/docs/ArchitectureMap";
 import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
+import { ConfigPromotionDemo } from "@/components/marketing/ConfigPromotionDemo";
 import { ProductDisclosure } from "@/components/marketing/ProductDisclosure";
 
 export const metadata: Metadata = {
@@ -95,6 +96,7 @@ export default function ProductPage() {
               </figure>
             ))}
           </div>
+          <ConfigPromotionDemo />
         </section>
 
         <section aria-labelledby="scripted-preview" className="mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10">

@@ -107,6 +107,28 @@ type EnvironmentVariablesResponse struct {
 	Count     int               `json:"count"`
 }
 
+// CheckResultInput is one deployment check run reported from CI.
+type CheckResultInput struct {
+	CheckKey        string `json:"checkKey"`
+	CheckVersion    int    `json:"checkVersion"`
+	Stage           string `json:"stage"`
+	Status          string `json:"status"`
+	DurationMs      *int   `json:"durationMs,omitempty"`
+	RunURL          string `json:"runUrl,omitempty"`
+	EnvironmentSlug string `json:"environmentSlug,omitempty"`
+	ReleaseRef      string `json:"releaseRef,omitempty"`
+	IdempotencyKey  string `json:"idempotencyKey"`
+}
+
+// CheckResultResponse reports whether the result was recorded or was a duplicate.
+type CheckResultResponse struct {
+	OK             bool `json:"ok"`
+	Recorded       bool `json:"recorded"`
+	Duplicate      bool `json:"duplicate,omitempty"`
+	CurrentVersion int  `json:"currentVersion,omitempty"`
+	Stale          bool `json:"stale,omitempty"`
+}
+
 type ReleaseGateResponse struct {
 	OK               bool        `json:"ok"`
 	HasRun           bool        `json:"hasRun"`
@@ -225,6 +247,15 @@ func (c *Client) ReleaseGate(ctx context.Context) (*ReleaseGateResponse, error) 
 func (c *Client) EnvironmentVariables(ctx context.Context, slug string) (*EnvironmentVariablesResponse, error) {
 	var out EnvironmentVariablesResponse
 	if err := c.do(ctx, "GET", "/api/v1/environments/"+url.PathEscape(slug)+"/variables", nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ReportCheckResult posts one deployment check run to /api/v1/checks/results. Required scope: governance:request.
+func (c *Client) ReportCheckResult(ctx context.Context, in CheckResultInput) (*CheckResultResponse, error) {
+	var out CheckResultResponse
+	if err := c.do(ctx, "POST", "/api/v1/checks/results", in, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "fd6487da5a19f47484b22e9dad87b441faeb92bff18be054319e398656c07a2d",
+      "sourceSha256": "28ced6d4d15fe6f9a4f43c665af9141df6373089b8f8f516eaedf9ce5e37a107",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c",
+      "sourceSha256": "607c47b24b10209214ab71501747f9a1df5f2039208a1ac2ea461b630abec206",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -181,7 +181,8 @@
         "The deployment lifecycle",
         "What users manage",
         "Availability rules",
-        "Trust questions"
+        "Trust questions",
+        "Deployment checks per stage"
       ]
     },
     {

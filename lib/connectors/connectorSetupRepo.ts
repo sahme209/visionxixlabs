@@ -63,6 +63,11 @@ interface SessionDelegate {
     where: { id: string };
     data: Partial<Pick<ConnectorSetupSessionRow, "status" | "lastEventKind" | "lastErrorCode" | "firstConnectedAt" | "lastTransitionAt">>;
   }): Promise<ConnectorSetupSessionRow>;
+  /** Compare-and-swap on the status read in this transaction (Prisma provides it; older test stubs may not). */
+  updateMany?(args: {
+    where: { id: string; status: ConnectorSetupStatus };
+    data: Partial<Pick<ConnectorSetupSessionRow, "status" | "lastEventKind" | "lastErrorCode" | "firstConnectedAt" | "lastTransitionAt">>;
+  }): Promise<{ count: number }>;
 }
 
 interface TransitionDelegate {
@@ -106,7 +111,25 @@ export type ApplyEventResult =
       eventKind: string;
     };
 
+class ConcurrentSetupChange extends Error { constructor() { super("connector_setup_concurrent_change"); } }
+const isUniqueViolation = (err: unknown) => typeof err === "object" && err !== null && (err as { code?: unknown }).code === "P2002";
+
+/** Apply one event against the latest status; a concurrent writer causes a re-read and re-apply (up to three attempts). */
 export async function applyConnectorSetupEvent(
+  repo: ConnectorSetupRepo,
+  input: ApplyEventInput,
+): Promise<ApplyEventResult> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await applyConnectorSetupEventOnce(repo, input);
+    } catch (err) {
+      if (attempt < 3 && (err instanceof ConcurrentSetupChange || isUniqueViolation(err))) continue;
+      throw err;
+    }
+  }
+}
+
+async function applyConnectorSetupEventOnce(
   repo: ConnectorSetupRepo,
   input: ApplyEventInput,
 ): Promise<ApplyEventResult> {
@@ -151,16 +174,21 @@ export async function applyConnectorSetupEvent(
     const now = input.now ?? new Date();
     const reachedConnected = result.next === "connected" && session.firstConnectedAt === null;
 
-    const updated = await tx.connectorSetupSession.update({
-      where: { id: session.id },
-      data: {
-        status: result.next,
-        lastEventKind: input.event.kind,
-        lastErrorCode: input.event.kind === "validation_failed" ? input.event.errorCode : null,
-        lastTransitionAt: now,
-        ...(reachedConnected ? { firstConnectedAt: now } : {}),
-      },
-    });
+    const data = {
+      status: result.next,
+      lastEventKind: input.event.kind,
+      lastErrorCode: input.event.kind === "validation_failed" ? input.event.errorCode : null,
+      lastTransitionAt: now,
+      ...(reachedConnected ? { firstConnectedAt: now } : {}),
+    };
+    let updated: ConnectorSetupSessionRow;
+    if (tx.connectorSetupSession.updateMany) {
+      const claim = await tx.connectorSetupSession.updateMany({ where: { id: session.id, status: session.status }, data });
+      if (claim.count !== 1) throw new ConcurrentSetupChange();
+      updated = { ...session, ...data, updatedAt: now } as ConnectorSetupSessionRow;
+    } else {
+      updated = await tx.connectorSetupSession.update({ where: { id: session.id }, data });
+    }
 
     const transition = await tx.connectorSetupTransition.create({
       data: {

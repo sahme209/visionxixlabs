@@ -2938,6 +2938,54 @@ model Environment {
   @@index([tier])
 }
 
+/// A deployment step check attached to one release stage. V19 never runs it:
+/// checks execute in the customer's CI or runners and results come back as evidence.
+model DeploymentCheck {
+  id              String   @id @default(cuid())
+  organizationId  String
+  key             String
+  name            String
+  /// smoke_test | health_check | migration_dry_run | custom_script | manual_checklist
+  kind            String
+  /// plan | validate | approve | deploy | verify | recover
+  stage           String
+  /// blocking | advisory
+  mode            String
+  spec            Json
+  enabled         Boolean  @default(true)
+  /// Increments on every edit so releases can record the exact check version they used.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
+/// A result reported by the customer's CI for one deployment check run.
+/// Evidence only; V19 did not run the check.
+model DeploymentCheckResult {
+  id              String   @id @default(cuid())
+  organizationId  String
+  checkKey        String
+  /// Check version the CI ran; compared with the current version when shown.
+  checkVersion    Int
+  stage           String
+  /// passed | failed | error
+  status          String
+  durationMs      Int?
+  runUrl          String?
+  environmentSlug String?
+  releaseRef      String?
+  idempotencyKey  String
+  apiKeyId        String
+  reportedAt      DateTime @default(now())
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, checkKey, reportedAt])
+}
+
 /// Plain configuration variable, either a workspace default (scopeKey
 /// "workspace") or an override for one Environment (scopeKey "env:<id>").
 /// Secrets never live here; the application refuses credential-like values.

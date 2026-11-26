@@ -24,6 +24,7 @@ import { prisma } from "@/lib/db";
 import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteAuthority";
 import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { recordDeploymentConfigSnapshot, type ConfigSnapshotRepo } from "@/lib/releaseops/deploymentConfigSnapshot";
+import { readDeploymentCheckGate, type DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGateStore";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -149,6 +150,14 @@ export async function POST(request: NextRequest): Promise<Response> {
       });
   if (!policy.ok) {
     return NextResponse.json({ ok: false, error: policy.error, policyId: policy.policyId ?? null }, { status: 409 });
+  }
+
+  // Blocking deployment checks for earlier stages must have passed in CI for this exact commit.
+  // An audited emergency bypass skips them, as it skips branch policy.
+  if (!emergencyBypass) {
+    const gate = await readDeploymentCheckGate(prisma as unknown as DeploymentCheckGateRepo, { organizationId, commitSha: policy.sourceCommitSha, now: new Date() });
+    if (gate === "unavailable") return NextResponse.json({ ok: false, error: "deployment_checks_unavailable" }, { status: 503 });
+    if (!gate.ok) return NextResponse.json({ ok: false, error: "deployment_checks_blocking", blocked: gate.blocked }, { status: 409 });
   }
 
   if (emergencyBypass) {

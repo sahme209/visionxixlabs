@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   releaseDeploymentDispatch: vi.fn(),
   settleDeploymentDispatch: vi.fn(),
   configSnapshot: vi.fn(async () => ({ recorded: true, digest: "d", count: 0 })),
+  checkGate: vi.fn(async (): Promise<unknown> => ({ ok: true, satisfied: [], notEnforceable: [] })),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -54,6 +55,7 @@ vi.mock("@/lib/releaseops/auditEventResponder", async () => {
   return { ...actual, appendAuditEvent: mocks.recordAudit };
 });
 vi.mock("@/lib/releaseops/deploymentConfigSnapshot", () => ({ recordDeploymentConfigSnapshot: mocks.configSnapshot }));
+vi.mock("@/lib/releaseops/deploymentCheckGateStore", () => ({ readDeploymentCheckGate: mocks.checkGate }));
 vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
   reserveDeploymentDispatch: mocks.reserveDeploymentDispatch,
   releaseDeploymentDispatch: mocks.releaseDeploymentDispatch,
@@ -167,6 +169,30 @@ describe("POST /api/desktop/environments/deploy", () => {
     expect(JSON.stringify(auditCall)).not.toContain("installation-token");
     expect(mocks.configSnapshot).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "org-1", environmentId: "env_1" }));
     expect(mocks.configSnapshot.mock.invocationCallOrder[0]).toBeLessThan(mocks.dispatchWorkflow.mock.invocationCallOrder[0]);
+  });
+
+  it("refuses to dispatch while blocking deployment checks have not passed for this commit", async () => {
+    mocks.checkGate.mockResolvedValueOnce({ ok: false, blocked: [{ key: "health-probe", name: "Health probe", stage: "validate", reason: "no_result" }], satisfied: [], notEnforceable: [] });
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: "deployment_checks_blocking", blocked: [{ key: "health-probe", reason: "no_result" }] });
+    expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled();
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when deployment checks cannot be read", async () => {
+    mocks.checkGate.mockResolvedValueOnce("unavailable");
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(503);
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
   it("still dispatches when the configuration snapshot cannot be recorded", async () => {
