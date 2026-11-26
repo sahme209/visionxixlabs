@@ -88,6 +88,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "read_gitops_state",
+    description: "Read up to 20 applications from the workspace's connected Argo CD project and Flux namespace: sync or readiness, health and the commit each applied. Use it to check whether a cluster runs what V19 deployed. Reads only; never syncs, reconciles or suspends.",
+    argsSchemaHint: "{} — no arguments.",
+    riskLevel: "low",
+  },
+  {
     name: "read_release_health",
     description: "Read the health of one release from the workspace's connected read-only signals: open PagerDuty/Opsgenie incidents, new Sentry issues first seen in the release, Datadog monitor states, stale LaunchDarkly flags and Verify-stage check results for the commit. Returns a verdict with reasons and lists signals that are not connected. Reads only; never pages, resolves, mutes or toggles anything.",
     argsSchemaHint: '{ "release": "release name used by the error tracker, e.g. web@1.4.0", "commit": "optional full 40-character commit SHA" }',
