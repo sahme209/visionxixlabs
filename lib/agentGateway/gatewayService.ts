@@ -97,7 +97,8 @@ export async function decideGatewayRequest(input: { organizationId: string; user
   if (key && key.createdBy.trim().toLowerCase() === input.userEmail.trim().toLowerCase()) return { ok: false as const, error: "self_approval_forbidden", status: 403 };
   const status = input.decision === "approve" ? "approved" : "rejected";
   const note = typeof input.note === "string" ? input.note.slice(0, 1000) : null;
-  const saved = await prisma.agentGatewayRequest.updateMany({ where: { id: row.id, status: "pending", actionDigest: row.actionDigest }, data: { status, decidedByUserId: input.userId, decidedAt: now, decisionNote: note } });
+  // Expiry and workspace are re-checked in the write itself, so a decision cannot land after the request expires.
+  const saved = await prisma.agentGatewayRequest.updateMany({ where: { id: row.id, organizationId: input.organizationId, status: "pending", actionDigest: row.actionDigest, expiresAt: { gt: now } }, data: { status, decidedByUserId: input.userId, decidedAt: now, decisionNote: note } });
   if (saved.count !== 1) return { ok: false as const, error: "not_pending", status: 409 };
   await audit(input.organizationId, `agent_gateway.${status}`, row.id, `${status} ${row.agentName} ${row.actionKind} on ${row.target.slice(0, 80)}`, input.userId);
   await notify(input.organizationId, "agent_gateway.request_decided", { requestId: row.id, agentName: row.agentName, actionKind: row.actionKind, decision: status, decidedByUserId: input.userId });
