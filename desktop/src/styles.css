@@ -1784,3 +1784,20 @@ html[data-theme="light"] {
 .change-window-timeline-ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); font-variant-numeric: tabular-nums; }
 .change-window-timeline-note { margin-top: 8px; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
 @media (prefers-reduced-motion: reduce) { .change-window-timeline-now { animation: none; } .change-window-timeline-fill { transition: none; } }
+
+/* Observed Airflow task waterfall (Batches run inspection). */
+.airflow-waterfall { margin-top: 10px; padding: 10px 12px; border: 1px solid rgb(var(--axiom-border)); border-radius: 10px; }
+.airflow-waterfall figcaption { font-size: 11px; color: rgb(var(--neutral-zinc-400)); margin-bottom: 8px; }
+.airflow-waterfall ol { display: grid; gap: 5px; }
+.airflow-waterfall li { display: grid; grid-template-columns: minmax(80px, 28%) 1fr 52px; align-items: center; gap: 10px; font-size: 11px; }
+.airflow-waterfall-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgb(var(--neutral-zinc-300)); font-family: var(--font-mono); }
+.airflow-waterfall-track { position: relative; height: 10px; border-radius: 999px; background: var(--status-neutral-surface); }
+.airflow-waterfall-bar { position: absolute; top: 0; bottom: 0; min-width: 4px; border-radius: 999px; background: var(--status-neutral); transform-origin: left center; animation: airflow-bar-in .5s cubic-bezier(.22,1,.36,1) both; animation-delay: var(--delay, 0ms); }
+.airflow-waterfall li[data-tone="green"] .airflow-waterfall-bar { background: var(--status-green); }
+.airflow-waterfall li[data-tone="red"] .airflow-waterfall-bar { background: var(--status-red); }
+.airflow-waterfall li[data-tone="blue"] .airflow-waterfall-bar { background: var(--status-blue); }
+.airflow-waterfall li[data-tone="amber"] .airflow-waterfall-bar { background: var(--status-amber); }
+.airflow-waterfall-bar[data-open] { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgb(0 0 0 / .25) 4px 8px); }
+.airflow-waterfall-time { text-align: end; color: rgb(var(--neutral-zinc-400)); font-variant-numeric: tabular-nums; }
+@keyframes airflow-bar-in { from { transform: scaleX(0); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .airflow-waterfall-bar { animation: none; } }
