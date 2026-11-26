@@ -79,6 +79,15 @@ public struct VisionXIXLabs {
         try await get("/api/v1/environments/\(slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug)/variables")
     }
 
+    /// POST /api/v1/checks/results — report one deployment check run from CI as evidence.
+    /// Required scope: `governance:request`. Idempotent on `idempotencyKey`.
+    public func reportCheckResult(checkKey: String, checkVersion: Int, stage: String, status: String, idempotencyKey: String, durationMs: Int? = nil, runUrl: String? = nil) async throws -> CheckResultResponse {
+        var body: [String: Any] = ["checkKey": checkKey, "checkVersion": checkVersion, "stage": stage, "status": status, "idempotencyKey": idempotencyKey]
+        if let durationMs { body["durationMs"] = durationMs }
+        if let runUrl { body["runUrl"] = runUrl }
+        return try await post("/api/v1/checks/results", body: body)
+    }
+
     /// GET /api/v1/pipelines/runs/{id} — poll a pipeline run's status.
     public func pipelineRun(id: String) async throws -> PipelineRunResponse {
         try await get("/api/v1/pipelines/runs/\(id)")
@@ -294,6 +303,14 @@ public struct EnvironmentVariablesResponse: Decodable {
     /// SHA-256 fingerprint of the resolved set.
     public let digest: String
     public let count: Int
+}
+
+public struct CheckResultResponse: Decodable {
+    public let ok: Bool
+    public let recorded: Bool
+    public let duplicate: Bool?
+    public let currentVersion: Int?
+    public let stale: Bool?
 }
 
 public struct ReleaseGateResponse: Decodable {

@@ -2963,6 +2963,29 @@ model DeploymentCheck {
   @@index([organizationId])
 }
 
+/// A result reported by the customer's CI for one deployment check run.
+/// Evidence only; V19 did not run the check.
+model DeploymentCheckResult {
+  id              String   @id @default(cuid())
+  organizationId  String
+  checkKey        String
+  /// Check version the CI ran; compared with the current version when shown.
+  checkVersion    Int
+  stage           String
+  /// passed | failed | error
+  status          String
+  durationMs      Int?
+  runUrl          String?
+  environmentSlug String?
+  releaseRef      String?
+  idempotencyKey  String
+  apiKeyId        String
+  reportedAt      DateTime @default(now())
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, checkKey, reportedAt])
+}
+
 /// Plain configuration variable, either a workspace default (scopeKey
 /// "workspace") or an override for one Environment (scopeKey "env:<id>").
 /// Secrets never live here; the application refuses credential-like values.

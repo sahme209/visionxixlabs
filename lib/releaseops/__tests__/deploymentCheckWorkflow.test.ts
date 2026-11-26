@@ -36,4 +36,17 @@ describe("generateCheckWorkflow", () => {
     expect(validateCheck({ key: "x", name: "Leak ${{ secrets.TOKEN }}", kind: "smoke_test", stage: "verify", mode: "blocking", spec: { url: "https://a.example.invalid/", expectStatus: 200, maxLatencyMs: 5 } }).ok).toBe(false);
     expect(validateCheck({ key: "x", name: "ok", kind: "manual_checklist", stage: "verify", mode: "blocking", spec: { items: ["fine", "${{ github.token }}"] } }).ok).toBe(false);
   });
+  it("reports each job's result to V19 only when the secret exists, as idempotent evidence", () => {
+    const out = generateCheckWorkflow([c({})]);
+    const js = parseDocument(out.yaml).toJS() as { jobs: Record<string, { steps: Array<{ name: string; if?: string; env?: Record<string, string>; run?: string }> }> };
+    const steps = js.jobs.check_health_probe.steps;
+    expect(steps[0].name).toBe("Start timer");
+    const report = steps[steps.length - 1];
+    expect(report.name).toBe("Report result to V19");
+    expect(report.if).toBe("always() && env.V19_API_KEY != ''");
+    expect(report.env?.V19_API_KEY).toBeUndefined();
+    expect((js.jobs.check_health_probe as unknown as { env: Record<string, string> }).env.V19_API_KEY).toBe("${{ secrets.V19_API_KEY }}");
+    expect(report.run).toContain("/api/v1/checks/results");
+    expect(report.run).toContain('--arg idem "$RUN_KEY-$V19_CHECK_KEY"');
+  });
 });

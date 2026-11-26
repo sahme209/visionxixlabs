@@ -30,7 +30,11 @@ export async function GET(): Promise<NextResponse> {
     const rows = await prisma.deploymentCheck.findMany({ where: { organizationId: ctx.organizationId }, orderBy: [{ key: "asc" }], take: MAX_CHECKS_PER_WORKSPACE, select });
     const order = (stage: string) => { const i = (CHECK_STAGES as readonly string[]).indexOf(stage); return i < 0 ? CHECK_STAGES.length : i; };
     const checks = [...rows].sort((a, b) => order(a.stage) - order(b.stage));
-    return NextResponse.json({ ok: true, data: { canEdit: ctx.isAdmin, checks, coverage: stageCoverage(checks as unknown as StoredCheck[]) } }, { headers: noStore });
+    // Latest reported result per check; optional evidence, so a read failure only hides it.
+    const results = await (async () => prisma.deploymentCheckResult.findMany({ where: { organizationId: ctx.organizationId }, orderBy: { reportedAt: "desc" }, take: 500, select: { checkKey: true, checkVersion: true, status: true, runUrl: true, reportedAt: true } }))().catch(() => null);
+    const latest: Record<string, { status: string; checkVersion: number; runUrl: string | null; reportedAt: string }> = {};
+    for (const r of results ?? []) if (!latest[r.checkKey]) latest[r.checkKey] = { status: r.status, checkVersion: r.checkVersion, runUrl: r.runUrl, reportedAt: r.reportedAt.toISOString() };
+    return NextResponse.json({ ok: true, data: { canEdit: ctx.isAdmin, checks, coverage: stageCoverage(checks as unknown as StoredCheck[]), latestResults: results === null ? null : latest } }, { headers: noStore });
   } catch {
     return fail("checks_unavailable", 503);
   }

@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { CHECK_KINDS, CHECK_STAGES, KIND_LABEL, STAGE_LABEL, type CheckKind, type CheckStage } from "@/lib/releaseops/deploymentChecks";
 
 interface Check { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; spec: Record<string, unknown>; enabled: boolean; version: number }
-interface Board { canEdit: boolean; checks: Check[]; coverage: { stages: Array<{ stage: CheckStage; blocking: number; advisory: number }>; uncovered: CheckStage[] } }
+interface LatestResult { status: string; checkVersion: number; runUrl: string | null; reportedAt: string }
+interface Board { canEdit: boolean; latestResults?: Record<string, LatestResult> | null; checks: Check[]; coverage: { stages: Array<{ stage: CheckStage; blocking: number; advisory: number }>; uncovered: CheckStage[] } }
 interface Draft { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; fields: Record<string, string>; enabled: boolean; expectedVersion?: number }
 
 const FIELDS: Record<CheckKind, Array<{ name: string; label: string; placeholder: string; numeric?: boolean; multiline?: boolean; options?: string[] }>> = {
@@ -91,6 +92,7 @@ export function ChecksBoard() {
                 <p className="text-sm text-zinc-100">{c.name} <span className="font-mono text-xs text-zinc-400">{c.key} · v{c.version}</span></p>
                 <p className="mt-1 text-xs text-zinc-400">{STAGE_LABEL[c.stage]} · {KIND_LABEL[c.kind]} · {c.mode}{c.enabled ? "" : " · disabled"}</p>
                 <p className="mt-1 break-all font-mono text-xs text-zinc-300">{summary(c)}</p>
+                <LatestResultLine check={c} latest={board.latestResults === null ? "unavailable" : board.latestResults?.[c.key]} />
               </div>
               {board.canEdit && <div className="flex gap-3 text-xs">
                 <button type="button" className="text-zinc-300 underline-offset-2 hover:underline" aria-label={`Edit ${c.name}`} onClick={() => setDraft({ key: c.key, name: c.name, kind: c.kind, stage: c.stage, mode: c.mode, fields: fieldsFrom(c), enabled: c.enabled, expectedVersion: c.version })}>Edit</button>
@@ -154,4 +156,13 @@ function WorkflowPreview({ revision }: { revision: string }) {
         <pre tabIndex={0} aria-label="Generated workflow" className="mt-3 max-h-96 overflow-auto rounded-lg border border-white/10 bg-black/40 p-3 font-mono text-xs leading-5 text-zinc-200">{state.yaml}</pre>
       </div>}
     </details>);
+}
+
+function LatestResultLine({ check, latest }: { check: Check; latest: LatestResult | "unavailable" | undefined }) {
+  if (check.kind === "manual_checklist" || check.kind === "health_check") return null;
+  if (latest === "unavailable") return <p className="mt-1 text-xs text-zinc-400">Results could not be read.</p>;
+  if (!latest) return <p className="mt-1 text-xs text-zinc-400">No result recorded yet.</p>;
+  const when = new Date(latest.reportedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  const tone = latest.status === "passed" ? "text-emerald-300" : latest.status === "failed" ? "text-red-300" : "text-amber-300";
+  return <p className="mt-1 text-xs text-zinc-400">Last result: <span className={tone}>{latest.status}</span> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}</p>;
 }

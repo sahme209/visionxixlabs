@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { Prisma } from "@/lib/prismaClient";
 
-const m = vi.hoisted(() => ({ ctx: vi.fn(), sameOrigin: vi.fn(() => true), audit: vi.fn(), findMany: vi.fn(), count: vi.fn(), create: vi.fn(), updateMany: vi.fn(), deleteMany: vi.fn() }));
+const m = vi.hoisted(() => ({ ctx: vi.fn(), sameOrigin: vi.fn(() => true), audit: vi.fn(), findMany: vi.fn(), resultsFindMany: vi.fn(async () => [] as unknown[]), count: vi.fn(), create: vi.fn(), updateMany: vi.fn(), deleteMany: vi.fn() }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: m.ctx }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: m.sameOrigin }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentCheck: { findMany: m.findMany, count: m.count, create: m.create, updateMany: m.updateMany, deleteMany: m.deleteMany } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentCheck: { findMany: m.findMany, count: m.count, create: m.create, updateMany: m.updateMany, deleteMany: m.deleteMany }, deploymentCheckResult: { findMany: m.resultsFindMany } } }));
 import { DELETE, GET, POST } from "../route";
 
 const admin = { isAuthenticated: true, organizationId: "org1", userId: "u1", email: "a@example.invalid", roles: ["owner"] };
@@ -22,6 +22,13 @@ describe("/api/control/checks", () => {
     const body = await (await GET()).json();
     expect(body.data.canEdit).toBe(false);
     expect(body.data.coverage.uncovered).toEqual(["plan", "validate", "approve", "deploy", "recover"]);
+    expect(body.data.latestResults).toEqual({});
+  });
+  it("GET returns the newest reported result per check", async () => {
+    m.findMany.mockResolvedValue([{ ...smoke, enabled: true, version: 2, updatedAt: new Date() }]);
+    m.resultsFindMany.mockResolvedValueOnce([{ checkKey: "health-probe", checkVersion: 1, status: "failed", runUrl: null, reportedAt: new Date("2026-11-26T10:00:00Z") }, { checkKey: "health-probe", checkVersion: 1, status: "passed", runUrl: null, reportedAt: new Date("2026-11-25T10:00:00Z") }]);
+    const body = await (await GET()).json();
+    expect(body.data.latestResults["health-probe"]).toEqual({ status: "failed", checkVersion: 1, runUrl: null, reportedAt: "2026-11-26T10:00:00.000Z" });
   });
   it("refuses non-admins and invalid specs without writing", async () => {
     m.ctx.mockResolvedValue({ ...admin, roles: ["viewer"] });

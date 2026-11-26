@@ -96,6 +96,15 @@ class VisionXIXLabs:
         """
         return self._get(f"/api/v1/environments/{quote(slug, safe='')}/variables")
 
+    def report_check_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """POST /api/v1/checks/results — report one deployment check run from CI as evidence.
+
+        Required scope: governance:request. Keys: checkKey, checkVersion, stage, status
+        (passed | failed | error), idempotencyKey, and optionally durationMs, runUrl,
+        environmentSlug, releaseRef. Idempotent on idempotencyKey.
+        """
+        return self._post("/api/v1/checks/results", result)
+
     def pipeline_run(self, run_id: str) -> Dict[str, Any]:
         """GET /api/v1/pipelines/runs/{id} — poll a run's status."""
         return self._get(f"/api/v1/pipelines/runs/{run_id}")

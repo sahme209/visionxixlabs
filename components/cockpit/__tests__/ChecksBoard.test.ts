@@ -54,3 +54,16 @@ describe("ChecksBoard CI workflow preview", () => {
     expect(f.mock.calls[1][0]).toBe("/api/control/checks/workflow");
   });
 });
+
+describe("ChecksBoard latest results", () => {
+  it("shows the last reported result, flags a stale check version and says when none is recorded", async () => {
+    const mk = (key: string, version: number) => ({ key, name: key, kind: "smoke_test", stage: "verify", mode: "blocking", spec: { url: "https://a.example.invalid/h", expectStatus: 200, maxLatencyMs: 500 }, enabled: true, version });
+    const b = board(true, [mk("probe-a", 3), mk("probe-b", 1)]);
+    (b.data as Record<string, unknown>).latestResults = { "probe-a": { status: "failed", checkVersion: 2, runUrl: "https://github.com/acme/app/actions/runs/9", reportedAt: "2026-11-26T10:00:00Z" } };
+    vi.stubGlobal("fetch", vi.fn(async () => json(b)));
+    render(createElement(ChecksBoard));
+    await waitFor(() => expect(screen.getByText("failed")).toBeTruthy());
+    expect(screen.getByText("ran version 2, current is 3")).toBeTruthy();
+    expect(screen.getByText("No result recorded yet.")).toBeTruthy();
+  });
+});
