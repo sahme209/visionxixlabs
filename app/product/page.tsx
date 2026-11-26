@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
@@ -80,6 +81,21 @@ export default function ProductPage() {
         <ControlPlaneModel />
         <ProductTour heading="Walk through the desktop app" />
         <section aria-label="How V19 fits together" className="mx-auto max-w-[1080px] px-5 pt-12 sm:px-8"><ArchitectureMap /></section>
+        <section aria-labelledby="config-promotion" className="mx-auto max-w-[1080px] px-5 pt-16 sm:px-8">
+          <h2 id="config-promotion" className="text-2xl font-medium tracking-[-0.03em] text-zinc-100">Configuration and promotion you can review</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Set configuration once with per-environment overrides and compare environments before promoting. Every desktop deployment records the configuration fingerprint it used, and Governance shows each repository&apos;s promotion order with any gaps.</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            {[
+              { src: "/docs/cockpit/variables.webp", alt: "Variables page with workspace defaults, environment overrides and a missing-value warning", caption: "Variables: defaults, overrides, fingerprints and gaps", href: "/docs/workspaces#variables" },
+              { src: "/docs/cockpit/lifecycles.webp", alt: "Promotion lifecycles showing Development to Staging to Production and a production gap warning", caption: "Promotion lifecycles with gap warnings", href: "/docs/governance-approvals#lifecycles" },
+            ].map((f) => (
+              <figure key={f.src} className="overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
+                <Image src={f.src} alt={f.alt} width={1600} height={1000} sizes="(min-width: 768px) 520px, 100vw" className="h-auto w-full" />
+                <figcaption className="flex items-center justify-between gap-3 px-4 py-3 text-xs text-zinc-400"><span>{f.caption}. Synthetic data.</span><Link href={f.href} className="shrink-0 text-zinc-200 underline underline-offset-4">Read the guide</Link></figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
 
         <section aria-labelledby="scripted-preview" className="mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10">
           <h2 id="scripted-preview" className="text-xl font-medium tracking-[-0.03em] text-zinc-100">Scripted interactive preview</h2>
