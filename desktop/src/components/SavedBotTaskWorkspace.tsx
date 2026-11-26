@@ -23,6 +23,14 @@ interface Props {headerActionsTarget?:HTMLDivElement|null;canManageActions?:bool
 /** Saved task editing, explicit tool-free Send, and the separate fixed readiness report. */
 const runFamilyLabel:Record<SavedBotTaskLastRunDto["family"],string>={ai_task:"AI task",readiness_run:"Readiness run",pull_request_evidence:"Pull request evidence"};
 /** Recorded facts only: run family, stored status and when it was last recorded. */
+/** Colour follows the stored status only: completed green, failed red, in progress blue; anything else stays neutral. */
+export function lastRunTone(run:SavedBotTaskLastRunDto|null):"green"|"red"|"blue"|undefined{
+ if(!run)return undefined;
+ if(/^(completed|succeeded|success)$/.test(run.status))return "green";
+ if(/^(failed|failure|error|cancelled|timed_out)$/.test(run.status))return "red";
+ if(/^(queued|running|in_progress|pending)$/.test(run.status))return "blue";
+ return undefined;
+}
 export function lastRunLabel(run:SavedBotTaskLastRunDto|null,currentVersion:number):string{
  if(!run)return "No recorded runs";
  const version=run.taskVersion===currentVersion?"this version":`version ${run.taskVersion}`;
@@ -259,7 +267,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     {listState==="ready"&&rows.length===0&&<p className="text-xs leading-5 text-zinc-500">No saved task drafts yet. Save a draft when you are ready.</p>}
     {listState==="ready"&&rows.length>0&&visibleRows.length===0&&<p className="text-xs text-zinc-500">No loaded tasks match.</p>}
     {listState==="error"&&<p className="text-xs leading-5 text-zinc-500">Saved tasks could not be loaded. Refresh to retry; the editor is retained.</p>}
-    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-400">Draft · version {task.version}</span>{task.id in lastRuns&&<span data-help-id="bot.workspace.task-last-run" className="mt-0.5 block text-[11px] text-zinc-400">{lastRunLabel(lastRuns[task.id],task.version)}</span>}</span></button></li>)}</ul>
+    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-400">Draft · version {task.version}</span>{task.id in lastRuns&&<span data-help-id="bot.workspace.task-last-run" className="mt-0.5 block text-[11px] text-zinc-400 status-text" data-tone={lastRunTone(lastRuns[task.id])}>{lastRunLabel(lastRuns[task.id],task.version)}</span>}</span></button></li>)}</ul>
     {nextCursor&&<button data-help-id="bot.workspace.tasks-more" type="button" className="btn-secondary mt-3" disabled={Boolean(busy)} onClick={()=>void loadList(nextCursor)}>More saved tasks</button>}
    </div>
   </section>

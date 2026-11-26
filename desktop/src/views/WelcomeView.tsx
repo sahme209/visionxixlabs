@@ -1,4 +1,5 @@
 import {ReadableTime} from "../components/ReadableTime";
+import { StatusBadge, releaseRequestTone } from "../components/StatusBadge";
 import { ArrowRight, Box, ChevronRight, GitBranch, History, Layers, ListChecks, Sparkles, SquareStack } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -374,7 +375,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
               className="studio-home-release-grid studio-home-release-row">
               <span className="studio-home-release-title"><Box aria-hidden size={16} /><span>{release.title}{" "}<small>v{release.version}</small></span></span>
               <span><span className="studio-home-environment">{release.environment || "Unspecified"}</span></span>
-              <span className="capitalize">{release.status.replaceAll("_", " ")}</span>
+              <span>{(() => { const t = releaseRequestTone(release.status); return <StatusBadge tone={t.tone} shape={t.shape}><span className="capitalize">{release.status.replaceAll("_", " ")}</span></StatusBadge>; })()}</span>
               <span>{Number.isFinite(updated.getTime()) ? <time dateTime={updated.toISOString()}>{updated.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</time> : "Unavailable"}</span>
             </button>
           </li>;

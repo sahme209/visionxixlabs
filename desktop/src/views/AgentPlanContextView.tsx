@@ -7,6 +7,7 @@ import {simulationApprovalEventLabels} from "../components/ReleaseExecutionAppro
 import {providerApprovalEventLabels} from "../components/ReleaseProviderMergeApproval";
 import {hasCompleteOperationPlanHistory, isOperationPlanList, operationPlanEventLabels, type OperationPlanList, type ReleaseOperationPlanDto} from "../lib/releaseOperationPlanContract";
 import type {SavedReleaseLink} from "./WelcomeView";
+import { StatusBadge, type StatusShape, type StatusTone } from "../components/StatusBadge";
 import "./AgentPlanContextView.css";
 
 const labels: Record<ReleaseOperationPlanDto["status"], string> = {
@@ -22,6 +23,14 @@ function verifiedPlanHistory(row: ReleaseOperationPlanDto) {
   if (row.status === "reviewed" &&
     !row.history.some(event => event.type === "reviewed" && event.actorKind === "independent_reviewer")) return null;
   return row.history;
+}
+
+function planTone(row: ReleaseOperationPlanDto): {tone: StatusTone; shape: StatusShape} {
+  if (!verifiedPlanHistory(row)) return {tone: "amber", shape: "attention"};
+  if (row.status === "reviewed") return {tone: "green", shape: "success"};
+  if (row.status === "pending_review") return {tone: "amber", shape: "waiting"};
+  if (row.status === "rejected") return {tone: "red", shape: "failure"};
+  return {tone: "neutral", shape: "closed"};
 }
 
 function planState(row: ReleaseOperationPlanDto) {
@@ -84,7 +93,7 @@ export function AgentPlanContextView({release, workspaceId, ownerConfig, revisio
         <div className="studio-agent-plan-title">
           {row && <div className="studio-agent-plan-record-meta">
             <p>Release version {row.requestVersion} · Plan version {row.version}{row.requestVersion !== release.version ? " · Earlier release version" : ""}</p>
-            <span className="studio-agent-plan-state">{planState(row)}</span>
+            <span className="studio-agent-plan-state">{(() => { const t = planTone(row); return <StatusBadge tone={t.tone} shape={t.shape}>{planState(row)}</StatusBadge>; })()}</span>
           </div>}
           <h2 ref={heading} tabIndex={-1}>{pr ? `Merge pull request #${pr.number}` : "Saved release plans"}</h2>
           {!row && <p>Release version {release.version} · Read-only context</p>}

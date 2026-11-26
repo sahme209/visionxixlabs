@@ -1579,17 +1579,17 @@ html[data-theme="light"] :is(.studio-deployments, .studio-batches-workspace) {
 /* Shared status tones (matte palette from Tickets). Colour always pairs with a shape and a label;
    use only for a recorded state: blue = in progress, green = recorded success, amber = waiting or needs attention, red = recorded failure. */
 :root {
-  --status-blue: #73b8ff; --status-blue-surface: #17283c;
-  --status-green: #a0d9aa; --status-green-surface: #1c3025;
-  --status-amber: #f8d484; --status-amber-surface: #322a1c;
-  --status-red: #ffa48e; --status-red-surface: #3b2723;
+  --status-blue: #5ad8ff; --status-blue-surface: #142830;
+  --status-green: #65df79; --status-green-surface: #172b1c;
+  --status-amber: #ffcc66; --status-amber-surface: #2d2516;
+  --status-red: #fa8379; --status-red-surface: #301e1c;
   --status-neutral: rgb(var(--neutral-zinc-300)); --status-neutral-surface: rgb(var(--neutral-white) / .06);
 }
 html[data-theme="light"] {
-  --status-blue: #0e558d; --status-blue-surface: #e8f3ff;
-  --status-green: #255d32; --status-green-surface: #edf8ef;
-  --status-amber: #654600; --status-amber-surface: #fff4d6;
-  --status-red: #872f23; --status-red-surface: #fff0ea;
+  --status-blue: #076384; --status-blue-surface: #ebf7ff;
+  --status-green: #1b7133; --status-green-surface: #edf8ef;
+  --status-amber: #75530a; --status-amber-surface: #fff5dc;
+  --status-red: #9d332d; --status-red-surface: #fff0ee;
   --status-neutral: rgb(var(--neutral-zinc-600)); --status-neutral-surface: rgb(0 0 0 / .05);
 }
 .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; line-height: 18px; font-weight: 500; white-space: nowrap; color: var(--status-neutral); background: var(--status-neutral-surface); }
