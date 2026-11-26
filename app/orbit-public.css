@@ -353,3 +353,10 @@ body:has(.site-navigation) main :is(h1,h2) { font-weight:400; }
 
 /* Keep original vendor assets inside the neutral public palette. */
 .integration-catalog-mark:not(.is-monochrome){filter:grayscale(1) brightness(2)}
+/* framer.com-style button feedback: a small lift on hover, a press on click, arrow nudge on secondary links. */
+.orbit-primary, .public-feature-action { transition: background-color 150ms, transform 180ms cubic-bezier(.22,1,.36,1), box-shadow 180ms; }
+.orbit-primary:hover, .public-feature-action:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgb(255 255 255 / .12); }
+.orbit-primary:active, .public-feature-action:active { transform: translateY(0) scale(.98); box-shadow: none; }
+.orbit-secondary svg, .public-feature-action svg { transition: transform 200ms cubic-bezier(.22,1,.36,1); }
+.orbit-secondary:hover svg, .public-feature-action:hover svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .orbit-primary, .public-feature-action, .orbit-secondary svg, .public-feature-action svg { transition: none; } .orbit-primary:hover, .public-feature-action:hover { transform: none; } }

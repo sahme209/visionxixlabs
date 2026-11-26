@@ -44,7 +44,7 @@ export function ArchitectureMap() {
           <button type="button" aria-label="Zoom in" className="px-2.5 py-1 hover:bg-white/5" onClick={() => zoom(1.2)}>+</button>
         </div>
       </div>
-      <p className="mt-1 text-xs text-zinc-500">Select a part to see what it does and open its guide. Drag to pan.</p>
+      <p className="mt-1 text-xs text-zinc-400">Select a part to see what it does and open its guide. Drag to pan.</p>
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full cursor-grab touch-none select-none active:cursor-grabbing" role="group" aria-label="Architecture map"
         onPointerDown={(e) => { if ((e.target as Element).closest("[data-node]")) return; drag.current = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; e.currentTarget.setPointerCapture?.(e.pointerId); }}
         onPointerMove={(e) => { const d = drag.current; if (!d) return; const r = e.currentTarget.getBoundingClientRect(); const s = r.width ? W / r.width : 1; setView((v) => ({ ...v, x: d.vx + (e.clientX - d.x) * s, y: d.vy + (e.clientY - d.y) * s })); }}

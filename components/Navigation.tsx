@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { SmoothScroll } from "@/components/marketing/SmoothScroll";
+import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 
 const primaryLinks = [
   { href: "/product", label: "Product" },
@@ -176,6 +178,8 @@ export function Navigation() {
           : "border-b border-transparent bg-[#090a08]/62"
       }`}
     >
+      <SmoothScroll />
+      <ScrollReveal />
       {/* Blur only the bar: a backdrop filter on nav would constrain the fixed
           mobile dialog to the bar height instead of the viewport. */}
       <div

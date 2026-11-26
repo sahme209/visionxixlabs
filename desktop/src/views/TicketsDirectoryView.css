@@ -433,3 +433,14 @@ html:not([data-theme="light"]) .studio-ticket-overview .studio-ticket-release-li
 [data-ticket-priority="high"] > .studio-ticket-severity-swatch { background: var(--studio-ticket-red); opacity: .7; }
 [data-ticket-priority="medium"] > .studio-ticket-severity-swatch { background: var(--studio-ticket-amber); }
 @media (prefers-reduced-motion: reduce) { .studio-ticket-severity-bar span { transition: none; } }
+
+/* Recovery metrics from loaded incidents. */
+.studio-ticket-recovery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 14px 0 0; border-block: 1px solid var(--studio-ticket-divider); padding-block: 10px; }
+.studio-ticket-recovery > div { padding-inline: 14px; }
+.studio-ticket-recovery > div:first-child { padding-inline-start: 0; }
+.studio-ticket-recovery > div + div { border-inline-start: 1px solid var(--studio-ticket-divider); }
+.studio-ticket-recovery dt { font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
+.studio-ticket-recovery dd { margin-top: 2px; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; color: rgb(var(--neutral-zinc-100)); }
+.studio-ticket-recovery dd small { margin-inline-start: 8px; font-size: 11px; font-weight: 400; color: rgb(var(--neutral-zinc-500)); }
+.studio-ticket-recovery p { grid-column: 1 / -1; margin-top: 6px; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
+@media (max-width: 640px) { .studio-ticket-recovery { grid-template-columns: 1fr; gap: 6px; } .studio-ticket-recovery > div { padding-inline: 0; border: 0 !important; } }

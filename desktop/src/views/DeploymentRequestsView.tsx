@@ -1302,15 +1302,14 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
   ].filter(part => part.count > 0) : [];
   return <dl aria-label="Release request and recorded run summary" className="studio-release-summary">
     {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title} data-metric={label === "Run success rate" ? "rate" : undefined}>
-      {label === "Run success rate" && outcomes?.successRate != null
-        ? <ProgressRing percent={outcomes.successRate} tone="green" size={30}/>
-        : tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}
       <dt>{label}{window && <span className="studio-release-summary-window">{window}</span>}</dt>
-      <dd>{label === "Run success rate" && outcomes?.successRate != null ? <><AnimatedNumber value={outcomes.successRate}/>%</> : value}</dd>
-      {label === "Run success rate" && split.length > 0 && <div className="studio-outcome-split">
-        <div className="studio-outcome-split-bar" aria-hidden="true">{split.map(part => <span key={part.key} data-tone={part.tone} style={{flexGrow: part.count}}/>)}</div>
-        <p className="studio-outcome-split-legend">{split.map(part => <span key={part.key} data-tone={part.tone}>{part.count.toLocaleString()} {part.label}</span>)}</p>
-      </div>}
+      <dd>{label === "Run success rate" && outcomes?.successRate != null
+        ? <ProgressRing percent={outcomes.successRate} tone="green" size={30}/>
+        : tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}{label === "Run success rate" && outcomes?.successRate != null ? <span><AnimatedNumber value={outcomes.successRate}/>%</span> : value}</dd>
+      {label === "Run success rate" && split.length > 0 && <dd className="studio-outcome-split">
+        <span className="studio-outcome-split-bar" aria-hidden="true">{split.map(part => <span key={part.key} data-tone={part.tone} style={{flexGrow: part.count}}/>)}</span>
+        <span className="studio-outcome-split-legend">{split.map(part => <span key={part.key} data-tone={part.tone}>{part.count.toLocaleString()} {part.label}</span>)}</span>
+      </dd>}
     </div>)}
   </dl>;
 }

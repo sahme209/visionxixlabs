@@ -937,3 +937,16 @@ it("toggles the severity filter from the loaded incident mix without a new read"
   expect(rows.getByText("Fixture change")).toBeTruthy();
   expect(m.read).toHaveBeenCalledOnce();
 });
+
+it("summarises recovery from loaded incidents without a new read", async () => {
+  const incident = data.records.find(record => record.kind === "incident")!;
+  m.read.mockResolvedValue({...data, records: [
+    {...incident, status: "resolved", reportedAt: "2026-11-17T10:00:00.000Z", mitigatedAt: "2026-11-17T10:30:00.000Z", resolvedAt: "2026-11-17T12:00:00.000Z"},
+    ...data.records.filter(record => record.kind !== "incident"),
+  ]});
+  show();
+  const metrics = await waitFor(() => { const node = document.querySelector('[aria-label="Recovery from loaded incidents"]'); if (!node) throw Error("missing"); return node; });
+  expect(metrics.textContent).toContain("Median time to mitigate30m");
+  expect(metrics.textContent).toContain("2h");
+  expect(m.read).toHaveBeenCalledOnce();
+});
