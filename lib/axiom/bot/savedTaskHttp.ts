@@ -5,7 +5,7 @@ import {prisma} from "@/lib/db";
 import {resolveRequestDesktopSession} from "@/lib/desktop/resolveRequestDesktopSession";
 import {consumeToken} from "@/lib/api/rateLimiter";
 import {parseSavedBotTaskCreate,parseSavedBotTaskUpdate} from "./savedTaskSchema";
-import {listSavedTaskLastRuns,parseSavedTaskIds,type SavedTaskLastRunRepo} from "./savedTaskLastRun";
+import {listSavedTaskLastRuns,listSavedTaskRunHistory,parseSavedTaskIds,type SavedTaskLastRunRepo,type SavedTaskRunHistoryRepo} from "./savedTaskLastRun";
 import {createSavedBotTask,updateSavedBotTask,getSavedBotTask,listSavedBotTasks,listSavedBotTaskHistory,SavedBotTaskConflictError,SavedBotTaskNotFoundError,type SavedBotTaskRepo,type SavedBotTaskRow,type SavedBotTaskSummary,type SavedBotTaskScope} from "./savedTaskRepo";
 const db=prisma as unknown as SavedBotTaskRepo;
 const idPattern=/^bot_[a-f0-9]{64}$/;
@@ -88,5 +88,15 @@ export async function handleSavedBotTaskLastRuns(request:NextRequest):Promise<Ne
   if(!allowed(scope,false))return fail("saved_task_rate_limited",429);
   const runs=await listSavedTaskLastRuns(prisma as unknown as SavedTaskLastRunRepo,scope,ids);
   return reply({ok:true,data:{runs:runs.map(run=>({taskId:run.taskId,taskVersion:run.taskVersion,family:run.family,status:run.status,recordedAt:run.recordedAt.toISOString()}))}});
+ }catch(error){return failure(error)}
+}
+export async function handleSavedBotTaskRuns(request:NextRequest,id:string):Promise<NextResponse>{
+ try{
+  const scope=await principal(request);if(!scope)return fail("desktop_session_required",401);
+  if(request.method!=="GET")return fail("method_not_allowed",405);
+  if(!idPattern.test(id))throw new Invalid();query(request,[]);
+  if(!allowed(scope,false))return fail("saved_task_rate_limited",429);
+  const runs=await listSavedTaskRunHistory(prisma as unknown as SavedTaskRunHistoryRepo,scope,id);
+  return reply({ok:true,data:{taskId:id,runs:runs.map(run=>({taskId:run.taskId,taskVersion:run.taskVersion,family:run.family,status:run.status,recordedAt:run.recordedAt.toISOString()}))}});
  }catch(error){return failure(error)}
 }

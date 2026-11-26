@@ -50,3 +50,35 @@ export async function listSavedTaskLastRuns(repo: SavedTaskLastRunRepo, scope: S
   }
   return ids.flatMap(id => latest.get(id) ?? []);
 }
+
+interface RunPageTable {
+  findMany(args: {
+    where: { organizationId: string; createdByUserId: string; taskId: string };
+    orderBy: Array<{ updatedAt: "desc" } | { id: "desc" }>;
+    take: number;
+    select: { taskId: true; taskVersion: true; status: true; updatedAt: true };
+  }): Promise<RunRow[]>;
+}
+export interface SavedTaskRunHistoryRepo { botAiTaskRun: RunPageTable; botTaskRun: RunPageTable; botPullRequestEvidenceRun: RunPageTable }
+export const SAVED_TASK_RUN_HISTORY_LIMIT = 20;
+
+/** Most recent recorded runs for one saved task across the three families (read-only, newest first). */
+export async function listSavedTaskRunHistory(repo: SavedTaskRunHistoryRepo, scope: SavedTaskLastRunScope, taskId: string): Promise<SavedTaskLastRun[]> {
+  if (!scope.organizationId.trim() || !scope.userId.trim()) throw new Error("Verified workspace and actor are required.");
+  if (!idPattern.test(taskId)) throw new Error("Invalid saved task.");
+  const args = {
+    where: { organizationId: scope.organizationId, createdByUserId: scope.userId, taskId },
+    orderBy: [{ updatedAt: "desc" as const }, { id: "desc" as const }],
+    take: SAVED_TASK_RUN_HISTORY_LIMIT,
+    select: { taskId: true as const, taskVersion: true as const, status: true as const, updatedAt: true as const },
+  };
+  const families: Array<[SavedTaskRunFamily, RunPageTable]> = [
+    ["ai_task", repo.botAiTaskRun], ["readiness_run", repo.botTaskRun], ["pull_request_evidence", repo.botPullRequestEvidenceRun],
+  ];
+  const rows = (await Promise.all(families.map(async ([family, table]) => (await table.findMany(args)).map(row => ({ ...row, family }))))).flat();
+  return rows
+    .filter(row => row.taskId === taskId && Number.isInteger(row.taskVersion) && row.taskVersion >= 0 && statusPattern.test(row.status) && row.updatedAt instanceof Date && !Number.isNaN(row.updatedAt.getTime()))
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, SAVED_TASK_RUN_HISTORY_LIMIT)
+    .map(row => ({ taskId: row.taskId, taskVersion: row.taskVersion, family: row.family, status: row.status, recordedAt: row.updatedAt }));
+}

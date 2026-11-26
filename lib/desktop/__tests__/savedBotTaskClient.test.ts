@@ -40,3 +40,11 @@ it("refuses last-run reads for invalid ids and rejects runs for tasks it did not
  wire.mockResolvedValue(response({runs:[{taskId:"bot_"+"c".repeat(64),taskVersion:0,family:"ai_task",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}));
  expect((await client.listSavedBotTaskLastRuns([id])).ok).toBe(false);
 });
+it("reads one task's recorded runs through the paired transport",async()=>{
+ wire.mockResolvedValue(response({taskId:id,runs:[{taskId:id,taskVersion:0,family:"ai_task",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}));
+ const result=await client.savedBotTaskRunHistory(id);
+ expect(result.ok).toBe(true);
+ expect(wire).toHaveBeenCalledWith(`https://axiom.test/api/desktop/bot/tasks/${id}/runs`,expect.objectContaining({method:"GET",credentials:"omit"}));
+ wire.mockResolvedValue(response({taskId:id,runs:[{taskId:"bot_"+"c".repeat(64),taskVersion:0,family:"ai_task",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}));
+ expect((await client.savedBotTaskRunHistory(id)).ok).toBe(false);
+});
