@@ -415,3 +415,21 @@ html:not([data-theme="light"]) .studio-ticket-overview .studio-ticket-release-li
 .studio-ticket-linked-release { padding-top: 0; }
 .studio-ticket-linked-release button { font-size: 13px; line-height: 20px; }
 .studio-ticket-linked-release-id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; color: var(--app-secondary, inherit); margin: 4px 0 8px; overflow-wrap: anywhere; }
+
+/* Loaded incident severity mix: proportional bar and toggle legend that filters by severity. */
+.studio-ticket-severity-mix { display: grid; gap: 8px; margin: 14px 0 4px; }
+.studio-ticket-severity-bar { display: flex; gap: 2px; height: 6px; border-radius: 999px; overflow: hidden; }
+.studio-ticket-severity-bar span { min-width: 4px; border-radius: 999px; background: rgb(var(--neutral-zinc-500) / .5); transition: opacity .2s ease, flex-grow .4s cubic-bezier(.22,1,.36,1); }
+.studio-ticket-severity-bar span[data-ticket-priority="critical"] { background: var(--studio-ticket-red); }
+.studio-ticket-severity-bar span[data-ticket-priority="high"] { background: var(--studio-ticket-red); opacity: .7; }
+.studio-ticket-severity-bar span[data-ticket-priority="medium"] { background: var(--studio-ticket-amber); }
+.studio-ticket-severity-bar span[data-active="false"] { opacity: .2; }
+.studio-ticket-severity-legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.studio-ticket-severity-legend button { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--studio-ticket-divider); border-radius: 999px; font-size: 11px; color: rgb(var(--neutral-zinc-300)); font-variant-numeric: tabular-nums; text-transform: capitalize; transition: background-color .15s, border-color .15s; }
+.studio-ticket-severity-legend button:hover { background: var(--studio-ticket-selected); }
+.studio-ticket-severity-legend button[aria-pressed="true"] { border-color: rgb(var(--neutral-zinc-400)); background: var(--studio-ticket-selected); color: rgb(var(--neutral-zinc-100)); }
+.studio-ticket-severity-swatch { width: 7px; height: 7px; border-radius: 2px; background: rgb(var(--neutral-zinc-500)); }
+[data-ticket-priority="critical"] > .studio-ticket-severity-swatch { background: var(--studio-ticket-red); }
+[data-ticket-priority="high"] > .studio-ticket-severity-swatch { background: var(--studio-ticket-red); opacity: .7; }
+[data-ticket-priority="medium"] > .studio-ticket-severity-swatch { background: var(--studio-ticket-amber); }
+@media (prefers-reduced-motion: reduce) { .studio-ticket-severity-bar span { transition: none; } }

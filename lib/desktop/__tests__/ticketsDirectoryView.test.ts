@@ -919,3 +919,21 @@ it("keeps the linked release reference visible without an open action when pipel
   expect(within(panel).getByText("Your role cannot open linked releases.")).toBeTruthy();
   expect(m.releases).not.toHaveBeenCalled();
 });
+
+it("toggles the severity filter from the loaded incident mix without a new read", async () => {
+  m.read.mockResolvedValue({...data, records: [data.records[0], {...data.records[1], priority: "high"}]});
+  show();
+  await screen.findByText("Synthetic readiness details");
+  const mix = screen.getByRole("group", {name: "Loaded incidents by severity"});
+  const severity = (data.records[0] as {severity: string}).severity;
+  const toggle = within(mix).getByRole("button", {name: new RegExp(`1 ${severity}`)});
+  const rows = within(screen.getByRole("navigation", {name: "Select a ticket"}));
+  fireEvent.click(toggle);
+  expect(toggle.getAttribute("aria-pressed")).toBe("true");
+  expect(screen.getByRole("combobox", {name: "Filter tickets by priority or severity"})).toHaveProperty("value", `incident:${severity}`);
+  expect(rows.queryByText("Fixture change")).toBeNull();
+  fireEvent.click(toggle);
+  expect(toggle.getAttribute("aria-pressed")).toBe("false");
+  expect(rows.getByText("Fixture change")).toBeTruthy();
+  expect(m.read).toHaveBeenCalledOnce();
+});
