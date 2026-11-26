@@ -203,3 +203,7 @@ html:not([data-theme="light"]) .studio-capabilities-table tr[data-inspected="tru
     --studio-catalog-inspector-bg: #141414;
   }
 }
+.studio-catalog-reported-status.status-badge { align-items: center; white-space: normal; max-width: 100%; border-radius: 8px; padding-block: 3px; }
+.studio-catalog-reported-status.status-badge::before { content: none; display: none; }
+html:not([data-theme="light"]) .studio-catalog-reported-status.status-badge[data-read-verified] { color: var(--status-green); }
+.studio-catalog-reported-status.status-badge[data-connected="true"] { color: var(--status-green); }
