@@ -41,6 +41,7 @@ export default function WorkspacesGuide() {
    <p>In the cockpit, <strong>Services</strong> lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository&apos;s last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.</p>
   </DocSection>
   <DocSection id="webhooks" kicker="07" title="Webhooks">
+   <DocFigure src="/docs/cockpit/webhooks.webp" alt="The Webhooks page in the V19 cockpit with the event list" caption="Webhooks for a synthetic workspace: choose the events each address receives." width={1600} height={1000} />
    <p>In the cockpit, <strong>Webhooks</strong> sends V19 events to an address you choose, for example a Slack or pager bridge. Owners and admins add a webhook with a name, a public <code>https://</code> address and the events it should receive, such as <code>deployment.blocked</code> or <code>agent_gateway.request_pending</code>. Each event in the list says when it fires.</p>
    <p>When you add a webhook, V19 shows its signing secret once. Copy it into your receiver and check the signature on every delivery. Private and internal addresses are refused, and a webhook that keeps failing is switched off automatically. Revoke a webhook at any time; members can see the list but cannot change it.</p>
   </DocSection>
