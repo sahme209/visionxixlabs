@@ -102,9 +102,15 @@ type EnvironmentVariablesResponse struct {
 		Name string `json:"name"`
 	} `json:"environment"`
 	Variables map[string]string `json:"variables"`
+	// Sources is "workspace", "set" or "environment" per key.
 	Sources   map[string]string `json:"sources"`
 	Digest    string            `json:"digest"`
 	Count     int               `json:"count"`
+	// Conflicts lists keys that matching variable sets define differently; empty when none.
+	Conflicts []struct {
+		Key  string   `json:"key"`
+		Sets []string `json:"sets"`
+	} `json:"conflicts,omitempty"`
 }
 
 // CheckResultInput is one deployment check run reported from CI.

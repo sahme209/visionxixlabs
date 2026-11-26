@@ -7,3 +7,9 @@ Dagster: exact unmodified SVG linked by https://dagster.io/brand, retrieved Nove
 Azure: reuses public/brands/azure.svg, already attributed to Simple Icons11.15.0 in public/brands/README.md/LICENSE.txt.
 
 Visual Studio Code: https://code.visualstudio.com/brand was inspected; permission for the proposed marketing association is not established by the allowed documentation/website-link uses. The current catalog therefore uses an explicitly generic editor symbol, not a copied or invented vendor logo. Obtaining an appropriate permitted mark/use remains open; do not claim every entry has an official logo.
+
+Argo CD: reuses the existing Simple Icons Argo project mark (argo.svg), the same project family as Argo Workflows.
+
+Flux: no permitted mark has been obtained, so the catalog uses an explicitly generic GitOps symbol, not a copied or invented vendor logo.
+
+Opsgenie and LaunchDarkly: no permitted marks have been obtained, so the catalog uses explicitly generic alerts and feature-flag symbols, not copied or invented vendor logos.

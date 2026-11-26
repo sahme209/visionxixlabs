@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 const m = vi.hoisted(() => ({ auth: vi.fn(), envFindFirst: vi.fn(), varFindMany: vi.fn() }));
 vi.mock("@/lib/security/authenticateApiKey", () => ({ authenticateApiKey: m.auth }));
-vi.mock("@/lib/db", () => ({ prisma: { environment: { findFirst: m.envFindFirst }, configVariable: { findMany: m.varFindMany } } }));
+vi.mock("@/lib/db", () => ({ prisma: { environment: { findFirst: m.envFindFirst }, configVariable: { findMany: m.varFindMany }, variableSet: { findMany: async () => [] } } }));
 import { GET } from "../route";
 import { resolvedDigest } from "@/lib/releaseops/scopedVariables";
 

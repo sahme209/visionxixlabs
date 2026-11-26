@@ -131,6 +131,20 @@ export default async function InsightsPage() {
             <p className="mt-3 max-w-2xl text-xs leading-5 text-zinc-400">Counts recorded workflow runs against today&apos;s blocking checks, by commit.</p></>}
       </section>
 
+      <section aria-labelledby="insights-evidence-pack" className="mt-10">
+        <h2 id="insights-evidence-pack" className="text-base font-medium">Export release evidence</h2>
+        <p className="mt-2 max-w-2xl text-sm text-zinc-400">Download one JSON file with every recorded deployment of a commit, the check results CI reported for it and the audit events on those deployments, with a SHA-256 digest an auditor can recompute. Configuration values are not included, only their fingerprints. Missing evidence is listed as a gap.</p>
+        <form method="get" action="/api/control/releases/evidence-pack" className="mt-4 flex max-w-2xl flex-wrap items-end gap-3">
+          <label className="text-xs text-zinc-400">Repository
+            <input name="repository" required pattern="[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+" placeholder="owner/name" spellCheck={false} className="mt-1 block w-48 rounded-lg border border-white/10 bg-black/30 px-3 py-2 font-mono text-sm text-zinc-200" />
+          </label>
+          <label className="text-xs text-zinc-400">Full commit SHA
+            <input name="commit" required pattern="[0-9a-fA-F]{40}" placeholder="40 hexadecimal characters" spellCheck={false} className="mt-1 block w-80 max-w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 font-mono text-sm text-zinc-200" />
+          </label>
+          <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download evidence</button>
+        </form>
+      </section>
+
       <p className="mt-10 max-w-2xl text-xs leading-5 text-zinc-400">These are workflow and incident records, not DORA certification: a workflow failure is not always a failed change, and lead time from commit is not measured. See <Link className="underline underline-offset-4" href="/docs/releaseops">Release operations</Link>.</p>
     </div>
   );

@@ -26,6 +26,7 @@ import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantSc
 import { recordDeploymentConfigSnapshot, type ConfigSnapshotRepo } from "@/lib/releaseops/deploymentConfigSnapshot";
 import { readDeploymentCheckGate, type DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGateStore";
 import { readRingGate, type RingGateRepo } from "@/lib/releaseops/ringGate";
+import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -99,6 +100,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
     if (bypassReason.length < 20) {
       return NextResponse.json({ ok: false, error: "production_bypass_reason_required" }, { status: 400 });
+    }
+  }
+
+  // Change windows and freezes on the environment. An audited emergency bypass skips them, as it skips
+  // branch policy; an unreadable rule fails closed rather than silently allowing the deployment.
+  if (!emergencyBypass) {
+    const rule = parseChangeWindowRule(environment.changeWindowRuleJson);
+    if (rule.kind === "unreadable") return NextResponse.json({ ok: false, error: "change_window_unreadable", detail: rule.error }, { status: 409 });
+    const windowDecision = evaluateChangeWindow(rule, new Date());
+    if (!windowDecision.open) {
+      return NextResponse.json({ ok: false, error: windowDecision.reason === "freeze" ? "deployment_freeze_active" : "outside_change_window", ...windowDecision }, { status: 409 });
     }
   }
 

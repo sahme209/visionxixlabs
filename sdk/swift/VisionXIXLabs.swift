@@ -299,10 +299,14 @@ public struct EnvironmentVariablesResponse: Decodable {
     public let environment: Environment
     /// Resolved plain configuration. Never secrets.
     public let variables: [String: String]
+    /// "workspace", "set" or "environment" per key.
     public let sources: [String: String]
     /// SHA-256 fingerprint of the resolved set.
     public let digest: String
     public let count: Int
+    public struct Conflict: Decodable { public let key: String; public let sets: [String] }
+    /// Keys that matching variable sets define differently; nil when none.
+    public let conflicts: [Conflict]?
 }
 
 public struct CheckResultResponse: Decodable {

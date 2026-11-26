@@ -18,6 +18,8 @@ export interface EnvironmentRow {
   approvalPolicyId: string | null;
   /** Absent on stores that predate tags. */
   tags?: string[];
+  /** Absent on stores that predate change windows. */
+  changeWindowRuleJson?: unknown;
   createdAt: Date;
 }
 
@@ -38,6 +40,8 @@ export interface EnvironmentListItem {
   displayOrder: number;
   hasApprovalPolicy: boolean;
   tags: string[];
+  /** Raw change-window rule as stored (not secret); null when none. */
+  changeWindowRule: unknown;
   createdAtIso: string;
 }
 
@@ -70,6 +74,7 @@ export async function buildEnvironmentListResponse(
             displayOrder: r.displayOrder,
             hasApprovalPolicy: Boolean(r.approvalPolicyId),
             tags: Array.isArray(r.tags) ? r.tags : [],
+            changeWindowRule: r.changeWindowRuleJson ?? null,
             createdAtIso: r.createdAt.toISOString(),
           })),
         },

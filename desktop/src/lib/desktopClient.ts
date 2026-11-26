@@ -1339,9 +1339,14 @@ export class DesktopClient {
   }
 
   listEnvironments(): Promise<ApiResult<{
-    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[]; createdAtIso: string }>;
+    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[]; changeWindowRule?: unknown; createdAtIso: string }>;
   }>> {
     return this.get("/api/desktop/environments");
+  }
+
+  /** Replace an environment's change window rule (null clears it); refused if it changed since `expectedRule` was read. */
+  setEnvironmentChangeWindow(environmentId: string, rule: unknown, expectedRule: unknown): Promise<ApiResult<{ id: string; changeWindowRule: unknown }>> {
+    return this.put(`/api/desktop/environments/${encodeURIComponent(environmentId)}/change-window`, { rule, expectedRule: expectedRule ?? null });
   }
 
   /** Replace an environment's tags; refused if they changed since `expectedTags` was read. */

@@ -14,7 +14,7 @@ export { MAX_VARIABLE_VALUE };
 export const MAX_VARIABLES_PER_WORKSPACE = 500;
 
 export interface StoredVariable { key: string; value: string; scopeKey: string; description?: string | null }
-export interface ResolvedVariable { key: string; value: string; source: "workspace" | "environment" }
+export interface ResolvedVariable { key: string; value: string; source: "workspace" | "set" | "environment"; /** Variable set slug when source is "set". */ set?: string }
 
 import type { VariableInputError } from "./scopedVariableMessages";
 export type { VariableInputError } from "./scopedVariableMessages";
@@ -50,7 +50,7 @@ export function validateVariable(input: { key: string; value: string; scopeKey: 
   // eslint-disable-next-line no-control-regex
   if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(input.value)) errors.push("value_has_control_characters");
   if (SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(input.value))) errors.push("looks_like_secret_value");
-  if (input.scopeKey !== WORKSPACE_SCOPE && !/^env:[A-Za-z0-9_-]{1,64}$/.test(input.scopeKey)) errors.push("scope_invalid");
+  if (input.scopeKey !== WORKSPACE_SCOPE && !/^env:[A-Za-z0-9_-]{1,64}$/.test(input.scopeKey) && !/^set:[a-z0-9][a-z0-9-]{0,47}$/.test(input.scopeKey)) errors.push("scope_invalid");
   if ((input.description ?? "").length > 500) errors.push("description_too_long");
   return errors;
 }
@@ -76,7 +76,7 @@ export { compareResolved, type ResolvedComparison } from "./scopedVariableCompar
 export function partialKeys(variables: readonly StoredVariable[], environmentIds: readonly string[]): Array<{ key: string; missingIn: string[] }> {
   const defaults = new Set(variables.filter((v) => v.scopeKey === WORKSPACE_SCOPE).map((v) => v.key));
   const byKey = new Map<string, Set<string>>();
-  for (const v of variables) if (v.scopeKey !== WORKSPACE_SCOPE) {
+  for (const v of variables) if (v.scopeKey.startsWith("env:")) {
     const set = byKey.get(v.key) ?? new Set<string>(); set.add(v.scopeKey.slice(4)); byKey.set(v.key, set);
   }
   const gaps: Array<{ key: string; missingIn: string[] }> = [];

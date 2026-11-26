@@ -186,6 +186,21 @@ describe("POST /api/desktop/environments/deploy", () => {
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
+  it("refuses outside the environment change window and during a freeze before any GitHub work", async () => {
+    const { POST } = await import("../route");
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod", changeWindowRuleJson: { freezes: [{ startUtc: "2000-01-01T00:00:00Z", endUtc: "2999-01-01T00:00:00Z", reason: "Release freeze" }] } });
+    let res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: "deployment_freeze_active", freezeReason: "Release freeze" });
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod", changeWindowRuleJson: { utcWindows: [{ start: "9am", end: "5pm" }] } });
+    res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: "change_window_unreadable" });
+    expect(mocks.findTarget).not.toHaveBeenCalled();
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
   it("refuses a later ring until the previous ring deployed this commit", async () => {
     mocks.ringGate.mockResolvedValueOnce({ ok: false, ring: 1, previousRing: 0, reason: "previous_ring_not_deployed" });
     mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
