@@ -13,6 +13,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
+import { ProductTour } from "@/components/marketing/ProductTour";
 import { AxiomPublicHero } from "@/components/marketing/AxiomPublicHero";
 import { PublicFeatureSection } from "@/components/marketing/PublicFeatureSection";
 import { PublicFeaturePanel } from "@/components/marketing/PublicFeaturePanel";
@@ -93,6 +94,8 @@ export default function Home() {
           </div>
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
         </section>
+
+        <ProductTour />
 
         <section className="px-5 py-24 sm:px-8 lg:px-10" aria-labelledby="public-benefits-title">
           <div className="mx-auto max-w-[1080px]">
