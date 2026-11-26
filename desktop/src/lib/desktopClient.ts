@@ -170,6 +170,14 @@ export interface DeploymentExecutionEvidence {
   rollbackImageVerified: false;
 }
 
+/** Advisory: migrations changed since the last successful deployment of this repository to this environment. */
+export type DatabaseChangeEvidence =
+  | { status: "detected"; since: string; paths: string[]; truncated: boolean }
+  | { status: "none_detected"; since: string; truncated: boolean }
+  | { status: "first_deployment" }
+  | { status: "same_commit"; since: string }
+  | { status: "unknown"; reason: string };
+
 export interface DeploymentExecution {
   evidence?: DeploymentExecutionEvidence;
   id: string;
@@ -1360,7 +1368,7 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deploy", body, { "Idempotency-Key": idempotencyKey });
   }
 
-  preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ evidence?: DeploymentExecutionEvidence; ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
+  preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ evidence?: DeploymentExecutionEvidence; ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass"; databaseChanges?: DatabaseChangeEvidence }>> {
     return this.post("/api/desktop/environments/deploy/preflight", input);
   }
 

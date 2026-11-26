@@ -80,6 +80,11 @@ export default function ReleaseOpsDocOverviewPage() {
               <p>Rings are enforced: before the desktop app dispatches to an environment tagged <code>ring:N</code> (N above 0), at least one environment tagged <code>ring:N-1</code> must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.</p>
             </DocSection>
 
+            <DocSection id="database-changes" title="Database changes in a deployment" kicker="07">
+              <p>When you check readiness for a deployment in the desktop app, V19 compares the commit with the last successful deployment of the same repository to the same environment and lists any changed migration files (for example Prisma, Rails, Alembic, Flyway, Liquibase, Supabase or Drizzle migrations). Review the migration and its rollback before dispatching.</p>
+              <p>This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.</p>
+            </DocSection>
+
             <DocFooterNav
                 prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
                 next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}

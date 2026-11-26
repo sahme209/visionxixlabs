@@ -41,7 +41,7 @@ import {
   Trees,
 } from "lucide-react";
 import { normalizeTags, planFanOut } from "../../../lib/releaseops/environmentTags";
-import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
+import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
@@ -1502,7 +1502,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [bypassReason, setBypassReason] = useState("");
   const [checkingReadiness, setCheckingReadiness] = useState(false);
   const [readinessError, setReadinessError] = useState<string | null>(null);
-  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" } | null>(null);
+  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass"; databaseChanges?: DatabaseChangeEvidence } | null>(null);
   const [deploying, setDeploying] = useState(false);
   const [blockingChecks, setBlockingChecks] = useState<Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> | "unavailable" | null>(null);
   useEffect(() => {
@@ -1741,6 +1741,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           </div>
         )}
         <BlockingChecksNote checks={blockingChecks} commit={readiness?.sourceCommitSha ?? null} bypass={emergencyBypass} />
+        {readiness?.databaseChanges && <DatabaseChangesNote evidence={readiness.databaseChanges} />}
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
         {readiness && (
           <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-[12px] text-emerald-200">
@@ -2488,4 +2489,20 @@ export function BlockingChecksNote({ checks, commit, bypass }: { checks: Array<{
       <p>{bypass ? "The emergency bypass skips these blocking checks; the bypass is audited." : <>Before dispatch, these blocking checks must have passed {commit ? <>for <span className="font-mono">{commit.slice(0, 12)}</span></> : "for the source commit"} within the last 72 hours:</>}</p>
       <ul className="mt-2 space-y-1">{checks.map((c) => <li key={c.key}><span className="text-zinc-100">{c.name}</span> <span className="text-zinc-500">· {stageName(c.stage)} · {c.kind.replaceAll("_", " ")}{c.enforced ? "" : " · not enforced yet"}</span></li>)}</ul>
     </div>);
+}
+
+/** Advisory database-change evidence for the commit about to deploy. Never changes readiness. */
+export function DatabaseChangesNote({ evidence }: { evidence: DatabaseChangeEvidence }) {
+  const short = (sha: string) => sha.slice(0, 12);
+  if (evidence.status === "detected") return (
+    <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-[12px] text-amber-200" aria-label="Database changes">
+      <p>This commit changes database migrations since the last successful deployment here (<span className="font-mono">{short(evidence.since)}</span>). Review the migration and its rollback before dispatching.</p>
+      <ul className="mt-2 space-y-0.5 font-mono text-[11px] text-amber-100/90">{evidence.paths.slice(0, 10).map((p) => <li key={p}>{p}</li>)}{evidence.paths.length > 10 && <li>…and {evidence.paths.length - 10} more</li>}</ul>
+      {evidence.truncated && <p className="mt-1 text-[11px] text-amber-200/80">The comparison lists at most 300 files, so more may have changed.</p>}
+    </div>);
+  const text = evidence.status === "none_detected" ? `No database migration files changed since the last successful deployment here (${short(evidence.since)})${evidence.truncated ? "; the comparison was truncated, so check large changes yourself" : ""}.`
+    : evidence.status === "first_deployment" ? "First recorded deployment of this repository here, so database changes could not be compared."
+    : evidence.status === "same_commit" ? "This commit is already the last successful deployment here."
+    : "Database changes could not be compared for this commit.";
+  return <p className="mt-3 text-[11px] text-zinc-400" aria-label="Database changes">{text}</p>;
 }

@@ -26,6 +26,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   return { ...actual, resolveTenantScopedToken: mocks.resolveToken };
 });
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ resolveGitReference: mocks.resolveRef }));
+vi.mock("@/lib/releaseops/databaseChangeEvidence", () => ({ readDatabaseChangeEvidence: async () => ({ status: "detected", since: "a".repeat(40), paths: ["prisma/migrations/x/migration.sql"], truncated: false }) }));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/environments/deploy/preflight", {
@@ -78,7 +79,7 @@ describe("POST /api/desktop/environments/deploy/preflight", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       ok: true,
-      data: { evidence: deploymentEvidence("service_restart"), ready: true, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null, governanceMode: "policy_enforced" },
+      data: { evidence: deploymentEvidence("service_restart"), ready: true, databaseChanges: { status: "detected", since: "a".repeat(40), paths: ["prisma/migrations/x/migration.sql"], truncated: false }, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null, governanceMode: "policy_enforced" },
     });
     expect(mocks.resolveRef).toHaveBeenCalledWith(expect.objectContaining({ installationToken: "scoped-token" }));
   });
