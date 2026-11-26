@@ -354,7 +354,13 @@ airflow.automation_succeeded       airflow.automation_failed
 agent_gateway.request_pending      agent_gateway.request_decided
 agent_gateway.outcome_recorded     audit.integrity_failed
 workspace.access_requested         deployment.blocked          webhook.ping
+deployment.freeze_started          deployment.freeze_ended
 ```
+
+`deployment.freeze_started` fires when an owner or admin freezes deployments
+from the cockpit Overview. Payload: `{ reason, environments, scope, endsAt }`.
+`deployment.freeze_ended` fires when a freeze is ended early, with
+`{ reason, environments }`.
 
 `webhook.ping` is the test delivery an owner or admin sends with **Send test**
 on the Webhooks page. It is sent once, never retried, and carries

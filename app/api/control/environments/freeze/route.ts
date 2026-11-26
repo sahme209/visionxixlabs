@@ -9,6 +9,7 @@ import { record as auditRecord } from "@/lib/audit/secureAudit";
 import type { CorrelationId, OrganizationId, UserId } from "@/lib/domain/ids";
 import { prisma } from "@/lib/db";
 import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { MAX_FREEZE_HOURS, activeFreezes, addFreeze, endFreezeEarly } from "@/lib/releaseops/deploymentFreeze";
 
 export const dynamic = "force-dynamic";
@@ -86,6 +87,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
       await auditRecord({ organizationId: ctx.organizationId as OrganizationId, actorUserId: ctx.userId as UserId, action: "governance.update", outcome: "success", entityRef: "deployment_freeze", correlationId: randomUUID() as CorrelationId, detail: { kind: body.action === "start" ? "deployment_freeze.start" : "deployment_freeze.end", reason: body.reason, environments: names, ...(body.action === "start" ? { hours: body.hours, scope: body.scope } : {}) } });
     } catch { /* best-effort */ }
+    try {
+      await dispatchWebhookEvent({ organizationId: ctx.organizationId, eventKind: body.action === "start" ? "deployment.freeze_started" : "deployment.freeze_ended", data: { reason: body.reason, environments: names, ...(body.action === "start" ? { scope: body.scope, endsAt: new Date(now.getTime() + body.hours * 3_600_000).toISOString() } : {}) }, fireImmediately: true });
+    } catch { /* best-effort: a webhook outage never undoes the freeze */ }
     return NextResponse.json({ ok: true, data: { environments: names, skipped } }, { headers: noStore });
   } catch {
     return fail("freezes_unavailable", 503);

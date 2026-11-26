@@ -8,6 +8,8 @@ export interface WebhookEventEntry { kind: WebhookEventKind; group: string; desc
 
 export const WEBHOOK_EVENT_CATALOG: readonly WebhookEventEntry[] = [
   { kind: "deployment.blocked", group: "Releases", description: "A release gate refused a deployment: change window, freeze, stability warning, checks or rings." },
+  { kind: "deployment.freeze_started", group: "Releases", description: "Someone froze deployments to production or every environment." },
+  { kind: "deployment.freeze_ended", group: "Releases", description: "Someone ended a deployment freeze early." },
   { kind: "release_gate.passed", group: "Releases", description: "A release gate check passed." },
   { kind: "release_gate.blocked", group: "Releases", description: "A release gate check blocked a release." },
   { kind: "pipeline.run_started", group: "Pipelines", description: "A pipeline run started." },
