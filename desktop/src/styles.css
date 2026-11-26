@@ -1819,3 +1819,23 @@ html[data-theme="light"] {
 .studio-home-summary .studio-home-trend > dd.studio-home-trend-delta { order: 0; font-size: 11.5px; }
 .studio-home-summary .studio-home-trend > dd.studio-home-trend-chart { order: 1; font-size: inherit; font-weight: 400; }
 .studio-release-summary > div > dd.studio-outcome-split { order: 5; font-size: inherit; font-weight: 400; display: block; }
+
+/* Environment board (Deployments): repositories × environments, latest recorded run. */
+.environment-board { margin-bottom: 16px; padding: 16px; border: 1px solid rgb(var(--axiom-border)); border-radius: 12px; }
+.environment-board header h2 { font-size: 14px; font-weight: 500; color: rgb(var(--neutral-zinc-100)); }
+.environment-board header p { margin-top: 2px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
+.environment-board-scroll { margin-top: 12px; overflow-x: auto; }
+.environment-board table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+.environment-board th, .environment-board td { padding: 8px 10px; text-align: start; border-bottom: 1px solid rgb(var(--axiom-border)); white-space: nowrap; }
+.environment-board thead th { font-weight: 500; color: rgb(var(--neutral-zinc-300)); }
+.environment-board thead th span { display: block; font-size: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: .06em; color: rgb(var(--neutral-zinc-400)); }
+.environment-board tbody th { font-weight: 400; color: rgb(var(--neutral-zinc-200)); font-family: var(--font-mono); font-size: 11.5px; }
+.environment-board-cell { display: inline-grid; grid-template-columns: auto auto auto; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 8px; background: var(--status-neutral-surface); }
+.environment-board-cell[data-tone="green"] { background: var(--status-green-surface); }
+.environment-board-cell[data-tone="red"] { background: var(--status-red-surface); }
+.environment-board-cell[data-tone="blue"] { background: var(--status-blue-surface); }
+.environment-board-cell code { font-size: 11px; color: rgb(var(--neutral-zinc-100)); }
+.environment-board-cell small { margin-inline-start: 6px; font-size: 10.5px; color: rgb(var(--neutral-zinc-400)); }
+.environment-board-cell time { font-size: 10.5px; color: rgb(var(--neutral-zinc-400)); font-variant-numeric: tabular-nums; }
+.environment-board-empty { font-size: 11px; color: rgb(var(--neutral-zinc-400)); }
+.environment-board-note { margin-top: 8px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); }

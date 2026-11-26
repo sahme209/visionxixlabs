@@ -27,6 +27,7 @@ import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvid
 import { ProgressRing } from "../components/motion/ProgressRing";
 import { ReleaseRiskRadar } from "../components/ReleaseRiskRadar";
 import { ChangeWindowTimeline } from "../components/ChangeWindowTimeline";
+import { EnvironmentBoard } from "../components/EnvironmentBoard";
 import { AnimatedNumber } from "../components/motion/AnimatedNumber";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
@@ -800,6 +801,7 @@ export function DeploymentRequestsView({ active = true, onIntakeOpenChange, save
         /></div>
       )}
 
+      <EnvironmentBoard executions={executions} />
       {executions.length > 0 && (
         <section className="glass-card p-4" aria-label="Workflow execution evidence">
           <div className="flex items-center justify-between gap-3">
