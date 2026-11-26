@@ -129,7 +129,7 @@ html:not([data-theme="light"]) .studio-agent-plan {
   padding-inline: 0;
 }
 .studio-agent-plan-approval-reads .btn-secondary:hover { color: rgb(var(--neutral-zinc-100)); }
-:is(.studio-agent-plan-evidence-body, .studio-agent-plan-approval-reads) button { width: 100%; text-align: start; }
+:is(.studio-agent-plan-evidence-body, .studio-agent-plan-approval-reads) button { width: 100%; text-align: start; justify-content: flex-start; }
 .studio-agent-plan-boundary {
   margin-top: 20px;
   padding: 10px;
