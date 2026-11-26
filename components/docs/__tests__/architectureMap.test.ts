@@ -6,7 +6,7 @@ import { ArchitectureMap } from "../ArchitectureMap";
 afterEach(cleanup);
 it("selects a part, explains it and links its guide; a text version lists every part", () => {
   render(createElement(ArchitectureMap));
-  expect(screen.getByRole("link", { name: "Security model →" }).getAttribute("href")).toBe("/docs/security-model");
+  expect(screen.getByRole("link", { name: "Permissions model →" }).getAttribute("href")).toBe("/docs/permissions-model");
   fireEvent.click(screen.getByRole("button", { name: /^Batch orchestration/ }));
   expect(screen.getByRole("link", { name: "Batch providers →" }).getAttribute("href")).toBe("/docs/batch-providers");
   expect(document.body.textContent).toContain("nothing is started, retried or cancelled");

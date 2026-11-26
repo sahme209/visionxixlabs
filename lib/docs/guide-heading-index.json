@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "3eb4d4f91c683efb57b13af3c859ed508e48d0a03f899db4bff9d39f7d555baf",
+      "sourceSha256": "9a129518cf7b8fc7a2db64a75fd94b8e8f1fc073f964c08e3861ad2f4ac8ee64",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -251,7 +251,7 @@
     {
       "href": "/docs/security-model",
       "source": "app/docs/security-model/page.tsx",
-      "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15",
+      "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10",
       "fields": [
         "The current V19 security model.",
         "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",

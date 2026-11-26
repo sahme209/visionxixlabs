@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {Callout,DocFooterNav,DocHeader,DocSection} from '@/components/docs/DocPrimitives';
-import {ArchitectureMap} from '@/components/docs/ArchitectureMap';
 
 export const metadata:Metadata={title:'Product surfaces — V19 Documentation',description:'Choose the right V19 desktop workspace or public guide, and distinguish browsing, review, execution and help.',alternates:{canonical:'/docs/surfaces'}};
 
@@ -21,7 +20,6 @@ const DESTINATIONS=[
 
 export default function SurfacesPage(){return <>
  <DocHeader kicker="Workflow reference · Navigation" title="Find the right place to work." summary="Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision." />
- <ArchitectureMap />
  <Callout title="Version and availability">
   These destinations are registered in the current local desktop source. Your installed version may have different labels or controls; local previews are not automatically production-activated. This is a navigation guide, not proof that a connection, workflow or Governance enforcement is ready. The Governance Intelligence prototype is not a registered customer destination in this navigation.
  </Callout>
