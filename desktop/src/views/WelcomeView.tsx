@@ -17,6 +17,7 @@ import { AnimatedNumber } from "../components/motion/AnimatedNumber";
 import { TrendSparkline } from "../components/motion/TrendSparkline";
 import { motion } from "framer-motion";
 import { useAllowMotion } from "../components/motion/useAllowMotion";
+import { changeWindowState, formatCountdown } from "../../../lib/releaseops/changeWindowState";
 import { releaseJourney } from "../../../lib/customerJourney/journey";
 
 export interface SavedReleaseLink {
@@ -29,6 +30,7 @@ interface RecentRelease extends SavedReleaseLink {
   status: string;
   updatedAt: string;
   environment: string | null;
+  window?: {startUtc: string; endUtc: string; displayTimeZone: string} | null;
   nextAction?: string;
 }
 
@@ -247,6 +249,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
             unique.set(release.id, {
               id: release.id, version: release.version, title: release.title, status: release.status,
               updatedAt: release.updatedAt, environment: context?.scope?.targetEnvironment ?? null,
+              window: context?.window ?? null,
               nextAction,
             });
           }
@@ -422,6 +425,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
           releases === null ? "Release actions are unavailable." : "No next actions in the loaded releases."
         }</p>}
       </section>
+      <UpcomingChangeWindows rows={ownedActivity?.loadedRows} onOpen={link => { nextActionOrigin.current = undefined; onOpenSavedRelease(link); }}/>
     <nav aria-label="Workspace actions" className="studio-home-actions">
       <div className="studio-home-activity-heading"><h2>Workspace actions</h2></div>
       <button type="button" onClick={onDeploy}><Layers aria-hidden size={16} />Deploy and Manage</button>
@@ -452,6 +456,29 @@ function WorkflowRunTrend() {
     {delta !== undefined && <span className="studio-home-trend-delta" data-direction={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>{delta > 0 ? "↑" : delta < 0 ? "↓" : "→"} {Math.abs(delta)}%<span className="studio-home-trend-delta-context"> vs previous 30 days</span></span>}
     {daily && <TrendSparkline values={daily} unit={["run", "runs"]} label="Recorded workflow runs per day, last 30 days"/>}
   </div>;
+}
+
+/** Open and upcoming change windows across loaded, unclosed releases; times are recorded, the countdown uses this device's clock. */
+export function UpcomingChangeWindows({rows, onOpen}: {rows?: RecentRelease[]; onOpen: (link: SavedReleaseLink) => void}) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const id = setInterval(() => setNow(new Date()), 60_000); return () => clearInterval(id); }, []);
+  const windows = (rows ?? []).filter(row => row.status !== "closed" && row.window)
+    .map(row => ({row, state: changeWindowState(row.window!, now)}))
+    .filter(({state}) => state.phase === "open" || state.phase === "upcoming")
+    .sort((a, b) => (a.state.phase === "open" ? -1 : 0) - (b.state.phase === "open" ? -1 : 0) || (a.state.msToBoundary ?? 0) - (b.state.msToBoundary ?? 0))
+    .slice(0, 3);
+  if (!windows.length) return null;
+  return <section className="studio-home-windows" aria-labelledby="home-change-windows">
+    <div className="studio-home-activity-heading"><h2 id="home-change-windows">Change windows</h2></div>
+    <ul>{windows.map(({row, state}) => <li key={row.id}>
+      <button type="button" onClick={() => onOpen({id: row.id, version: row.version})} data-phase={state.phase}
+        aria-label={`${row.title}, version ${row.version}: ${state.phase === "open" ? `window open, closes in ${formatCountdown(state.msToBoundary!)}` : `window opens in ${formatCountdown(state.msToBoundary!)}`}`}>
+        <StatusIconChip tone={state.phase === "open" ? "green" : "blue"} shape={state.phase === "open" ? "running" : "waiting"} size={12}/>
+        <span><strong>{row.title}</strong><small>{state.phase === "open" ? `Open · closes in ${formatCountdown(state.msToBoundary!)}` : `Opens in ${formatCountdown(state.msToBoundary!)}`}{row.environment ? ` · ${row.environment}` : ""}</small></span>
+        <span className="studio-home-window-progress" aria-hidden="true"><span style={{width: `${state.progress * 100}%`}}/></span>
+      </button>
+    </li>)}</ul>
+  </section>;
 }
 
 const pipelineStages = [
