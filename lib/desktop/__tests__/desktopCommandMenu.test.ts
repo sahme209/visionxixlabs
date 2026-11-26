@@ -63,3 +63,33 @@ it.each([{isComposing:true},{keyCode:229}])('does not open or cancel the global 
  const event=new KeyboardEvent('keydown',{key:'p',ctrlKey:true,shiftKey:true,bubbles:true,cancelable:true,...signal});fireEvent(window,event);
  expect(event.defaultPrevented).toBe(false);expect(change).not.toHaveBeenCalled();expect(navigate).not.toHaveBeenCalled();
 });
+
+it('finds a loaded release by name and opens that exact version', async () => {
+  const {desktopClient} = await import('../../../desktop/src/lib/desktopClient');
+  vi.spyOn(desktopClient, 'deploymentRequests').mockResolvedValue({ok: true, data: [
+    {id: 'rel-pay', version: 3, title: 'Payments API', status: 'submitted', releaseContext: {scope: {targetEnvironment: 'production'}}},
+    {id: 'rel-inv', version: 1, title: 'Inventory service', status: 'draft', releaseContext: {scope: {targetEnvironment: 'staging'}}},
+  ]} as never);
+  const openRelease = vi.fn(), change = vi.fn(), navigate = vi.fn();
+  render(createElement(WorkspaceCommands, {open: true, onOpenChange: change, onNavigate: navigate, onOpenRelease: openRelease}));
+  expect(await screen.findByText('Recent releases')).toBeTruthy();
+  const field = screen.getByRole('combobox', {name: 'Search desktop commands'});
+  fireEvent.change(field, {target: {value: 'payments'}});
+  const option = screen.getByRole('option', {name: 'Open release Payments API'});
+  expect(option.textContent).toContain('Version 3 · production · submitted');
+  expect(screen.queryByRole('option', {name: 'Open release Inventory service'})).toBeNull();
+  fireEvent.keyDown(field, {key: 'Enter'});
+  expect(openRelease).toHaveBeenCalledExactlyOnceWith({id: 'rel-pay', version: 3});
+  expect(navigate).not.toHaveBeenCalled();
+  expect(change).toHaveBeenCalledWith(false);
+  vi.restoreAllMocks();
+});
+
+it('keeps destinations working when releases cannot be loaded', async () => {
+  const {desktopClient} = await import('../../../desktop/src/lib/desktopClient');
+  vi.spyOn(desktopClient, 'deploymentRequests').mockResolvedValue({ok: false, error: 'unavailable'} as never);
+  render(createElement(WorkspaceCommands, {open: true, onOpenChange: vi.fn(), onNavigate: vi.fn(), onOpenRelease: vi.fn()}));
+  expect(await screen.findByText('Releases could not be loaded. Destinations still work.')).toBeTruthy();
+  expect(screen.getByRole('option', {name: 'Open Deployments'})).toBeTruthy();
+  vi.restoreAllMocks();
+});
