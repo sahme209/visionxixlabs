@@ -31,6 +31,8 @@ const RAW: ReadonlyArray<Omit<IntegrationLogo, "status" | "onHome"> & { statusId
   { id: "grafana", name: "Grafana", logo: L("grafana"), group: "signals" },
   { id: "dynatrace", name: "Dynatrace", logo: L("dynatrace"), group: "signals" },
   { id: "pagerduty", name: "PagerDuty", logo: L("pagerduty"), group: "signals" },
+  { id: "sentry", name: "Sentry", logo: null, group: "signals" },
+  { id: "datadog", name: "Datadog", logo: null, group: "signals" },
   { id: "opsgenie", name: "Opsgenie", logo: null, group: "signals" },
   { id: "launchdarkly", name: "LaunchDarkly", logo: null, group: "orchestration" },
   { id: "postgres", name: "PostgreSQL", logo: L("postgresql"), group: "data" },

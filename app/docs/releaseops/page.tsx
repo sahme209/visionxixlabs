@@ -102,7 +102,7 @@ export default function ReleaseOpsDocOverviewPage() {
             </DocSection>
 
             <DocSection id="gitops" title="Argo CD and Flux" kicker="11">
-              <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. The connection forms and live acceptance with a real Argo CD instance or cluster are still pending.</p>
+              <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. Connect them under Release signals (see below); live acceptance with a real Argo CD instance or cluster is still pending.</p>
             </DocSection>
 
             <DocSection id="stability-warning" title="Stability early warning" kicker="12">
@@ -112,6 +112,15 @@ export default function ReleaseOpsDocOverviewPage() {
             <DocSection id="serverless-templates" title="Lambda, Cloud Run and Azure Functions" kicker="13">
               <p>In the cockpit, <strong>Services</strong> also generates serverless deploy workflows. For AWS Lambda, it publishes a new version, sends it a share of traffic on an alias named <code>live</code>, and moves all traffic back if that version reports errors. For Google Cloud Run, it deploys a revision with no traffic, sends it a share, watches readiness, then moves all traffic to it. For Azure Functions, it deploys to a <code>staging</code> slot, checks a health path, and swaps it into production.</p>
               <p>Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment&apos;s gates pass.</p>
+            </DocSection>
+
+            <DocSection id="verification-signals" title="Verification signals from Sentry and Datadog" kicker="14">
+              <p>V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. Connect them under Release signals (see below); live acceptance with real accounts is still pending.</p>
+            </DocSection>
+
+            <DocSection id="release-signals" title="Connect release signals" kicker="15">
+              <p>In the desktop app, under Settings, <strong>Release signals</strong> connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog and LaunchDarkly. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again.</p>
+              <p>Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as <code>monitors_read</code>. V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time.</p>
             </DocSection>
 
             <DocFooterNav

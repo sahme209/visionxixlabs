@@ -160,20 +160,21 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "1cca2f41c3913e1ea148568079a004ca9fab62c591b5d7dd3d62b85aa9836559",
+      "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206",
       "fields": [
         "Rollback is specific to the execution path.",
         "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
         "Verified ECS behavior",
         "The recovery sequence",
         "Limits",
+        "Roll back to the last good version",
         "Trust questions"
       ]
     },
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920",
+      "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -190,7 +191,9 @@
         "Release evidence pack",
         "Argo CD and Flux",
         "Stability early warning",
-        "Lambda, Cloud Run and Azure Functions"
+        "Lambda, Cloud Run and Azure Functions",
+        "Verification signals from Sentry and Datadog",
+        "Connect release signals"
       ]
     },
     {
