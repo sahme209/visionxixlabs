@@ -4,6 +4,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
 import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
+import { SERVERLESS_PLATFORMS } from "@/lib/releaseops/serverlessDeployTemplates";
 
 export const dynamic = "force-dynamic";
 const OUTCOME: Record<string, { label: string; tone: string }> = {
@@ -74,6 +75,28 @@ export default async function ServicesPage() {
             <input name="observeMinutes" type="number" min={1} max={60} defaultValue={5} className="mt-1 block w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200" />
           </label>
           <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download workflow</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="serverless-templates-heading" className="mt-10">
+        <h2 id="serverless-templates-heading" className="text-base font-medium">Serverless deploy templates</h2>
+        <p className="mt-2 max-w-2xl text-sm text-zinc-400">Generate a GitHub Actions workflow that shifts traffic gradually and keeps the previous version for rollback. Cloud access uses short-lived sign-in (OIDC) that you set up in your cloud account, named in repository variables; no cloud keys are stored anywhere.</p>
+        <ul className="mt-3 max-w-2xl space-y-1 text-xs text-zinc-400">{SERVERLESS_PLATFORMS.map((p) => <li key={p.id}><span className="text-zinc-200">{p.label}:</span> {p.summary}</li>)}</ul>
+        <form method="get" action="/api/control/templates/serverless" className="mt-4 flex max-w-3xl flex-wrap items-end gap-3">
+          <label className="text-xs text-zinc-400">Platform
+            <select name="platform" defaultValue="aws_lambda" className="mt-1 block rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200">{SERVERLESS_PLATFORMS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select>
+          </label>
+          {[["name", "Function or service", "checkout-api", true], ["region", "Region", "us-east-1", true], ["resourceGroup", "Azure resource group", "only for Azure", false]].map(([name, label, placeholder, required]) => (
+            <label key={String(name)} className="text-xs text-zinc-400">{label}
+              <input name={String(name)} required={Boolean(required)} maxLength={90} placeholder={String(placeholder)} spellCheck={false} className="mt-1 block w-40 rounded-lg border border-white/10 bg-black/30 px-3 py-2 font-mono text-sm text-zinc-200" />
+            </label>))}
+          <label className="text-xs text-zinc-400">First traffic %
+            <input name="canaryPercent" type="number" min={1} max={50} defaultValue={10} className="mt-1 block w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200" />
+          </label>
+          <label className="text-xs text-zinc-400">Watch minutes
+            <input name="observeMinutes" type="number" min={1} max={60} defaultValue={5} className="mt-1 block w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-200" />
+          </label>
+          <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download serverless workflow</button>
         </form>
       </section>
 

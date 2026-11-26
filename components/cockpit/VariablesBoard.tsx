@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { VARIABLE_ERROR_TEXT, type VariableInputError } from "@/lib/releaseops/scopedVariableMessages";
 import { compareResolved } from "@/lib/releaseops/scopedVariableCompare";
+import { parseSecretReference, SECRET_PROVIDERS } from "@/lib/releaseops/secretReferences";
 
 interface Env { id: string; name: string; slug: string; tier: string }
 interface Stored { key: string; value: string; scopeKey: string; description: string | null; version: number }
@@ -77,7 +78,7 @@ export function VariablesBoard() {
                 <th scope="row" className="px-4 py-3 font-mono text-xs font-normal text-zinc-200">{key}</th>
                 {columns.map((c) => { const v = cell(key, c.scopeKey); const fromSet = !v && c.id ? board.resolved.find((r) => r.environmentId === c.id)?.variables.find((x) => x.key === key && x.source === "set")?.set : undefined; const inherited = !v && c.id && cell(key, "workspace");
                   return <td key={c.scopeKey} className="px-4 py-3 align-top">
-                    {v ? <div className="flex items-start gap-2"><span className="break-all font-mono text-xs text-zinc-100">{v.value || <em className="text-zinc-400">empty</em>}</span>
+                    {v ? <div className="flex items-start gap-2"><span className="break-all font-mono text-xs text-zinc-100">{v.value || <em className="text-zinc-400">empty</em>}{(() => { const ref = parseSecretReference(v.value); return ref ? <span className="mt-1 block font-sans text-[11px] text-zinc-400">Secret reference · {SECRET_PROVIDERS[ref.provider]} · resolved in your CI, never by V19</span> : null; })()}</span>
                       {board.canEdit && <span className="ml-auto flex shrink-0 gap-2 text-xs">
                         <button type="button" className="text-zinc-300 underline-offset-2 hover:underline" aria-label={`Edit ${key} in ${c.label}`} onClick={() => setDraft({ key, scope: c.scopeKey, value: v.value, description: v.description ?? "", expectedVersion: v.version })}>Edit</button>
                         <button type="button" className="text-zinc-300 underline-offset-2 hover:underline" aria-label={`Remove ${key} from ${c.label}`} disabled={busy} onClick={() => void send("DELETE", { key, ...scopePayload(c.scopeKey), expectedVersion: v.version })}>Remove</button>

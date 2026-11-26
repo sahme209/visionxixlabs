@@ -28,6 +28,13 @@ describe("GET /api/v1/environments/{slug}/variables", () => {
     expect(body.sources).toEqual({ LOG_LEVEL: "environment", REGION: "workspace" });
     expect(body.digest).toBe(resolvedDigest([{ key: "LOG_LEVEL", value: "warn", source: "environment" }, { key: "REGION", value: "eu", source: "workspace" }]));
   });
+  it("returns secret references unresolved and lists them under secretRefs", async () => {
+    m.envFindFirst.mockResolvedValue({ id: "e_prod", slug: "prod", name: "Production" });
+    m.varFindMany.mockResolvedValue([{ key: "DB_URL", value: "secret://aws-sm/prod/db#url", scopeKey: "workspace" }]);
+    const body = await (await call("prod")).json();
+    expect(body.variables).toEqual({ DB_URL: "secret://aws-sm/prod/db#url" });
+    expect(body.secretRefs).toEqual({ DB_URL: { provider: "aws-sm", path: "prod/db", field: "url" } });
+  });
   it("refuses malformed slugs, reports unknown environments and hides storage errors", async () => {
     expect((await call("../x")).status).toBe(400);
     m.envFindFirst.mockResolvedValueOnce(null);

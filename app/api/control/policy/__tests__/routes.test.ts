@@ -2,12 +2,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-const io = vi.hoisted(() => ({ admin: true, sameOrigin: true, findMany: vi.fn() }));
+const io = vi.hoisted(() => ({ admin: true, sameOrigin: true, findMany: vi.fn(), violations: vi.fn(async (): Promise<unknown[]> => []) }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_p", userId: "u", email: "a@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => io.admin }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => io.sameOrigin }));
-vi.mock("@/lib/db", () => ({ prisma: { policyRule: { findMany: io.findMany } } }));
+vi.mock("@/lib/db", () => ({ prisma: { policyRule: { findMany: io.findMany }, policyViolation: { findMany: io.violations } } }));
 import { GET } from "../export/route";
 import { POST } from "../diff/route";
 
@@ -29,6 +29,16 @@ describe("policy as code routes", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.loosening).toEqual(["min_approvals: no longer blocks releases"]);
+    expect(body.data.backtest).toMatchObject({ releases: 0, newlyBlocked: [], newlyUnblocked: [] });
+  });
+
+  it("backtests the proposal against recorded violations, and omits the backtest if history cannot be read", async () => {
+    io.violations.mockResolvedValueOnce([{ releaseId: "rel_1", exceptionGrantedAt: null, rule: { key: "min_approvals" } }]);
+    const body = await (await post(JSON.stringify({ kind: "v19.policy", version: 1, rules: [rule("min_approvals", { blocking: false })] }))).json();
+    expect(body.data.backtest).toMatchObject({ releases: 1, blockedNow: 1, blockedProposed: 0, newlyUnblocked: ["rel_1"] });
+    io.violations.mockRejectedValueOnce(new Error("db"));
+    const fallback = await (await post(JSON.stringify({ kind: "v19.policy", version: 1, rules: [rule("min_approvals")] }))).json();
+    expect(fallback.data.backtest).toBeNull();
   });
 
   it("refuses non-admins, cross-origin posts and invalid documents", async () => {

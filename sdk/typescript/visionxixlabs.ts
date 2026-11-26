@@ -62,6 +62,8 @@ export interface EnvironmentVariablesResponse {
   sources: Record<string, "workspace" | "set" | "environment">;
   /** Present when two matching variable sets give a key different values (the set whose slug sorts last applies). */
   conflicts?: Array<{ key: string; sets: string[] }>;
+  /** Variables whose value is a secret reference (secret://provider/path#field). V19 never resolves them; read them in your CI. */
+  secretRefs?: Record<string, { provider: "aws-sm" | "aws-ssm" | "gcp-sm" | "azure-kv" | "vault"; path: string; field: string | null }>;
   /** SHA-256 fingerprint of the resolved set; record it with your deployment. */
   digest: string;
   count: number;

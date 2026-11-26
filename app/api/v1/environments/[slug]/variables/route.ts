@@ -15,6 +15,7 @@ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import { prisma } from "@/lib/db";
 import { MAX_VARIABLES_PER_WORKSPACE, resolvedDigest } from "@/lib/releaseops/scopedVariables";
 import { MAX_VARIABLE_SETS, resolveWithSets } from "@/lib/releaseops/variableSets";
+import { secretReferencesIn } from "@/lib/releaseops/secretReferences";
 
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "private, no-store" };
@@ -50,6 +51,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
       digest: resolvedDigest(resolved),
       count: resolved.length,
       ...(conflicts.length ? { conflicts } : {}),
+      // Secret references are returned as written; V19 never resolves them. Your CI reads them with its own identity.
+      ...(() => { const refs = secretReferencesIn(resolved); return Object.keys(refs).length ? { secretRefs: refs } : {}; })(),
     }, { headers: noStore });
   } catch {
     return NextResponse.json({ ok: false, error: "variables_unavailable" }, { status: 503, headers: noStore });
