@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ChevronDown, CircleCheck, Clock, Columns3, GitBranch, RefreshCw, Search, ShieldCheck, TriangleAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, CircleCheck, Clock, Columns3, GitBranch, LayoutGrid, List, RefreshCw, Search, ShieldCheck, TriangleAlert } from "lucide-react";
 import { z } from "zod";
 import { DesktopDialog } from "../components/DesktopDialog";
 import { desktopClient } from "../lib/desktopClient";
@@ -113,6 +113,8 @@ export function RepositoryDirectoryView({active, canRead, onOpenLocal, onConnect
   const [query, setQuery] = useState("");
   const [provider, setProvider] = useState("");
   const [workflowFilter, setWorkflowFilter] = useState<WorkflowFilter>("all");
+  const [layout, setLayout] = useState<"list" | "grid">(() => { try { return globalThis.localStorage?.getItem("v19.repositories.layout") === "grid" ? "grid" : "list"; } catch { return "list"; } });
+  const chooseLayout = (next: "list" | "grid") => { setLayout(next); try { globalThis.localStorage?.setItem("v19.repositories.layout", next); } catch { /* per-viewer convenience only */ } };
   const [syncOrder, setSyncOrder] = useState<WorkflowSyncOrder>("");
   const [hiddenColumns, setHiddenColumns] = useState<DirectoryColumn[]>([]);
   const visibleColumns = directoryColumns.filter(column => !hiddenColumns.includes(column.id));
@@ -236,6 +238,10 @@ export function RepositoryDirectoryView({active, canRead, onOpenLocal, onConnect
               <button type="button" className="btn-secondary" onClick={() => setHiddenColumns([])}>Show all columns</button>
             </fieldset>
           </details>
+          <div className="studio-repository-layout" role="group" aria-label="Repository layout">
+            <button type="button" aria-pressed={layout === "list"} aria-label="List view" title="List view" onClick={() => chooseLayout("list")}><List size={15} aria-hidden="true"/></button>
+            <button type="button" aria-pressed={layout === "grid"} aria-label="Grid view" title="Grid view" onClick={() => chooseLayout("grid")}><LayoutGrid size={15} aria-hidden="true"/></button>
+          </div>
           <div className="studio-repository-select">
             <ChevronDown size={14} aria-hidden="true"/>
             <select aria-label="Sort by recorded workflow sync" value={syncOrder} onChange={event => {
@@ -253,7 +259,18 @@ export function RepositoryDirectoryView({active, canRead, onOpenLocal, onConnect
       {directory.state === "loading" && <p role="status">Loading repositories…</p>}
       {directory.state === "unavailable" && <p role="alert">Repository directory is unavailable. Refresh to try again.</p>}
       {directory.state === "ready" && <>
-        <div className="studio-repository-table" role="region" aria-label="Loaded repository rows" tabIndex={0}>
+        {layout === "grid" && <ul className="studio-repository-grid" aria-label="Loaded repository cards">{visible.map(row => <li key={row.id}>
+          <div className="studio-repository-name"><GitBranch aria-hidden="true" size={16}/><div>
+            <strong>{row.displayName.split("/").pop() || row.displayName}</strong>
+            <small>{row.displayName}</small>
+          </div></div>
+          <dl>{visibleColumns.map(column => <div key={column.id}><dt>{column.title}</dt><dd>{column.cell(row)}</dd></div>)}</dl>
+          <button type="button" className="btn-secondary" aria-label={`Inspect ${row.displayName}`} onClick={event => {
+            inspectorOpener.current = {button: event.currentTarget, config: desktopClient.config, revision: desktopClient.getContextRevision()};
+            setInspectedId(row.id);
+          }}>Inspect</button>
+        </li>)}</ul>}
+        {layout === "list" && <div className="studio-repository-table" role="region" aria-label="Loaded repository rows" tabIndex={0}>
           <table style={{minWidth: 320 + visibleColumns.length * 80}}>
             <thead><tr>
               <th scope="col">Repository</th>
@@ -273,7 +290,7 @@ export function RepositoryDirectoryView({active, canRead, onOpenLocal, onConnect
               }}>Inspect</button></td>
             </tr>)}</tbody>
           </table>
-        </div>
+        </div>}
         {!visible.length && <p role="status">{rows.length ? "No matching repositories." : "No repositories are registered."}</p>}
         {!!visible.length && <div className="studio-repository-page-row">
           <p aria-live="polite">Showing {start + 1}–{start + visible.length} of {matching.length} matching repositories</p>

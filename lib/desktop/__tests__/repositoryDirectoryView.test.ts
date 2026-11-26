@@ -248,3 +248,21 @@ it("shows or hides supported columns without reloading rows, and restores the co
   expect(screen.getByRole("columnheader", {name: "Last recorded workflow"})).toBeTruthy();
   expect(read).toHaveBeenCalledOnce();
 });
+
+it("switches between list and grid layouts with the same rows and inspector", async () => {
+  vi.spyOn(desktopClient, "listRepositories").mockResolvedValue({ok: true, data});
+  render(createElement(RepositoryDirectoryView, {active: true, canRead: true, onOpenLocal: vi.fn()}));
+  await screen.findByRole("button", {name: "Inspect fixture/gallery"});
+  const grid = screen.getByRole("button", {name: "Grid view"});
+  fireEvent.click(grid);
+  expect(grid.getAttribute("aria-pressed")).toBe("true");
+  const cards = screen.getByRole("list", {name: "Loaded repository cards"});
+  expect(screen.queryByRole("region", {name: "Loaded repository rows"})).toBeNull();
+  const inspect = within(cards).getByRole("button", {name: "Inspect fixture/gallery"});
+  fireEvent.click(inspect);
+  expect(screen.getByRole("dialog", {name: "Repository details for fixture/gallery"})).toBeTruthy();
+  fireEvent.keyDown(document.activeElement!, {key: "Escape"});
+  expect(document.activeElement).toBe(inspect);
+  fireEvent.click(screen.getByRole("button", {name: "List view"}));
+  expect(screen.getByRole("region", {name: "Loaded repository rows"})).toBeTruthy();
+});

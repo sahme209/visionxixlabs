@@ -554,7 +554,7 @@ function AuthenticatedWorkspace({ identity, verifiedConfig, onSignOut }: {
             }}>Leave without saving</button>
           </div>
         </DesktopDialog>
-      ) : <WorkspaceCommands open={commandsOpen} onOpenChange={setCommandsOpen} onNavigate={navigate} />}
+      ) : <WorkspaceCommands open={commandsOpen} onOpenChange={setCommandsOpen} onNavigate={navigate} onOpenRelease={identity.kind === "desktop_session" && identity.capabilities.includes("pipeline:read") ? release => selectSavedRelease(release) : undefined} />}
     </div>
   );
 }

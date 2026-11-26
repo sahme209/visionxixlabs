@@ -164,6 +164,8 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     && matchesTicketFacets(record,facets)
     && (!classification || classification === classificationKey(record))
     && ticketSearchText(record).includes(needle));
+  const severityMix = incidentSeverities.map(severity => ({severity, count: (data?.records ?? []).filter(record => record.kind === "incident" && record.severity === severity
+    && inFilter(record,filter,identity.userId) && matchesTicketFacets(record,facets) && ticketSearchText(record).includes(needle)).length})).filter(part => part.count > 0);
   useLayoutEffect(() => {
     const entry = savedDraftReturn.current;
     if (!entry) return;
@@ -489,6 +491,17 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
     })}
     {selectionUnavailable && <p role="status">The selected ticket could not be verified in the loaded records. Refresh or select another ticket.</p>}
     {showNoRows && !selectionUnavailable && <p role="status">{data.records.length ? "No loaded tickets match." : "No records from the available sources."}</p>}
+    {severityMix.length > 0 && <div className="studio-ticket-severity-mix" role="group" aria-label="Loaded incidents by severity">
+      <div className="studio-ticket-severity-bar" aria-hidden="true">{severityMix.map(part => <span key={part.severity} data-ticket-priority={part.severity}
+        data-active={classification === `incident:${part.severity}` ? "true" : classification ? "false" : undefined} style={{flexGrow: part.count}}/>)}</div>
+      <div className="studio-ticket-severity-legend">{severityMix.map(part => {
+        const value = `incident:${part.severity}`;
+        return <button key={part.severity} type="button" data-ticket-priority={part.severity} aria-pressed={classification === value}
+          onClick={() => setClassification(current => current === value ? "" : value)}>
+          <span className="studio-ticket-severity-swatch" aria-hidden="true"/>{part.count} {part.severity}
+        </button>;
+      })}</div>
+    </div>}
     {visible.length > 0 && <div className="studio-tickets-workbench">
       <nav aria-label="Select a ticket" aria-describedby={`${panelId}-instructions`}>
         <p id={`${panelId}-instructions`} className="sr-only">Use the Up and Down arrow keys to select a ticket. Press Enter to focus its details.</p>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
+import { PUBLIC_PLAN_CATALOG, publicPlanIdFor } from "@/lib/billing/publicPlanCatalog";
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 import { decideDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccessPolicy";
@@ -44,7 +45,8 @@ export default async function ControlOverviewPage() {
     withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId)).catch(() => ({ available: false } as const)),
   ]);
   const plan = billing?.available ? billing.plan : null;
-  const planName = plan ? (plan.publicPlanId ? ({free:"Free",pro:"Pro",enterprise:"Enterprise"})[plan.publicPlanId] : plan.spec?.label ?? (plan.status === "no_plan" ? "No subscription" : plan.tier)) : "Unavailable";
+  // Same plan name as Usage & billing, so the two pages never disagree (for example "14-day trial" beside "Free · no plan").
+  const planName = plan ? (PUBLIC_PLAN_CATALOG.find(entry => entry.id === (plan.publicPlanId ?? publicPlanIdFor(plan.tier, plan.status)))?.name ?? "Unavailable") : "Unavailable";
   const desktopAccess = plan ? decideDesktopCommercialAccess(plan) : null;
   const money = (cents: number) => new Intl.NumberFormat("en-US", {style:"currency",currency:"USD"}).format(cents / 100);
 

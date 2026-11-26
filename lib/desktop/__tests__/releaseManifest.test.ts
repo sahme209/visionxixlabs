@@ -184,3 +184,9 @@ function asset(name: string) {
     digest: name.endsWith(".asc") ? null : "sha256:abc123",
   };
 }
+
+it("never tells people to bypass Gatekeeper when macOS signing is merely unconfirmed", async () => {
+  const source = (await import("node:fs")).readFileSync(new URL("../releaseManifest.ts", import.meta.url), "utf8");
+  expect(source).not.toMatch(/bypass Gatekeeper/);
+  expect(source).toContain("Signing not yet confirmed in the release record");
+});

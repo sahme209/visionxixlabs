@@ -12,7 +12,7 @@ import { WorkspaceAIUsageBudgetPanel } from "@/components/billing/WorkspaceAIUsa
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner, isTenantAdmin } from "@/lib/auth/platformAdmin";
 import { checkDeploymentQuota } from "@/lib/billing/deploymentQuota";
-import { PUBLIC_PLAN_CATALOG, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { PUBLIC_PLAN_CATALOG, isSelfServiceBillingEnabled, publicPlanIdFor } from "@/lib/billing/publicPlanCatalog";
 import { describeStripeStatus } from "@/lib/billing/stripeHelper";
 import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
 import { prisma } from "@/lib/db";
@@ -62,13 +62,6 @@ function creditTransactionSummary(transaction: CreditTransaction) {
   return details.join(" · ");
 }
 
-function planIdFor(tier: string, status: string) {
-  if (status !== "active") return "free" as const;
-  if (tier === "enterprise") return "enterprise" as const;
-  if (tier === "starter" || tier === "growth") return "pro" as const;
-  return "free" as const;
-}
-
 export default async function ControlUsageBillingPage({ searchParams }: { searchParams?: Promise<{ billing?: string | string[] }> }) {
   const context = await currentContext();
   if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
@@ -81,7 +74,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
   const period = currentPeriod(now);
   const billingRead = await readBillingPlanWithAvailability(organizationId);
   const billing = billingRead.plan;
-  const publicPlanId = billing.publicPlanId ?? planIdFor(billing.tier, billing.status);
+  const publicPlanId = billing.publicPlanId ?? publicPlanIdFor(billing.tier, billing.status);
   const publicPlan = PUBLIC_PLAN_CATALOG.find((plan) => plan.id === publicPlanId)!;
   const stripe = describeStripeStatus();
 
