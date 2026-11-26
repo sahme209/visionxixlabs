@@ -16,10 +16,15 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
   if (!environments?.length || !executions.length) return null;
   const board = buildEnvironmentBoard(environments, executions);
   if (!board.rows.length) return null;
+  const trailing = board.rows.reduce((sum, row) => sum + row.gaps.length, 0);
   return (
     <section className="environment-board" aria-labelledby="environment-board-title">
-      <header>
+      <details>
+      <summary>
         <h2 id="environment-board-title">Environment board</h2>
+        <span className="environment-board-count">{board.rows.length} repositor{board.rows.length === 1 ? "y" : "ies"} · {board.environments.length} environment{board.environments.length === 1 ? "" : "s"}{trailing ? ` · ${trailing} trailing` : ""}</span>
+      </summary>
+      <header>
         <p>Latest recorded workflow run for each repository in each environment, in lifecycle order. This is recorded evidence, not the live deployed version. “Trails” marks a later environment whose latest run is older than a newer successful commit before it; promotion still needs its own release and approval.</p>
       </header>
       <div className="environment-board-scroll" role="region" aria-label="Environment board table" tabIndex={0}>
@@ -38,6 +43,7 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
           </tr>)}</tbody>
         </table>
       </div>
+      </details>
       {board.unplaced > 0 && <p className="environment-board-note">{board.unplaced} recorded run{board.unplaced === 1 ? "" : "s"} for environments not in this workspace’s list are not shown.</p>}
     </section>
   );
