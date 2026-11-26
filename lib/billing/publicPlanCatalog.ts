@@ -117,3 +117,11 @@ export function legacyEntitlementTierForPublicPlan(planId: PaidPublicPlanId): "g
 export function isSelfServiceBillingEnabled(): boolean {
   return process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED === "true";
 }
+
+/** Public plan shown for a stored plan when no explicit public plan is recorded. Shared by Overview and Usage & billing. */
+export function publicPlanIdFor(tier: string, status: string): "free" | "pro" | "enterprise" {
+  if (status !== "active") return "free";
+  if (tier === "enterprise") return "enterprise";
+  if (tier === "starter" || tier === "growth") return "pro";
+  return "free";
+}
