@@ -68,7 +68,8 @@ export default async function InsightsPage() {
 
       <section aria-labelledby="insights-delivery" className="mt-8">
         <h2 id="insights-delivery" className="text-base font-medium">Delivery · last {OUTCOME_WINDOW_DAYS} days</h2>
-        {!outcome ? <p role="status" className="mt-3 text-sm text-zinc-400">Workflow run records could not be read. Nothing is shown rather than an estimate.</p> : <>
+        {!outcome ? <p role="status" className="mt-3 text-sm text-zinc-400">Workflow run records could not be read. Nothing is shown rather than an estimate.</p>
+          : outcome.recorded === 0 ? <p role="status" className="mt-3 text-sm text-zinc-400">No workflow runs were recorded in the last {OUTCOME_WINDOW_DAYS} days. Runs appear here after a governed release dispatches its workflow.</p> : <>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Metric label="Workflow runs" value={outcome.recorded.toLocaleString()} note={change === null ? undefined : `${change >= 0 ? "+" : ""}${change}% vs previous ${OUTCOME_WINDOW_DAYS} days`} />
             <Metric label="Runs per week" value={perWeek ?? "—"} note="Deployment frequency proxy" />

@@ -44,3 +44,11 @@ it("shows nothing rather than an estimate when records cannot be read", async ()
     "Incident records could not be read. Nothing is shown rather than an estimate.",
   ]);
 });
+
+it("explains an empty window instead of showing zero rates", async () => {
+  io.runs.mockResolvedValue([]);
+  io.count.mockResolvedValue(0);
+  render(await Page());
+  expect(screen.getAllByRole("status")[0].textContent).toContain("No workflow runs were recorded in the last 30 days");
+  expect(screen.queryByText("Runs per week")).toBeNull();
+});
