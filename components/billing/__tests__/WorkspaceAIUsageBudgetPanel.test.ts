@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { createElement } from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WorkspaceAIUsageBudgetPanel } from "../WorkspaceAIUsageBudgetPanel";
 
@@ -68,7 +68,8 @@ describe("workspace AI budget cockpit", () => {
     fireEvent.click(screen.getByRole("button", { name: "Remove budget" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirm removal" }));
     await screen.findByText("AI budget removed.");
-    expect(document.activeElement).toBe(limitInput());
+    // Focus moves in an effect after the status renders; wait for it rather than racing it under load.
+    await waitFor(() => expect(document.activeElement).toBe(limitInput()));
     expect(JSON.parse(fetchBudget.mock.calls[1][1].body)).toEqual({ organizationId, expectedRevision: revision, budget: null });
   });
 

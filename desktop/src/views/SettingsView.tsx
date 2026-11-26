@@ -1799,6 +1799,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
             {deploying ? "Dispatching…" : "Dispatch workflow"}
           </button>
         </div>
+        {environment.changeWindowRule != null && <p data-testid="deploy-window-status" className="mt-3 text-[11px] text-zinc-400">Change window: {windowStatusText(environment.changeWindowRule, new Date())}</p>}
         {environment.tier !== "dev" && <p className="mt-3 text-[11px] text-zinc-500">A successful workflow is not source-artifact promotion evidence. Promotion remains blocked until artifact identity and provenance are verified.</p>}
         {environment.tier !== "dev" && (
           <label className="mt-3 block">

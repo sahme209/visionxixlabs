@@ -5,6 +5,7 @@
  * raised in it (with current status), scoped to the caller's org.
  */
 
+import { readChangePassport } from "@/lib/agentGateway/changePassport";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       actions: actions.map((a) => ({
         id: a.id, requiresIndependentReviewer: a.proposedByUserId === String(session.userId), toolName: a.toolName, argsJson: redactSensitiveRepositoryEvidence(a.argsJson), riskLevel: a.riskLevel, status: a.status,
         resultJson: redactSensitiveRepositoryEvidence(a.resultJson), errorMessage: a.errorMessage, createdAt: a.createdAt.toISOString(),
+        passport: (() => { const p = readChangePassport(a.passport); return p ? { agent: p.agent, model: p.model, tools: p.tools, digest: p.digest } : null; })(),
       })),
     },
   });
