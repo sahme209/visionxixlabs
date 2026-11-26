@@ -88,6 +88,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "read_ci_jobs",
+    description: "Read up to 20 jobs and their last build result from the workspace's connected Jenkins, failing jobs first. Reads only; never starts, aborts or configures a job.",
+    argsSchemaHint: "{} — no arguments.",
+    riskLevel: "low",
+  },
+  {
     name: "read_gitops_state",
     description: "Read up to 20 applications from the workspace's connected Argo CD project and Flux namespace: sync or readiness, health and the commit each applied. Use it to check whether a cluster runs what V19 deployed. Reads only; never syncs, reconciles or suspends.",
     argsSchemaHint: "{} — no arguments.",
