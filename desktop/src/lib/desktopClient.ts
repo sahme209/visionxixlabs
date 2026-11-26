@@ -1331,9 +1331,14 @@ export class DesktopClient {
   }
 
   listEnvironments(): Promise<ApiResult<{
-    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
+    environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[]; createdAtIso: string }>;
   }>> {
     return this.get("/api/desktop/environments");
+  }
+
+  /** Replace an environment's tags; refused if they changed since `expectedTags` was read. */
+  setEnvironmentTags(environmentId: string, tags: string[], expectedTags: string[]): Promise<ApiResult<{ id: string; tags: string[] }>> {
+    return this.put(`/api/desktop/environments/${encodeURIComponent(environmentId)}/tags`, { tags, expectedTags });
   }
 
   createEnvironment(input: { slug: string; name: string; tier: string }): Promise<ApiResult<{ id: string; slug: string; name: string; tier: string; created: boolean }>> {

@@ -692,28 +692,35 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "9df0c7635c55377cfae5591b8f4c6a6b689d4eae2eae7fd5eb47a5e1fe5568af"
+   "sourceSha256": "5ef5298e2900838cb6a02517283e5982b7a468d85804faf855e7e25846692c64"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "9df0c7635c55377cfae5591b8f4c6a6b689d4eae2eae7fd5eb47a5e1fe5568af"
+   "sourceSha256": "5ef5298e2900838cb6a02517283e5982b7a468d85804faf855e7e25846692c64"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "9df0c7635c55377cfae5591b8f4c6a6b689d4eae2eae7fd5eb47a5e1fe5568af"
+   "sourceSha256": "5ef5298e2900838cb6a02517283e5982b7a468d85804faf855e7e25846692c64"
   },
   {
    "href": "/docs/releaseops#deployment-checks",
    "title": "Deployment checks per stage",
    "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) and supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool). Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V19 never runs a check. Under CI workflow for these checks , the page generates a GitHub Actions workflow ( .github/workflows/v19-deployment-checks.yml ) that runs the smoke tests and repository scripts for a chosen stage; copy or download it and add it through a pull request. Health checks, migration dry runs and manual checklists are listed with the reason they are not in that file. Each generated job ends by reporting its result to V19 when the repository has a V19_API_KEY secret (an API key with the governance:request scope; it is available to the whole check job, including your scripts) and an optional V19_URL variable. The Checks page then shows each check's last result, and says when it ran an older version of the check. Results are evidence only. Before the desktop app dispatches a deployment, every enabled blocking check at an earlier stage (Plan,",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "9df0c7635c55377cfae5591b8f4c6a6b689d4eae2eae7fd5eb47a5e1fe5568af"
+   "sourceSha256": "5ef5298e2900838cb6a02517283e5982b7a468d85804faf855e7e25846692c64"
+  },
+  {
+   "href": "/docs/releaseops#tenant-fan-out",
+   "title": "Tenants, tags and fan-out",
+   "text": "In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase key:value labels such as tenant:acme , region:eu or ring:1 . Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime. Tenant fan-out preview takes a selector (all terms must match, and key:* matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals, and later rings should wait for earlier ones to succeed.",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "5ef5298e2900838cb6a02517283e5982b7a468d85804faf855e7e25846692c64"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",

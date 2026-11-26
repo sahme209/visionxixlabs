@@ -40,6 +40,7 @@ import {
   ShieldCheck,
   Trees,
 } from "lucide-react";
+import { normalizeTags, planFanOut } from "../../../lib/releaseops/environmentTags";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
@@ -1295,7 +1296,7 @@ const STANDARD_ENVIRONMENTS = [
 ];
 
 interface EnvironmentListItem {
-  id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean;
+  id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; tags?: string[];
 }
 
 function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
@@ -1366,20 +1367,68 @@ function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }
           <div key={env.id} className="border-b border-white/4.5 last:border-b-0">
             <ActionRow
               title={`${env.name} (${env.tier})`}
-              detail={`slug: ${env.slug}${env.hasApprovalPolicy ? " · approval policy attached" : ""}`}
+              detail={`slug: ${env.slug}${env.hasApprovalPolicy ? " · approval policy attached" : ""}${env.tags?.length ? ` · ${env.tags.join(" ")}` : ""}`}
               action={
                 <button data-help-id="settings.workspace.environment-target-toggle" type="button" onClick={() => setExpandedId(expandedId === env.id ? null : env.id)} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/6">
                   {expandedId === env.id ? "Hide" : "AWS deploy"}
                 </button>
               }
             />
+            {expandedId === env.id && <EnvironmentTagsEditor environment={env} onSaved={load} />}
             {expandedId === env.id && <DeploymentTargetPanel environment={env} environments={environments ?? []} identity={identity} />}
           </div>
         ))}
       </Group>
+      {(environments ?? []).some((e) => e.tags?.length) && <FanOutPreview environments={environments ?? []} />}
       <NewEnvironmentForm onCreated={load} />
     </div>
   );
+}
+
+/** Edit key:value tags (tenant:acme, region:eu, ring:1). Saved with a compare-and-set on the tags shown. */
+export function EnvironmentTagsEditor({ environment, onSaved }: { environment: EnvironmentListItem; onSaved: () => void }) {
+  const [text, setText] = useState((environment.tags ?? []).join(" "));
+  const [state, setState] = useState<{ kind: "idle" | "busy" | "saved" } | { kind: "error"; message: string }>({ kind: "idle" });
+  const proposed = text.split(/[\s,]+/).filter(Boolean);
+  const normalized = normalizeTags(proposed);
+  async function save() {
+    if (!normalized.ok) return;
+    setState({ kind: "busy" });
+    const r = await desktopClient.setEnvironmentTags(environment.id, normalized.tags, environment.tags ?? []).catch(() => ({ ok: false as const, error: "unavailable" }));
+    if (r.ok) { setState({ kind: "saved" }); onSaved(); return; }
+    setState({ kind: "error", message: r.error === "tags_changed" ? "Someone changed these tags. Reload the list and try again." : r.error === "desktop_session_required" ? "Only owners and admins can change environment tags." : "Tags could not be saved. Try again." });
+  }
+  return (
+    <div className="mx-4 mb-3 rounded-lg border border-white/8 bg-white/[0.02] p-3 text-[12px]">
+      <label className="block text-zinc-400">Tags (key:value, space separated)
+        <input data-help-id="settings.workspace.environment-tags" value={text} onChange={(e) => { setText(e.target.value); setState({ kind: "idle" }); }} placeholder="tenant:acme region:eu ring:1" spellCheck={false} className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-[12px] text-zinc-200" />
+      </label>
+      {!normalized.ok && <p className="mt-1 text-amber-300">Use lowercase key:value tags, for example tenant:acme. Not valid: {normalized.invalid.join(", ")}</p>}
+      <div className="mt-2 flex items-center gap-3">
+        <button data-help-id="settings.workspace.environment-tags-save" type="button" disabled={!normalized.ok || state.kind === "busy"} onClick={() => void save()} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/6 disabled:opacity-50">{state.kind === "busy" ? "Saving…" : "Save tags"}</button>
+        <span aria-live="polite" className={state.kind === "error" ? "text-amber-300" : "text-zinc-400"}>{state.kind === "saved" ? "Saved." : state.kind === "error" ? state.message : ""}</span>
+      </div>
+    </div>);
+}
+
+/** Preview which environments a tag selector would reach, in ring order. Planning only; nothing is deployed. */
+export function FanOutPreview({ environments }: { environments: EnvironmentListItem[] }) {
+  const [selector, setSelector] = useState("tenant:*");
+  const plan = planFanOut(environments.map((e) => ({ id: e.id, name: e.name, tier: e.tier, tags: e.tags ?? [] })), selector);
+  return (
+    <Group label="Tenant fan-out preview">
+      <div className="px-4 py-3 text-[12px]">
+        <label className="block text-zinc-400">Tag selector (all terms must match; key:* matches any value)
+          <input data-help-id="settings.workspace.fanout-selector" value={selector} onChange={(e) => setSelector(e.target.value)} spellCheck={false} className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-2 py-1.5 font-mono text-[12px] text-zinc-200" />
+        </label>
+        <div aria-live="polite" className="mt-3">
+          {!plan.ok ? <p className="text-amber-300">Use key:value terms, for example tenant:* region:eu.</p>
+            : plan.plan.matched === 0 ? <p className="text-zinc-400">No environments match.</p>
+            : <ol className="space-y-1.5">{plan.plan.rings.map((r) => <li key={String(r.ring)}><span className="text-zinc-400">{r.ring === null ? "No ring (last)" : `Ring ${r.ring}`}:</span> <span className="text-zinc-200">{r.environments.map((e) => e.name).join(", ")}</span></li>)}</ol>}
+        </div>
+        <p className="mt-3 text-[11px] text-zinc-500">A plan only. Each environment still deploys on its own, with its own policy, checks and approvals; later rings should wait for earlier ones to succeed.</p>
+      </div>
+    </Group>);
 }
 
 function NewEnvironmentForm({ onCreated }: { onCreated: () => void }) {

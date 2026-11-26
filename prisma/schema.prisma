@@ -2927,6 +2927,8 @@ model Environment {
   /// Optional AxiomApprovalPolicy ID that gates production deploys here.
   /// Soft reference (no FK) so policy lifecycle is independent.
   approvalPolicyId String?
+  /// key:value labels such as tenant:acme, region:eu or ring:1, used to plan tenant fan-out.
+  tags            String[]        @default([])
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
