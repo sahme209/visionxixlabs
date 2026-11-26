@@ -1,5 +1,6 @@
 import {CustomerJourneyEntry} from '@/components/shared/CustomerJourneyEntry';
 import Link from "next/link";
+import { DeploymentFreezePanel } from "@/components/cockpit/DeploymentFreezePanel";
 import { redirect } from "next/navigation";
 
 import { currentContext } from "@/lib/auth/currentContext";
@@ -118,6 +119,7 @@ export default async function ControlOverviewPage() {
           </ul>
         </section>
       )}
+      <DeploymentFreezePanel />
       <section aria-label="V19 products and connections" className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">V19</h2><p className="mt-2 text-xs text-zinc-300">{desktopAccess?.title ?? "Access status unavailable"}</p><p className="mt-1 text-xs leading-5 text-zinc-400">Workspace access is checked by the desktop service. Paired devices are managed separately.</p><Link href="/control/settings?section=sessions" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Manage desktop sessions</Link></article>
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">Integrations</h2><p className="mt-2 text-xs leading-5 text-zinc-400">Connect workspace services and review their validated permissions.</p><Link href="/control/integrations" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Connect services</Link></article>
