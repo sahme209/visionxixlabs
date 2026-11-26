@@ -123,6 +123,35 @@ export function ChecksBoard() {
           <div aria-live="polite">{messages.length > 0 && <ul className="mt-3 list-disc pl-5 text-sm text-amber-300">{messages.map((m) => <li key={m}>{m}</li>)}</ul>}</div>
         </form>
       ) : <p className="text-sm text-zinc-400">Only workspace owners and admins can change checks.</p>}
-      <p className="text-xs leading-5 text-zinc-400">Checks are recorded configuration in this step. Generating the CI job for a check, collecting results and enforcing blocking checks at stage transitions come next; nothing on this page runs a check or changes a release.</p>
+      {board.checks.length > 0 && <WorkflowPreview revision={board.checks.map((c) => `${c.key}@${c.version}:${c.enabled}`).join(",")} />}
+      <p className="text-xs leading-5 text-zinc-400">Checks are recorded configuration in this step. The CI workflow below is generated for you to review and merge in your repository; collecting results and enforcing blocking checks at stage transitions come next. Nothing on this page runs a check or changes a release.</p>
     </div>);
+}
+
+function WorkflowPreview({ revision }: { revision: string }) {
+  const [open, setOpen] = useState(false);
+  const [state, setState] = useState<{ kind: "idle" | "loading" | "error" } | { kind: "ready"; yaml: string; path: string; skipped: Array<{ key: string; reason: string }> }>({ kind: "idle" });
+  const [copied, setCopied] = useState(false);
+  useEffect(() => { setState({ kind: "idle" }); }, [revision]);
+  useEffect(() => {
+    if (!open || state.kind !== "idle") return;
+    setState({ kind: "loading" });
+    fetch("/api/control/checks/workflow", { cache: "no-store" }).then((r) => r.json()).then((b) => b?.ok ? setState({ kind: "ready", yaml: b.data.yaml, path: b.data.path, skipped: b.data.skipped }) : setState({ kind: "error" })).catch(() => setState({ kind: "error" }));
+  }, [open, state.kind]);
+  return (
+    <details className="rounded-xl border border-white/8 bg-[#111111] p-5" onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
+      <summary className="cursor-pointer text-base font-medium">CI workflow for these checks</summary>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">A GitHub Actions workflow that runs the CI-runnable checks in your repository when you start it for a stage. Review it and add it through a pull request; V19 does not write it to your repository.</p>
+      {state.kind === "loading" && <p className="mt-3 text-sm text-zinc-400">Generating…</p>}
+      {state.kind === "error" && <p className="mt-3 text-sm text-amber-300">The workflow could not be generated. Try again.</p>}
+      {state.kind === "ready" && <div className="mt-4">
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <code className="font-mono text-xs text-zinc-300">{state.path}</code>
+          <button type="button" className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-zinc-200" onClick={() => { void navigator.clipboard?.writeText(state.yaml).then(() => setCopied(true), () => setCopied(false)); }}>{copied ? "Copied" : "Copy"}</button>
+          <a href="/api/control/checks/workflow?format=yaml" className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-zinc-200">Download</a>
+        </div>
+        {state.skipped.length > 0 && <ul className="mt-3 list-disc pl-5 text-xs leading-5 text-zinc-400">{state.skipped.map((s) => <li key={s.key}><span className="font-mono">{s.key}</span>: not in this file, {s.reason}.</li>)}</ul>}
+        <pre tabIndex={0} aria-label="Generated workflow" className="mt-3 max-h-96 overflow-auto rounded-lg border border-white/10 bg-black/40 p-3 font-mono text-xs leading-5 text-zinc-200">{state.yaml}</pre>
+      </div>}
+    </details>);
 }

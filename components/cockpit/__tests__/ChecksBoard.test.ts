@@ -40,3 +40,17 @@ describe("ChecksBoard", () => {
     expect(JSON.parse(f.mock.calls[1][1].body)).toMatchObject({ expectedVersion: 2, check: { spec: { items: ["Post update", "Notify on-call"] } } });
   });
 });
+
+describe("ChecksBoard CI workflow preview", () => {
+  it("loads the generated workflow when opened and lists skipped checks", async () => {
+    const check = { key: "health-probe", name: "Health probe", kind: "smoke_test", stage: "verify", mode: "blocking", spec: { url: "https://a.example.invalid/h", expectStatus: 200, maxLatencyMs: 500 }, enabled: true, version: 1 };
+    const f = vi.fn().mockResolvedValueOnce(json(board(true, [check]))).mockResolvedValueOnce(json({ ok: true, data: { path: ".github/workflows/v19-deployment-checks.yml", yaml: "name: V19 deployment checks\n", included: ["health-probe"], skipped: [{ key: "runbook", reason: "confirmed by a person in V19, not in CI" }] } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(ChecksBoard));
+    const summary = await screen.findByText("CI workflow for these checks");
+    const details = summary.closest("details")!; details.open = true; fireEvent(details, new Event("toggle"));
+    await waitFor(() => expect(screen.getByLabelText("Generated workflow").textContent).toContain("V19 deployment checks"));
+    expect(screen.getByText(/not in this file, confirmed by a person in V19/)).toBeTruthy();
+    expect(f.mock.calls[1][0]).toBe("/api/control/checks/workflow");
+  });
+});

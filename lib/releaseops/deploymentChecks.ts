@@ -39,6 +39,9 @@ export function validateCheck(input: unknown): { ok: true; check: ValidatedCheck
   if (!base.success) return { ok: false, errors: base.error.issues.map((i) => `${i.path.join(".") || "check"}: ${i.message}`) };
   const spec = checkSpecSchemas[base.data.kind].safeParse(base.data.spec);
   if (!spec.success) return { ok: false, errors: spec.error.issues.map((i) => `spec.${i.path.join(".")}: ${i.message}`) };
+  // Generated CI files evaluate ${{ }} expressions, so no stored text may contain one.
+  const texts = [base.data.name, ...Object.values(spec.data as Record<string, unknown>).flatMap((v) => (Array.isArray(v) ? v : [v]))].filter((v): v is string => typeof v === "string");
+  if (texts.some((t) => t.includes("${{"))) return { ok: false, errors: ["check: remove ${{ … }} expressions; check values are inserted into CI files as plain text"] };
   return { ok: true, check: { ...base.data, spec: spec.data as Record<string, unknown> } };
 }
 
