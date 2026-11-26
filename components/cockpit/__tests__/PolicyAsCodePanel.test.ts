@@ -38,6 +38,18 @@ describe("PolicyAsCodePanel", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Change requested" })).toBeTruthy());
     expect(calls.some(([u, i]) => u === "/api/control/policy/requests" && i?.method === "POST" && i.body === "{}")).toBe(true);
   });
+  it("shows the backtest of past releases under the proposed rules", async () => {
+    const backtest = { releases: 12, blockedNow: 3, blockedProposed: 1, newlyBlocked: [], newlyUnblocked: ["r1", "r2"], byRule: [{ key: "prod-gate", blockedNow: 2, blockedProposed: 0 }], rulesWithoutHistory: ["new-rule"] };
+    routes({ "/api/control/policy/diff": [() => json({ ok: true, data: { ...diff, backtest } })] });
+    render(createElement(PolicyAsCodePanel));
+    fireEvent.change(screen.getByLabelText("Proposed policy file (JSON)"), { target: { value: "{}" } });
+    fireEvent.click(screen.getByRole("button", { name: "Preview changes" }));
+    await waitFor(() => expect(screen.getByText(/Backtest/)).toBeTruthy());
+    expect(screen.getByText("Of 12 releases, 3 were blocked under the current rules; 1 would be under this file.")).toBeTruthy();
+    expect(screen.getByText("Would no longer be blocked: 2 releases.")).toBeTruthy();
+    expect(screen.getByText("prod-gate: 2 → 0 blocked")).toBeTruthy();
+    expect(screen.getByText(/effect is unknown: new-rule/)).toBeTruthy();
+  });
   it("lists validation issues and maps admin refusal to plain words", async () => {
     routes({ "/api/control/policy/diff": [() => json({ ok: false, error: "policy_document_invalid", issues: ["rules.0.key: Required"] }, 422), () => json({ ok: false, error: "workspace_admin_required" }, 403)] });
     render(createElement(PolicyAsCodePanel));

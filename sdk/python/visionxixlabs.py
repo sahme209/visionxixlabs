@@ -94,7 +94,8 @@ class VisionXIXLabs:
 
         Required scope: pipeline:read. Values are plain configuration, never secrets.
         ``sources`` maps each key to "workspace", "set" or "environment"; ``conflicts`` is present when
-        two matching variable sets define a key differently.
+        two matching variable sets define a key differently. ``secretRefs`` lists variables whose value is a
+        secret reference (secret://provider/path#field); V19 never resolves them, so read them in your CI.
         """
         return self._get(f"/api/v1/environments/{quote(slug, safe='')}/variables")
 

@@ -111,6 +111,12 @@ type EnvironmentVariablesResponse struct {
 		Key  string   `json:"key"`
 		Sets []string `json:"sets"`
 	} `json:"conflicts,omitempty"`
+	// SecretRefs lists variables whose value is a secret reference; V19 never resolves them.
+	SecretRefs map[string]struct {
+		Provider string  `json:"provider"`
+		Path     string  `json:"path"`
+		Field    *string `json:"field"`
+	} `json:"secretRefs,omitempty"`
 }
 
 // CheckResultInput is one deployment check run reported from CI.

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { diffPolicy, parsePolicyDocument } from "@/lib/releaseops/policyAsCode";
-import { policyAdminContext, readPolicyRules } from "../shared";
+import { policyAdminContext, readBacktestHistory, readPolicyRules } from "../shared";
+import { backtestPolicy } from "@/lib/releaseops/policyBacktest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,8 +18,11 @@ export async function POST(request: NextRequest) {
   const parsed = parsePolicyDocument(text);
   if (!parsed.ok) return NextResponse.json({ ok: false, error: "policy_document_invalid", issues: parsed.errors }, { status: 422 });
   try {
-    const diff = diffPolicy(await readPolicyRules(context.organizationId), parsed.document);
-    return NextResponse.json({ ok: true, data: diff }, { headers: { "Cache-Control": "private, no-store" } });
+    const current = await readPolicyRules(context.organizationId);
+    const diff = diffPolicy(current, parsed.document);
+    // Backtest against recorded violations; optional evidence, so a read failure only omits it.
+    const backtest = await readBacktestHistory(context.organizationId).then((h) => backtestPolicy(current, parsed.document, h.violations, h.releaseIds), () => null);
+    return NextResponse.json({ ok: true, data: { ...diff, backtest } }, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ ok: false, error: "policy_rules_unavailable" }, { status: 503 });
   }

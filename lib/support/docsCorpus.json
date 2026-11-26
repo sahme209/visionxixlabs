@@ -412,56 +412,56 @@
    "title": "Who can decide",
    "text": "Owners, admins, operators and security reviewers can record an approval. Nobody can approve their own proposal: another authorized reviewer must. The person who proposed an action can always cancel it.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#review",
    "title": "Review an action",
    "text": "Each pending action shows its tool, risk level and when it was created. Branch, file-commit and pull-request proposals include their exact changes, for example Review file changes or Review pull request . Read them before deciding. For reviewed branch, file, pull-request and AWS restart proposals, approving records your decision only. The requester runs the action separately, and the page says so.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#rules",
    "title": "Approval rules",
    "text": "An approval is bound to the exact action, expires after 24 hours and is used once before the action runs. An expired proposal, or one without an integrity binding, cannot be approved: ask for a fresh proposal, because an old approval cannot restore it. Reject means nothing was executed.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#limits",
    "title": "What this page shows",
    "text": "The inbox shows up to 20 pending actions. It is not a complete approval or outcome history; use the audit log for that.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#scope",
    "title": "Workspace and platform approvals are different",
    "text": "This inbox is for your workspace's Agent proposals. Release, ticket and connected-app reviews belong to their own exact workflows; a decision in one does not authorize an action in another. A workspace owner or reviewer is not automatically an V19 platform administrator. V19's own deployment and issuer controls require separate platform authority. The prepared platform-control workflow remains local development work, not a control available from this inbox or proof of complete Governance enforcement.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#outcomes",
    "title": "Read the result before trying again",
    "text": "Approval means a decision was recorded; it does not prove an action ran or succeeded. When execution is separate, the original requester must use the exact approved action and the service checks current permissions again. If the result is unknown or a response is lost, retain the original action or request reference and inspect its saved history. Do not automatically resend it, create a replacement, or assume that an expired review means nothing happened. A later observation can add evidence without erasing the original attempt. A provider accepting a command is not proof a deployment is healthy. A recorded issuer drain is not proof existing credentials were revoked or expired. Read the exact workflow's outcome and limitations; a historical record does not grant new permission.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#policy-as-code",
    "title": "Keep policy rules in Git",
-   "text": "Owners and admins can choose Download policy file under Policy as code on the Governance page. The file lists this workspace's policy rules in a stable, sorted JSON format, so it can be reviewed and versioned like code. Paste a changed file and choose Preview changes to see added, changed and removed rules. Changes that weaken governance are listed under Loosens governance : a rule that no longer blocks releases, is disabled, newly allows exceptions, no longer requires evidence, or is removed. A preview never changes a rule. To apply a file, choose Request this change . The request records the diff and a fingerprint of the current rules, and appears under Change requests with what it adds, changes and disables. A different owner or admin must choose Approve and apply ; the person who requested it cannot. Approval applies the whole file in one step, and only if the rules still match the fingerprint; if anything changed since the request, it is marked stale and nothing is applied. Rules removed from the file are disabled rather than deleted, so their history remains.",
+   "text": "Owners and admins can choose Download policy file under Policy as code on the Governance page. The file lists this workspace's policy rules in a stable, sorted JSON format, so it can be reviewed and versioned like code. Paste a changed file and choose Preview changes to see added, changed and removed rules. Changes that weaken governance are listed under Loosens governance : a rule that no longer blocks releases, is disabled, newly allows exceptions, no longer requires evidence, or is removed. A preview never changes a rule. The preview also backtests the file. It replays the policy violations recorded on releases in the last 90 days, once under the current rules and once under the proposed file. It then shows how many releases were blocked before and would be blocked now, which releases would newly be blocked or no longer be blocked, and which rules cause the difference. A rule the file adds has no recorded history, so its effect is shown as unknown rather than zero. To apply a file, choose Request this change . The request records the diff and a fingerprint of the current rules, and appears under Change requests with what it adds, changes and disables. A different owner or admin must choose Approve and apply ; the person who requested it cannot. Approval applies the whole file in one step, and only if the rules still match the fingerprint; if anything changed since the request, it is marked stale and nothing is applied. Rules removed from the file are disabled rather than d",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/governance-approvals#lifecycles",
    "title": "Promotion lifecycles",
    "text": "Under Promotion lifecycles , Governance shows for each repository the order releases move through environments. The order comes from enabled branch policies that require promotion from an earlier environment; environments in the same box have no order between them. Warnings point out gaps: a production environment that can receive a release never deployed to an earlier environment, promotion from the same or a later stage, promotion from an environment that no longer exists, and environments that require promotion from each other. Deployment checks enforce the policies; this view does not change them.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c"
+   "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40"
   },
   {
    "href": "/docs/integration-setup#shared",
@@ -720,77 +720,84 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#deployment-checks",
    "title": "Deployment checks per stage",
    "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool) and resilience experiments (for example a chaos test with AWS FIS or Chaos Mesh, run under your own safeguards). Owners and admins can also describe a check in plain language under Draft with AI ; the workspace's governed AI fills the form with a draft that passes the same validation, and nothing is saved until they add it. Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V19 never runs a check. Under CI workflow for these checks , the page generates a GitHub Actions workflow ( .github/workflows/v19-deployment-checks.yml ) that runs the smoke tests and repository scripts for a chosen stage; copy or download it and add it through a pull request. Health checks, migration dry runs and manual checklists are listed with the reason they are not in that file. Each generated job ends by reporting its result to V19 when the repository has a V19_API_KEY secret (an API key with the checks:report scope, kept separate fro",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#tenant-fan-out",
    "title": "Tenants, tags and fan-out",
    "text": "In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase key:value labels such as tenant:acme , region:eu or ring:1 . Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime. Tenant fan-out preview takes a selector (all terms must match, and key:* matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals. Rings are enforced: before the desktop app dispatches to an environment tagged ring:N (N above 0), at least one environment tagged ring:N-1 must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#database-changes",
    "title": "Database changes in a deployment",
    "text": "When you check readiness for a deployment in the desktop app, V19 compares the commit with the last successful deployment of the same repository to the same environment and lists any changed migration files (for example Prisma, Rails, Alembic, Flyway, Liquibase, Supabase or Drizzle migrations). Review the migration and its rollback before dispatching. This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#change-windows",
    "title": "Change windows and freezes",
    "text": "In the desktop app, under Settings → Environments, owners and admins can give an environment a change window: the days it opens on and one or more times in UTC (for example 22:00-02:00 , which crosses midnight from the day it starts), plus freezes written as 2026-12-20 to 2027-01-02: Holiday freeze . The editor shows whether deployments are allowed right now and when the window next opens. Saving uses the governed configuration path, and an edit is refused if someone changed the window in the meantime. The desktop app refuses to dispatch outside the window or during a freeze, before any GitHub work starts. A freeze always wins over a window. A rule that cannot be read refuses deployments until it is fixed, rather than silently allowing them. The audited production emergency bypass still works. Queuing a deployment to run automatically when the window opens is not available yet; dispatch it once the window is open.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#kubernetes-templates",
    "title": "Kubernetes rolling, blue/green and canary",
    "text": "In the cockpit, Services generates a GitHub Actions workflow for a Kubernetes rolling update, a blue/green switch or a canary. Commit it to your repository and add a KUBE_CONFIG repository secret scoped to the namespace: cluster access stays in your CI, and V19 never holds it. V19 dispatches the workflow only after the environment's policy, checks, rings, change window and approvals pass. A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running so you can switch back. A canary runs the new image in a small canary Deployment, watches readiness and restarts for the minutes you choose, promotes to the main Deployment, and always scales the canary back to zero. The workflow uses only kubectl and checks the image reference before using it.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#evidence-pack",
    "title": "Release evidence pack",
    "text": "In the cockpit, Insights → Export release evidence downloads one JSON file for a repository commit: every recorded deployment of it (environment, who, when, policy, reviewed pull request, configuration fingerprint and outcome), every check result CI reported for it, and audit events on those deployments. Configuration values are not included, only their fingerprints. Missing evidence is listed under gaps rather than invented. The file carries a SHA-256 digest of its canonical JSON (sorted keys, without the export time), so exporting the same records again gives the same digest and an auditor can recompute it. Every export is recorded in the audit log.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#gitops",
    "title": "Argo CD and Flux",
    "text": "V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. The connection forms and live acceptance with a real Argo CD instance or cluster are still pending.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops#stability-warning",
    "title": "Stability early warning",
    "text": "V19 compares the change failure rate of releases finished in the last 7 days with the 90 days before. When at least three recent releases failed, rolled back or had an incident reported against them, and the recent rate is at least 20% and well above the earlier rate, Overview and Insights show a stability warning. While it is active, the desktop app asks for a reason before a production deployment and records that reason in the audit log. If release records cannot be read, nothing is blocked.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb"
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
+  },
+  {
+   "href": "/docs/releaseops#serverless-templates",
+   "title": "Lambda, Cloud Run and Azure Functions",
+   "text": "In the cockpit, Services also generates serverless deploy workflows. For AWS Lambda, it publishes a new version, sends it a share of traffic on an alias named live , and moves all traffic back if that version reports errors. For Google Cloud Run, it deploys a revision with no traffic, sends it a share, watches readiness, then moves all traffic to it. For Azure Functions, it deploys to a staging slot, checks a health path, and swaps it into production. Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment's gates pass.",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",
@@ -1126,49 +1133,49 @@
    "title": "Choose an active workspace",
    "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#recover",
    "title": "Recover unavailable workspace access",
    "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#devices",
    "title": "Browser context and paired devices are separate",
    "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#insights",
    "title": "Delivery insights for the workspace",
    "text": "In the cockpit, Insights shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification. When blocking deployment checks exist, Insights also counts how many recorded deployments in the window had passing evidence for every one of them, how many had a failed check, and how many had no evidence (for example runs before a check was added, or emergency bypasses). It uses today's blocking checks and matches results by commit. Insights also shows a change failure rate: of the releases that finished in the last 90 days, the share that ended failed or rolled back, or that had an incident reported against them afterwards. Releases that never finished are not counted.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#variables",
    "title": "Configuration variables per environment",
    "text": "In the cockpit, Variables holds plain configuration such as a base URL, log level or feature switch. Set a workspace default, then override it for an environment that needs a different value; environments without an override inherit the default. A notice lists names that are set for some environments but have no default, so a missing value is visible before a release. Each environment shows a short fingerprint of what it resolves to, which changes whenever any value it sees changes. Owners and admins can add, edit and remove variables. Edits carry the version you loaded, so a change made by someone else in the meantime is reported instead of overwritten. Names and values that look like credentials are refused: keep secrets in scoped credentials. Passing variables into deployment workflows is not connected yet, so this page does not change any running service. When the desktop app dispatches a deployment to an environment, V19 records that environment's fingerprint and resolved values with the deployment. Each fingerprint card then says whether the configuration still matches the last recorded deployment or has changed since. Feature switches shows every variable named FEATURE_… as on, off or its value in each environment, so staged exposure is visible at a glance. Compare before promoting lists the values that differ between two environments, and names that exist in only one of them. If the snapshot cannot be recorded, the deployment still runs and the card says no fingerprin",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#services",
    "title": "Service catalog",
    "text": "In the cockpit, Services lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository's last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   },
   {
    "href": "/docs/workspaces#cockpit-pages",
    "title": "Every cockpit page",
    "text": "The cockpit sidebar, in order, with what each page is for: Overview : Workspace summary and next steps. Governance : Pending Agent approvals, roles, environment policy, promotion lifecycles and policy as code. Guide Insights : Delivery and recovery figures, deployment check evidence and the release evidence pack. Guide Services : Repositories with owners, guardrails, the latest run per environment, and Kubernetes rollout templates. Guide Variables : Configuration per environment, variable sets, feature switches and comparisons. Guide Checks : Deployment checks per release stage, results and the generated CI workflow. Guide AI & Agents : AI settings and Agent activity. Guide Agent gateway : Governance keys and requests from external agents. Guide Trust tools : Read-only tools that inspect your connected systems. Guide Airflow : Airflow connection and automations. Guide Integrations : Connected providers and their status. Guide Apps & skills : Plugins and skills available to the workspace. Guide Members : People, roles and invitations. Guide Usage & Billing : Plan, usage and invoices. Guide Audit & Security : Audit log and security settings. Guide API keys : Keys for CI, SDKs and agents, with scopes. Guide Settings & sessions : Your profile and signed-in devices. Guide",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0"
+   "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66"
   }
  ]
 }

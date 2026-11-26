@@ -95,3 +95,13 @@ describe("VariablesBoard variable sets", () => {
     expect(JSON.parse(f.mock.calls[3][1].body)).toEqual({ key: "CDN", value: "eu2.cdn", environmentId: null, setSlug: "eu", description: null, expectedVersion: 1 });
   });
 });
+
+describe("VariablesBoard secret references", () => {
+  it("labels a secret reference and never shows it as a plain value only", async () => {
+    const b = board(false);
+    b.data.variables = [...b.data.variables, { key: "DB_URL", value: "secret://aws-sm/prod/db#url", scopeKey: "workspace", description: null, version: 1 }];
+    vi.stubGlobal("fetch", vi.fn(async () => json(b)));
+    render(createElement(VariablesBoard));
+    await waitFor(() => expect(screen.getByText(/Secret reference · AWS Secrets Manager · resolved in your CI, never by V19/)).toBeTruthy());
+  });
+});

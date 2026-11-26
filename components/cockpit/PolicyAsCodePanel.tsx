@@ -1,11 +1,13 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import type { PolicyDiff } from "@/lib/releaseops/policyAsCode";
+import type { PolicyBacktest } from "@/lib/releaseops/policyBacktest";
+type DiffWithBacktest = PolicyDiff & { backtest?: PolicyBacktest | null };
 
 /** Export policy rules for Git, preview a proposed file, and request it as a change that a different admin must approve. */
 export function PolicyAsCodePanel() {
   const [text, setText] = useState("");
-  const [state, setState] = useState<{ kind: "idle" | "busy" } | { kind: "diff"; diff: PolicyDiff } | { kind: "error"; messages: string[] }>({ kind: "idle" });
+  const [state, setState] = useState<{ kind: "idle" | "busy" } | { kind: "diff"; diff: DiffWithBacktest } | { kind: "error"; messages: string[] }>({ kind: "idle" });
   const [requestState, setRequestState] = useState<{ kind: "idle" | "busy" | "sent" } | { kind: "error"; message: string }>({ kind: "idle" });
   const [refresh, setRefresh] = useState(0);
   async function requestChange() {
@@ -21,7 +23,7 @@ export function PolicyAsCodePanel() {
     setState({ kind: "busy" }); setRequestState({ kind: "idle" });
     try {
       const res = await fetch("/api/control/policy/diff", { method: "POST", body: text, headers: { "Content-Type": "application/json" } });
-      const body = await res.json().catch(() => null) as { ok?: boolean; data?: PolicyDiff; issues?: string[]; error?: string } | null;
+      const body = await res.json().catch(() => null) as { ok?: boolean; data?: DiffWithBacktest; issues?: string[]; error?: string } | null;
       if (res.ok && body?.ok && body.data) setState({ kind: "diff", diff: body.data });
       else setState({ kind: "error", messages: body?.issues ?? [body?.error === "workspace_admin_required" ? "Only workspace owners and admins can compare policy files." : "The file could not be compared. Try again."] });
     } catch { setState({ kind: "error", messages: ["The comparison could not be reached. Try again."] }); }
@@ -46,6 +48,15 @@ export function PolicyAsCodePanel() {
           {d.changed.length > 0 && <ul className="space-y-1 font-mono text-xs">{d.changed.map((c) => <li key={c.key}>{c.key}: {c.fields.map((f) => `${f.field} ${JSON.stringify(f.from)} → ${JSON.stringify(f.to)}`).join(", ")}</li>)}</ul>}
           {d.added.length > 0 && <p className="text-xs">Added: {d.added.map((r) => r.key).join(", ")}</p>}
           {d.removed.length > 0 && <p className="text-xs">Removed: {d.removed.join(", ")}</p>}
+          {d.backtest === null ? <p className="text-xs text-zinc-400">Past releases could not be read, so no backtest is shown.</p>
+            : d.backtest && <div className="rounded-lg border border-white/10 p-3 text-xs">
+              <p className="font-medium text-zinc-200">Backtest · releases with recorded violations in the last 90 days</p>
+              <p className="mt-1 text-zinc-300">{d.backtest.releases === 0 ? "No recorded violations in the last 90 days, so there is nothing to replay." : `Of ${d.backtest.releases} releases, ${d.backtest.blockedNow} were blocked under the current rules; ${d.backtest.blockedProposed} would be under this file.`}</p>
+              {d.backtest.newlyBlocked.length > 0 && <p className="mt-1 text-amber-200">Would now be blocked: {d.backtest.newlyBlocked.length} {d.backtest.newlyBlocked.length === 1 ? "release" : "releases"}.</p>}
+              {d.backtest.newlyUnblocked.length > 0 && <p className="mt-1 text-amber-200">Would no longer be blocked: {d.backtest.newlyUnblocked.length} {d.backtest.newlyUnblocked.length === 1 ? "release" : "releases"}.</p>}
+              {d.backtest.byRule.length > 0 && <ul className="mt-1 font-mono text-zinc-400">{d.backtest.byRule.map((r) => <li key={r.key}>{r.key}: {r.blockedNow} → {r.blockedProposed} blocked</li>)}</ul>}
+              {d.backtest.rulesWithoutHistory.length > 0 && <p className="mt-1 text-zinc-400">New rules have no history yet, so their effect is unknown: {d.backtest.rulesWithoutHistory.join(", ")}.</p>}
+            </div>}
           <p className="text-xs text-zinc-400">This is a preview. To apply it, request the change; a different owner or admin must approve it.</p>
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" disabled={requestState.kind === "busy" || requestState.kind === "sent"} onClick={() => void requestChange()} className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-sm text-zinc-200 disabled:opacity-50">{requestState.kind === "busy" ? "Requesting…" : requestState.kind === "sent" ? "Change requested" : "Request this change"}</button>

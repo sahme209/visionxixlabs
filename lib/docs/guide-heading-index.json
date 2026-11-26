@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb",
+      "sourceSha256": "5ade64848cbe20305e739967bf8e6f36161ebf0a9eaaedb557f030eeb0b1a920",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -189,7 +189,8 @@
         "Kubernetes rolling, blue/green and canary",
         "Release evidence pack",
         "Argo CD and Flux",
-        "Stability early warning"
+        "Stability early warning",
+        "Lambda, Cloud Run and Azure Functions"
       ]
     },
     {
@@ -421,7 +422,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "e962b0e02d6f1f2b97dfa1245a377ea03022541260cd486757cf24306ab723b0",
+      "sourceSha256": "c8fe051b47bce83ea8cf228e099a991d27a6a3292d804e22c78aaf4f396ffb66",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -452,7 +453,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c",
+      "sourceSha256": "9f6b9ccf0435b6f2b7beee32b89fe4dd4e183fc9f967c6901d44852eb1d67e40",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",

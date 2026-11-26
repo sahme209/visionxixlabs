@@ -70,6 +70,11 @@ sets whose tag selector matches the environment, then that environment's own
 overrides) in CI, and keep the fingerprint with your deployment. `sources`
 says where each value came from (`workspace`, `set` or `environment`), and
 `conflicts` appears when two matching sets define a key differently.
+A variable can hold a secret reference instead of a value, for example
+`secret://aws-sm/prod/db#password` (providers: `aws-sm`, `aws-ssm`, `gcp-sm`,
+`azure-kv`, `vault`). V19 returns references unresolved and lists them under
+`secretRefs`; your CI reads each one from your secret manager with its own
+identity, so secrets never pass through V19.
 Every SDK exposes `environmentVariables(slug)` / `environment_variables(slug)`
 / `EnvironmentVariables(ctx, slug)`. Required scope: `pipeline:read`.
 Values are plain configuration; secrets stay in scoped credentials.

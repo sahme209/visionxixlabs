@@ -311,6 +311,9 @@ public struct EnvironmentVariablesResponse: Decodable {
     public struct Conflict: Decodable { public let key: String; public let sets: [String] }
     /// Keys that matching variable sets define differently; nil when none.
     public let conflicts: [Conflict]?
+    public struct SecretRef: Decodable { public let provider: String; public let path: String; public let field: String? }
+    /// Variables whose value is a secret reference; V19 never resolves them.
+    public let secretRefs: [String: SecretRef]?
 }
 
 public struct CheckResultResponse: Decodable {
