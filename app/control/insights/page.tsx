@@ -7,6 +7,7 @@ import { incidentRecoveryMetrics } from "@/lib/desktop/incidentRecoveryMetrics";
 import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
 import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
+import { summarizeGateRefusals } from "@/lib/releaseops/gateRefusalSummary";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,8 @@ export default async function InsightsPage() {
     return changeFailureRate(releases, new Set(withIncidents.map((i) => i.releaseId)));
   })().catch(() => null);
   const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, now);
+  // Release-gate refusals recorded in the audit trail; optional, so a read failure hides only this section.
+  const refusals = await (async () => summarizeGateRefusals(await prisma.auditEvent.findMany({ where: { organizationId, kind: "release.gate_refused", createdAt: { gte: since } }, take: 5000, select: { detailJson: true } })))().catch(() => null);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
   const coverage = await (async () => {
     const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
@@ -125,6 +128,13 @@ export default async function InsightsPage() {
         <h2 id="insights-stability" className="text-base font-medium">Stability early warning · last 7 days against the 90 before</h2>
         {stability === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Release records could not be read. Nothing is shown rather than an estimate.</p>
           : <p className={`mt-3 max-w-2xl text-sm ${stability.level === "elevated" ? "text-amber-200" : "text-zinc-300"}`}>{stability.level === "elevated" ? "Elevated: " : stability.level === "steady" ? "Steady: " : ""}{stability.message}{stability.level === "elevated" ? " Production deployments ask for a reason until the rate settles." : ""}</p>}
+      </section>
+
+      <section aria-labelledby="insights-gate-refusals" className="mt-10">
+        <h2 id="insights-gate-refusals" className="text-base font-medium">Deployments refused by release gates · last {OUTCOME_WINDOW_DAYS} days</h2>
+        {refusals === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Refusals could not be read. Nothing is shown rather than an estimate.</p>
+          : refusals.total === 0 ? <p className="mt-3 text-sm text-zinc-400">No deployment was refused by a release gate in this window.</p>
+          : <dl className="mt-4 grid gap-3 sm:grid-cols-3">{refusals.byReason.map((r) => <Metric key={r.reason} label={r.label} value={r.count.toLocaleString()} />)}</dl>}
       </section>
 
       <section aria-labelledby="insights-checks" className="mt-10">

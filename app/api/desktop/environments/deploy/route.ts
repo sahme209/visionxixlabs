@@ -31,7 +31,10 @@ import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabi
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 /** Refuse a deployment at a release gate and tell subscribed endpoints (best-effort; never changes the refusal). */
-async function gateRefusal(organizationId: string, environmentId: string, repositoryFullName: string, body: { error: string } & Record<string, unknown>, status: number): Promise<NextResponse> {
+async function gateRefusal(organizationId: string, environmentId: string, repositoryFullName: string, body: { error: string } & Record<string, unknown>, status: number, actorUserId?: string): Promise<NextResponse> {
+  try {
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "release.gate_refused", subjectKind: "environment", subjectId: environmentId, outcome: "rejected", summary: `Deployment of ${repositoryFullName} refused at a release gate: ${body.error}`, actorUserId: actorUserId ?? null, detailJson: { reason: body.error, repositoryFullName } });
+  } catch { /* best-effort */ }
   try {
     await dispatchWebhookEvent({ organizationId, eventKind: "deployment.blocked", data: { environmentId, repositoryFullName, reason: body.error, ...(typeof body.nextOpen === "object" && body.nextOpen ? { nextOpen: body.nextOpen } : {}), ...(typeof body.freezeReason === "string" ? { freezeReason: body.freezeReason } : {}) }, fireImmediately: true });
   } catch { /* best-effort */ }
@@ -118,7 +121,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   // branch policy; an unreadable rule fails closed rather than silently allowing the deployment.
   if (!emergencyBypass) {
     const windowGate = changeWindowGate(environment.changeWindowRuleJson, new Date());
-    if (!windowGate.ok) return gateRefusal(organizationId, environmentId, repositoryFullName, windowGate, 409);
+    if (!windowGate.ok) return gateRefusal(organizationId, environmentId, repositoryFullName, windowGate, 409, String(session.userId));
   }
   // Stability early warning: while recent changes fail far more often than usual, a production
   // deployment needs a stated reason. Advisory slowdown: if it cannot be read, nothing is blocked.
@@ -127,7 +130,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!emergencyBypass && environment.tier === "prod") {
     const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, new Date());
     if (stability?.level === "elevated") {
-      if (stabilityReason.length < 10) return gateRefusal(organizationId, environmentId, repositoryFullName, { error: "stability_warning_active", message: stability.message }, 409);
+      if (stabilityReason.length < 10) return gateRefusal(organizationId, environmentId, repositoryFullName, { error: "stability_warning_active", message: stability.message }, 409, String(session.userId));
       stabilityAcknowledged = true;
     }
   }
@@ -190,7 +193,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     const gates = await commitGates(prisma as unknown as DeploymentCheckGateRepo & RingGateRepo, { organizationId, environmentId, repositoryFullName, commitSha: policy.sourceCommitSha, now: new Date() });
     if (!gates.ok) {
       if (gates.error === "deployment_checks_unavailable" || gates.error === "ring_gate_unavailable") return NextResponse.json(gates, { status: 503 });
-      return gateRefusal(organizationId, environmentId, repositoryFullName, gates, 409);
+      return gateRefusal(organizationId, environmentId, repositoryFullName, gates, 409, String(session.userId));
     }
   }
 

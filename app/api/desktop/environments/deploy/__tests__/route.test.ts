@@ -197,6 +197,7 @@ describe("POST /api/desktop/environments/deploy", () => {
     let res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ error: "deployment_freeze_active", freezeReason: "Release freeze" });
+    expect(mocks.recordAudit).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ kind: "release.gate_refused", subjectId: "env_1", outcome: "rejected", detailJson: { reason: "deployment_freeze_active", repositoryFullName: "acme/widgets" } }));
     expect(mocks.webhook).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", eventKind: "deployment.blocked", data: expect.objectContaining({ environmentId: "env_1", repositoryFullName: "acme/widgets", reason: "deployment_freeze_active", freezeReason: "Release freeze" }) }));
     mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod", changeWindowRuleJson: { utcWindows: [{ start: "9am", end: "5pm" }] } });
     res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
