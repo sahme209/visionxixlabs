@@ -160,6 +160,7 @@ export interface AirflowAutomation {
 }
 export interface AirflowAutomationExecution { id: string; automationId: string; sourceDagId: string; sourceDagRunId: string; sourceDagState: string; status: string; attempt: number; errorCode: string | null; resultJson: unknown; createdAt: string }
 
+export interface DeploymentOutcomeSummaryDto { windowDays: number; recorded: number; inProgress: number; succeeded: number; failed: number; successRate: number | null; medianSeconds: number | null; truncated: boolean }
 export interface DeploymentExecutionEvidence {
   operation: "unknown";
   requestedOperation?: "service_restart";
@@ -1340,6 +1341,10 @@ export class DesktopClient {
 
   preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ evidence?: DeploymentExecutionEvidence; ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
     return this.post("/api/desktop/environments/deploy/preflight", input);
+  }
+
+  deploymentOutcomeSummary(): Promise<ApiResult<DeploymentOutcomeSummaryDto>> {
+    return this.get("/api/desktop/environments/deployments/outcome-summary");
   }
 
   listDeploymentExecutions(environmentId?: string): Promise<ApiResult<{ executions: DeploymentExecution[] }>> {
