@@ -453,8 +453,8 @@ function WorkflowRunTrend() {
   return <div className="studio-home-trend" title="Recorded workflow runs created in the last 30 days">
     <dt>Workflow runs <span className="studio-release-summary-window">Last 30 days</span></dt>
     <dd>{summary === undefined ? "…" : summary === null ? "Unavailable" : <AnimatedNumber value={summary.recorded}/>}</dd>
-    {delta !== undefined && <span className="studio-home-trend-delta" data-direction={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>{delta > 0 ? "↑" : delta < 0 ? "↓" : "→"} {Math.abs(delta)}%<span className="studio-home-trend-delta-context"> vs previous 30 days</span></span>}
-    {daily && <TrendSparkline values={daily} unit={["run", "runs"]} label="Recorded workflow runs per day, last 30 days"/>}
+    {delta !== undefined && <dd className="studio-home-trend-delta" data-direction={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>{delta > 0 ? "↑" : delta < 0 ? "↓" : "→"} {Math.abs(delta)}%<span className="studio-home-trend-delta-context"> vs previous 30 days</span></dd>}
+    {daily && <dd className="studio-home-trend-chart"><TrendSparkline values={daily} unit={["run", "runs"]} label="Recorded workflow runs per day, last 30 days"/></dd>}
   </div>;
 }
 

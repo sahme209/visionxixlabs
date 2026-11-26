@@ -1615,11 +1615,14 @@ html[data-theme="light"] {
 .studio-home-trend > dt { flex: 1 1 auto; }
 .studio-home-trend-delta { order: -1; display: inline-flex; align-items: baseline; gap: 4px; padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--status-neutral); background: var(--status-neutral-surface); }
 .studio-home-trend-delta-context { font-weight: 400; opacity: .75; }
-.trend-sparkline { position: relative; flex-basis: 100%; color: var(--status-blue); border-radius: 6px; outline: none; cursor: crosshair; }
+.trend-sparkline { position: relative; color: var(--status-blue); border-radius: 6px; outline: none; cursor: crosshair; }
 .trend-sparkline svg { width: 100%; max-width: 320px; height: auto; }
 .trend-sparkline:focus-visible { box-shadow: 0 0 0 2px rgb(var(--axiom-bg)), 0 0 0 4px var(--status-blue); }
 .trend-sparkline svg { display: block; overflow: visible; }
-.studio-home-trend > dd { order: -2; }
+.studio-home-trend > dd:not([class]) { order: -2; }
+.studio-home-trend-chart { flex-basis: 100%; }
+.studio-release-summary > div > dd:first-of-type { display: inline-flex; align-items: center; gap: 8px; }
+.studio-outcome-split-bar, .studio-outcome-split-legend { display: flex; }
 .trend-sparkline-crosshair { stroke: currentColor; stroke-width: 1; stroke-dasharray: 2 2; opacity: .55; }
 .trend-sparkline-dot { fill: currentColor; stroke: rgb(var(--axiom-bg)); stroke-width: 2; transition: cx .12s ease-out, cy .12s ease-out; }
 .trend-sparkline-readout { position: absolute; top: calc(100% + 4px); transform: translateX(-50%); padding: 3px 8px; border-radius: 6px; white-space: nowrap; font-size: 11px; font-variant-numeric: tabular-nums; color: rgb(var(--neutral-zinc-100)); background: rgb(var(--axiom-bg-elev)); border: 1px solid rgb(var(--axiom-border)); box-shadow: 0 6px 18px rgb(0 0 0 / .35); pointer-events: none; z-index: 5; }
@@ -1812,3 +1815,7 @@ html[data-theme="light"] {
 .studio-home-window-progress { grid-column: 2; height: 3px; border-radius: 999px; background: var(--status-neutral-surface); overflow: hidden; }
 .studio-home-window-progress span { display: block; height: 100%; border-radius: 999px; background: var(--status-green); }
 .studio-home-windows button[data-phase="upcoming"] .studio-home-window-progress { display: none; }
+/* Secondary dd elements in summary tiles keep their own size and order (axe-valid markup). */
+.studio-home-summary .studio-home-trend > dd.studio-home-trend-delta { order: 0; font-size: 11.5px; }
+.studio-home-summary .studio-home-trend > dd.studio-home-trend-chart { order: 1; font-size: inherit; font-weight: 400; }
+.studio-release-summary > div > dd.studio-outcome-split { order: 5; font-size: inherit; font-weight: 400; display: block; }
