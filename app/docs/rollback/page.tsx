@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "AWS ECS rollback — V19 Documentation",
@@ -19,6 +19,7 @@ export default function RollbackPage() {
         Before updating the service, the workflow captures the current task definition. If the new deployment does not reach ECS steady state, the workflow updates the service back to that captured definition and waits again.
       </Callout>
 
+      <DocFigure src="/docs/desktop/deployments.webp" alt="The Deployments lifecycle in the V19 desktop app" caption="The lifecycle shows Verify and recovery as recorded steps; rollback availability comes from the saved release. Synthetic example records." width={1600} height={1067} />
       <DocSection id="sequence" title="The recovery sequence" kicker="01">
         <ol className="list-inside list-decimal space-y-1.5 text-zinc-400">
           <li>Resolve and record the task definition currently serving the target.</li>

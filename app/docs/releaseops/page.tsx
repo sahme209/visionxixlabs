@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "ReleaseOps overview — V19 Documentation",
@@ -20,6 +20,7 @@ export default function ReleaseOpsDocOverviewPage() {
                 A connector logo is not proof of availability. Each configured adapter must report its real connection state and source. Preview adapters cannot execute, and an approval in V19 does not prove an external deployment occurred without provider evidence.
             </Callout>
 
+            <DocFigure src="/docs/desktop/deployments.webp" alt="The Deployments view in the V19 desktop app" caption="Deployments with a selected release, its lifecycle and readiness, shown with synthetic example records." width={1600} height={1067} />
             <DocSection id="lifecycle" title="The deployment lifecycle" kicker="01">
                 <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
                     <li>Capture deployment intake, ownership, scope, dependencies, and timing.</li>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "Readiness checks — ReleaseOps Documentation",
@@ -30,6 +30,7 @@ export default function ReadinessScoringPage() {
                 Any summary or score must be traceable to its source inputs. Missing connectors stay unknown, not green. Organizations configure their own gates; this documentation does not promise a universal numeric threshold.
             </Callout>
 
+            <DocFigure src="/docs/desktop/deployments.webp" alt="The Deployments view with release readiness in the inspector" caption="The release inspector lists recorded readiness; unrecorded items stay marked as unavailable. Synthetic example records." width={1600} height={1067} />
             <DocSection id="dimensions" title="Readiness dimensions" kicker="01">
                 <div className="space-y-3">
                     {DIMENSIONS.map(([name, detail]) => (

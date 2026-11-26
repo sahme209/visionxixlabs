@@ -27,7 +27,7 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd",
+      "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3",
       "fields": [
         "Getting started with V19 Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
@@ -84,7 +84,7 @@
     {
       "href": "/docs/aws-setup",
       "source": "app/docs/aws-setup/page.tsx",
-      "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef",
+      "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1",
       "fields": [
         "Deploy through your workflow and your AWS role.",
         "V19 dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment.",
@@ -99,7 +99,7 @@
     {
       "href": "/docs/azure-setup",
       "source": "app/docs/azure-setup/page.tsx",
-      "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6",
+      "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b",
       "fields": [
         "Azure setup.",
         "V19 currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release.",
@@ -114,7 +114,7 @@
     {
       "href": "/docs/gcp-setup",
       "source": "app/docs/gcp-setup/page.tsx",
-      "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14",
+      "sourceSha256": "1df0ec1edec861498ce15a934c6a6501615b3f7c898bf00437922b14c7ba053d",
       "fields": [
         "GCP setup.",
         "V19 currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release.",
@@ -160,7 +160,7 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "d742abf6cbe402cee6ba3ffd3622dc9cfe702b277e9616360717290335ecf681",
+      "sourceSha256": "1cca2f41c3913e1ea148568079a004ca9fab62c591b5d7dd3d62b85aa9836559",
       "fields": [
         "Rollback is specific to the execution path.",
         "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1",
+      "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -199,7 +199,7 @@
     {
       "href": "/docs/releaseops/readiness",
       "source": "app/docs/releaseops/readiness/page.tsx",
-      "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1",
+      "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8",
       "fields": [
         "Deployment readiness.",
         "V19 assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
@@ -214,7 +214,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5",
+      "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
@@ -268,7 +268,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93",
+      "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else.",

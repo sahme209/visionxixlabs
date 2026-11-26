@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "Azure setup — V19 Documentation",
@@ -20,6 +20,7 @@ export default function AzureSetupPage() {
                 The current Azure path validates configuration shape and can render preview findings. It must not be presented as a successful live subscription scan. Before live availability, the product needs authenticated Azure Resource Manager inventory traversal, least-privilege verification, tenant-scoped persistence, error handling, and safe integration tests.
             </Callout>
 
+            <DocFigure src="/docs/desktop/apps-and-skills.webp" alt="The Apps and Skills view listing cloud connections" caption="Apps & Skills lists AWS, Azure and Google Cloud connections with their recorded state. Synthetic example records." width={1600} height={1067} />
             <DocSection id="desktop-candidate" title="Desktop source candidate" kicker="Candidate">
                 <p className="text-zinc-400">The source candidate adds paired-desktop enrollment for an existing service principal in Settings → Integrations. An accepted workspace owner/admin enters the tenant, subscription, client UUID and secret. The backend verifies the exact tenant/subscription read identity and stores the credential in the canonical tenant-bound encrypted vault. The secret clears after submission and is not persisted in desktop settings.</p>
                 <p className="mt-3 text-zinc-400">Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes V19&apos;s stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation.</p>

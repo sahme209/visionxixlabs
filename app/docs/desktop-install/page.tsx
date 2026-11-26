@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocHeader, DocSection, Step, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
+import { DocHeader, DocSection, Step, Callout, TrustGrid, DocFooterNav, DocFeedback, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Install the desktop app — V19 Documentation",
@@ -20,6 +20,7 @@ export default function DesktopInstallPage() {
         The <Link href="/download">download page</Link> shows direct links for verified installers from the public GitHub release manifest. When a download has not been confirmed, the platform link checks availability with the service. It shows the current release tag and the signing or notarization state supported by machine-readable release attestations. If an asset or attestation is absent, the page says so.
       </Callout>
 
+      <DocFigure src="/docs/website-download.webp" alt="The V19 download page on visionxixlabs.com" caption="The public download page listing the current desktop installers (captured 26 Nov 2026)." width={1600} height={1000} />
       <DocSection id="installer-availability" title="Installer availability and download pauses">
         <p><strong>Check Windows availability</strong> and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file.</p>
         <p><strong>Desktop downloads are temporarily paused</strong> means the required service storage checks are unavailable. <strong>Release status unavailable</strong> means the current installer status could not be verified.</p>

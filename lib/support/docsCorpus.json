@@ -153,56 +153,56 @@
    "title": "Prepare the repository",
    "text": "Add the supported .github/workflows/axiom-deploy-aws-ecs.yml workflow to the repository selected in V19. Limit workflow_dispatch inputs and GitHub environment access to the values your team intends to permit.",
    "source": "app/docs/aws-setup/page.tsx",
-   "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef"
+   "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1"
   },
   {
    "href": "/docs/aws-setup#role",
    "title": "Create the OIDC trust boundary",
    "text": "Create an AWS role whose trust policy accepts the intended GitHub organization, repository, branch or environment. Grant only the ECS and task-definition permissions required by the workflow. Do not use a wildcard repository subject for convenience.",
    "source": "app/docs/aws-setup/page.tsx",
-   "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef"
+   "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1"
   },
   {
    "href": "/docs/aws-setup#target",
    "title": "Map an V19 environment",
    "text": "In the desktop app, create or select an environment and configure its AWS region, ECS cluster, ECS service, and role ARN. The selected environment becomes the deployment target; production context is treated as high risk.",
    "source": "app/docs/aws-setup/page.tsx",
-   "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef"
+   "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1"
   },
   {
    "href": "/docs/aws-setup#validate",
    "title": "Validate before production",
    "text": "Run the workflow against a non-production ECS service first. Confirm repository scope, role trust, task-definition capture, steady-state validation, rollback behavior, and the resulting action record before enabling the production target.",
    "source": "app/docs/aws-setup/page.tsx",
-   "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef"
+   "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1"
   },
   {
    "href": "/docs/azure-setup#desktop-candidate",
    "title": "Desktop source candidate",
    "text": "The source candidate adds paired-desktop enrollment for an existing service principal in Settings → Integrations. An accepted workspace owner/admin enters the tenant, subscription, client UUID and secret. The backend verifies the exact tenant/subscription read identity and stores the credential in the canonical tenant-bound encrypted vault. The secret clears after submission and is not persisted in desktop settings. Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes V19's stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation. This implemented source candidate is not proof of live Azure authorization, production deployment or verified native release availability. Missing storage, configuration or current authority produces an unavailable state. Provider mutation and generic Agent scans remain disabled.",
    "source": "app/docs/azure-setup/page.tsx",
-   "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6"
+   "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b"
   },
   {
    "href": "/docs/azure-setup#available",
    "title": "What is available",
    "text": "Azure credential and configuration-shape validation Runtime mode and credential-presence reporting without exposing secrets Preview snapshots, findings, and recommendations that remain labeled preview An audited scan API that reports whether its source is preview or live Desktop UI states for unavailable, disconnected, and failed connectors",
    "source": "app/docs/azure-setup/page.tsx",
-   "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6"
+   "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b"
   },
   {
    "href": "/docs/azure-setup#not-available",
    "title": "What is not verified",
    "text": "Live VM, Storage, VNet, NSG, SQL, IAM, or cost inventory Production topology and drift claims derived from live Azure responses Azure action dispatch, retries, validation, or rollback Provider-side evidence proving a real operation occurred",
    "source": "app/docs/azure-setup/page.tsx",
-   "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6"
+   "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b"
   },
   {
    "href": "/docs/azure-setup#planned-setup",
    "title": "Configuration required for a future live path",
    "text": "Register an application in the organization's Microsoft Entra tenant. Create a service principal and prefer workload identity federation over a long-lived client secret. Grant only the read permissions needed at subscription or resource-group scope. Enter the Tenant ID, Subscription ID, and Application ID in the installed application. Run a connector test in a dedicated non-production subscription and require an actual ARM response before reporting connected. Download V19 from the release page . Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.",
    "source": "app/docs/azure-setup/page.tsx",
-   "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6"
+   "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b"
   },
   {
    "href": "/docs/batch-providers#connect",
@@ -230,49 +230,49 @@
    "title": "Installer availability and download pauses",
    "text": "Check Windows availability and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file. Desktop downloads are temporarily paused means the required service storage checks are unavailable. Release status unavailable means the current installer status could not be verified. To recheck installer availability, choose Recheck release status on the download page . From the installer availability screen, choose Return to downloads . Check the release and platform details before installing.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#current-state",
    "title": "What the current desktop build delivers",
    "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#requirements",
    "title": "System requirements",
    "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Browser engine for Tailwind 4 source builds — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer. Network — HTTPS access to the configured V19 API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#install-macos",
    "title": "Install — macOS (Apple Silicon + Intel)",
    "text": "Visit /download . Choose Apple Silicon or Intel. A verified download link points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag V19 to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#install-windows",
    "title": "Install — Windows x64",
    "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch V19, and approve the desktop pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#install-linux",
    "title": "Install — Linux x64",
    "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. Run the commands for the package you verified. These examples use v0.1.25. Substitute the exact filename for the version you downloaded. chmod +x ./V19_0.1.25_amd64.AppImage ./V19_0.1.25_amd64.AppImage sudo dpkg -i ./V19_0.1.25_amd64.deb sudo rpm -i ./V19-0.1.25-1.x86_64.rpm Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/desktop-install#updates",
    "title": "Desktop installer updates, website deployments and release notes",
    "text": "A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer. In releases that include About this app , open Settings → General and check Installed version . This value comes from the installed app. Unavailable means it could not be read, not that a newer version is installed. Older releases may not have this section. Review releases opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer's verification details. The current desktop installer does not update automatically. Check the download page for a newer verified tag and install it manually. Review the public V19 release notes before upgrading.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5"
+   "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8"
   },
   {
    "href": "/docs/execution-plans#read",
@@ -314,70 +314,70 @@
    "title": "What is available",
    "text": "Project ID and service-account JSON shape validation Runtime mode and credential-format reporting without exposing secret values Preview snapshots, findings, and recommendations that remain labeled preview An audited scan API that reports whether its source is preview or live Desktop UI states for unavailable, disconnected, and failed connectors",
    "source": "app/docs/gcp-setup/page.tsx",
-   "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14"
+   "sourceSha256": "1df0ec1edec861498ce15a934c6a6501615b3f7c898bf00437922b14c7ba053d"
   },
   {
    "href": "/docs/gcp-setup#not-available",
    "title": "What is not verified",
    "text": "Live Compute Engine, Cloud Storage, VPC, firewall, IAM, or billing inventory Production topology and drift claims derived from live GCP responses GCP action dispatch, retries, validation, or rollback Provider-side evidence proving a real operation occurred",
    "source": "app/docs/gcp-setup/page.tsx",
-   "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14"
+   "sourceSha256": "1df0ec1edec861498ce15a934c6a6501615b3f7c898bf00437922b14c7ba053d"
   },
   {
    "href": "/docs/gcp-setup#planned-setup",
    "title": "Configuration required for a future live path",
    "text": "Create or select a dedicated non-production Google Cloud project. Create a service account or workload-identity binding with only the required viewer roles. Enable only the APIs needed by the implemented inventory path. Enter the project and approved credential reference in the installed application. Run a connector test and require actual Google Cloud API responses before reporting connected. Download V19 from the release page . Do not provision credentials solely for preview output unless your administrator has supplied an approved evaluation plan.",
    "source": "app/docs/gcp-setup/page.tsx",
-   "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14"
+   "sourceSha256": "1df0ec1edec861498ce15a934c6a6501615b3f7c898bf00437922b14c7ba053d"
   },
   {
    "href": "/docs/getting-started#prereqs",
    "title": "Prerequisites",
    "text": "A supported macOS, Windows, or Linux system listed on the download page Permission to install software on the workstation HTTPS access to the configured V19 API and any integrations you enable An organization identity and connector accounts supplied by your administrator",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#install",
    "title": "Step 1 — Download and install",
    "text": "Open Download V19 . Choose the architecture that matches your device. When a verified installer is available, its download link opens the matching file. A check availability link asks the service to look up the current release for that platform. Confirm the displayed version and read the platform-specific signing or notarization status. Detached GPG signatures verify release origin, but they do not replace operating-system code signing. Follow your organization's software-installation policy. Follow the desktop installation guide for macOS, Windows, or Linux. If the release is marked unsigned, expect the operating system to warn you; do not bypass that warning where policy forbids unsigned software.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#authenticate",
    "title": "Step 2 — Authenticate the desktop",
    "text": "The app opens a short-lived pairing flow in your browser. Sign in with the organization identity your administrator configured, review the request, and approve it. V19 polls the pairing status and receives a scoped desktop session after approval. A failed, expired, or rejected request remains visible and must not be reported as connected.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#configure",
    "title": "Step 3 — Configure integrations",
    "text": "A fresh installation should show useful empty states. Add only the repositories, applications, environments, clients, and connectors required for the deployment workflow you intend to run. Begin with the GitHub App and select only the repositories required for your workflow. AWS ECS delivery additionally requires a configured environment target and OIDC role. Other integrations remain unavailable until their server registration and live validation succeed. First check whether desktop enrollment is enabled for that provider and workspace. If the app labels setup blocked, it will not request provider secrets; an administrator must complete the scoped connector-management setup. A successful status must come from a real configured integration response—sample connectors and the website sandbox are never presented as live.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#workflow",
    "title": "Step 4 — Complete a deployment workflow",
    "text": "{GOVERNED_JOURNEY.map((stage, index) => ( ))} In desktop builds containing this guide, Documentation provides buttons to open each of these screens. Missing credentials, policy approval or provider validation remain blockers. Capture deployment intake and required operational context. Resolve readiness checks, missing permissions, and dependencies. Generate or select the versioned playbook. Collect required approvals and separation-of-duties decisions. Follow guided execution; unavailable or failed adapters remain explicit. Run validation or schedule deferred validation with an owner. Collect evidence, review audit history, and close only when exit criteria pass. For the released AWS ECS path, approval dispatches the tenant-owned GitHub Actions workflow. Treat any unavailable adapter as a blocker rather than a synthetic success.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#example-plan-metadata",
    "title": "Example plan metadata",
    "text": "This illustrative release intake excerpt records an application, environment, source branch, pending pull request approval, and rollback availability. A complete release request also needs its scoped inputs and evidence. Review all required approvals before execution.",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/getting-started#next",
    "title": "Next steps",
    "text": "→ Desktop installation details → AWS setup and permissions → Explore the isolated product sandbox",
    "source": "app/docs/getting-started/page.tsx",
-   "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd"
+   "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3"
   },
   {
    "href": "/docs/governance-approvals#who",
@@ -622,28 +622,28 @@
    "title": "Workspace roles",
    "text": "Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93"
+   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
   },
   {
    "href": "/docs/permissions-model#github",
    "title": "GitHub repository scope",
    "text": "The GitHub App installation determines which repositories are available. For a repository action, the service mints a short-lived token scoped to the selected repository rather than reusing a broad user token.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93"
+   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
   },
   {
    "href": "/docs/permissions-model#agent",
    "title": "Agent authority",
    "text": "The decision loop may execute registered low-risk reads. Medium- and high-risk tools create proposals. In the separate-execution preview, an authorized independent reviewer records the decision, then the original requester uses Execute when the action is supported and current checks pass. An approval record is not evidence that a provider action ran.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93"
+   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
   },
   {
    "href": "/docs/permissions-model#aws",
    "title": "AWS ECS authority",
    "text": "V19 dispatches the tenant workflow; GitHub Actions OIDC assumes the environment's configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93"
+   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
   },
   {
    "href": "/docs/plugins#browse",
@@ -678,21 +678,21 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1"
+   "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1"
+   "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1"
+   "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",
@@ -706,42 +706,42 @@
    "title": "Readiness dimensions",
    "text": "{DIMENSIONS.map(([name, detail]) => ( ))}",
    "source": "app/docs/releaseops/readiness/page.tsx",
-   "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1"
+   "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8"
   },
   {
    "href": "/docs/releaseops/readiness#states",
    "title": "Readiness check states",
    "text": "Verified — supported by a current persisted record or actual integration response. Human confirmed — explicitly attested by an authorized user with time and identity recorded. Preview — derived from sample or non-live logic and never treated as production evidence. Unknown — no current evidence; cannot silently pass a gate. Failed or blocked — the check ran and did not satisfy policy, or a required dependency is unavailable.",
    "source": "app/docs/releaseops/readiness/page.tsx",
-   "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1"
+   "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8"
   },
   {
    "href": "/docs/releaseops/readiness#gates",
    "title": "How gates behave",
    "text": "Blocking requirements stop progression and identify the owner or dependency needed to continue. Rejected and expired approvals remain recorded and do not count as authorization. Retries preserve prior attempts and their evidence. Closure is unavailable until required evidence and validation are present.",
    "source": "app/docs/releaseops/readiness/page.tsx",
-   "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1"
+   "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8"
   },
   {
    "href": "/docs/releaseops/readiness#deferred-validation",
    "title": "What deferred validation records",
    "text": "When policy allows deferred validation, record an owner, due time, expected check, and follow-up state. Closure stays unavailable while required validation or evidence is missing.",
    "source": "app/docs/releaseops/readiness/page.tsx",
-   "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1"
+   "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8"
   },
   {
    "href": "/docs/rollback#sequence",
    "title": "The recovery sequence",
    "text": "Resolve and record the task definition currently serving the target. Register or select the requested task definition and update the ECS service. Use ECS's own steady-state waiter as the deployment health boundary. On stabilization failure, restore the captured task definition. Wait for the restored service and preserve the workflow result as evidence.",
    "source": "app/docs/rollback/page.tsx",
-   "sourceSha256": "d742abf6cbe402cee6ba3ffd3622dc9cfe702b277e9616360717290335ecf681"
+   "sourceSha256": "1cca2f41c3913e1ea148568079a004ca9fab62c591b5d7dd3d62b85aa9836559"
   },
   {
    "href": "/docs/rollback#limits",
    "title": "Limits",
    "text": "This path restores the ECS task definition. It does not undo database migrations, external side effects, incompatible data changes, or changes made outside the workflow. Teams must keep application-level recovery steps in their own release procedure.",
    "source": "app/docs/rollback/page.tsx",
-   "sourceSha256": "d742abf6cbe402cee6ba3ffd3622dc9cfe702b277e9616360717290335ecf681"
+   "sourceSha256": "1cca2f41c3913e1ea148568079a004ca9fab62c591b5d7dd3d62b85aa9836559"
   },
   {
    "href": "/docs/security-model#authentication",
