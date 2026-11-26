@@ -84,3 +84,14 @@ it("offers a release evidence download through a plain GET form", async () => {
   expect(form.getAttribute("method")).toBe("get");
   expect((screen.getByLabelText(/Full commit SHA/) as HTMLInputElement).pattern).toBe("[0-9a-fA-F]{40}");
 });
+
+it("raises a stability early warning when recent releases fail far more often than before", async () => {
+  const day = (d: number) => new Date(Date.now() - d * 86_400_000);
+  io.releases.mockResolvedValue([
+    { id: "r1", status: "failed", actualDeployEnd: day(1) }, { id: "r2", status: "rolled_back", actualDeployEnd: day(2) }, { id: "r3", status: "failed", actualDeployEnd: day(3) }, { id: "r4", status: "deployed", actualDeployEnd: day(4) },
+    ...Array.from({ length: 10 }, (_, i) => ({ id: `b${i}`, status: "deployed", actualDeployEnd: day(10 + i) })),
+  ]);
+  render(await Page());
+  const section = screen.getByRole("heading", { name: /Stability early warning/ }).parentElement!;
+  expect(section.textContent).toMatch(/Elevated: 3 of 4 releases in the last 7 days .*\(75%\), against 0% before\./);
+});

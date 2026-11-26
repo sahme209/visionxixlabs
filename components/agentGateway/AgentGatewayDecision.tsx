@@ -11,7 +11,7 @@ export function AgentGatewayDecision({ organizationId, requestId }: { organizati
     try {
       const res = await fetch(`/api/agent-gateway/requests/${encodeURIComponent(requestId)}/decision`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ organizationId, decision, note: note || undefined }) });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok || !body.ok) setError(body.error === "self_approval_forbidden" ? "You minted this agent's key, so another admin must decide." : `Could not ${decision} (${body.error ?? res.status}).`);
+      if (!res.ok || !body.ok) setError(body.error === "self_approval_forbidden" ? "You minted this agent's key, so another admin must decide." : body.error === "second_approver_must_differ" ? "You already approved this. A different admin must give the second approval." : `Could not ${decision} (${body.error ?? res.status}).`);
       else router.refresh();
     } finally { setBusy(false); }
   }

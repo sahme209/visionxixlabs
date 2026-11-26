@@ -328,6 +328,9 @@ type AgentActionInput struct {
 	AgentName   string `json:"agentName,omitempty"`
 	// ChangedFiles lists touched paths; sensitive or wide changes always need approval.
 	ChangedFiles []string `json:"changedFiles,omitempty"`
+	// Model and Tools are optional change-passport facts; they never change what is approved.
+	Model string   `json:"model,omitempty"`
+	Tools []string `json:"tools,omitempty"`
 }
 
 // AgentPolicyResponse is returned by CheckAgentAction.

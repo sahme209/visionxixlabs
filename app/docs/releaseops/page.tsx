@@ -104,6 +104,10 @@ export default function ReleaseOpsDocOverviewPage() {
               <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. The connection forms and live acceptance with a real Argo CD instance or cluster are still pending.</p>
             </DocSection>
 
+            <DocSection id="stability-warning" title="Stability early warning" kicker="12">
+              <p>V19 compares the change failure rate of releases finished in the last 7 days with the 90 days before. When at least three recent releases failed, rolled back or had an incident reported against them, and the recent rate is at least 20% and well above the earlier rate, Overview and Insights show a stability warning. While it is active, the desktop app asks for a reason before a production deployment and records that reason in the audit log. If release records cannot be read, nothing is blocked.</p>
+            </DocSection>
+
             <DocFooterNav
                 prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
                 next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}

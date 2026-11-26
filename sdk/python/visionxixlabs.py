@@ -194,9 +194,17 @@ class VisionXIXLabs:
         """POST /api/v1/governance/check — may an agent do this? Stores nothing. Scope: governance:read."""
         return self._post("/api/v1/governance/check", _agent_action(action_kind, target, summary, environment, agent_name, changed_files))
 
-    def request_agent_approval(self, action_kind: str, target: str, summary: str, environment: str = "unknown", agent_name: Optional[str] = None, changed_files: Optional[list] = None) -> Dict[str, Any]:
-        """POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request."""
-        return self._post("/api/v1/governance/requests", _agent_action(action_kind, target, summary, environment, agent_name, changed_files))
+    def request_agent_approval(self, action_kind: str, target: str, summary: str, environment: str = "unknown", agent_name: Optional[str] = None, changed_files: Optional[list] = None, model: Optional[str] = None, tools: Optional[list] = None) -> Dict[str, Any]:
+        """POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request.
+
+        ``model`` and ``tools`` are optional facts for the change passport; they never change what is approved.
+        """
+        body = _agent_action(action_kind, target, summary, environment, agent_name, changed_files)
+        if model:
+            body["model"] = model
+        if tools:
+            body["tools"] = list(tools)
+        return self._post("/api/v1/governance/requests", body)
 
     def get_agent_approval(self, request_id: str) -> Dict[str, Any]:
         """GET /api/v1/governance/requests/{id} — proceed only when request.mayProceed is true. Scope: governance:read."""

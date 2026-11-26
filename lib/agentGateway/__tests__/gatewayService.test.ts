@@ -24,6 +24,18 @@ describe("agent gateway service", () => {
     expect(db.create.mock.calls[2][0].data).toMatchObject({ organizationId: "org", apiKeyId: "key", actionDigest: expect.stringMatching(/^[0-9a-f]{64}$/) });
   });
 
+  it("attaches a change passport with the reported model and tools and the key's creator as owner", async () => {
+    db.keyFind.mockResolvedValueOnce({ createdBy: "owner-1" });
+    const r = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship", agentName: "claude-code", model: "claude-opus", tools: ["git", "bash"] }, NOW);
+    const data = db.create.mock.calls[0][0].data;
+    expect(data.passport).toMatchObject({ origin: "external_agent", agent: "claude-code", model: "claude-opus", tools: ["git", "bash"], ownerUserId: "owner-1" });
+    expect(data).not.toHaveProperty("agentModel");
+    expect(r.ok && r.request.passport).toMatchObject({ agent: "claude-code", model: "claude-opus" });
+    const withoutModel = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship", agentName: "claude-code", model: "x", tools: ["git"] }, NOW);
+    expect(withoutModel.ok && withoutModel.request.actionDigest).toBe(r.ok && r.request.actionDigest); // passport facts never change the approval digest
+    expect(await createGatewayRequest(caller, { actionKind: "read", target: "x", summary: "y", tools: "git" }, NOW)).toEqual({ ok: false, error: "invalid_tools" });
+  });
+
   it("scopes reads to the calling workspace and key", async () => {
     db.findFirst.mockResolvedValue(null);
     expect(await getGatewayRequest(caller, "r1")).toBeNull();
@@ -51,6 +63,24 @@ describe("agent gateway service", () => {
     const r = await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "reviewer@acme.com", id: "r1", decision: "approve", note: "ok" }, NOW);
     expect(r).toMatchObject({ ok: true, request: { status: "approved", mayProceed: true } });
     expect(db.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "r1", organizationId: "org", status: "pending", actionDigest: "d", expiresAt: { gt: NOW } } }));
+  });
+
+  it("triages on arrival and needs two different admins for a two-person lane", async () => {
+    const created = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship", changedFiles: ["prisma/migrations/1/migration.sql"] }, NOW);
+    expect(db.create.mock.calls[0][0].data.reviewTriage).toMatchObject({ lane: "two_person", approvalsRequired: 2 });
+    expect(created.ok && created.request.triage).toMatchObject({ lane: "two_person" });
+    const triage = { lane: "two_person", approvalsRequired: 2, reason: "x" };
+    db.keyFind.mockResolvedValue({ createdBy: "owner@acme.com" });
+    db.findFirst.mockResolvedValueOnce(row({ reviewTriage: triage, firstApproverUserId: null })).mockResolvedValueOnce(row({ reviewTriage: triage, firstApproverUserId: "u2" }));
+    const first = await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "a@acme.com", id: "r1", decision: "approve" }, NOW);
+    expect(first).toMatchObject({ ok: true, request: { status: "pending", mayProceed: false, awaitingSecondApprover: true } });
+    expect(db.updateMany).toHaveBeenLastCalledWith(expect.objectContaining({ data: { firstApproverUserId: "u2", firstApprovedAt: NOW } }));
+    db.findFirst.mockResolvedValueOnce(row({ reviewTriage: triage, firstApproverUserId: "u2" }));
+    expect(await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "a@acme.com", id: "r1", decision: "approve" }, NOW)).toMatchObject({ ok: false, error: "second_approver_must_differ" });
+    db.findFirst.mockResolvedValueOnce(row({ reviewTriage: triage, firstApproverUserId: "u2" })).mockResolvedValueOnce(row({ status: "approved", reviewTriage: triage, firstApproverUserId: "u2", decidedByUserId: "u3" }));
+    const second = await decideGatewayRequest({ organizationId: "org", userId: "u3", userEmail: "b@acme.com", id: "r1", decision: "approve" }, NOW);
+    expect(second).toMatchObject({ ok: true, request: { status: "approved", mayProceed: true } });
+    expect(db.updateMany).toHaveBeenLastCalledWith(expect.objectContaining({ where: expect.objectContaining({ firstApproverUserId: "u2" }), data: expect.objectContaining({ status: "approved", decidedByUserId: "u3" }) }));
   });
 
   it("refuses expired, settled or non-approval requests", async () => {

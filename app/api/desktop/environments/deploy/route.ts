@@ -24,9 +24,10 @@ import { prisma } from "@/lib/db";
 import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteAuthority";
 import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { recordDeploymentConfigSnapshot, type ConfigSnapshotRepo } from "@/lib/releaseops/deploymentConfigSnapshot";
-import { readDeploymentCheckGate, type DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGateStore";
-import { readRingGate, type RingGateRepo } from "@/lib/releaseops/ringGate";
-import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
+import type { DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGateStore";
+import type { RingGateRepo } from "@/lib/releaseops/ringGate";
+import { changeWindowGate, commitGates } from "@/lib/releaseops/releaseGates";
+import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     promotedFromExecutionId?: unknown;
     emergencyBypass?: unknown;
     bypassReason?: unknown;
+    stabilityReason?: unknown;
   } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
@@ -106,11 +108,18 @@ export async function POST(request: NextRequest): Promise<Response> {
   // Change windows and freezes on the environment. An audited emergency bypass skips them, as it skips
   // branch policy; an unreadable rule fails closed rather than silently allowing the deployment.
   if (!emergencyBypass) {
-    const rule = parseChangeWindowRule(environment.changeWindowRuleJson);
-    if (rule.kind === "unreadable") return NextResponse.json({ ok: false, error: "change_window_unreadable", detail: rule.error }, { status: 409 });
-    const windowDecision = evaluateChangeWindow(rule, new Date());
-    if (!windowDecision.open) {
-      return NextResponse.json({ ok: false, error: windowDecision.reason === "freeze" ? "deployment_freeze_active" : "outside_change_window", ...windowDecision }, { status: 409 });
+    const windowGate = changeWindowGate(environment.changeWindowRuleJson, new Date());
+    if (!windowGate.ok) return NextResponse.json(windowGate, { status: 409 });
+  }
+  // Stability early warning: while recent changes fail far more often than usual, a production
+  // deployment needs a stated reason. Advisory slowdown: if it cannot be read, nothing is blocked.
+  const stabilityReason = typeof body?.stabilityReason === "string" ? body.stabilityReason.trim().slice(0, 500) : "";
+  let stabilityAcknowledged = false;
+  if (!emergencyBypass && environment.tier === "prod") {
+    const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, new Date());
+    if (stability?.level === "elevated") {
+      if (stabilityReason.length < 10) return NextResponse.json({ ok: false, error: "stability_warning_active", message: stability.message }, { status: 409 });
+      stabilityAcknowledged = true;
     }
   }
 
@@ -168,13 +177,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   // Blocking deployment checks for earlier stages must have passed in CI for this exact commit.
   // An audited emergency bypass skips them, as it skips branch policy.
   if (!emergencyBypass) {
-    const gate = await readDeploymentCheckGate(prisma as unknown as DeploymentCheckGateRepo, { organizationId, commitSha: policy.sourceCommitSha, now: new Date() });
-    if (gate === "unavailable") return NextResponse.json({ ok: false, error: "deployment_checks_unavailable" }, { status: 503 });
-    if (!gate.ok) return NextResponse.json({ ok: false, error: "deployment_checks_blocking", blocked: gate.blocked }, { status: 409 });
-    // Ring N waits for a successful deployment of this commit in ring N-1 (environment tags).
-    const ring = await readRingGate(prisma as unknown as RingGateRepo, { organizationId, environmentId, repositoryFullName, commitSha: policy.sourceCommitSha });
-    if (ring === "unavailable") return NextResponse.json({ ok: false, error: "ring_gate_unavailable" }, { status: 503 });
-    if (!ring.ok) return NextResponse.json({ ok: false, error: "previous_ring_not_deployed", ring: ring.ring, previousRing: ring.previousRing, reason: ring.reason }, { status: 409 });
+    // Ring N also waits for a successful deployment of this commit in ring N-1 (environment tags).
+    const gates = await commitGates(prisma as unknown as DeploymentCheckGateRepo & RingGateRepo, { organizationId, environmentId, repositoryFullName, commitSha: policy.sourceCommitSha, now: new Date() });
+    if (!gates.ok) return NextResponse.json(gates, { status: gates.error === "deployment_checks_unavailable" || gates.error === "ring_gate_unavailable" ? 503 : 409 });
   }
 
   if (emergencyBypass) {
@@ -275,7 +280,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       kind: "release.deploy_triggered",
       subjectKind: "environment",
       subjectId: environmentId,
-      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName}@${sourceRef} → ${target.ecsCluster}/${target.ecsService} (${target.region})${policy.policyId ? ` under branch policy ${policy.policyId}` : ""}${execution ? " with live observation" : " without durable observation"}`,
+      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName}@${sourceRef} → ${target.ecsCluster}/${target.ecsService} (${target.region})${policy.policyId ? ` under branch policy ${policy.policyId}` : ""}${execution ? " with live observation" : " without durable observation"}${stabilityAcknowledged ? `. Deployed during a stability warning. Reason: ${stabilityReason}` : ""}`,
       actorUserId: String(session.userId),
     });
   } catch { /* best-effort */ }

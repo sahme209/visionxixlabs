@@ -9,6 +9,7 @@ import { PUBLIC_PLAN_CATALOG, publicPlanIdFor } from "@/lib/billing/publicPlanCa
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 import { decideDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAccessPolicy";
+import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 
 type Overview = {
   pendingActions: number;
@@ -58,11 +59,12 @@ export default async function ControlOverviewPage() {
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control");
   if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);
-  const [overview, billing, allowance, attention] = await Promise.all([
+  const [overview, billing, allowance, attention, stability] = await Promise.all([
     readOverview(organizationId),
     readBillingPlanWithAvailability(organizationId).catch(() => null),
     withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId)).catch(() => ({ available: false } as const)),
     readGovernanceAttention(organizationId),
+    readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, new Date()),
   ]);
   const plan = billing?.available ? billing.plan : null;
   // Same plan name as Usage & billing, so the two pages never disagree (for example "14-day trial" beside "Free · no plan").
@@ -91,6 +93,13 @@ export default async function ControlOverviewPage() {
           <Link href="/control/usage-billing" className="mt-5 inline-flex text-xs text-zinc-300 underline underline-offset-4">Review allowance &amp; transactions</Link>
         </section>
       </div>
+      {stability?.level === "elevated" && (
+        <section aria-labelledby="stability-warning-heading" role="status" className="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4">
+          <h2 id="stability-warning-heading" className="text-sm font-medium text-amber-200">Stability warning</h2>
+          <p className="mt-2 text-sm text-amber-100/90">{stability.message}</p>
+          <p className="mt-2 text-xs text-zinc-400">Production deployments ask for a reason while this warning is active. <Link href="/control/insights#insights-stability" className="underline underline-offset-4">See Insights</Link></p>
+        </section>
+      )}
       {attention && (attention.pendingPolicyChanges > 0 || attention.blockingChecks > 0) && (
         <section aria-labelledby="release-governance-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
           <h2 id="release-governance-heading" className="text-xs font-normal text-zinc-400">Release governance</h2>

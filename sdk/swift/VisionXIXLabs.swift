@@ -144,8 +144,12 @@ public struct VisionXIXLabs {
     }
 
     /// POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request.
-    public func requestAgentApproval(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil, changedFiles: [String] = []) async throws -> AgentRequestResponse {
-        try await post("/api/v1/governance/requests", body: Self.agentAction(actionKind, target, summary, environment, agentName, changedFiles))
+    /// `model` and `tools` are optional change-passport facts; they never change what is approved.
+    public func requestAgentApproval(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil, changedFiles: [String] = [], model: String? = nil, tools: [String] = []) async throws -> AgentRequestResponse {
+        var body = Self.agentAction(actionKind, target, summary, environment, agentName, changedFiles)
+        if let model { body["model"] = model }
+        if !tools.isEmpty { body["tools"] = tools }
+        return try await post("/api/v1/governance/requests", body: body)
     }
 
     /// GET /api/v1/governance/requests/{id} — proceed only when `request.mayProceed` is true. Scope: governance:read.

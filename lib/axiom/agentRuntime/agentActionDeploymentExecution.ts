@@ -17,6 +17,9 @@ import {observeAgentRestartWorkflowSource,AGENT_RESTART_WORKFLOW_CONTENT_SHA256}
 import {captureRestartTarget,matchesRestartTarget,type RestartTargetRepo} from './restartTargetReview';
 import {readAgentDeploymentAuthoritySnapshot} from './agentDeploymentAuthoritySnapshot';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {changeWindowGate,commitGates} from '@/lib/releaseops/releaseGates';
+import type {DeploymentCheckGateRepo} from '@/lib/releaseops/deploymentCheckGateStore';
+import type {RingGateRepo} from '@/lib/releaseops/ringGate';
 import type {createAgentActionExecutionStore} from './agentActionExecutionStore';
 import type {AgentExecutionScope} from './agentActionExecutionContract';
 type Store=ReturnType<typeof createAgentActionExecutionStore>;
@@ -35,6 +38,10 @@ export async function executeStoredAgentDeployment(request:NextRequest,principal
  if(saved.toolName!=='trigger_aws_deploy'||!parsed||!reviewedSource||reviewedSource.workflowContentSha256!==AGENT_RESTART_WORKFLOW_CONTENT_SHA256)throw Error('agent_execution_source_unavailable');
  const target=await captureRestartTarget(repo,scope.organizationId,args.environmentId);
  if(!target||!z.enum(ALL_ENVIRONMENT_TIERS).safeParse(target.environmentTier).success||!matchesRestartTarget(args._review,target))throw Error('agent_execution_target_unavailable');
+ // Agent action firewall: an approved Agent deployment faces the same change window, checks and rings
+ // as a person's desktop deployment, and has no emergency bypass. Window first, before any credential.
+ const windowRule=await (repo as unknown as {environment:{findFirst(a:unknown):Promise<{changeWindowRuleJson:unknown}|null>}}).environment.findFirst({where:{id:args.environmentId,organizationId:scope.organizationId},select:{changeWindowRuleJson:true}});
+ if(!windowRule||!changeWindowGate(windowRule.changeWindowRuleJson,new Date()).ok)throw Error('agent_execution_change_window_closed');
  const guard=createCurrentGithubWriteGuard(request,principal,repo,'deployment_dispatch');
  await guard();
  const outbound=createAgentEcsOutboundDrain(repo as AgentDeploymentExecutionRepo&ReleaseOperationPlanRepo,request,scope,id,store,saved,guard.connectionBinding(),target,executionSignal);outbound.assertAvailable();
@@ -57,6 +64,8 @@ export async function executeStoredAgentDeployment(request:NextRequest,principal
    const decision=await evaluateDeploymentPolicy(policyRepo,policyInput);
    const after=await readAgentDeploymentAuthoritySnapshot(repo,scope.organizationId,args.environmentId);
    if(before!==after||!decision.ok||decision.sourceCommitSha!==reviewedSource.sourceCommitSha)throw Error('agent_execution_deployment_policy_unavailable');
+   const gates=await commitGates(repo as unknown as DeploymentCheckGateRepo&RingGateRepo,{organizationId:scope.organizationId,environmentId:args.environmentId,repositoryFullName:args.repositoryFullName,commitSha:decision.sourceCommitSha,now:new Date()});
+   if(!gates.ok)throw Error(`agent_execution_release_gate:${gates.error}`);
    return{decision,digest:after};
   };
   const admitted=await policy();await exact();

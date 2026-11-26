@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   resolveGitReference: vi.fn(),
   findRepositories: vi.fn(),
   findBranchPolicies: vi.fn(),
+  findReleases: vi.fn(async (): Promise<unknown[]> => []),
   recordAudit: vi.fn(async (
     _repo: import("@/lib/releaseops/auditEventResponder").AuditEventRepo,
     _input: import("@/lib/releaseops/auditEventResponder").AppendAuditEventInput,
@@ -37,6 +38,8 @@ vi.mock("@/lib/db", () => ({
     deploymentTarget: { findUnique: mocks.findTarget },
     repository: { findMany: mocks.findRepositories },
     branchEnvironmentPolicy: { findMany: mocks.findBranchPolicies },
+    release: { findMany: mocks.findReleases },
+    deploymentIncident: { findMany: async () => [] },
   },
 }));
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
@@ -199,6 +202,18 @@ describe("POST /api/desktop/environments/deploy", () => {
     expect(mocks.findTarget).not.toHaveBeenCalled();
     expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("asks for a reason before a production deployment during a stability warning", async () => {
+    const { POST } = await import("../route");
+    const day = (d: number) => new Date(Date.now() - d * 86_400_000);
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod", changeWindowRuleJson: null });
+    mocks.findReleases.mockResolvedValue([{ id: "r1", status: "failed", actualDeployEnd: day(1) }, { id: "r2", status: "failed", actualDeployEnd: day(1) }, { id: "r3", status: "rolled_back", actualDeployEnd: day(2) }]);
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: "stability_warning_active", message: expect.stringContaining("3 of 3 releases") });
+    expect(mocks.findTarget).not.toHaveBeenCalled();
+    mocks.findReleases.mockResolvedValue([]);
   });
 
   it("refuses a later ring until the previous ring deployed this commit", async () => {

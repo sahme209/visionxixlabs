@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "314c0c2067ba2ddd14783bdd9c39a0f06dd7a36051376399ada102c7f1c0ee5e",
+      "sourceSha256": "6677651ba92f8f132f963660baea902b3726f460fda3a10c0ac142c7bce633fb",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -188,7 +188,8 @@
         "Change windows and freezes",
         "Kubernetes rolling, blue/green and canary",
         "Release evidence pack",
-        "Argo CD and Flux"
+        "Argo CD and Flux",
+        "Stability early warning"
       ]
     },
     {
@@ -306,7 +307,7 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058",
+      "sourceSha256": "553b51acd90312147778862bdf010787580d42dc9af000e76b6b0f080b3b39b4",
       "fields": [
         "Govern any AI agent.",
         "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",
@@ -314,7 +315,10 @@
         "Connect an agent",
         "How requests are decided",
         "Approve or reject",
-        "Gate a CI deploy"
+        "Gate a CI deploy",
+        "Agent firewall",
+        "Change passport",
+        "Review lanes by blast radius"
       ]
     },
     {
