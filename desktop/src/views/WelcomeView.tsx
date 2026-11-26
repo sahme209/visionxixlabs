@@ -13,6 +13,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { HOME_DRAFT_MAX_LENGTH, type HomePlanningContext, type HomePlanningIntent } from "../lib/agentDraftRequest";
 import { desktopClient, type DeploymentOutcomeSummaryDto } from "../lib/desktopClient";
+import { AnimatedNumber } from "../components/motion/AnimatedNumber";
+import { TrendSparkline } from "../components/motion/TrendSparkline";
+import { motion } from "framer-motion";
+import { useAllowMotion } from "../components/motion/useAllowMotion";
 import { releaseJourney } from "../../../lib/customerJourney/journey";
 
 export interface SavedReleaseLink {
@@ -348,7 +352,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
     <dl aria-label="Loaded release summary" aria-busy={releases === undefined} className="studio-home-summary">
       {releaseSummary.map(({key, label}) => <div key={key}>
         <dt>{label}</dt>
-        <dd>{ownedActivity?.counts?.[key].toLocaleString() ?? "—"}</dd>
+        <dd>{typeof ownedActivity?.counts?.[key] === "number" ? <AnimatedNumber value={ownedActivity.counts[key]}/> : "—"}</dd>
       </div>)}
       <WorkflowRunTrend/>
     </dl>
@@ -440,15 +444,13 @@ function WorkflowRunTrend() {
     return () => { live = false; };
   }, []);
   const daily = summary?.daily && summary.daily.length > 1 ? summary.daily : undefined;
-  const max = daily ? Math.max(1, ...daily) : 1;
-  const points = daily?.map((count, index) => `${(index / (daily.length - 1)) * 80},${22 - (count / max) * 20}`).join(" ");
   const delta = summary && typeof summary.previousRecorded === "number" && summary.previousRecorded > 0
     ? Math.round(((summary.recorded - summary.previousRecorded) / summary.previousRecorded) * 100) : undefined;
   return <div className="studio-home-trend" title="Recorded workflow runs created in the last 30 days">
     <dt>Workflow runs <span className="studio-release-summary-window">Last 30 days</span></dt>
-    <dd>{summary === undefined ? "…" : summary === null ? "Unavailable" : summary.recorded.toLocaleString()}</dd>
-    {delta !== undefined && <span className="studio-home-trend-delta">{delta >= 0 ? "↑" : "↓"} {Math.abs(delta)}%<span className="sr-only"> compared with the previous 30 days</span></span>}
-    {points && <svg className="studio-home-sparkline" viewBox="0 0 80 24" width="80" height="24" aria-hidden="true"><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/></svg>}
+    <dd>{summary === undefined ? "…" : summary === null ? "Unavailable" : <AnimatedNumber value={summary.recorded}/>}</dd>
+    {delta !== undefined && <span className="studio-home-trend-delta" data-direction={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>{delta > 0 ? "↑" : delta < 0 ? "↓" : "→"} {Math.abs(delta)}%<span className="studio-home-trend-delta-context"> vs previous 30 days</span></span>}
+    {daily && <TrendSparkline values={daily} unit={["run", "runs"]} label="Recorded workflow runs per day, last 30 days"/>}
   </div>;
 }
 
@@ -462,15 +464,20 @@ const pipelineStages = [
 
 /** The governed release path, as an explainer. It shows no live status. */
 export function ReleasePipeline({onOpen}: {onOpen: () => void}) {
+  const motionOk = useAllowMotion();
   return <section className="studio-home-pipeline" aria-labelledby="studio-home-pipeline-title">
     <div className="studio-home-pipeline-head">
       <div><h2 id="studio-home-pipeline-title">Release pipeline</h2><p>End-to-end path from plan to recovery. Each step needs its own recorded evidence.</p></div>
       <button type="button" className="studio-home-pipeline-link" onClick={onOpen}>Open Deployments <ArrowRight size={14} aria-hidden="true"/></button>
     </div>
-    <ol>{pipelineStages.map(({label, detail, Icon}, index) => <li key={label}>
-      <Icon size={18} aria-hidden="true"/>
-      <strong>{label}</strong><span>{detail}</span>
-      {index < pipelineStages.length - 1 && <ArrowRight className="studio-home-pipeline-arrow" size={16} aria-hidden="true"/>}
-    </li>)}</ol>
+    <div className="studio-home-pipeline-track">
+      <motion.span className="studio-home-pipeline-rail" aria-hidden="true" initial={motionOk ? {scaleX: 0} : false} animate={{scaleX: 1}} transition={{duration: 1.1, ease: [0.22, 1, 0.36, 1]}}/>
+      <ol>{pipelineStages.map(({label, detail, Icon}, index) => <motion.li key={label} data-stage={label.toLowerCase()}
+        initial={motionOk ? {opacity: 0, y: 8} : false} animate={{opacity: 1, y: 0}} transition={{duration: 0.45, delay: 0.08 * index, ease: [0.22, 1, 0.36, 1]}}>
+        <span className="studio-home-pipeline-node"><Icon size={16} aria-hidden="true"/></span>
+        <span className="studio-home-pipeline-step">Step {index + 1}</span>
+        <strong>{label}</strong><span className="studio-home-pipeline-detail">{detail}</span>
+      </motion.li>)}</ol>
+    </div>
   </section>;
 }

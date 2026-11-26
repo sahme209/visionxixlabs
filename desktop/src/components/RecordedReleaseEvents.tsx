@@ -1,6 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import {desktopClient} from "../lib/desktopClient";
 import {formatRunElapsed} from "./DeploymentWorkflowEvidence";
+import {motion} from "framer-motion";
+import {useAllowMotion} from "./motion/useAllowMotion";
 
 type RecordedEvent<EventType extends string> = {type: EventType; at: string};
 
@@ -14,6 +16,7 @@ export function RecordedReleaseEvents<EventType extends string>({subject, labels
   const flight = useRef<AbortController | null>(null);
   const [events, setEvents] = useState<RecordedEvent<EventType>[] | null>();
   const [loading, setLoading] = useState(false);
+  const motionOk = useAllowMotion();
   useEffect(() => () => flight.current?.abort(), []);
 
   async function load() {
@@ -55,9 +58,14 @@ export function RecordedReleaseEvents<EventType extends string>({subject, labels
           {events.map((event, index) => {
             const at = validDate(event.at);
             const elapsed = index > 0 && first && at ? formatRunElapsed(first, at) : null;
-            return <li key={event.type} data-last={index === events.length - 1 ? "true" : undefined}>
+            const next = index < events.length - 1 ? validDate(events[index + 1].at) : null;
+            const totalMs = first && last ? last.getTime() - first.getTime() : 0;
+            const share = at && next && totalMs > 0 ? Math.max(0.02, (next.getTime() - at.getTime()) / totalMs) : 0;
+            return <motion.li key={event.type} data-last={index === events.length - 1 ? "true" : undefined}
+              initial={motionOk ? {opacity: 0, x: -6} : false} animate={{opacity: 1, x: 0}} transition={{duration: 0.35, delay: index * 0.07, ease: [0.22, 1, 0.36, 1]}}>
               <span>{labels[event.type]}</span><span className="recorded-release-event-separator" aria-hidden="true"> · </span><time dateTime={event.at}>{at ? at.toLocaleString() : event.at}</time>{elapsed && <span className="recorded-release-event-elapsed">+{elapsed}</span>}
-            </li>;
+              {share > 0 && <span className="recorded-release-event-duration" aria-hidden="true"><motion.span initial={motionOk ? {scaleX: 0} : false} animate={{scaleX: 1}} transition={{duration: 0.6, delay: 0.2 + index * 0.07}} style={{width: `${Math.min(100, share * 100)}%`}}/></span>}
+            </motion.li>;
           })}
         </ol>
       </>;

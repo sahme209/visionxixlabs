@@ -420,6 +420,18 @@ function DraftVersionComparison({saved,version,draft,candidate}:{
 }
 
 /** Recorded runs for the selected saved task (read-only). Loads only on request; unavailable stays unknown. */
+/** Oldest-to-newest strip of recorded run results; colour pairs with the counted labels beside it. */
+function RunHealthStrip({runs}:{runs:SavedBotTaskRunHistoryDto["runs"]}){
+ const ordered=[...runs].reverse();
+ const tones=ordered.map(run=>lastRunTone(run)??"neutral");
+ const count=(tone:string)=>tones.filter(t=>t===tone).length;
+ const parts=[["green","succeeded"],["red","failed"],["blue","in progress"],["neutral","other"]].map(([tone,label])=>({tone,label,n:count(tone)})).filter(part=>part.n>0);
+ return <div className="studio-task-run-strip">
+  <div className="studio-task-run-strip-cells" aria-hidden="true">{ordered.map((run,index)=><span key={index} data-tone={tones[index]} title={`${run.status.replaceAll("_"," ")} · ${new Date(run.recordedAt).toLocaleString()}`} style={{animationDelay:`${index*25}ms`}}/>)}</div>
+  <p>{parts.map(part=><span key={part.tone} data-tone={part.tone}>{part.n} {part.label}</span>)}<span className="studio-task-run-strip-note">oldest to newest</span></p>
+ </div>;
+}
+
 function SavedTaskRunHistory({taskId,version}:{taskId:string;version:number}){
  const [state,setState]=useState<{runs?:SavedBotTaskRunHistoryDto["runs"];error?:string;busy:boolean}>({busy:false});
  const read=useRef<AbortController|null>(null);
@@ -437,6 +449,7 @@ function SavedTaskRunHistory({taskId,version}:{taskId:string;version:number}){
   {state.busy&&<p role="status">Loading recorded runs…</p>}
   {state.error&&<p role="alert">{state.error}</p>}
   {state.runs?.length===0&&<p role="status">No runs are recorded for this task.</p>}
+  {state.runs&&state.runs.length>0&&<RunHealthStrip runs={state.runs}/>}
   {state.runs&&state.runs.length>0&&<ul className="studio-task-run-list">{state.runs.map((run,index)=>{const tone=lastRunTone(run);return <li key={`${run.family}:${run.recordedAt}:${index}`}>
    <StatusBadge tone={tone??"neutral"} shape={tone==="green"?"success":tone==="red"?"failure":tone==="blue"?"running":"dot"}>{run.status.replaceAll("_"," ")}</StatusBadge>
    <span>{runFamilyLabel[run.family]} · {run.taskVersion===version?"this version":`version ${run.taskVersion}`}</span>

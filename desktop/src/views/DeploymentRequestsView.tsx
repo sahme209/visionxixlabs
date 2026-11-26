@@ -24,6 +24,8 @@ import { WorkflowCatalogue } from "../components/WorkflowCatalogue";
 import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs";
 import { matchingWorkflowObservation, restoredWorkflowRef, singleGithubRepository, workflowFilePath, type WorkflowSourceObservation } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
+import { ProgressRing } from "../components/motion/ProgressRing";
+import { AnimatedNumber } from "../components/motion/AnimatedNumber";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
@@ -1289,11 +1291,22 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
       title: outcomes ? `${outcomes.succeeded} succeeded, ${outcomes.failed} failed of ${outcomes.recorded} recorded workflow runs${outcomes.truncated ? " (first 5,000)" : ""}` : undefined},
     {label: "Median time to complete", value: median, window: windowLabel, title: "From recorded dispatch to recorded completion, queue time included"},
   ];
+  const split = outcomes && outcomes.recorded > 0 ? [
+    {key: "succeeded", count: outcomes.succeeded, tone: "green", label: "succeeded"},
+    {key: "failed", count: outcomes.failed, tone: "red", label: "failed"},
+    {key: "inProgress", count: outcomes.inProgress, tone: "blue", label: "in progress"},
+  ].filter(part => part.count > 0) : [];
   return <dl aria-label="Release request and recorded run summary" className="studio-release-summary">
-    {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title}>
-      {tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}
+    {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title} data-metric={label === "Run success rate" ? "rate" : undefined}>
+      {label === "Run success rate" && outcomes?.successRate != null
+        ? <ProgressRing percent={outcomes.successRate} tone="green" size={30}/>
+        : tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}
       <dt>{label}{window && <span className="studio-release-summary-window">{window}</span>}</dt>
-      <dd>{value}</dd>
+      <dd>{label === "Run success rate" && outcomes?.successRate != null ? <><AnimatedNumber value={outcomes.successRate}/>%</> : value}</dd>
+      {label === "Run success rate" && split.length > 0 && <div className="studio-outcome-split">
+        <div className="studio-outcome-split-bar" aria-hidden="true">{split.map(part => <span key={part.key} data-tone={part.tone} style={{flexGrow: part.count}}/>)}</div>
+        <p className="studio-outcome-split-legend">{split.map(part => <span key={part.key} data-tone={part.tone}>{part.count.toLocaleString()} {part.label}</span>)}</p>
+      </div>}
     </div>)}
   </dl>;
 }

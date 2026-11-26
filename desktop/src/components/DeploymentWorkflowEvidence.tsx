@@ -32,7 +32,16 @@ export function DeploymentRunTiming({ execution }: { execution: TimedExecution }
     { label: "Last observed", at: observed, tone: observed ? "blue" : "neutral", shape: "dot", pending: "Not yet observed" },
     { label: "Completed", at: completed, tone: completed ? result.tone : "neutral", shape: completed ? result.shape : "dot", pending: "Not completed" },
   ];
+  const end = completed ?? observed;
+  const total = end ? end.getTime() - dispatched.getTime() : 0;
+  const firstShare = observed && total > 0 ? Math.min(1, Math.max(0, (observed.getTime() - dispatched.getTime()) / total)) : completed ? 0 : 1;
+  const running = !completed && result.tone === "blue";
   return (
+    <div className="deployment-run-timing-wrap">
+    {total > 0 && <div className="deployment-run-gantt" aria-hidden="true" data-running={running ? "true" : undefined}>
+      <span className="deployment-run-gantt-segment" data-tone="blue" style={{flexGrow: firstShare}}/>
+      {completed && firstShare < 1 && <span className="deployment-run-gantt-segment" data-tone={result.tone} style={{flexGrow: 1 - firstShare}}/>}
+    </div>}
     <ol className="deployment-run-timing" aria-label="Recorded run timing">
       {steps.map((step) => {
         const elapsed = step.at && step.at !== dispatched ? formatRunElapsed(dispatched, step.at) : null;
@@ -45,6 +54,7 @@ export function DeploymentRunTiming({ execution }: { execution: TimedExecution }
         );
       })}
     </ol>
+    </div>
   );
 }
 
