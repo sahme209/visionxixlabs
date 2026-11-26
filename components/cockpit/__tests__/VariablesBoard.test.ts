@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { VariablesBoard } from "../VariablesBoard";
@@ -16,7 +17,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 describe("VariablesBoard", () => {
   it("shows overrides, inherited defaults and gaps, read-only for members", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => json(board(false))));
-    render(<VariablesBoard />);
+    render(createElement(VariablesBoard));
     await waitFor(() => expect(screen.getByText("Set only in some environments")).toBeTruthy());
     expect(screen.getByText("warn")).toBeTruthy();
     expect(screen.getByText("Inherits default")).toBeTruthy();
@@ -29,7 +30,7 @@ describe("VariablesBoard", () => {
       .mockResolvedValueOnce(json({ ok: false, error: "variable_changed" }, 409))
       .mockResolvedValueOnce(json(board(true)));
     vi.stubGlobal("fetch", f);
-    render(<VariablesBoard />);
+    render(createElement(VariablesBoard));
     fireEvent.click(await screen.findByRole("button", { name: "Edit LOG_LEVEL in Production" }));
     fireEvent.change(screen.getByLabelText("Value"), { target: { value: "error" } });
     fireEvent.click(screen.getByRole("button", { name: "Save change" }));
@@ -39,7 +40,7 @@ describe("VariablesBoard", () => {
   });
   it("shows plain-language validation messages", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(json(board(true))).mockResolvedValueOnce(json({ ok: false, error: "variable_invalid", issues: ["looks_like_secret_key"] }, 422)));
-    render(<VariablesBoard />);
+    render(createElement(VariablesBoard));
     fireEvent.change(await screen.findByLabelText("Name"), { target: { value: "github_token" } });
     fireEvent.click(screen.getByRole("button", { name: "Add variable" }));
     await waitFor(() => expect(screen.getByText(/Store secrets as scoped credentials/)).toBeTruthy());

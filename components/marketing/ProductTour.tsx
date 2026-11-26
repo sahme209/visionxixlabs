@@ -31,11 +31,12 @@ export function ProductTour({ heading = "See V19 in motion" }: { heading?: strin
     return () => io.disconnect();
   }, [reduced]);
 
+  // The video remounts per tab (key) and gets its src only once near view, so the browser
+  // fetches each clip once; calling load() again would cancel and repeat that request.
   useEffect(() => {
     const v = video.current;
-    if (!v || !near) return;
-    try { v.load(); } catch { /* environments without media support */ }
-    if (!reduced) tryPlay(v);
+    if (!v || !near || reduced) return;
+    tryPlay(v);
   }, [index, near, reduced]);
 
   const select = (next: number) => setIndex((next + PREVIEW_TOURS.length) % PREVIEW_TOURS.length);
@@ -53,9 +54,7 @@ export function ProductTour({ heading = "See V19 in motion" }: { heading?: strin
       </div>
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tour.id}`} className="product-tour-panel">
         <div className="product-tour-frame">
-          <video ref={video} key={tour.id} poster={tour.poster} muted loop playsInline preload="none" controls={reduced} aria-label={`${tour.label} walkthrough, ${tour.steps.length} steps`}>
-            {near && <source src={tour.video} type="video/mp4" />}
-          </video>
+          <video ref={video} key={tour.id} src={near ? tour.video : undefined} poster={tour.poster} muted loop playsInline preload="none" controls={reduced} aria-label={`${tour.label} walkthrough, ${tour.steps.length} steps`} />
         </div>
         <div className="product-tour-copy">
           <p className="product-tour-summary">{tour.summary}</p>
