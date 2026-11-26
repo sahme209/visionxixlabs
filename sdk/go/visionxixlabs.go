@@ -252,7 +252,7 @@ func (c *Client) EnvironmentVariables(ctx context.Context, slug string) (*Enviro
 	return &out, nil
 }
 
-// ReportCheckResult posts one deployment check run to /api/v1/checks/results. Required scope: governance:request.
+// ReportCheckResult posts one deployment check run to /api/v1/checks/results. Required scope: checks:report.
 func (c *Client) ReportCheckResult(ctx context.Context, in CheckResultInput) (*CheckResultResponse, error) {
 	var out CheckResultResponse
 	if err := c.do(ctx, "POST", "/api/v1/checks/results", in, &out); err != nil {

@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53",
+      "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -345,7 +345,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b",
+      "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",

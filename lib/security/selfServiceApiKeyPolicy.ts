@@ -8,7 +8,7 @@
  */
 import type { ApiKeyScope } from "./apiKeyScope";
 
-export const SELF_SERVICE_SCOPES = ["governance:read", "governance:request", "pipeline:read", "release_gate:read", "webhook:read"] as const satisfies readonly ApiKeyScope[];
+export const SELF_SERVICE_SCOPES = ["governance:read", "governance:request", "pipeline:read", "release_gate:read", "webhook:read", "checks:report"] as const satisfies readonly ApiKeyScope[];
 export type SelfServiceScope = (typeof SELF_SERVICE_SCOPES)[number];
 export const MAX_ACTIVE_KEYS = 20;
 export const MAX_EXPIRY_DAYS = 90;

@@ -84,7 +84,7 @@ echo "V19_CONFIG_DIGEST=$(jq -r .digest v19-config.json)" >> "$GITHUB_ENV"
 The cockpit's Checks page generates a GitHub Actions workflow that reports
 each check's outcome here; you can also report from any CI. Every SDK
 exposes `reportCheckResult()` / `report_check_result()` / `ReportCheckResult(ctx, …)`.
-Required scope: `governance:request`. Results are evidence only: V19 did not
+Required scope: `checks:report`. Results are evidence only: V19 did not
 run the check. A retried step with the same `idempotencyKey` records once.
 
 ```bash
@@ -247,7 +247,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/whoami`             | any read-class        | `whoami()`            |
 | `GET  /api/v1/release-gate`       | `release_gate:read`   | `releaseGate()`       |
 | `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
-| `POST /api/v1/checks/results`     | `governance:request`  | `reportCheckResult()` |
+| `POST /api/v1/checks/results`     | `checks:report`       | `reportCheckResult()` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |

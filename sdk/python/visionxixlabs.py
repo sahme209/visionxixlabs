@@ -99,7 +99,7 @@ class VisionXIXLabs:
     def report_check_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """POST /api/v1/checks/results — report one deployment check run from CI as evidence.
 
-        Required scope: governance:request. Keys: checkKey, checkVersion, stage, status
+        Required scope: checks:report. Keys: checkKey, checkVersion, stage, status
         (passed | failed | error), idempotencyKey, and optionally durationMs, runUrl,
         environmentSlug, releaseRef. Idempotent on idempotencyKey.
         """

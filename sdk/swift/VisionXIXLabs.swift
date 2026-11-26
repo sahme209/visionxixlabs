@@ -80,7 +80,7 @@ public struct VisionXIXLabs {
     }
 
     /// POST /api/v1/checks/results — report one deployment check run from CI as evidence.
-    /// Required scope: `governance:request`. Idempotent on `idempotencyKey`.
+    /// Required scope: `checks:report`. Idempotent on `idempotencyKey`.
     public func reportCheckResult(checkKey: String, checkVersion: Int, stage: String, status: String, idempotencyKey: String, durationMs: Int? = nil, runUrl: String? = nil) async throws -> CheckResultResponse {
         var body: [String: Any] = ["checkKey": checkKey, "checkVersion": checkVersion, "stage": stage, "status": status, "idempotencyKey": idempotencyKey]
         if let durationMs { body["durationMs"] = durationMs }

@@ -233,7 +233,7 @@ export class VisionXIXLabs {
 
   /**
    * POST /api/v1/checks/results — report one deployment check run from your CI as evidence.
-   * Required scope: governance:request. Idempotent on `idempotencyKey`.
+   * Required scope: checks:report. Idempotent on `idempotencyKey`.
    */
   reportCheckResult(input: CheckResultInput): Promise<CheckResultResponse> {
     return this.post<CheckResultResponse>("/api/v1/checks/results", input as unknown as Record<string, unknown>);

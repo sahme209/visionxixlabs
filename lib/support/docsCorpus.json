@@ -32,30 +32,30 @@
   {
    "href": "/docs/api-keys#create",
    "title": "Create a key",
-   "text": "Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints. Wildcard, trigger and admin permissions are not available here. The full key is shown once. V19 stores only a hash and a short prefix, so it cannot show the key again.",
+   "text": "Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints, report deployment check results. Wildcard, trigger and admin permissions are not available here. The full key is shown once. V19 stores only a hash and a short prefix, so it cannot show the key again.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b"
+   "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426"
   },
   {
    "href": "/docs/api-keys#duties",
    "title": "Separation of duties",
    "text": "The person who creates a key is recorded and cannot approve agent gateway requests made with that key. Another owner or admin must decide them.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b"
+   "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426"
   },
   {
    "href": "/docs/api-keys#revoke",
    "title": "Revoke a key",
    "text": "Revoke a key from the list as soon as it may have been exposed or is no longer needed. Revocation takes effect immediately and is recorded in the audit log. A workspace can hold up to 20 active keys.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b"
+   "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426"
   },
   {
    "href": "/docs/api-keys#ci",
    "title": "Use a key in CI",
-   "text": "Two endpoints are built for pipelines. With read pipeline runs , GET /api/v1/environments/{\" \"}/variables returns an environment's resolved configuration and its fingerprint, so a deployment can load its settings and record which configuration it used. With request approvals and report outcomes , POST /api/v1/checks/results records the result of a deployment check for a commit; the workflow generated on the Checks page uses it when the repository has a V19_API_KEY secret. Store the key as a repository secret, give it only the permissions those calls need, and choose a short expiry. API calls also require an active paid plan for the workspace. Every SDK has matching methods.",
+   "text": "Two endpoints are built for pipelines. With read pipeline runs , GET /api/v1/environments/{\" \"}/variables returns an environment's resolved configuration and its fingerprint, so a deployment can load its settings and record which configuration it used. With report deployment check results , POST /api/v1/checks/results records the result of a deployment check for a commit; the workflow generated on the Checks page uses it when the repository has a V19_API_KEY secret. Store the key as a repository secret, give it only the permissions those calls need, and choose a short expiry. API calls also require an active paid plan for the workspace. Every SDK has matching methods.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "0427699f309863f05b1f2fba2ecb250e1284b3ed043c64d01ed74c371ada227b"
+   "sourceSha256": "393105dde9ade36a021f80a2b3a8092cde8ab93c05c8454fe2d328fb9b59d426"
   },
   {
    "href": "/docs/approval-workflow#risk",
@@ -699,42 +699,42 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops#deployment-checks",
    "title": "Deployment checks per stage",
-   "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool) and resilience experiments (for example a chaos test with AWS FIS or Chaos Mesh, run under your own safeguards). Owners and admins can also describe a check in plain language under Draft with AI ; the workspace's governed AI fills the form with a draft that passes the same validation, and nothing is saved until they add it. Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V19 never runs a check. Under CI workflow for these checks , the page generates a GitHub Actions workflow ( .github/workflows/v19-deployment-checks.yml ) that runs the smoke tests and repository scripts for a chosen stage; copy or download it and add it through a pull request. Health checks, migration dry runs and manual checklists are listed with the reason they are not in that file. Each generated job ends by reporting its result to V19 when the repository has a V19_API_KEY secret (an API key with the governance:request scope; it is availa",
+   "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool) and resilience experiments (for example a chaos test with AWS FIS or Chaos Mesh, run under your own safeguards). Owners and admins can also describe a check in plain language under Draft with AI ; the workspace's governed AI fills the form with a draft that passes the same validation, and nothing is saved until they add it. Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V19 never runs a check. Under CI workflow for these checks , the page generates a GitHub Actions workflow ( .github/workflows/v19-deployment-checks.yml ) that runs the smoke tests and repository scripts for a chosen stage; copy or download it and add it through a pull request. Health checks, migration dry runs and manual checklists are listed with the reason they are not in that file. Each generated job ends by reporting its result to V19 when the repository has a V19_API_KEY secret (an API key with the checks:report scope, kept separate fro",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops#tenant-fan-out",
    "title": "Tenants, tags and fan-out",
    "text": "In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase key:value labels such as tenant:acme , region:eu or ring:1 . Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime. Tenant fan-out preview takes a selector (all terms must match, and key:* matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals. Rings are enforced: before the desktop app dispatches to an environment tagged ring:N (N above 0), at least one environment tagged ring:N-1 must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops#database-changes",
    "title": "Database changes in a deployment",
    "text": "When you check readiness for a deployment in the desktop app, V19 compares the commit with the last successful deployment of the same repository to the same environment and lists any changed migration files (for example Prisma, Rails, Alembic, Flyway, Liquibase, Supabase or Drizzle migrations). Review the migration and its rollback before dispatching. This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "3835a3cd7d54ca0779a959a2c19619d89735b71bdea269a19fc373c5a76d9b53"
+   "sourceSha256": "618edab402ac42e42bdcb1d5be6e7ba344191fdd2e810f9e9a0536bdd6b6c117"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",
