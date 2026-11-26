@@ -760,7 +760,7 @@ it("counts loaded release records without claiming deployment outcomes", async (
   expect(summary.getByText("Loaded requests").nextElementSibling?.textContent).toBe("2");
   expect(summary.getByText("Draft requests").nextElementSibling?.textContent).toBe("2");
   expect(summary.getByText("Submitted requests").nextElementSibling?.textContent).toBe("0");
-  expect(summary.getByText("Closed requests").nextElementSibling?.textContent).toBe("0");
+  expect(summary.getByText(/Workflow runs/)).toBeTruthy();
   expect(summary.queryByText(/success|health/i)).toBeNull();
 });
 

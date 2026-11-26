@@ -160,7 +160,7 @@ export interface AirflowAutomation {
 }
 export interface AirflowAutomationExecution { id: string; automationId: string; sourceDagId: string; sourceDagRunId: string; sourceDagState: string; status: string; attempt: number; errorCode: string | null; resultJson: unknown; createdAt: string }
 
-export interface DeploymentOutcomeSummaryDto { windowDays: number; recorded: number; inProgress: number; succeeded: number; failed: number; successRate: number | null; medianSeconds: number | null; truncated: boolean }
+export interface DeploymentOutcomeSummaryDto { windowDays: number; recorded: number; inProgress: number; succeeded: number; failed: number; successRate: number | null; medianSeconds: number | null; truncated: boolean; daily?: number[]; previousRecorded?: number | null }
 export interface DeploymentExecutionEvidence {
   operation: "unknown";
   requestedOperation?: "service_restart";

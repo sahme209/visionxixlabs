@@ -1276,7 +1276,7 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
   const [outcomes, setOutcomes] = useState<DeploymentOutcomeSummaryDto | null | undefined>();
   useEffect(() => {
     let live = true;
-    Promise.resolve().then(() => desktopClient.deploymentOutcomeSummary()).then(result => { if (live) setOutcomes(result.ok ? result.data : null); }).catch(() => { if (live) setOutcomes(null); });
+    Promise.resolve().then(() => desktopClient.deploymentOutcomeSummary()).then(result => { if (live) setOutcomes(result.ok && typeof result.data?.recorded === "number" ? result.data : null); }).catch(() => { if (live) setOutcomes(null); });
     return () => { live = false; };
   }, []);
   const windowLabel = `Last ${outcomes?.windowDays ?? 30} days`;

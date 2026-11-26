@@ -59,7 +59,9 @@ it("recovers a transient saved sign-in failure through the mounted App without w
     "/api/desktop/access",
     "/api/desktop/access",
     "/api/desktop/deployments",
+    "/api/desktop/environments/deployments/outcome-summary",
   ]);
+  expect(fetchMock.mock.calls.every(([, init]) => !init?.method || init.method === "GET")).toBe(true);
   expect(m.write).not.toHaveBeenCalled(); expect(m.clear).not.toHaveBeenCalled();
 });
 it.each([401, 403, 200])("keeps rejected or invalid initial verification locked (HTTP %s)", async status => {
