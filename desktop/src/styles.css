@@ -1634,3 +1634,15 @@ html[data-theme="light"] {
 .deployment-run-timing-label { color: var(--status-neutral); font-weight: 500; }
 .deployment-run-timing-value { color: var(--color-axiom-accent); font-variant-numeric: tabular-nums; }
 .deployment-run-timing li[data-recorded="false"] .deployment-run-timing-value { color: var(--status-neutral); }
+
+/* Saved Airflow automation dependency graph (Batches). */
+.airflow-dependency-graph { grid-column: 1 / -1; margin: 0; padding: 12px 14px; border: 1px solid var(--color-axiom-border-soft); border-radius: 10px; }
+.airflow-dependency-graph figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-bottom: 10px; font-size: 12px; font-weight: 500; color: var(--color-axiom-accent); }
+.airflow-dependency-graph-note { font-weight: 400; color: var(--status-neutral); }
+.airflow-dependency-graph svg { display: block; width: 100%; max-width: 760px; height: auto; max-height: 360px; margin: 0 auto; }
+.airflow-dependency-edge { fill: none; stroke: var(--status-blue); stroke-width: 1.5; opacity: .7; }
+.airflow-dependency-arrowhead { fill: var(--status-blue); }
+.airflow-dependency-node rect { fill: var(--status-neutral-surface); stroke: var(--color-axiom-border); stroke-width: 1; }
+.airflow-dependency-node[data-kind="automation"] rect { fill: var(--status-blue-surface); stroke: var(--status-blue); stroke-opacity: .5; }
+.airflow-dependency-node[data-enabled="false"] rect { fill: var(--status-neutral-surface); stroke: var(--status-neutral); stroke-dasharray: 4 3; }
+.airflow-dependency-node text { font: 500 12px var(--font-mono); fill: var(--color-axiom-accent); }
