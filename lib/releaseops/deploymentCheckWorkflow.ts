@@ -85,8 +85,8 @@ function reportStep(c: GeneratableCheck): string[] {
     "          case \"$JOB_STATUS\" in success) status=passed ;; failure) status=failed ;; *) status=error ;; esac",
     "          duration=$(( $(date +%s%3N) - ${V19_STARTED_MS:-$(date +%s%3N)} ))",
     "          jq -n --arg key \"$V19_CHECK_KEY\" --argjson version \"$V19_CHECK_VERSION\" --arg stage \"$CHECK_STAGE\" --arg status \"$status\" \\",
-    "            --argjson duration \"$duration\" --arg run \"$RUN_URL\" --arg idem \"$RUN_KEY-$V19_CHECK_KEY\" \\",
-    "            '{checkKey:$key, checkVersion:$version, stage:$stage, status:$status, durationMs:$duration, runUrl:$run, idempotencyKey:$idem}' \\",
+    "            --argjson duration \"$duration\" --arg run \"$RUN_URL\" --arg idem \"$RUN_KEY-$V19_CHECK_KEY\" --arg ref \"$GITHUB_SHA\" \\",
+    "            '{checkKey:$key, checkVersion:$version, stage:$stage, status:$status, durationMs:$duration, runUrl:$run, idempotencyKey:$idem, releaseRef:$ref}' \\",
     "          | curl -fsS --max-time 20 -X POST -H \"Authorization: Bearer $V19_API_KEY\" -H 'Content-Type: application/json' --data @- \"$V19_URL/api/v1/checks/results\"",
   ];
 }
