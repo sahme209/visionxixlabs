@@ -54,6 +54,17 @@ export interface WhoamiResponse {
   serverTimeSec: number;
 }
 
+export interface EnvironmentVariablesResponse {
+  ok: true;
+  environment: { slug: string; name: string };
+  /** Resolved plain configuration: workspace defaults overridden by this environment. Never secrets. */
+  variables: Record<string, string>;
+  sources: Record<string, "workspace" | "environment">;
+  /** SHA-256 fingerprint of the resolved set; record it with your deployment. */
+  digest: string;
+  count: number;
+}
+
 export interface ReleaseGateResponse {
   ok: true;
   hasRun: boolean;
@@ -193,6 +204,14 @@ export class VisionXIXLabs {
 
   releaseGate(): Promise<ReleaseGateResponse> {
     return this.get<ReleaseGateResponse>("/api/v1/release-gate");
+  }
+
+  /**
+   * GET /api/v1/environments/{slug}/variables — resolved configuration for one
+   * environment plus its fingerprint. Required scope: pipeline:read.
+   */
+  environmentVariables(slug: string): Promise<EnvironmentVariablesResponse> {
+    return this.get<EnvironmentVariablesResponse>(`/api/v1/environments/${encodeURIComponent(slug)}/variables`);
   }
 
   pipelineRun(runId: string): Promise<PipelineRunResponse> {

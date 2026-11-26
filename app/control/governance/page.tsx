@@ -25,7 +25,7 @@ export default async function GovernancePage() {
     prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, argsJson: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
   ]);
   // Read-only lifecycle view; a read failure hides the section instead of blocking Governance.
-  const branchPolicies = await prisma.branchEnvironmentPolicy.findMany({ where: { organizationId }, take: 500, select: { repositoryId: true, environmentId: true, branchPattern: true, requirePromotionFromEnvironmentId: true, enabled: true, repository: { select: { remoteOwner: true, remoteName: true } } } }).catch(() => null);
+  const branchPolicies = await (async () => prisma.branchEnvironmentPolicy.findMany({ where: { organizationId }, take: 500, select: { repositoryId: true, environmentId: true, branchPattern: true, requirePromotionFromEnvironmentId: true, enabled: true, repository: { select: { remoteOwner: true, remoteName: true } } } }))().catch(() => null);
   const lifecycles = branchPolicies ? buildLifecycles(environments.map((e) => ({ id: e.id, name: e.name, tier: e.tier })), branchPolicies.map((p) => ({ repositoryId: p.repositoryId, repositoryName: `${p.repository.remoteOwner}/${p.repository.remoteName}`, environmentId: p.environmentId, branchPattern: p.branchPattern, requirePromotionFromEnvironmentId: p.requirePromotionFromEnvironmentId, enabled: p.enabled }))) : null;
   const envName = (id: string) => environments.find((e) => e.id === id)?.name ?? "an unknown environment";
   const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });

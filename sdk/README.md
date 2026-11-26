@@ -63,6 +63,22 @@ curl -fsS -H "Authorization: Bearer $VXL_API_KEY" \
   | jq -e '.gate.passed' >/dev/null || exit 1
 ```
 
+## Environment configuration at deploy time
+
+Load an environment's resolved variables (workspace defaults overridden by
+that environment) in CI, and keep the fingerprint with your deployment.
+Every SDK exposes `environmentVariables(slug)` / `environment_variables(slug)`
+/ `EnvironmentVariables(ctx, slug)`. Required scope: `pipeline:read`.
+Values are plain configuration; secrets stay in scoped credentials.
+
+```bash
+# GitHub Actions step: export each variable for later steps, safely.
+curl -fsS -H "Authorization: Bearer $VXL_API_KEY" \
+  https://visionxixlabs.com/api/v1/environments/production/variables > v19-config.json
+jq -r '.variables | to_entries[] | "\(.key)<<V19EOF\n\(.value)\nV19EOF"' v19-config.json >> "$GITHUB_ENV"
+echo "V19_CONFIG_DIGEST=$(jq -r .digest v19-config.json)" >> "$GITHUB_ENV"
+```
+
 ## Webhook signature verification
 
 When you register a webhook endpoint, the platform returns a `secret`
@@ -216,6 +232,7 @@ Every subcommand supports `--json` for piping into `jq`.
 |-----------------------------------|-----------------------|-----------------------|
 | `GET  /api/v1/whoami`             | any read-class        | `whoami()`            |
 | `GET  /api/v1/release-gate`       | `release_gate:read`   | `releaseGate()`       |
+| `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
