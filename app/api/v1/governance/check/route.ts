@@ -6,13 +6,13 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { gatewayAuth, noStore } from "@/lib/agentGateway/apiAuth";
-import { checkPolicy } from "@/lib/agentGateway/gatewayService";
+import { checkPolicyForCaller } from "@/lib/agentGateway/gatewayService";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const auth = await gatewayAuth(req, "governance:read", "POST /api/v1/governance/check");
   if ("response" in auth) return auth.response;
-  const result = checkPolicy(await req.json().catch(() => null));
+  const result = await checkPolicyForCaller(auth.caller, await req.json().catch(() => null));
   return result.ok ? NextResponse.json({ ok: true, policy: result.policy }, noStore) : NextResponse.json(result, { status: 400 });
 }

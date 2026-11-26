@@ -15,6 +15,7 @@ export const ALWAYS_ENFORCED: ReadonlyArray<{ id: string; rule: string }> = [
   { id: "approved-exact-action", rule: "Writes, deployments and configuration changes run only after a person approves that exact action. The action is checked against what was approved immediately before it runs." },
   { id: "same-release-gates", rule: "An approved Agent deployment faces the same change window, freezes, deployment checks and rings as a person's, and has no emergency bypass." },
   { id: "no-production-secrets", rule: "Production secret reads and deletes requested through the gateway are always refused." },
+  { id: "freeze-applies-to-agents", rule: "While a production environment is frozen, agents' production deploys, merges, infrastructure changes, data migrations and deletes are refused." },
 ];
 
 const scopesOf = (v: unknown): string[] => (Array.isArray(v) ? v.filter((s): s is string => typeof s === "string") : []);
