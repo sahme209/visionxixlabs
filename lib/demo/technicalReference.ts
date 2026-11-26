@@ -425,6 +425,7 @@ export const CLOSED_UNIONS: ReadonlyArray<ClosedUnionSpec> = [
       { value: "eval:write",        meaning: "Submit eval cases / runs." },
       { value: "eval:*",            meaning: "Both eval scopes." },
       { value: "release_gate:read", meaning: "Read release-gate verdicts." },
+      { value: "checks:report",     meaning: "Report deployment check results from CI (evidence only)." },
       { value: "release_gate:*",    meaning: "Same — gates aren't user-controllable." },
       { value: "webhook:read",      meaning: "List endpoints + deliveries." },
       { value: "webhook:write",     meaning: "Create / update endpoints." },

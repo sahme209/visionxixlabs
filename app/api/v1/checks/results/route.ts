@@ -5,8 +5,8 @@
  * check and records exactly what was reported, with the API key that reported it. Idempotent per
  * workspace on `idempotencyKey`, so a retried CI step cannot record the same run twice.
  *
- * Auth: Bearer API key with `governance:request` scope (self-service; the same scope agents use to
- * submit governed records). It records evidence only and grants no execution.
+ * Auth: Bearer API key with the `checks:report` scope. Kept separate from agent governance keys so
+ * an agent key cannot certify its own deployment checks. Records evidence only; grants no execution.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const auth = await authenticateApiKey({
     authorizationHeader: req.headers.get("authorization"),
     sourceIp: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip") ?? null,
-    requiredScope: "governance:request",
+    requiredScope: "checks:report",
     correlationId: `v1_check_result_${Date.now().toString(36)}`,
     route: "POST /api/v1/checks/results",
   });

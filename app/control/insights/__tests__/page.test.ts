@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn() }));
+const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn(() => { throw new Error("redirect"); }) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_insights", email: "owner@example.test", roles: ["owner"] }) }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results } } }));
 import Page from "../page";
 
 const value = (label: string) => screen.getByText(label, { selector: "dt" }).parentElement!.querySelector("dd")!.textContent!.trim();
@@ -21,6 +21,7 @@ beforeEach(() => {
   io.count.mockResolvedValue(2);
   io.checks.mockResolvedValue([]);
   io.results.mockResolvedValue([]);
+  io.releases.mockResolvedValue([]);
   io.incidents.mockResolvedValue([{ status: "resolved", reportedAt: day(5), mitigatedAt: new Date(day(5).getTime() + 1_800_000), resolvedAt: new Date(day(5).getTime() + 7_200_000) }, { status: "open", reportedAt: day(1), mitigatedAt: null, resolvedAt: null }]);
 });
 afterEach(cleanup);
@@ -65,4 +66,13 @@ it("reports deployment check evidence by commit when blocking checks exist", asy
   expect(value("All blocking checks passed")).toBe("1 of 3");
   expect(value("A blocking check failed")).toBe("1");
   expect(io.results.mock.calls[0][0].where).toEqual({ organizationId: "org_insights", releaseRef: { in: ["a", "b"] } });
+});
+
+it("reports change failure rate from finished releases and their incidents", async () => {
+  io.releases.mockResolvedValue([{ id: "r1", status: "deployed", actualDeployEnd: new Date() }, { id: "r2", status: "rolled_back", actualDeployEnd: new Date() }, { id: "r3", status: "deployed", actualDeployEnd: new Date() }, { id: "r4", status: "deployed", actualDeployEnd: new Date() }]);
+  io.incidents.mockImplementation(async (args: { where: { releaseId?: unknown } }) => args.where.releaseId ? [{ releaseId: "r3" }] : []);
+  render(await Page());
+  expect(value("Change failure rate")).toBe("50%");
+  expect(document.body.textContent).toContain("2 of 4 finished releases");
+  expect(value("Deployed, then an incident")).toBe("1");
 });

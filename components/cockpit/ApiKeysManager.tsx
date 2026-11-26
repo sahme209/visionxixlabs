@@ -7,6 +7,7 @@ const SCOPES = [
   { id: "pipeline:read", label: "Read pipeline runs" },
   { id: "release_gate:read", label: "Read the release gate" },
   { id: "webhook:read", label: "Read webhook endpoints" },
+  { id: "checks:report", label: "Report deployment check results (CI)" },
 ] as const;
 type Key = { id: string; name: string; prefix: string; env: string; scopes: string[]; createdBy: string; lastUsedAt: string | null; expiresAt: string | null; revokedAt: string | null; createdAt: string };
 

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { OUTCOME_ROW_LIMIT, OUTCOME_WINDOW_DAYS, summarizeDeploymentOutcomes, type ExecutionOutcomeRow } from "@/lib/releaseops/deploymentOutcomeSummary";
 import { incidentRecoveryMetrics } from "@/lib/desktop/incidentRecoveryMetrics";
 import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
+import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,13 @@ export default async function InsightsPage() {
   ]);
   const outcome = runs ? summarizeDeploymentOutcomes(runs.slice(0, OUTCOME_ROW_LIMIT), runs.length > OUTCOME_ROW_LIMIT, now, previous) : null;
   const recovery = incidents ? incidentRecoveryMetrics(incidents.slice(0, INCIDENT_ROW_LIMIT).map((i) => ({ status: i.status, reportedAt: i.reportedAt.toISOString(), mitigatedAt: i.mitigatedAt?.toISOString() ?? null, resolvedAt: i.resolvedAt?.toISOString() ?? null }))) : null;
+  // Change failure rate from recorded releases over the incident window; optional, so a read failure hides only this section.
+  const changes = await (async () => {
+    const releases = await prisma.release.findMany({ where: { organizationId, actualDeployEnd: { gte: incidentSince } }, take: 2000, select: { id: true, status: true, actualDeployEnd: true } });
+    const ids = releases.map((r) => r.id);
+    const withIncidents = ids.length ? await prisma.deploymentIncident.findMany({ where: { organizationId, releaseId: { in: ids } }, take: 5000, select: { releaseId: true } }) : [];
+    return changeFailureRate(releases, new Set(withIncidents.map((i) => i.releaseId)));
+  })().catch(() => null);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
   const coverage = await (async () => {
     const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
@@ -98,6 +106,17 @@ export default async function InsightsPage() {
           <Metric label="Median time to mitigate" value={duration(recovery.mitigate.medianSeconds)} note={`${recovery.mitigate.count} mitigated`} />
           <Metric label="Median time to resolve" value={duration(recovery.resolve.medianSeconds)} note={`${recovery.resolve.count} resolved`} />
         </dl>}
+      </section>
+
+      <section aria-labelledby="insights-change-failure" className="mt-10">
+        <h2 id="insights-change-failure" className="text-base font-medium">Change failure rate · releases finished in the last {INCIDENT_WINDOW_DAYS} days</h2>
+        {changes === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Release records could not be read. Nothing is shown rather than an estimate.</p>
+          : changes.ratePercent === null ? <p className="mt-3 text-sm text-zinc-400">No release finished in this window yet.</p>
+          : <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+              <Metric label="Change failure rate" value={`${changes.ratePercent}%`} note={`${changes.failedChanges} of ${changes.finished} finished releases`} />
+              <Metric label="Failed or rolled back" value={changes.byReason.failedOrRolledBack.toLocaleString()} />
+              <Metric label="Deployed, then an incident" value={changes.byReason.incidentOnly.toLocaleString()} />
+            </dl>}
       </section>
 
       <section aria-labelledby="insights-checks" className="mt-10">

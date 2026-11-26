@@ -42,6 +42,9 @@ export type ApiKeyScope =
   | "governance:read"
   | "governance:request"
   | "governance:*"
+  // Deployment checks: CI reports check results (evidence only; separate from agent governance keys)
+  | "checks:report"
+  | "checks:*"
   // Catch-all (Enterprise only — admin route must verify before granting)
   | "*";
 
@@ -53,6 +56,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set<ApiKeyScope>([
   "release_gate:read", "release_gate:*",
   "webhook:read", "webhook:write", "webhook:admin", "webhook:*",
   "governance:read", "governance:request", "governance:*",
+  "checks:report", "checks:*",
   "*",
 ]);
 

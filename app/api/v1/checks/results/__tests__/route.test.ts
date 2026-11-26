@@ -9,13 +9,13 @@ import { POST } from "../route";
 
 const body = { checkKey: "health-probe", checkVersion: 2, stage: "verify", status: "passed", durationMs: 812, runUrl: "https://github.com/acme/app/actions/runs/1", idempotencyKey: "123-1-health-probe" };
 const call = (b: unknown) => POST(new NextRequest("http://localhost/api/v1/checks/results", { method: "POST", body: JSON.stringify(b), headers: { authorization: "Bearer k" } }));
-beforeEach(() => { vi.clearAllMocks(); m.auth.mockResolvedValue({ ok: true, apiKeyId: "key1", organizationId: "org1", scopes: ["governance:request"], env: "live" }); m.findFirst.mockResolvedValue({ version: 3, stage: "verify" }); m.create.mockResolvedValue({}); });
+beforeEach(() => { vi.clearAllMocks(); m.auth.mockResolvedValue({ ok: true, apiKeyId: "key1", organizationId: "org1", scopes: ["checks:report"], env: "live" }); m.findFirst.mockResolvedValue({ version: 3, stage: "verify" }); m.create.mockResolvedValue({}); });
 
 describe("POST /api/v1/checks/results", () => {
-  it("requires governance:request", async () => {
-    m.auth.mockResolvedValueOnce({ ok: false, reason: "insufficient_scope", httpStatus: 403, requiredScope: "governance:request" });
+  it("requires checks:report", async () => {
+    m.auth.mockResolvedValueOnce({ ok: false, reason: "insufficient_scope", httpStatus: 403, requiredScope: "checks:report" });
     expect((await call(body)).status).toBe(403);
-    expect(m.auth).toHaveBeenCalledWith(expect.objectContaining({ requiredScope: "governance:request" }));
+    expect(m.auth).toHaveBeenCalledWith(expect.objectContaining({ requiredScope: "checks:report" }));
   });
   it("records the reported result with the reporting key and flags a stale check version", async () => {
     const r = await call(body);
