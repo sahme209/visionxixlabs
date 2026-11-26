@@ -27,6 +27,8 @@ export const PUBLIC_AVAILABILITY: Readonly<Record<string, PublicAvailability>> =
   argo_cd: { label: "implementation review", detail: "A read-only client compares the commit Argo CD applied with what V19 recorded. The connection form and live acceptance with a real Argo CD instance are pending; V19 never syncs or rolls back.", href: "/docs", enabled: false },
   flux: { label: "implementation review", detail: "A read-only client compares the revision Flux applied with what V19 recorded. The connection form and live acceptance with a real cluster are pending; V19 never reconciles or suspends.", href: "/docs", enabled: false },
   pagerduty: { label: "implementation review", detail: "A read-only client lists open incidents so V19 can show them beside a deployment. The connection form and live acceptance with a real account are pending; V19 never triggers, acknowledges or resolves incidents.", href: "/docs", enabled: false },
+  sentry: { label: "implementation review", detail: "A read-only client lists unresolved issues first seen in a release, so V19 can show whether a deployment introduced new errors. The connection form and live acceptance are pending; V19 never resolves, assigns or mutes issues.", href: "/docs", enabled: false },
+  datadog: { label: "implementation review", detail: "A read-only client reads monitor states for a service tag, so V19 can show whether a release's service is alerting. The connection form and live acceptance are pending; V19 never mutes or edits monitors.", href: "/docs", enabled: false },
   opsgenie: { label: "implementation review", detail: "A read-only client lists open alerts as deployment context. The connection form and live acceptance with a real account are pending; V19 never creates, acknowledges or closes alerts.", href: "/docs", enabled: false },
   launchdarkly: { label: "implementation review", detail: "A read-only client reads flag state for one project and environment and points out temporary flags left on. The connection form and live acceptance are pending; V19 never toggles flags.", href: "/docs", enabled: false },
   vscode: { label: "preview", detail: "Extension code is tracked separately; marketplace installation and the shared authentication path require release verification.", href: "/docs", enabled: true },
@@ -37,6 +39,6 @@ export const PUBLIC_AVAILABILITY: Readonly<Record<string, PublicAvailability>> =
 export function publicCatalogEntries():PublicCatalogEntry[]{
  return INTEGRATIONS.map(i=>({id:i.id,name:i.name,job:JOB_BY_CATEGORY[i.category],
   availability:PUBLIC_AVAILABILITY[i.id]??{label:"planned",detail:"No verified customer path is published.",href:"/docs",enabled:false},
-  operations:i.category==="monitoring"?["events"]:i.writeAccess==="none"?["read"]:["read","change"],
+  operations:i.category==="monitoring"&&i.activation==="webhook_inbound"?["events"]:i.writeAccess==="none"?["read"]:["read","change"],
  }));
 }

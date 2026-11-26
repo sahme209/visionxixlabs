@@ -13,3 +13,5 @@ Argo CD: reuses the existing Simple Icons Argo project mark (argo.svg), the same
 Flux: no permitted mark has been obtained, so the catalog uses an explicitly generic GitOps symbol, not a copied or invented vendor logo.
 
 Opsgenie and LaunchDarkly: no permitted marks have been obtained, so the catalog uses explicitly generic alerts and feature-flag symbols, not copied or invented vendor logos.
+
+Sentry and Datadog: no permitted marks have been obtained, so the catalog uses an explicitly generic monitoring symbol, not copied or invented vendor logos.

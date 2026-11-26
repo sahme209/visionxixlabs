@@ -114,6 +114,10 @@ export default function ReleaseOpsDocOverviewPage() {
               <p>Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment&apos;s gates pass.</p>
             </DocSection>
 
+            <DocSection id="verification-signals" title="Verification signals from Sentry and Datadog" kicker="14">
+              <p>V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. The connection forms and live acceptance with real accounts are still pending.</p>
+            </DocSection>
+
             <DocFooterNav
                 prev={{ href: "/docs/rollback", label: "Rollback strategy" }}
                 next={{ href: "/docs/releaseops/connectors", label: "CI/CD connectors" }}
