@@ -28,6 +28,7 @@ import { ProgressRing } from "../components/motion/ProgressRing";
 import { ReleaseRiskRadar } from "../components/ReleaseRiskRadar";
 import { ChangeWindowTimeline } from "../components/ChangeWindowTimeline";
 import { EnvironmentBoard } from "../components/EnvironmentBoard";
+import { CopyReleaseRecord } from "../components/CopyReleaseRecord";
 import { AnimatedNumber } from "../components/motion/AnimatedNumber";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
@@ -911,6 +912,7 @@ export function DeploymentRequestsView({ active = true, onIntakeOpenChange, save
                     <p className="mt-2 break-all font-mono">Request {request.id}</p>
                     <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
                     <p className="mt-1">Updated <time dateTime={request.updatedAt}>{new Date(request.updatedAt).toLocaleString()}</time></p>
+                    <CopyReleaseRecord request={request} />
                   </details>
                   <h3 className="release-focus-detail-title">{request.title}</h3>
                   <div className="studio-release-detail-metadata">
