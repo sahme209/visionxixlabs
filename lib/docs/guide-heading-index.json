@@ -409,7 +409,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "1fccae5e52acddd102d0cb01a5fd4e364f72b2f5a55f0cb46c9a972a46de5430",
+      "sourceSha256": "89fe7c32f9bca30424e024eb0470bbffdda22c2e23925407192e43c3539ba92e",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -417,7 +417,8 @@
         "Recover unavailable workspace access",
         "Browser context and paired devices are separate",
         "Selection is not authorization",
-        "Delivery insights for the workspace"
+        "Delivery insights for the workspace",
+        "Configuration variables per environment"
       ]
     },
     {

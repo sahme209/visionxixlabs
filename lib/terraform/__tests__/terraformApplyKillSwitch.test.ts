@@ -13,11 +13,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   findJob: vi.fn(),
   updateJob: vi.fn(),
+  updateManyJob: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
   prisma: {
-    terraformExecutionJob: { findUnique: mocks.findJob, update: mocks.updateJob },
+    terraformExecutionJob: { findUnique: mocks.findJob, update: mocks.updateJob, updateMany: mocks.updateManyJob },
   },
 }));
 
@@ -85,5 +86,17 @@ describe("terraformApply kill-switch", () => {
     expect(result.blockedByKillSwitch).toBeUndefined();
     expect(result.success).toBe(false);
     expect(result.output).toMatch(/CONFIRM APPLY/);
+  });
+
+  it("claims the job conditionally so a second concurrent apply cannot run terraform", async () => {
+    vi.stubEnv("TERRAFORM_LEGACY_APPLY_ENABLED", "true");
+    mocks.findJob.mockResolvedValue({ ...approvedJob });
+    mocks.updateManyJob.mockResolvedValue({ count: 0 });
+    const { terraformApply } = await import("../runner");
+    const result = await terraformApply("job-1");
+    expect(mocks.updateManyJob).toHaveBeenCalledWith({ where: { id: "job-1", status: "awaiting_approval" }, data: { status: "applying" } });
+    expect(result.success).toBe(false);
+    expect(result.output).toMatch(/already being applied/);
+    expect(mocks.updateJob).not.toHaveBeenCalled();
   });
 });
