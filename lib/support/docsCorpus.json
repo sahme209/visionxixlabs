@@ -146,35 +146,35 @@
    "title": "View the audit log from desktop Settings",
    "text": "In desktop versions with this shortcut, open Settings → View audit log . V19 opens the website’s Audit & Security page for the workspace selected in the browser. A current workspace owner or administrator can review organization audit evidence. Check the browser workspace before reviewing records. Desktop and browser sign-in are separate. If the shortcut is unavailable in your installed version, sign in to the website and open the Audit & Security directly. If the browser fails to open from Settings, retry from the same button or use the website.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
+   "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570"
   },
   {
    "href": "/docs/audit-logs#record",
    "title": "Review the original record",
    "text": "Open the saved request or task using the history and details controls available in that workflow. Keep its original identifier and version. Compare the displayed source, target, proposed change, actor, review decision and timestamps where those fields are available. Saved metadata is bounded product evidence, not complete provider history. A familiar target name, screenshot or status label alone cannot establish which exact change occurred. Understand execution plans before interpreting their records.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
+   "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570"
   },
   {
    "href": "/docs/audit-logs#effects",
    "title": "Separate decisions from effects",
    "text": "Review evidence Who reviewed which exact saved proposal. Approval is not proof that execution was attempted or succeeded. Attempt evidence Whether the supported path recorded a claim or submission and its known result. A completed HTTP request is not by itself an external outcome. Outcome evidence The actual provider observation or readback, its target and observation time. A deployment dispatch does not prove rollback, service health or later availability. Record which evidence is missing. An audit entry is not an independent attestation that an organization is compliant. Hash or export utilities, where available, do not establish complete coverage or independent verification.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
+   "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570"
   },
   {
    "href": "/docs/audit-logs#uncertain",
    "title": "Handle an uncertain result",
    "text": "A timeout does not prove that nothing happened. Do not resend an uncertain or consumed action, edit its history or treat an expired review as current permission. Use supported read-only history or recovery controls first. Keep the difference between refusal before a write, known failure, confirmed result and unknown outcome. Do not infer absence from a blank field or missing response. Recovery is workflow-specific. A readback may establish an external fact without restoring execution authority. Further consequential actions still need the supported current checks and genuine approvals. Troubleshoot an uncertain operation for the next safe inspection step.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
+   "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570"
   },
   {
    "href": "/docs/audit-logs#share",
    "title": "Share evidence safely",
-   "text": "Use only the approved support or export path available to your organization. Do not publish tokens, credentials, customer source, private operation identifiers or unredacted screenshots in public URLs or issue comments. Check the target audience and access before sharing. Account help (sign-in required) and the security model and limitations explain adjacent boundaries; neither grants an exception to a consumed attempt.",
+   "text": "Use only the approved support or export path available to your organization. Do not publish tokens, credentials, customer source, private operation identifiers or unredacted screenshots in public URLs or issue comments. Check the target audience and access before sharing. Account help (sign-in required) and the security model and limitations explain adjacent boundaries; neither grants an exception to a consumed attempt. Owners and admins can download the audit log from Export audit log on the Audit & Security page. Choose the last 24 hours, 7, 30 or 90 days and CSV (for spreadsheets) or NDJSON (for log and security tools). The file lists time, action, outcome, actor, subject, correlation ID and source, newest first, up to 10,000 records; it does not include record details. Spreadsheet formulas in a cell are neutralised with a leading apostrophe. Each export is itself recorded in the audit log.",
    "source": "app/docs/audit-logs/page.tsx",
-   "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490"
+   "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570"
   },
   {
    "href": "/docs/aws-setup#prepare",

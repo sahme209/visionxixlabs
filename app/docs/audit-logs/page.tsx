@@ -37,6 +37,7 @@ export default function AuditLogsPage() {
   <DocSection id="share" kicker="04" title="Share evidence safely">
    <p>Use only the approved support or export path available to your organization. Do not publish tokens, credentials, customer source, private operation identifiers or unredacted screenshots in public URLs or issue comments. Check the target audience and access before sharing.</p>
    <p><Link href="/account/help">Account help (sign-in required)</Link> and the <Link href="/docs/security-model">security model and limitations</Link> explain adjacent boundaries; neither grants an exception to a consumed attempt.</p>
+  <p>Owners and admins can download the audit log from <strong>Export audit log</strong> on the Audit &amp; Security page. Choose the last 24 hours, 7, 30 or 90 days and CSV (for spreadsheets) or NDJSON (for log and security tools). The file lists time, action, outcome, actor, subject, correlation ID and source, newest first, up to 10,000 records; it does not include record details. Spreadsheet formulas in a cell are neutralised with a leading apostrophe. Each export is itself recorded in the audit log.</p>
   </DocSection>
   <DocFooterNav prev={{href:"/docs/approval-workflow",label:"Approval workflow"}} next={{href:"/docs/troubleshooting",label:"Troubleshooting"}} />
  </>;
