@@ -50,3 +50,15 @@ describe("VariablesBoard", () => {
     await waitFor(() => expect(screen.getByText(/Store secrets as scoped credentials/)).toBeTruthy());
   });
 });
+
+describe("VariablesBoard feature switches", () => {
+  it("reads FEATURE_* variables as on/off per environment", async () => {
+    const b = board(false);
+    b.data.resolved = [{ environmentId: "dev", digest: "a".repeat(64), variables: [{ key: "FEATURE_NEW_CHECKOUT", value: "on" }] }, { environmentId: "prod", digest: "b".repeat(64), variables: [{ key: "FEATURE_NEW_CHECKOUT", value: "off" }] }] as never;
+    vi.stubGlobal("fetch", vi.fn(async () => json(b)));
+    render(createElement(VariablesBoard));
+    await waitFor(() => expect(screen.getByText("Feature switches")).toBeTruthy());
+    const row = screen.getByRole("rowheader", { name: "FEATURE_NEW_CHECKOUT" }).closest("tr")!;
+    expect(row.textContent).toBe("FEATURE_NEW_CHECKOUTonoff");
+  });
+});
