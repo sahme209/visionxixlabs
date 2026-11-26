@@ -16,6 +16,7 @@ export const AGENT_TOOL_ACTIVITY_LABELS: Readonly<Record<string, string>> = {
   read_dagster_runs: "Inspecting Dagster runs",
   list_argo_templates: "Inspecting Argo templates",
   list_argo_workflows: "Inspecting Argo workflows",
+  read_release_health: "Reading release health",
   search_microsoft_docs: "Searching public Microsoft documentation",
   list_cloud_accounts: "Checking connected cloud accounts",
   read_aws_inventory: "Reading AWS inventory",
