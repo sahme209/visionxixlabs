@@ -81,6 +81,16 @@ export interface ManualFixRepo {
         reconciliationRef: string | null;
       };
     }): Promise<ManualFixRow>;
+    /** Conditional write: only a still-pending fix in the same workspace is reconciled. */
+    updateMany(args: {
+      where: { id: string; organizationId: string; status: "pending" };
+      data: {
+        status: ManualFixStatus;
+        reconciledByUserId: string | null;
+        reconciledAt: Date | null;
+        reconciliationRef: string | null;
+      };
+    }): Promise<{ count: number }>;
   };
 }
 
@@ -307,8 +317,9 @@ export async function buildManualFixReconcileResponse(
     if (existing.status !== "pending") {
       return { status: 409, body: { ok: false, error: "not_pending", hint: `fix is already ${existing.status}` } };
     }
-    const updated = await repo.manualFix.update({
-      where: { id: input.fixId },
+    // Two reconcilers (reconciled vs won't fix) must not both win: claim the pending row atomically.
+    const claimed = await repo.manualFix.updateMany({
+      where: { id: input.fixId, organizationId: input.organizationId, status: "pending" },
       data: {
         status: input.outcome,
         reconciledByUserId: input.actorUserId,
@@ -316,6 +327,10 @@ export async function buildManualFixReconcileResponse(
         reconciliationRef: input.reconciliationRef?.trim() || null,
       },
     });
+    const updated = await repo.manualFix.findUnique({ where: { id: input.fixId } });
+    if (claimed.count !== 1 || !updated) {
+      return { status: 409, body: { ok: false, error: "not_pending", hint: `fix is already ${updated?.status ?? "changed"}` } };
+    }
     return { status: 200, body: { ok: true, data: { fix: projectRow(updated) } } };
   } catch (err) {
     if (isMissingTable(err)) {

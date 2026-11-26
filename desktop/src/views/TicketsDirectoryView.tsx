@@ -499,8 +499,8 @@ export function TicketsDirectoryView({identity, revision, onOpenReleases, onOpen
       <div><dt>Open incidents</dt><dd>{recovery.open}</dd></div>
       <div><dt>Median time to mitigate</dt><dd>{recovery.mitigate.medianSeconds === null ? "—" : formatRunElapsed(new Date(0), new Date(recovery.mitigate.medianSeconds * 1000))}<small>{recovery.mitigate.count} mitigated</small></dd></div>
       <div><dt>Median time to resolve</dt><dd>{recovery.resolve.medianSeconds === null ? "—" : formatRunElapsed(new Date(0), new Date(recovery.resolve.medianSeconds * 1000))}<small>{recovery.resolve.count} resolved</small></dd></div>
-      <p>From reported to recorded mitigation or resolution, across loaded incidents only.</p>
     </dl>}
+    {recovery && <p className="studio-ticket-recovery-note">From reported to recorded mitigation or resolution, across loaded incidents only.</p>}
     {severityMix.length > 0 && <div className="studio-ticket-severity-mix" role="group" aria-label="Loaded incidents by severity">
       <div className="studio-ticket-severity-bar" aria-hidden="true">{severityMix.map(part => <span key={part.severity} data-ticket-priority={part.severity}
         data-active={classification === `incident:${part.severity}` ? "true" : classification ? "false" : undefined} style={{flexGrow: part.count}}/>)}</div>

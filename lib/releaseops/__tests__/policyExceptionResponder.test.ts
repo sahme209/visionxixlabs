@@ -29,6 +29,13 @@ function makeRepo(): PolicyExceptionRepo & {
           exceptionGrantedAt: data.exceptionGrantedAt ?? null,
         };
       },
+      async updateMany({ where, data }) {
+        const existing = rows.get(where.id);
+        if (!existing || existing.organizationId !== where.organizationId || existing.status !== where.status) return { count: 0 };
+        rows.set(where.id, { ...existing, status: data.status });
+        updates.push({ id: where.id, status: data.status });
+        return { count: 1 };
+      },
     },
   };
 }
@@ -137,5 +144,18 @@ describe("buildPolicyExceptionResponse", () => {
     expect(r.status).toBe(503);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("migration_pending");
+  });
+});
+
+describe("policy exception concurrency", () => {
+  it("lets only one of a concurrent grant and resolve change the violation", async () => {
+    const repo = makeRepo();
+    repo._rows.set("pv_1", makeRow());
+    const [a, b] = await Promise.all([
+      buildPolicyExceptionResponse(repo, { organizationId: "o", violationId: "pv_1", actorUserId: "u1", action: "grant_exception", reason: "Hotfix approved by the CAB." }),
+      buildPolicyExceptionResponse(repo, { organizationId: "o", violationId: "pv_1", actorUserId: "u2", action: "resolve" }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    expect(repo._updates).toHaveLength(1);
   });
 });

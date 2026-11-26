@@ -2938,6 +2938,28 @@ model Environment {
   @@index([tier])
 }
 
+/// Plain configuration variable, either a workspace default (scopeKey
+/// "workspace") or an override for one Environment (scopeKey "env:<id>").
+/// Secrets never live here; the application refuses credential-like values.
+model ConfigVariable {
+  id              String   @id @default(cuid())
+  organizationId  String
+  scopeKey        String
+  /// Soft reference to Environment.id for environment overrides.
+  environmentId   String?
+  key             String
+  value           String
+  description     String?
+  /// Optimistic concurrency: writers must present the version they read.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, scopeKey, key])
+  @@index([organizationId])
+}
+
 // ---------------------------------------------------------------------------
 // Real cloud deployment target for one Environment. The actual AWS trust
 // (OIDC identity provider + the role's trust policy) lives entirely on the

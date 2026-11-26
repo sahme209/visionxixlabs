@@ -31,6 +31,13 @@ function makeRepo(): CherryPickDecideRepo & {
         updates.push(updated);
         return updated;
       },
+      async updateMany({ where, data }) {
+        const existing = rows.get(where.id);
+        if (!existing || existing.organizationId !== where.organizationId || existing.status !== where.status) return { count: 0 };
+        rows.set(where.id, { ...existing, status: data.status });
+        updates.push({ id: existing.id, status: data.status, decidedByUserId: data.decidedByUserId, decidedAt: data.decidedAt, decisionReason: data.decisionReason });
+        return { count: 1 };
+      },
     },
   };
 }
@@ -165,5 +172,18 @@ describe("buildCherryPickDecideResponse", () => {
     expect(r.status).toBe(503);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("migration_pending");
+  });
+});
+
+describe("cherry-pick decision concurrency", () => {
+  it("lets only one of two concurrent approvers decide", async () => {
+    const repo = makeRepo();
+    repo._rows.set("cpe_1", makeRow());
+    const [a, b] = await Promise.all([
+      buildCherryPickDecideResponse(repo, { organizationId: "o", exceptionId: "cpe_1", approverUserId: "u_a", decision: "approve" }, { now: NOW }),
+      buildCherryPickDecideResponse(repo, { organizationId: "o", exceptionId: "cpe_1", approverUserId: "u_b", decision: "deny", reason: "Too risky for this release window." }, { now: NOW }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    expect(repo._updates).toHaveLength(1);
   });
 });

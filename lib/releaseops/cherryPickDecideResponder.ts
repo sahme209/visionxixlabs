@@ -51,6 +51,16 @@ export interface CherryPickDecideRepo {
         decisionReason: string | null;
       };
     }): Promise<CherryPickDecideUpdated>;
+    /** Conditional decision: only a row still in the status that was read is decided. */
+    updateMany(args: {
+      where: { id: string; organizationId: string; status: CherryPickStatus };
+      data: {
+        status: "approved" | "denied";
+        decidedByUserId: string;
+        decidedAt: Date;
+        decisionReason: string | null;
+      };
+    }): Promise<{ count: number }>;
   };
 }
 
@@ -149,8 +159,9 @@ export async function buildCherryPickDecideResponse(
 
     const now = opts.now ?? new Date();
     const reasonTrimmed = input.reason?.trim() ?? null;
-    const updated = await repo.cherryPickException.update({
-      where: { id: input.exceptionId },
+    // Two approvers deciding at once must not both win; claim the row in its current status.
+    const claimed = await repo.cherryPickException.updateMany({
+      where: { id: input.exceptionId, organizationId: input.organizationId, status: current },
       data: {
         status: transition.next as "approved" | "denied",
         decidedByUserId: input.approverUserId,
@@ -158,6 +169,16 @@ export async function buildCherryPickDecideResponse(
         decisionReason: reasonTrimmed && reasonTrimmed.length > 0 ? reasonTrimmed : null,
       },
     });
+    if (claimed.count !== 1) {
+      return { status: 409, body: { ok: false, error: "illegal_transition", hint: "Another approver decided this exception first. Reload to see the decision." } };
+    }
+    const updated: CherryPickDecideUpdated = {
+      id: input.exceptionId,
+      status: transition.next,
+      decidedByUserId: input.approverUserId,
+      decidedAt: now,
+      decisionReason: reasonTrimmed && reasonTrimmed.length > 0 ? reasonTrimmed : null,
+    };
 
     return {
       status: 200,

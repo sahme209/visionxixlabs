@@ -133,6 +133,17 @@ export interface PolicyProposalRepo {
         acceptedRuleId?: string | null;
       };
     }): Promise<ProposalRow>;
+    /** Conditional transition: only succeeds while the decision is still the one that was read. */
+    updateMany(args: {
+      where: { id: string; organizationId: string; operatorDecision: ProposalDecision };
+      data: {
+        operatorDecision: ProposalDecision;
+        decidedByUserId: string | null;
+        decidedAt: Date | null;
+        decisionNote?: string | null;
+        acceptedRuleId?: string | null;
+      };
+    }): Promise<{ count: number }>;
   };
   /**
    * The existing PolicyRule schema (Phase 443) uses these field names:
@@ -425,48 +436,54 @@ export async function buildProposalDecisionResponse(
     }
     const now = opts.now ?? new Date();
 
-    let acceptedRuleId: string | null = null;
+    let rule: { key: string; severity: ProposalSeverity; blocking: boolean; description: string } | null = null;
     if (input.action === "accept") {
-      // Validate rule body has the minimum shape before upserting.
+      // Validate rule body has the minimum shape before claiming the decision.
       const body = existing.suggestedRuleBodyJson as Record<string, unknown> | null;
       if (!body || typeof body !== "object" || typeof body.description !== "string" || typeof body.severity !== "string") {
         return { status: 422, body: { ok: false, error: "invalid_rule_body" } };
       }
-      const key = (input.ruleKeyOverride?.trim() || existing.suggestedRuleKey);
-      const severity = isSeverity(body.severity as string) ? (body.severity as ProposalSeverity) : "medium";
-      const blocking = body.defaultBlocking === true;
-      const description = body.description as string;
-      const rule = await repo.policyRule.upsert({
-        where: { organizationId_key: { organizationId: input.organizationId, key } },
-        create: {
-          organizationId: input.organizationId,
-          key,
-          label: existing.title,
-          severity,
-          blocking,
-          description,
-          source: "operator",
-        },
-        update: {
-          label: existing.title,
-          severity,
-          blocking,
-          description,
-        },
-      });
-      acceptedRuleId = rule.id;
+      rule = {
+        key: input.ruleKeyOverride?.trim() || existing.suggestedRuleKey,
+        severity: isSeverity(body.severity as string) ? (body.severity as ProposalSeverity) : "medium",
+        blocking: body.defaultBlocking === true,
+        description: body.description as string,
+      };
     }
 
-    await repo.policyProposal.update({
-      where: { id: existing.id },
-      data: {
-        operatorDecision: plan.next,
-        decidedByUserId: input.actorUserId,
-        decidedAt: now,
-        decisionNote: input.note?.trim() || null,
-        acceptedRuleId,
-      },
+    const previous = { operatorDecision: existing.operatorDecision as ProposalDecision, decidedByUserId: existing.decidedByUserId, decidedAt: existing.decidedAt, decisionNote: existing.decisionNote };
+    // Claim the transition first so concurrent decisions cannot both apply (e.g. one accept creating a
+    // rule while a reject wins). Only the claimant writes the rule.
+    const claimed = await repo.policyProposal.updateMany({
+      where: { id: existing.id, organizationId: input.organizationId, operatorDecision: previous.operatorDecision },
+      data: { operatorDecision: plan.next, decidedByUserId: input.actorUserId, decidedAt: now, decisionNote: input.note?.trim() || null },
     });
+    if (claimed.count !== 1) {
+      return { status: 409, body: { ok: false, error: "illegal_transition", hint: "The proposal changed while you were deciding. Reload it before deciding again." } };
+    }
+
+    let acceptedRuleId: string | null = null;
+    if (rule) {
+      try {
+        const saved = await repo.policyRule.upsert({
+          where: { organizationId_key: { organizationId: input.organizationId, key: rule.key } },
+          create: { organizationId: input.organizationId, key: rule.key, label: existing.title, severity: rule.severity, blocking: rule.blocking, description: rule.description, source: "operator" },
+          update: { label: existing.title, severity: rule.severity, blocking: rule.blocking, description: rule.description },
+        });
+        acceptedRuleId = saved.id;
+        await repo.policyProposal.update({
+          where: { id: existing.id },
+          data: { operatorDecision: plan.next, decidedByUserId: input.actorUserId, decidedAt: now, decisionNote: input.note?.trim() || null, acceptedRuleId },
+        });
+      } catch (err) {
+        // Put the proposal back so the decision is not recorded without its rule.
+        await repo.policyProposal.updateMany({
+          where: { id: existing.id, organizationId: input.organizationId, operatorDecision: plan.next },
+          data: previous,
+        }).catch(() => undefined);
+        throw err;
+      }
+    }
 
     return {
       status: 200,
@@ -474,7 +491,7 @@ export async function buildProposalDecisionResponse(
         ok: true,
         data: {
           id: existing.id,
-          previousDecision: existing.operatorDecision as ProposalDecision,
+          previousDecision: previous.operatorDecision,
           decision: plan.next,
           action: input.action,
           acceptedRuleId,

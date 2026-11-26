@@ -136,3 +136,19 @@ html[data-theme="light"] .studio-flow-family-card { border-color: rgb(var(--axio
 .studio-flow-list .studio-flow-lane ol { display: grid; gap: 6px; }
 .studio-flow-list .studio-flow-lane li { position: static; }
 .studio-flow-list .studio-flow-step { min-height: 44px; }
+
+/* Architecture map inside desktop Documentation (shared model with the website). */
+.studio-arch-map { display: grid; gap: 14px; padding: 16px; border: 1px solid rgb(var(--axiom-border)); border-radius: 12px; }
+.studio-arch-map svg { width: 100%; max-height: 380px; }
+.studio-arch-edge path { fill: none; stroke: rgb(var(--neutral-zinc-500)); stroke-width: 1.2; opacity: .3; transition: opacity .2s; }
+.studio-arch-edge[data-on] path { stroke: var(--status-blue); stroke-width: 1.8; opacity: 1; }
+.studio-arch-edge text { font-size: 9.5px; fill: rgb(var(--neutral-zinc-400)); }
+.studio-arch-node { cursor: pointer; outline: none; opacity: .5; transition: opacity .2s; }
+.studio-arch-node[data-on] { opacity: 1; }
+.studio-arch-node rect { fill: rgb(var(--axiom-bg-elev)); stroke: rgb(var(--axiom-border)); }
+.studio-arch-node[data-selected] rect, .studio-arch-node:focus-visible rect { stroke: var(--status-blue); stroke-width: 1.6; }
+.studio-arch-title { font-size: 12px; fill: rgb(var(--neutral-zinc-100)); }
+.studio-arch-sub { font-size: 9.5px; fill: rgb(var(--neutral-zinc-400)); }
+.studio-arch-detail { display: grid; gap: 6px; justify-items: start; }
+.studio-arch-detail strong { font-size: 13px; font-weight: 500; }
+.studio-arch-detail p { font-size: 12px; line-height: 1.6; color: rgb(var(--neutral-zinc-300)); }

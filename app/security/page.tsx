@@ -4,6 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { BotAiDataFlow } from "@/components/marketing/BotAiDataFlow";
 import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
+import { DataBoundaryDiagram } from "@/components/docs/DataBoundaryDiagram";
 import { SECURITY_ASSESSMENT_STAGES } from "@/lib/marketing/securityAssessmentModel";
 import { PublicFeaturePanel } from "@/components/marketing/PublicFeaturePanel";
 import { PageHero } from "@/components/marketing/PageHero";
@@ -30,6 +31,7 @@ export default function SecurityPage(){
   <main className="public-reading-marketing-page">
    <PageHero eyebrow="V19 · Security" title="Know the boundary." muted="Verify the workflow." lead="Understand the access, decision and evidence behind an action. Assess the exact workflow and version instead of relying on a badge or a broad promise." note="This page describes source-level controls and known limits. It is not a completed security assessment or proof that every deployment path is qualified." />
    <section aria-labelledby="action-assessment"><h2 id="action-assessment" className="text-xl font-medium tracking-tight">How to assess an action</h2><p className="mt-3 max-w-3xl text-[15px] leading-7 text-zinc-400">One action moves through five checks. Each one confirms something specific and passes it to the next. If a check fails, the action stops there.</p><div className="mt-6"><PipeFlow stages={SECURITY_ASSESSMENT_STAGES} label="How to assess an action" /></div></section>
+   <section aria-label="Where your data goes"><DataBoundaryDiagram /></section>
    <section aria-labelledby="control-areas" className="public-security-controls"><div className="public-section-intro"><p>// Control boundaries</p><h2 id="control-areas">Inspect a specific control.</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">Implementation notes are not independent assurance. Follow the relevant guide, then verify the configured operation.</p></div>{AREAS.map((area,index)=><PublicFeaturePanel key={area.title} eyebrow={`0${index+1} / Control area`} title={area.title} copy={area.detail} reverse={index%2===1} visualLabel="Control boundary · explanatory diagram" action={{href:area.href,label:area.label}} visual={<ol className="public-security-boundary" aria-label={`${area.title} boundary`}>{[
      ["Browser sign-in", "Scoped desktop session", "Current roles and actions"],
      ["Connector-specific custody", "Scopes and revocation", "Separate recovery verification"],

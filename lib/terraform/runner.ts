@@ -160,10 +160,14 @@ export async function terraformApply(jobId: string): Promise<TerraformApplyResul
     };
   }
 
-  await prisma.terraformExecutionJob.update({
-    where: { id: jobId },
+  // Claim the job once: a concurrent or repeated apply must not run terraform twice.
+  const claim = await prisma.terraformExecutionJob.updateMany({
+    where: { id: jobId, status: job.status },
     data: { status: "applying" },
   });
+  if (claim.count !== 1) {
+    return { success: false, output: "Apply rejected: this job is already being applied or has changed. Refresh its status." };
+  }
 
   const result = await runTerraformCommand(
     "terraform apply -auto-approve -no-color",

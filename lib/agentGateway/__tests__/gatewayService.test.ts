@@ -50,7 +50,7 @@ describe("agent gateway service", () => {
     db.keyFind.mockResolvedValue({ createdBy: "owner@acme.com" });
     const r = await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "reviewer@acme.com", id: "r1", decision: "approve", note: "ok" }, NOW);
     expect(r).toMatchObject({ ok: true, request: { status: "approved", mayProceed: true } });
-    expect(db.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "r1", status: "pending", actionDigest: "d" } }));
+    expect(db.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "r1", organizationId: "org", status: "pending", actionDigest: "d", expiresAt: { gt: NOW } } }));
   });
 
   it("refuses expired, settled or non-approval requests", async () => {

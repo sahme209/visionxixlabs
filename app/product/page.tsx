@@ -7,6 +7,8 @@ import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { PublicFeaturePanel } from "@/components/marketing/PublicFeaturePanel";
 import { PageHero } from "@/components/marketing/PageHero";
 import { ControlPlaneModel } from "@/components/marketing/ControlPlaneModel";
+import { ProductTour } from "@/components/marketing/ProductTour";
+import { ArchitectureMap } from "@/components/docs/ArchitectureMap";
 import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 import { ProductDisclosure } from "@/components/marketing/ProductDisclosure";
@@ -76,6 +78,8 @@ export default function ProductPage() {
         </ProductDisclosure>
 
         <ControlPlaneModel />
+        <ProductTour heading="Walk through the desktop app" />
+        <section aria-label="How V19 fits together" className="mx-auto max-w-[1080px] px-5 pt-12 sm:px-8"><ArchitectureMap /></section>
 
         <section aria-labelledby="scripted-preview" className="mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10">
           <h2 id="scripted-preview" className="text-xl font-medium tracking-[-0.03em] text-zinc-100">Scripted interactive preview</h2>

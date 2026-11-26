@@ -31,16 +31,11 @@ function makeRepo(): Stub {
         }).sort((a, b) => b.generatedAt.getTime() - a.generatedAt.getTime());
         return take ? out.slice(0, take) : out;
       },
-      async updateMany({ where, data }) {
+      async updateMany({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) {
         let count = 0;
         for (const r of stub._rows) {
-          if (r.organizationId === where.organizationId
-              && r.releaseId === where.releaseId
-              && r.operatorDecision === where.operatorDecision) {
-            r.operatorDecision = data.operatorDecision;
-            r.updatedAt = new Date();
-            count += 1;
-          }
+          const row = r as unknown as Record<string, unknown>;
+          if (Object.entries(where).every(([k, v]) => row[k] === v)) { Object.assign(row, data, { updatedAt: new Date() }); count += 1; }
         }
         return { count };
       },
@@ -302,5 +297,18 @@ describe("buildAdvisorDecisionResponse", () => {
       organizationId: "o", actorUserId: "u", recommendationId: id, action: "accept",
     });
     expect(r.status).toBe(503);
+  });
+});
+
+describe("advisor decision concurrency", () => {
+  it("lets only one of a concurrent accept and reject stand", async () => {
+    const stub = makeRepo();
+    await buildAdvisorGenerateResponse(stub, { organizationId: "o", releaseId: "rel_1", engineInputs: baseEngineInputs({ policyViolations: { blocking: 1, warning: 0, advisory: 0 } }) });
+    const id = stub._rows[0].id;
+    const [a, b] = await Promise.all([
+      buildAdvisorDecisionResponse(stub, { organizationId: "o", actorUserId: "u1", recommendationId: id, action: "accept" }),
+      buildAdvisorDecisionResponse(stub, { organizationId: "o", actorUserId: "u2", recommendationId: id, action: "reject" }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
   });
 });

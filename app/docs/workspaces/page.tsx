@@ -17,6 +17,14 @@ export default function WorkspacesGuide() {
    <p>Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use <a href="/docs/settings">Settings and sessions</a> to inspect your paired devices for the current workspace.</p>
    <Callout variant="warning" title="Selection is not authorization">Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else&apos;s request.</Callout>
   </DocSection>
+  <DocSection id="insights" kicker="04" title="Delivery insights for the workspace">
+   <DocFigure src="/docs/cockpit/insights.webp" alt="The Delivery insights page in the V19 cockpit" caption="Delivery insights in the cockpit, shown for a new synthetic workspace with no runs yet." width={1600} height={1000} />
+   <p>In the cockpit, <strong>Insights</strong> shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification.</p>
+  </DocSection>
+  <DocSection id="variables" kicker="05" title="Configuration variables per environment">
+   <p>In the cockpit, <strong>Variables</strong> holds plain configuration such as a base URL, log level or feature switch. Set a workspace default, then override it for an environment that needs a different value; environments without an override inherit the default. A notice lists names that are set for some environments but have no default, so a missing value is visible before a release.</p>
+   <p>Each environment shows a short fingerprint of what it resolves to, which changes whenever any value it sees changes. Owners and admins can add, edit and remove variables. Edits carry the version you loaded, so a change made by someone else in the meantime is reported instead of overwritten. Names and values that look like credentials are refused: keep secrets in scoped credentials. Passing variables into deployment workflows is not connected yet, so this page does not change any running service.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/mcp-tools",label:"MCP tools"}} next={{href:"/docs/members",label:"Members and roles"}} />
  </>;
 }

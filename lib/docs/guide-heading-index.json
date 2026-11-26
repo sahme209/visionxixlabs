@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "cc1d1811980041d208e9dcb83282615e9d574fe08379dda1677923337aa0c796",
+      "sourceSha256": "fd6487da5a19f47484b22e9dad87b441faeb92bff18be054319e398656c07a2d",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -409,14 +409,16 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350",
+      "sourceSha256": "89fe7c32f9bca30424e024eb0470bbffdda22c2e23925407192e43c3539ba92e",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
         "Choose an active workspace",
         "Recover unavailable workspace access",
         "Browser context and paired devices are separate",
-        "Selection is not authorization"
+        "Selection is not authorization",
+        "Delivery insights for the workspace",
+        "Configuration variables per environment"
       ]
     },
     {
@@ -436,7 +438,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5",
+      "sourceSha256": "4e1f348c5f8dbabde31633dc760dc1ce5aaeb223b8b34c9a2855787fe58319b9",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -447,7 +449,8 @@
         "What this page shows",
         "Workspace and platform approvals are different",
         "Read the result before trying again",
-        "Different evidence answers different questions"
+        "Different evidence answers different questions",
+        "Keep policy rules in Git"
       ]
     },
     {

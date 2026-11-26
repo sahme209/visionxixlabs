@@ -44,6 +44,16 @@ export interface PolicyExceptionRepo {
         remediation?: string | null;
       };
     }): Promise<ExceptionUpdatedRow>;
+    /** Conditional transition out of a non-terminal status; terminal rows are never rewritten. */
+    updateMany(args: {
+      where: { id: string; organizationId: string; status: string };
+      data: {
+        status: "exception_granted" | "resolved";
+        exceptionGrantedByUserId?: string | null;
+        exceptionGrantedAt?: Date | null;
+        remediation?: string | null;
+      };
+    }): Promise<{ count: number }>;
   };
 }
 
@@ -128,8 +138,8 @@ export async function buildPolicyExceptionResponse(
         };
       }
       const now = opts.now ?? new Date();
-      const updated = await repo.policyViolation.update({
-        where: { id: input.violationId },
+      const claimed = await repo.policyViolation.updateMany({
+        where: { id: input.violationId, organizationId: input.organizationId, status: violation.status },
         data: {
           status: "exception_granted",
           exceptionGrantedByUserId: input.actorUserId,
@@ -139,6 +149,10 @@ export async function buildPolicyExceptionResponse(
           remediation: `[exception ${now.toISOString()} by ${input.actorUserId}] ${(input.reason ?? "").trim()}`,
         },
       });
+      if (claimed.count !== 1) {
+        return { status: 409, body: { ok: false, error: "already_terminal", hint: "The violation changed while you were deciding. Reload it." } };
+      }
+      const updated = { id: input.violationId, exceptionGrantedByUserId: input.actorUserId, exceptionGrantedAt: now };
       return {
         status: 200,
         body: {
@@ -155,10 +169,14 @@ export async function buildPolicyExceptionResponse(
     }
 
     // action === "resolve"
-    const updated = await repo.policyViolation.update({
-      where: { id: input.violationId },
+    const claimed = await repo.policyViolation.updateMany({
+      where: { id: input.violationId, organizationId: input.organizationId, status: violation.status },
       data: { status: "resolved" },
     });
+    if (claimed.count !== 1) {
+      return { status: 409, body: { ok: false, error: "already_terminal", hint: "The violation changed while you were deciding. Reload it." } };
+    }
+    const updated = { id: input.violationId, exceptionGrantedByUserId: null as string | null, exceptionGrantedAt: null as Date | null };
     return {
       status: 200,
       body: {

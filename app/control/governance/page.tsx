@@ -10,6 +10,7 @@ import { pullRequestProposalReview } from "@/lib/cockpit/pullRequestProposalRevi
 import { fileProposalReview } from "@/lib/cockpit/fileProposalReview";
 import { ProposalFileDiff } from "@/components/cockpit/ProposalFileDiff";
 import { ApprovalDecisionButtons } from "./ApprovalDecisionButtons";
+import { PolicyAsCodePanel } from "@/components/cockpit/PolicyAsCodePanel";
 
 export default async function GovernancePage() {
   const context = await currentContext();
@@ -113,6 +114,7 @@ export default async function GovernancePage() {
           <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">{environments.map((environment) => <div key={environment.id} className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm">{environment.name}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{environment.slug}</p></div><div className="text-right"><p className="text-xs uppercase tracking-[0.12em] text-zinc-400">{environment.tier}</p><p className="mt-1 text-xs text-zinc-600">{environment.approvalPolicyId ? "Approval policy assigned" : "No approval policy assigned"}</p></div></div>)}</div>
         )}
       </section>
+      <PolicyAsCodePanel />
     </div>
   );
 }

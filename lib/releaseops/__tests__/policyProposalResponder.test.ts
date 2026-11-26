@@ -84,6 +84,12 @@ function makeRepo(): Stub {
         };
         return stub._proposals[idx];
       },
+      async updateMany({ where, data }) {
+        const row = stub._proposals.find((p) => p.id === where.id && p.organizationId === where.organizationId && p.operatorDecision === where.operatorDecision);
+        if (!row) return { count: 0 };
+        Object.assign(row, { operatorDecision: data.operatorDecision, decidedByUserId: data.decidedByUserId, decidedAt: data.decidedAt, decisionNote: data.decisionNote ?? null, ...(data.acceptedRuleId !== undefined ? { acceptedRuleId: data.acceptedRuleId } : {}), updatedAt: new Date() });
+        return { count: 1 };
+      },
     },
     policyRule: {
       async upsert({ where, create, update }) {
@@ -285,5 +291,32 @@ describe("buildProposalDecisionResponse", () => {
       organizationId: "o", actorUserId: "u", proposalId: id, action: "accept",
     });
     expect(r.status).toBe(503);
+  });
+});
+
+describe("proposal decision concurrency", () => {
+  async function seeded(): Promise<{ stub: Stub; id: string }> {
+    const stub = makeRepo();
+    await buildProposalGenerateResponse(stub, { organizationId: "o", engineInputs: baseInputs({ forcePushAllowedMainRepos: 1 }) });
+    return { stub, id: stub._proposals[0].id };
+  }
+
+  it("lets one of a concurrent accept and reject win, and creates a rule only if accept won", async () => {
+    const { stub, id } = await seeded();
+    const [a, b] = await Promise.all([
+      buildProposalDecisionResponse(stub, { organizationId: "o", actorUserId: "u1", proposalId: id, action: "accept" }),
+      buildProposalDecisionResponse(stub, { organizationId: "o", actorUserId: "u2", proposalId: id, action: "reject" }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    const final = stub._proposals.find((p) => p.id === id)!.operatorDecision;
+    expect(stub._rules.length).toBe(final === "accepted" ? 1 : 0);
+  });
+
+  it("puts the proposal back if the rule cannot be saved", async () => {
+    const { stub, id } = await seeded();
+    stub.policyRule.upsert = async () => { throw new Error("rule store down"); };
+    const r = await buildProposalDecisionResponse(stub, { organizationId: "o", actorUserId: "u", proposalId: id, action: "accept" });
+    expect(r.status).toBe(500);
+    expect(stub._proposals.find((p) => p.id === id)!.operatorDecision).toBe("pending");
   });
 });

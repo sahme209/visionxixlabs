@@ -32,6 +32,10 @@ export default function GovernanceApprovalsDocsPage() {
    <p>If the result is unknown or a response is lost, retain the original action or request reference and inspect its saved history. Do not automatically resend it, create a replacement, or assume that an expired review means nothing happened. A later observation can add evidence without erasing the original attempt.</p>
    <Callout variant="info" title="Different evidence answers different questions">A provider accepting a command is not proof a deployment is healthy. A recorded issuer drain is not proof existing credentials were revoked or expired. Read the exact workflow's outcome and limitations; a historical record does not grant new permission.</Callout>
   </DocSection>
+  <DocSection id="policy-as-code" kicker="07" title="Keep policy rules in Git">
+   <p>Owners and admins can choose <em>Download policy file</em> under Policy as code on the Governance page. The file lists this workspace's policy rules in a stable, sorted JSON format, so it can be reviewed and versioned like code.</p>
+   <p>Paste a changed file and choose <em>Preview changes</em> to see added, changed and removed rules. Changes that weaken governance are listed under <em>Loosens governance</em>: a rule that no longer blocks releases, is disabled, newly allows exceptions, no longer requires evidence, or is removed. A preview never changes a rule; applying a policy change stays a separate, reviewed action.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/members",label:"Members and roles"}} next={{href:"/docs/usage-billing",label:"Usage and billing"}} />
  </>;
 }
