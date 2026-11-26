@@ -54,5 +54,6 @@ describe("recorded run timing", () => {
  it("refuses negative or invalid elapsed time", () => {
   expect(formatRunElapsed(new Date(2000), new Date(1000))).toBeNull();
   expect(formatRunElapsed(new Date(0), new Date(3_720_000))).toBe("1h 2m");
+  expect(formatRunElapsed(new Date(0), new Date(120_000))).toBe("2m");
  });
 });

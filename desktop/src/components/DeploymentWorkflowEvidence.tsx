@@ -15,7 +15,7 @@ export function formatRunElapsed(from: Date, to: Date): string | null {
   if (!Number.isFinite(seconds) || seconds < 0) return null;
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
+  if (minutes < 60) return seconds % 60 ? `${minutes}m ${seconds % 60}s` : `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   return `${hours}h ${minutes % 60}m`;
 }
