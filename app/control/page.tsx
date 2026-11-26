@@ -33,16 +33,36 @@ async function readOverview(organizationId: string): Promise<Overview | null> {
   }
 }
 
+type GovernanceAttention = { pendingPolicyChanges: number; blockingChecks: number; checksFailingLatest: number };
+
+/** Optional release-governance signals; a read failure hides only this section. */
+async function readGovernanceAttention(organizationId: string): Promise<GovernanceAttention | null> {
+  try {
+    const [pendingPolicyChanges, blocking] = await Promise.all([
+      prisma.policyChangeRequest.count({ where: { organizationId, status: "pending" } }),
+      prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } }),
+    ]);
+    const keys = blocking.map((b) => b.key);
+    const recent = keys.length ? await prisma.deploymentCheckResult.findMany({ where: { organizationId, checkKey: { in: keys } }, orderBy: { reportedAt: "desc" }, take: 500, select: { checkKey: true, status: true } }) : [];
+    const latest = new Map<string, string>();
+    for (const r of recent) if (!latest.has(r.checkKey)) latest.set(r.checkKey, r.status);
+    return { pendingPolicyChanges, blockingChecks: keys.length, checksFailingLatest: [...latest.values()].filter((s) => s !== "passed").length };
+  } catch {
+    return null;
+  }
+}
+
 export default async function ControlOverviewPage() {
   const context = await currentContext();
   if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control");
   if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);
-  const [overview, billing, allowance] = await Promise.all([
+  const [overview, billing, allowance, attention] = await Promise.all([
     readOverview(organizationId),
     readBillingPlanWithAvailability(organizationId).catch(() => null),
     withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId)).catch(() => ({ available: false } as const)),
+    readGovernanceAttention(organizationId),
   ]);
   const plan = billing?.available ? billing.plan : null;
   // Same plan name as Usage & billing, so the two pages never disagree (for example "14-day trial" beside "Free · no plan").
@@ -71,6 +91,15 @@ export default async function ControlOverviewPage() {
           <Link href="/control/usage-billing" className="mt-5 inline-flex text-xs text-zinc-300 underline underline-offset-4">Review allowance &amp; transactions</Link>
         </section>
       </div>
+      {attention && (attention.pendingPolicyChanges > 0 || attention.blockingChecks > 0) && (
+        <section aria-labelledby="release-governance-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
+          <h2 id="release-governance-heading" className="text-xs font-normal text-zinc-400">Release governance</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {attention.pendingPolicyChanges > 0 && <li><Link href="/control/governance#policy-as-code-heading" className="underline underline-offset-4">{attention.pendingPolicyChanges} policy change {attention.pendingPolicyChanges === 1 ? "request awaits" : "requests await"} a second approver</Link></li>}
+            {attention.blockingChecks > 0 && <li className="text-zinc-300">{attention.blockingChecks} blocking deployment {attention.blockingChecks === 1 ? "check" : "checks"}{attention.checksFailingLatest > 0 ? <>; <Link href="/control/checks" className="text-amber-300 underline underline-offset-4">{attention.checksFailingLatest} failed on {attention.checksFailingLatest === 1 ? "its" : "their"} latest reported run</Link></> : <> · <Link href="/control/checks" className="underline underline-offset-4">Review checks</Link></>}</li>}
+          </ul>
+        </section>
+      )}
       <section aria-label="V19 products and connections" className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">V19</h2><p className="mt-2 text-xs text-zinc-300">{desktopAccess?.title ?? "Access status unavailable"}</p><p className="mt-1 text-xs leading-5 text-zinc-400">Workspace access is checked by the desktop service. Paired devices are managed separately.</p><Link href="/control/settings?section=sessions" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Manage desktop sessions</Link></article>
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">Integrations</h2><p className="mt-2 text-xs leading-5 text-zinc-400">Connect workspace services and review their validated permissions.</p><Link href="/control/integrations" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Connect services</Link></article>
