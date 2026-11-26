@@ -860,91 +860,91 @@
    "title": "Choose a desktop destination",
    "text": "Open the installed app and use its sidebar. A destination organizes work; it does not authorize a provider action. Read-only inspection, proposing a change, independent review and execution are separate concerns. {DESTINATIONS.map(item=> Next: with synthetic example records. Your workspace shows your own records and the controls your role allows. )}",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#workflow-map",
    "title": "Follow a desktop workflow",
    "text": "In desktop versions that include it, open Documentation in the sidebar and select Workflow map . Choose Release, Tickets and recovery, or Batches. Select Fit overview to see the workflow at a glance. Choose a responsibility group to jump to it. Drag an empty part of the canvas to pan when the map extends beyond its viewport. Select a step to open its details and follow a conditional next step . Select Read the guide for the relevant instructions. If the canvas is hard to read at your current window size, use Step list to browse the same steps by group. Use Close details to return focus to the step you opened, or Back to guides to return to the guide reader. The map explains which evidence and approvals a workflow requires. Use the original workspace record to confirm the current version, result and available actions.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#workflow-map-next-steps",
    "title": "Follow conditional next steps in the workflow map",
    "text": "In desktop versions that include the workflow map, open a step and read the condition below each option in Next steps . Matching a condition is a navigation choice. Use the original release, ticket or batch record to verify which condition applies. On the Release map, Review current authority shows Run the supported operation for Current approval and authority . If approval was rejected or expired, or the saved release changed, choose Hold for review under Rejected, expired or changed . Once the missing evidence or permission is resolved, use Return to review and verify the current saved version. On the Batches map, choose Inspect the run’s tasks for Run failed or task details needed . Follow the failed-run guide from that step for the exact task read. Selecting a branch opens the destination step’s details and moves focus to its heading. Close details returns keyboard focus to the step that opened the details. Read the guide opens the selected step’s documentation. The map is read-only. Use the separate approval and execution workflow for any action.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#ticket-release-draft",
    "title": "Start, save and resume a release draft from Tickets",
    "text": "In desktop versions with Start release draft , open a supported Jira or ServiceNow change in Tickets . Check its reference before opening the draft and review the scope before saving. To pause an unsaved draft, choose Close . During the same signed-in session, return to that ticket and select Resume release draft for followed by its reference. Other tickets keep their own drafts. Choose Save draft , then Open saved release draft to open the exact saved version in Deployments . Choose Return to source ticket to return to the original ticket. If the ticket is unavailable, V19 returns you to ticket search. Saving keeps the draft for review. Submission, approval and execution each have their own controls.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#ticket-collection-receipt",
    "title": "Check the collection receipt for incident evidence",
    "text": "In desktop versions with Check collection receipt , open the incident in Tickets , choose Evidence and select Review linked release evidence to inspect the linked release. To record collection, an authorized operator needs a completed eligible workflow run and a verified comparison baseline. If Record evidence collection returns an uncertain result, choose Check collection receipt . This read-only check looks up the exact original attempt. If the receipt is still unavailable and Retry evidence collection is offered, that control retries the same collection attempt. A recovered receipt confirms the original collection record only. It does not prove application recovery, successful rollback or current release readiness. Use the incident overview to verify the current release and comparison baseline, and consult the release readiness guide for the remaining checks.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#release-closure-evidence",
    "title": "Read recorded closure evidence in Deployments",
    "text": "In desktop versions with Read closure evidence , use a paired workspace session. Open Deployments and select the exact closed release version. Choose Read closure evidence below Closure recorded . V19 shows the evidence reference and reported outcome saved when that version was closed. If recording the closure returned an uncertain result, resume the closure draft and use Check closure status before attempting another write. If the evidence read is unavailable, confirm the release version and workspace, then try the read again. An unavailable receipt does not tell you that the closure failed. The receipt records a reported external outcome. Use the reference to check the original change or validation record and follow the release readiness guide for independent verification. Reading a receipt does not authorize or dispatch a deployment.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#batch-failed-run",
    "title": "Inspect a failed Airflow run in Batches release dependencies",
    "text": "In desktop versions with Inspect failed run , open Batches , choose Release dependencies , select the exact submitted release version and select Check batches . The check requires pipeline read access and uses the Airflow runs declared on that version. If a run failed, select Inspect failed run to open the first recorded failed run’s tasks. V19 moves focus to that run’s task control. To choose another observed run, select Inspect tasks below its workflow and run. Waiting or unverified results leave readiness unresolved. The failed-run shortcut only appears after a recorded failure. If the release version changed, reopen the current release and check its declared runs again. In versions with the Observed task states table, read the task’s status, try number, and start and end times in UTC. Missing times show as unavailable. V19 clears the old rows when a task page fails to load. Choose Retry tasks to reread that same page, or Previous task page to return to the previous page when the control is available. Task inspection reads provider evidence. To retry an Airflow run or execute a deployment, use the separately authorized workflow. For a completed check, return to the release approval workflow .",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#batch-closed-history",
    "title": "Find older closed releases in Batches History",
    "text": "In desktop versions with the History action, use a paired workspace session and open Batches → Release dependencies . Choose History beside the Batches heading to load older closed releases with declared Airflow runs. The archive skips closed releases already in the recent list. Use Load more history for the next page, or Retry history if a page could not be verified. Search filters the loaded releases, including pages you opened in this visit. Select the historical row and check the saved version and recorded UTC closing time, when available. Choose Open release to view that version in Deployments, then follow the recorded closure evidence guide . Choose Return to Batches to restore the historical row. Batches History shows saved closed release records. A closure receipt records a reported outcome. Use Airflow run evidence and independent validation for provider outcomes and application health. Viewing saved history makes no Airflow request and grants no approval or execution authority.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#batch-release-logs",
    "title": "Find release logs in desktop Batches",
    "text": "In desktop versions with Open release logs , choose Batches → Release dependencies and select the saved release. Open Logs , then choose Open release logs to open the exact release version’s Logs section in Deployments . In versions with Find recorded workflow logs , choose it to open Evidence . Load the evidence plans, choose the saved plan, and select Read recorded workflow commit . When the saved observation matches the accepted dispatch, choose Open recorded workflow logs to return to Logs. The recorded timeline shows the run and attempt, when the dispatch was accepted, and when the outcome was last observed, in UTC. Use the GitHub link to open that exact attempt. In versions with Review workflow evidence , Logs states why the exact attempt is unavailable, such as a missing run receipt or more than one matching observation. It never implies a deployment outcome. Airflow task logs and live application health are unavailable in this view. Use the failed Airflow run guide to inspect observed task state and try numbers. From Deployments → Logs , use Return to Batches to restore the selected release, open Logs section and keyboard focus. If search has hidden the selection, clear the search to show the same version again. If a refresh finds a newer version, select it explicitly before opening its logs.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#release-record",
    "title": "Open a release record in the browser",
    "text": "Some desktop views offer Open release record in browser . The record opens in the cockpit for your active workspace and is read-only. The heading shows the release tag, or Untagged release when none is recorded. Status , Release ID and Commit show the recorded values. Awaiting a recorded commit means no commit is stored yet. Linked change tickets lists up to 50 linked tickets, or says none are recorded. Release actions stay in V19 Studio. If the page says Release unavailable , check the workspace selector and reopen the link from the desktop app.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#website",
    "title": "Use the website for guidance",
    "text": "Download the desktop app — inspect the current manifest-backed installer and platform-specific verification information. Public documentation — read setup, workflow and recovery references without starting an action. Illustrative demo — explore the explanation of a workflow. Demo content is not a live workspace or evidence that an action ran. Account help (sign-in required) — use the authenticated help surface when available; this public guide grants no account access. Browser sign-in and provider-consent pages support specific authentication or connection steps. Returning from a browser does not by itself prove that desktop pairing, connection validation or an operation succeeded.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#recordings",
    "title": "Watch a V19 desktop recording or scripted tour",
    "text": "The public demo is a scripted tour with sample data. An authentic desktop recording is currently unavailable. The tour explains the workflow without running a provider action. When a reviewed recording is available on the homepage, its player shows the exact V19 version, platform and build source, with a still preview, captions and a transcript. Playback starts when you choose Play.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/surfaces#next-owner",
    "title": "Know who acts next",
    "text": "The person preparing work checks its exact source, target and content. An authorized independent reviewer makes the required decision personally. Who executes next, and whether execution is a separate control, depends on the supported workflow and installed version. See Review and execution guidance . If a connection or permission is missing, use its supported setup path or ask the authorized administrator. A different screen, a catalogue entry or an old approval does not remove that requirement. Do not resend an uncertain or consumed action. Inspect the original saved record using the supported read-only history or recovery controls. A different destination is not a retry permission. Troubleshoot the current state before preparing another action.",
    "source": "app/docs/surfaces/page.tsx",
-   "sourceSha256": "f50377690d0296040addcc75920964996d87b85d97d808ddd31aa381a815cdfb"
+   "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886"
   },
   {
    "href": "/docs/troubleshooting#installation",
