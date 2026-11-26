@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = { title: "Settings and sessions — V19 Documentation", description: "Review workspace access in desktop Settings, change your display name, and manage paired devices.", alternates: { canonical: "/docs/settings" } };
 export default function SettingsGuide() {
  return <>
   <DocHeader kicker="Account · Settings and sessions" title="Keep your profile and devices under control." summary="Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct." />
+  <DocFigure src="/docs/desktop/settings.webp" alt="The Settings view in the V19 desktop app" caption="Settings in the desktop app, shown with synthetic example records." />
   <DocSection id="profile" kicker="01" title="Change your display name">
    <p>Open <a href="/control/settings">Settings &amp; sessions → Profile</a>. Edit <em>Display name</em>, then choose <em>Save profile</em>. Names must contain 1–80 characters; the server trims surrounding whitespace and normalizes repeated spaces. This changes your own account name, not the workspace name.</p>
    <p>The profile form cannot change your sign-in email or workspace permissions. If saving is not confirmed, refresh to inspect the saved name before trying again; a failed response does not prove that the change was rolled back.</p>

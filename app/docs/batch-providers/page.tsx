@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Batch providers — V19 Documentation",
  description: "Connect Prefect, Dagster or Argo Workflows read-only so the Agent can inspect flows, jobs and runs.",
@@ -10,6 +10,7 @@ export default function BatchProvidersDocsPage() {
   <DocHeader kicker="Integrations · Batches" title="Prefect, Dagster and Argo, read-only."
    summary="Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything." />
   <Callout title="Availability">Read-only clients and the desktop connection form are built. Live acceptance with real Prefect, Dagster and Argo accounts is still pending. Airflow remains the existing provider with its own automation features.</Callout>
+  <DocFigure src="/docs/desktop/batches.webp" alt="The Batches view in the V19 desktop app" caption="Batches with declared Airflow runs, shown with synthetic example records." />
   <DocSection id="connect" kicker="01" title="Connect a provider">
    <p>In the desktop app open <strong>Batches → Connection</strong>. Under <strong>More batch providers</strong>, enter the API URL and a token. Argo Workflows also needs the one namespace to read. Choose <strong>Connect read-only</strong>.</p>
    <p>V19 validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.</p>

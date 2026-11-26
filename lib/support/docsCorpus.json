@@ -55,35 +55,35 @@
    "title": "Risk classification",
    "text": "Low risk: read-only checks can execute inline and are still recorded. Medium risk: reversible configuration or repository changes require approval. High risk: deployments and sensitive configuration require approval. Production context: risk can only escalate; it is never reduced for convenience.",
    "source": "app/docs/approval-workflow/page.tsx",
-   "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5"
+   "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650"
   },
   {
    "href": "/docs/approval-workflow#decision",
    "title": "Approve or reject",
    "text": "The proposal shows the requested tool, arguments, risk, workspace, and status. Approval and rejection use separate authenticated endpoints. The Agent cannot approve its own request.",
    "source": "app/docs/approval-workflow/page.tsx",
-   "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5"
+   "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650"
   },
   {
    "href": "/docs/approval-workflow#desktop-release-review",
    "title": "Execution requirements and View release review in desktop Deployments",
    "text": "In desktop versions with this Overview, open Deployments and select the exact submitted release version. Below Readiness , the Execution requirements panel explains that exact approvals and verified evidence are required before execution. When View release review is available, it opens the merge review for that same release version. Find the button below the scrolling evidence in the wide inspector, or in the toolbar beneath the section tabs in a compact window. Use Tab to reach the button after the section tabs. Opening review records no approval and runs no operation. If View release review is unavailable while the release is refreshing or its version cannot be verified, wait for the refresh or use Refresh before opening review. A draft, closed release or release with no pull request required does not offer this merge review shortcut. A recorded readiness decision of Ready for human review means a reviewer can inspect the request. It does not establish approval, execution or application health.",
    "source": "app/docs/approval-workflow/page.tsx",
-   "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5"
+   "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650"
   },
   {
    "href": "/docs/approval-workflow#execution",
    "title": "Execution and recovery",
    "text": "In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.",
    "source": "app/docs/approval-workflow/page.tsx",
-   "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5"
+   "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650"
   },
   {
    "href": "/docs/approval-workflow#audit",
    "title": "Audit evidence",
    "text": "Every tool call receives an action record, including low-risk reads. The record distinguishes proposed, approved, rejected, executed, and failed states so observation is as reviewable as mutation.",
    "source": "app/docs/approval-workflow/page.tsx",
-   "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5"
+   "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650"
   },
   {
    "href": "/docs/ask-axiom#answers",
@@ -209,21 +209,21 @@
    "title": "Connect a provider",
    "text": "In the desktop app open Batches → Connection . Under More batch providers , enter the API URL and a token. Argo Workflows also needs the one namespace to read. Choose Connect read-only . V19 validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.",
    "source": "app/docs/batch-providers/page.tsx",
-   "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17"
+   "sourceSha256": "5bd9de49b699348c9cdd1bf2e3fee5f23dda8021c536898c3ac27463d439a96a"
   },
   {
    "href": "/docs/batch-providers#urls",
    "title": "Accepted addresses",
    "text": "Prefect Prefect Cloud https://api.prefect.cloud/api/accounts/…/workspaces/… , or a self-hosted https://…/api . Dagster Dagster+ https://your-org.dagster.cloud/deployment , or a self-hosted root. Argo Workflows The Argo Server address (HTTPS) and one namespace. In-cluster and private addresses are refused.",
    "source": "app/docs/batch-providers/page.tsx",
-   "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17"
+   "sourceSha256": "5bd9de49b699348c9cdd1bf2e3fee5f23dda8021c536898c3ac27463d439a96a"
   },
   {
    "href": "/docs/batch-providers#agent",
    "title": "What the Agent can read",
    "text": "The Automation Agent and the Batches diagnostics skill can list flows, jobs and templates and read recent runs and task runs, up to 20 entries from the first page. Results are observation only and labelled as incomplete coverage. Logs, parameters, artifacts and secrets are never read.",
    "source": "app/docs/batch-providers/page.tsx",
-   "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17"
+   "sourceSha256": "5bd9de49b699348c9cdd1bf2e3fee5f23dda8021c536898c3ac27463d439a96a"
   },
   {
    "href": "/docs/desktop-install#installer-availability",
@@ -279,28 +279,28 @@
    "title": "Read the proposed change",
    "text": "Before reviewing a plan, identify what it proposes and where its effects would occur. Field names vary by workflow; inspect the exact record rather than assuming every plan contains the same fields. Source The repository, branch, tag, commit or other source evidence shown for this request. Check which revision the review actually covers. Target The account, environment, service, ticket or connected-app destination. A familiar name alone is not proof that it is the intended target. Change The exact action and content proposed. Read the displayed payload and limitations before making a decision. Review and window Who must act, the saved revision, and any displayed expiry or execution window. A recorded date is not permission to extend it. Review and execution guidance explains the registered Agent workflow. Release readiness explains why a recorded request is not enough to establish readiness.",
    "source": "app/docs/execution-plans/page.tsx",
-   "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f"
+   "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679"
   },
   {
    "href": "/docs/execution-plans#states",
    "title": "Keep four different states separate",
    "text": "These are concepts for reading a workflow, not a promise that every installed surface uses the same status names or controls. Saved plan The intended work is recorded. Saving does not grant permissions, record an independent decision or prove that a provider was contacted. Independent review An authorized reviewer records a decision about the exact version shown. That decision is not an execution receipt. Who may execute, and whether execution is separate, depends on the supported workflow and installed version. Execution attempt The supported execution path checks current authority and the exact action. An attempt may be refused, fail or remain uncertain. An acknowledgment or completed HTTP request is not proof of the intended external result. Verified outcome Use the workflow’s actual provider observation or readback. A deployment dispatch does not prove application health or rollback; those need their own evidence.",
    "source": "app/docs/execution-plans/page.tsx",
-   "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f"
+   "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679"
   },
   {
    "href": "/docs/execution-plans#changes",
    "title": "When the plan or access changes",
    "text": "Compare the current source, target, proposed content and saved revision with the exact review. Do not reuse an expired review or assume an old approval covers changed work. Follow the workflow’s supported refresh or new-review path when it is available. Do not edit old history, extend a deadline yourself or assume a consumed attempt can be renewed. Renewal and recovery rules are workflow-specific; this guide grants no exception.",
    "source": "app/docs/execution-plans/page.tsx",
-   "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f"
+   "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679"
   },
   {
    "href": "/docs/execution-plans#unknown",
    "title": "When the outcome is unknown",
    "text": "Do not resend an uncertain or consumed action. A timeout does not prove that no write occurred. Keep the original request and inspect its supported read-only history or recovery state. Inspect an uncertain operation before preparing any replacement. If further review is needed, involve the authorized requester and independent reviewer. Do not post private operation identifiers, tokens, source contents or customer data in public URLs. Account help (sign-in required) is separate from reading this public reference.",
    "source": "app/docs/execution-plans/page.tsx",
-   "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f"
+   "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679"
   },
   {
    "href": "/docs/faq#more",
@@ -426,63 +426,63 @@
    "title": "Before connecting a provider",
    "text": "Set the production V19 origin as NEXTAUTH_URL ; callback construction fails closed when the origin is not trusted. Register the exact HTTPS callback shown below. Wildcard callback domains are not supported. Store client secrets only in the hosting platform's encrypted secret manager—never in NEXT_PUBLIC_* , the desktop app, logs, or Git. Redeploy the service after adding credentials, then use Apps & skills or Settings → Integrations to start consent. Run the harmless validation step. V19 does not label a connection active from consent alone.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#github",
    "title": "GitHub App",
    "text": "Use this setup to grant the app access to selected repositories. GitHub account sign-in uses a separate OAuth flow. {`$ /api/integrations/github/install-callback`} Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled V19 workflows. A workspace admin reviews GitHub's installation screen and selects repositories. V19 records the installation, then verifies scoped read access before showing it as validated.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#gitlab",
    "title": "GitLab repository connection and account sign-in",
    "text": "Read-only GitLab repository setup is available only where the workspace feature is enabled. If you see Manage GitLab in Control → Integrations , open it as a workspace owner or admin and select a tracked GitLab repository. If the option is absent, setup is unavailable in that workspace. Use Register project credential to save the exact project ID, expiry date and approved read-only project credential. Pending registration alone does not enable sync. Use Verify read access with the separate verifier in the setup form. Keep tokens out of chat and support requests. Once the status is Read access validated , the bound repository can sync merge requests, releases and existing pipeline evidence. The connection cannot run GitLab CI or modify a repository. If setup is bound to another repository, select that repository to manage the existing binding. Revoke in V19 removes the stored credential and stops V19 sync for that project. Manage the original token separately in GitLab. GitLab account sign-in and linking are separate from repository consent. If your sign-in page offers GitLab, using it identifies your account. It does not connect repositories, grant GitLab CI access or authorize actions in a workspace.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#gitlab-status-recovery",
    "title": "GitLab setup status and recovery",
    "text": "If GitLab setup says V19 could not confirm the update , first check the current connection for the same repository. Use Refresh status when the connection panel is visible, or Refresh GitLab status if the setup status is unavailable. After saving, Awaiting validation means you can validate the pending project credential. Read access validated means the current repository binding has a valid read check. Revoked in V19 means V19 stopped using the stored credential. A refresh reads the current status without resending your update. If the status remains unavailable, wait for a fresh result before deciding whether to retry.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#airflow",
    "title": "Apache Airflow",
    "text": "In the desktop app, a workspace administrator opens Batches → Connection and uses the secure Airflow connection form. Use the HTTPS base address of your Airflow 3 deployment and choose username and password or an existing bearer token. Enter credentials only in the connection form. Select Validate & connect and wait for V19 to confirm the connection. Choose a DAG to inspect available runs. If validation fails or status is unavailable, check the endpoint and credentials and refresh before relying on the evidence. A validated connection gives no automatic permission to start, retry or schedule a run. For Prefect, Dagster and Argo Workflows, see the read-only batch provider guide .",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#slack",
    "title": "Slack",
    "text": "Implementation review. Customer OAuth and message delivery are not release-verified. The settings below describe operator configuration. {`$ /api/integrations/slack/callback`} SLACK_CLIENT_ID= SLACK_CLIENT_SECRET= The current workflow requests channels:read and chat:write . It does not request direct messages, private-channel history, commands, or broad message history.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#teams",
    "title": "Microsoft tenant / Teams",
    "text": "The current scope verifies tenant identity. Check your installed version and workspace state before starting consent. {`$ /api/integrations/teams/callback`} MICROSOFT_CLIENT_ID= MICROSOFT_CLIENT_SECRET= MICROSOFT_TENANT_ID= The authorization-code flow uses PKCE and currently requests openid , offline_access , and User.Read . This verifies tenant identity; it does not grant Teams messaging authority.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#linear",
    "title": "Linear",
    "text": "Planned. There is no verified customer activation path. The settings below describe operator configuration. {`$ /api/integrations/linear/callback`} LINEAR_CLIENT_ID= LINEAR_CLIENT_SECRET= Consent requests read and issues:create . Mutating Agent actions remain separately approval-gated and auditable after the connection is active.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/integration-setup#states",
    "title": "Understand connection states",
    "text": "Setup required: the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app. Awaiting validation: provider consent returned successfully, but V19 has not yet completed a live server-side check. Active / validated read-only: the scoped provider token or GitHub installation passed live validation. Needs attention / validation overdue: validation failed or is stale. Revalidate before relying on the connection for release evidence. Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the V19 audit trail before reconnecting.",
    "source": "app/docs/integration-setup/page.tsx",
-   "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e"
+   "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c"
   },
   {
    "href": "/docs/mcp-tools#enable",
@@ -797,35 +797,35 @@
    "title": "Change your display name",
    "text": "Open Settings & sessions → Profile . Edit Display name , then choose Save profile . Names must contain 1–80 characters; the server trims surrounding whitespace and normalizes repeated spaces. This changes your own account name, not the workspace name. The profile form cannot change your sign-in email or workspace permissions. If saving is not confirmed, refresh to inspect the saved name before trying again; a failed response does not prove that the change was rolled back.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa"
+   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
   },
   {
    "href": "/docs/settings#security",
    "title": "Understand the Security tab",
    "text": "Security shows the sign-in email and browser-session status. It is not a password, MFA or role-management form. Use Members and roles for workspace access. Signing out ends the browser session; paired desktop sessions remain independent.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa"
+   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
   },
   {
    "href": "/docs/settings#sessions",
    "title": "Review and revoke a paired device",
    "text": "Open Sessions . V19 lists active pairings belonging to your account in the current workspace, with device label, platform, app version when available and last-seen time. It does not show bearer tokens or provider credentials. An unavailable list is not proof that no devices exist. Choose Revoke device , check the named device in the confirmation and confirm. The selected pairing loses access to protected APIs; this does not sign out your browser or revoke other devices. If the result is unconfirmed, refresh the session list before retrying. This revokes the pairing. It does not uninstall the app, erase local files, revoke an independent provider credential or prove that earlier work was cancelled.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa"
+   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
   },
   {
    "href": "/docs/settings#desktop",
    "title": "Desktop settings have a different scope",
    "text": "This guide describes browser account settings. The desktop Agent has its own settings and saved session. Use the desktop installation guide for installation and pairing, and confirm the active account and workspace in the app before acting. For the desktop Settings shortcut and browser workspace scope, see View the audit log from desktop Settings .",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa"
+   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
   },
   {
    "href": "/docs/settings#desktop-workspace-access",
    "title": "Find the workspace owner and members in desktop Settings",
    "text": "In paired versions that show the owner, open Settings → General and look below the workspace ID and device time zone. The Owner row uses accepted owner records from that workspace. Access & roles previews up to three accepted members. Choose View permissions to open the member and role view. If workspace members are unavailable, use Refresh members . An unavailable read does not establish that the workspace has no owner or members. Check that the app is paired to the intended workspace before relying on the result. Invite member , when available, opens Control → Members in the browser. The desktop rechecks your permission and the browser requires the same account and workspace with a current membership. If the browser asks you to return to desktop Permissions, verify the browser account and workspace, then re-open the shortcut from desktop.",
    "source": "app/docs/settings/page.tsx",
-   "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa"
+   "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1"
   },
   {
    "href": "/docs/source-modes#local-files",

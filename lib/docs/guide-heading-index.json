@@ -128,7 +128,7 @@
     {
       "href": "/docs/approval-workflow",
       "source": "app/docs/approval-workflow/page.tsx",
-      "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5",
+      "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650",
       "fields": [
         "A write starts as a proposal.",
         "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
@@ -145,7 +145,7 @@
     {
       "href": "/docs/execution-plans",
       "source": "app/docs/execution-plans/page.tsx",
-      "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f",
+      "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679",
       "fields": [
         "Understand a saved plan.",
         "A plan records intended work. Review, current access, execution and outcome evidence are separate steps.",
@@ -232,7 +232,7 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e",
+      "sourceSha256": "e4960dc8ff9087bda0bc2c882684088b6d4f3e8566245dd4922f0e3c2f1c702c",
       "fields": [
         "Operator integration configuration",
         "Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps.",
@@ -355,7 +355,7 @@
     {
       "href": "/docs/batch-providers",
       "source": "app/docs/batch-providers/page.tsx",
-      "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17",
+      "sourceSha256": "5bd9de49b699348c9cdd1bf2e3fee5f23dda8021c536898c3ac27463d439a96a",
       "fields": [
         "Prefect, Dagster and Argo, read-only.",
         "Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything.",
@@ -466,7 +466,7 @@
     {
       "href": "/docs/settings",
       "source": "app/docs/settings/page.tsx",
-      "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa",
+      "sourceSha256": "262c8ae2f400f117c6994e189091b27b234c0459318cbf5f83490aab1feceed1",
       "fields": [
         "Keep your profile and devices under control.",
         "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
