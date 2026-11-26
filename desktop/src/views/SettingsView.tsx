@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { normalizeTags, planFanOut } from "../../../lib/releaseops/environmentTags";
 import { evaluateChangeWindow, formToRule, parseChangeWindowRule, ruleToForm, WEEKDAYS, type Weekday } from "../../../lib/releaseops/environmentChangeWindow";
+import { findRollbackTarget, rollbackCommitMatches, type RollbackTarget } from "../../../lib/releaseops/rollbackTarget";
 import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
@@ -1413,6 +1414,20 @@ export function EnvironmentTagsEditor({ environment, onSaved }: { environment: E
     </div>);
 }
 
+/** Roll back to the last good version: fills the form with it; dispatch still goes through every gate. */
+export function RollbackCard({ target, resolvedCommit, active, onPrepare }: { target: RollbackTarget; resolvedCommit: string | null; active: boolean; onPrepare: (ref: string, kind: "branch" | "tag") => void }) {
+  if (target.kind === "none") return target.reason === "no_earlier_success" ? <p className="mt-3 text-[11px] text-zinc-500">No earlier successful version of this repository is recorded here, so there is nothing to roll back to.</p> : null;
+  const matches = active ? rollbackCommitMatches(target, resolvedCommit) : null;
+  const when = new Date(target.to.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return (
+    <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-[12px]">
+      <p className="text-zinc-300">Last good version here: <span className="font-mono">{target.to.sourceCommitSha!.slice(0, 12)}</span> from {target.to.sourceKind} <span className="font-mono">{target.to.sourceRef}</span>, deployed {when}.</p>
+      <p className="mt-1 text-zinc-500">{target.note} Rolling back is an ordinary deployment: policy, checks, rings, change window and approvals still apply.</p>
+      <button data-help-id="settings.workspace.deploy-rollback" type="button" onClick={() => onPrepare(target.to.sourceRef!, target.to.sourceKind === "tag" ? "tag" : "branch")} className="mt-2 rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/6">Prepare rollback to this version</button>
+      {active && <p aria-live="polite" className={`mt-2 ${matches === false ? "text-amber-300" : "text-zinc-400"}`}>{matches === null ? "Rollback prepared. Check readiness to confirm the commit before dispatching." : matches ? "Readiness resolved the same commit, so dispatching redeploys the last good version." : `Readiness resolved ${resolvedCommit!.slice(0, 12)}, not the last good commit: the branch has moved. Use a tag for that commit instead.`}</p>}
+    </div>);
+}
+
 /** Human summary of whether deployments are allowed right now. */
 function windowStatusText(stored: unknown, now: Date): string {
   const parsed = parseChangeWindowRule(stored);
@@ -1551,6 +1566,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [bypassReason, setBypassReason] = useState("");
   const [stabilityRequired, setStabilityRequired] = useState(false);
   const [stabilityReason, setStabilityReason] = useState("");
+  const [environmentExecutions, setEnvironmentExecutions] = useState<DeploymentExecution[]>([]);
+  const [rollbackPrepared, setRollbackPrepared] = useState(false);
   const [checkingReadiness, setCheckingReadiness] = useState(false);
   const [readinessError, setReadinessError] = useState<string | null>(null);
   const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass"; databaseChanges?: DatabaseChangeEvidence } | null>(null);
@@ -1593,6 +1610,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
       }
       if (executions.ok) {
         setExecution(executions.data.executions.find((item) => item.environmentId === environmentId) ?? null);
+        setEnvironmentExecutions(executions.data.executions.filter((item) => item.environmentId === environmentId));
         setSuccessfulExecutions(executions.data.executions.filter((item) => item.environmentId !== environmentId && item.status === "completed" && item.conclusion === "success" && Boolean(item.sourceCommitSha)));
       }
       if (repositories.ok) {
@@ -1763,7 +1781,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
             </select>
           </label>
-          <LabeledInput label="Workflow source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
+          <LabeledInput label="Workflow source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); setRollbackPrepared(false); }} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
             <select data-help-id="settings.workspace.deploy-source-kind" value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
@@ -1798,10 +1816,11 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               <input data-help-id="settings.workspace.deploy-emergency-bypass" type="checkbox" checked={emergencyBypass} onChange={(event) => { setEmergencyBypass(event.target.checked); setReadiness(null); }} className="mt-0.5" />
               <span><strong>Emergency production bypass</strong><br /><span className="text-amber-200/70">Skips normal promotion evidence. Admin-only, reason required, and permanently audited.</span></span>
             </label>
-            {stabilityRequired && <textarea data-help-id="settings.workspace.deploy-stability-reason" aria-label="Reason to deploy during the stability warning" value={stabilityReason} onChange={(event) => setStabilityReason(event.target.value)} placeholder="Why this production deployment should go out now (at least 10 characters). It is recorded in the audit log." className="mt-3 min-h-16 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
             {emergencyBypass && <textarea data-help-id="settings.workspace.deploy-bypass-reason" aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
           </div>
         )}
+        {stabilityRequired && <textarea data-help-id="settings.workspace.deploy-stability-reason" aria-label="Reason to deploy during the stability warning" value={stabilityReason} onChange={(event) => setStabilityReason(event.target.value)} placeholder="Why this production deployment should go out now (at least 10 characters). It is recorded in the audit log." className="mt-3 min-h-16 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
+        {deployRepo && <RollbackCard target={findRollbackTarget(environmentExecutions, environmentId, deployRepo)} resolvedCommit={readiness?.sourceCommitSha ?? null} active={rollbackPrepared} onPrepare={(ref, kind) => { setSourceRef(ref); setSourceKind(kind); setPullRequestNumber(""); setPromotedFromExecutionId(""); setReadiness(null); setRollbackPrepared(true); }} />}
         <BlockingChecksNote checks={blockingChecks} commit={readiness?.sourceCommitSha ?? null} bypass={emergencyBypass} />
         {readiness?.databaseChanges && <DatabaseChangesNote evidence={readiness.databaseChanges} />}
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
