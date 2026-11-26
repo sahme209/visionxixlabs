@@ -118,7 +118,9 @@ jobs:
       # Vercel production credentials. Git-triggered Vercel builds are disabled.
       - name: Build production website (no deployment)
         env:
-          NODE_OPTIONS: --max-old-space-size=8192
+          # 6 GB keeps the webpack worker's peak near 5.5 GB (measured 26 Nov); an 8 GB cap let a
+          # cold build peak near 9 GB and the hosted runner was shut down mid-build three times.
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
 
       # Exercise these emitted routes before this same build can pass. Synthetic
