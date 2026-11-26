@@ -341,8 +341,14 @@ coding.lint_failed                 coding.test_failed          airflow.action_pr
 airflow.automation_succeeded       airflow.automation_failed
 agent_gateway.request_pending      agent_gateway.request_decided
 agent_gateway.outcome_recorded     audit.integrity_failed
-workspace.access_requested
+workspace.access_requested         deployment.blocked
 ```
+
+`deployment.blocked` fires when a release gate refuses a desktop deployment:
+outside the environment's change window, during a freeze, while a stability
+warning needs a reason, or when blocking checks or the previous ring have not
+passed. Payload: `{ environmentId, repositoryFullName, reason }`, plus
+`nextOpen` or `freezeReason` when they apply.
 
 `agent_gateway.request_pending` fires when an agent's action needs a human
 decision. Payload: `{ requestId, agentName, actionKind, environment, target,

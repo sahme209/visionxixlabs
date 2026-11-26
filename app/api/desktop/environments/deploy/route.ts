@@ -28,6 +28,15 @@ import type { DeploymentCheckGateRepo } from "@/lib/releaseops/deploymentCheckGa
 import type { RingGateRepo } from "@/lib/releaseops/ringGate";
 import { changeWindowGate, commitGates } from "@/lib/releaseops/releaseGates";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
+
+/** Refuse a deployment at a release gate and tell subscribed endpoints (best-effort; never changes the refusal). */
+async function gateRefusal(organizationId: string, environmentId: string, repositoryFullName: string, body: { error: string } & Record<string, unknown>, status: number): Promise<NextResponse> {
+  try {
+    await dispatchWebhookEvent({ organizationId, eventKind: "deployment.blocked", data: { environmentId, repositoryFullName, reason: body.error, ...(typeof body.nextOpen === "object" && body.nextOpen ? { nextOpen: body.nextOpen } : {}), ...(typeof body.freezeReason === "string" ? { freezeReason: body.freezeReason } : {}) }, fireImmediately: true });
+  } catch { /* best-effort */ }
+  return NextResponse.json({ ok: false, ...body }, { status });
+}
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -109,7 +118,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   // branch policy; an unreadable rule fails closed rather than silently allowing the deployment.
   if (!emergencyBypass) {
     const windowGate = changeWindowGate(environment.changeWindowRuleJson, new Date());
-    if (!windowGate.ok) return NextResponse.json(windowGate, { status: 409 });
+    if (!windowGate.ok) return gateRefusal(organizationId, environmentId, repositoryFullName, windowGate, 409);
   }
   // Stability early warning: while recent changes fail far more often than usual, a production
   // deployment needs a stated reason. Advisory slowdown: if it cannot be read, nothing is blocked.
@@ -118,7 +127,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!emergencyBypass && environment.tier === "prod") {
     const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, new Date());
     if (stability?.level === "elevated") {
-      if (stabilityReason.length < 10) return NextResponse.json({ ok: false, error: "stability_warning_active", message: stability.message }, { status: 409 });
+      if (stabilityReason.length < 10) return gateRefusal(organizationId, environmentId, repositoryFullName, { error: "stability_warning_active", message: stability.message }, 409);
       stabilityAcknowledged = true;
     }
   }
@@ -179,7 +188,10 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!emergencyBypass) {
     // Ring N also waits for a successful deployment of this commit in ring N-1 (environment tags).
     const gates = await commitGates(prisma as unknown as DeploymentCheckGateRepo & RingGateRepo, { organizationId, environmentId, repositoryFullName, commitSha: policy.sourceCommitSha, now: new Date() });
-    if (!gates.ok) return NextResponse.json(gates, { status: gates.error === "deployment_checks_unavailable" || gates.error === "ring_gate_unavailable" ? 503 : 409 });
+    if (!gates.ok) {
+      if (gates.error === "deployment_checks_unavailable" || gates.error === "ring_gate_unavailable") return NextResponse.json(gates, { status: 503 });
+      return gateRefusal(organizationId, environmentId, repositoryFullName, gates, 409);
+    }
   }
 
   if (emergencyBypass) {

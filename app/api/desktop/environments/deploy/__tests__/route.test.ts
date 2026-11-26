@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   findRepositories: vi.fn(),
   findBranchPolicies: vi.fn(),
   findReleases: vi.fn(async (): Promise<unknown[]> => []),
+  webhook: vi.fn(async () => ({})),
   recordAudit: vi.fn(async (
     _repo: import("@/lib/releaseops/auditEventResponder").AuditEventRepo,
     _input: import("@/lib/releaseops/auditEventResponder").AppendAuditEventInput,
@@ -61,6 +62,7 @@ vi.mock("@/lib/releaseops/auditEventResponder", async () => {
 vi.mock("@/lib/releaseops/deploymentConfigSnapshot", () => ({ recordDeploymentConfigSnapshot: mocks.configSnapshot }));
 vi.mock("@/lib/releaseops/deploymentCheckGateStore", () => ({ readDeploymentCheckGate: mocks.checkGate }));
 vi.mock("@/lib/releaseops/ringGate", () => ({ readRingGate: mocks.ringGate }));
+vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: mocks.webhook }));
 vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
   reserveDeploymentDispatch: mocks.reserveDeploymentDispatch,
   releaseDeploymentDispatch: mocks.releaseDeploymentDispatch,
@@ -195,6 +197,7 @@ describe("POST /api/desktop/environments/deploy", () => {
     let res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ error: "deployment_freeze_active", freezeReason: "Release freeze" });
+    expect(mocks.webhook).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", eventKind: "deployment.blocked", data: expect.objectContaining({ environmentId: "env_1", repositoryFullName: "acme/widgets", reason: "deployment_freeze_active", freezeReason: "Release freeze" }) }));
     mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod", changeWindowRuleJson: { utcWindows: [{ start: "9am", end: "5pm" }] } });
     res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(409);
