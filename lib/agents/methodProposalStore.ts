@@ -82,37 +82,48 @@ export interface DecideProposalInput {
   decisionReason?: string;
 }
 
+export type DecideProposalResult =
+  | { kind: "decided"; record: MethodProposalRecord }
+  | { kind: "already_decided"; record: MethodProposalRecord }
+  | { kind: "not_found" };
+
+/**
+ * Record a human verdict exactly once. The update is conditional on the row still being pending, so two
+ * concurrent decisions cannot overwrite each other: the second sees the first's outcome. Storage errors
+ * propagate to the caller instead of being reported as "not found".
+ */
+export async function decideProposalOnce(input: DecideProposalInput): Promise<DecideProposalResult> {
+  const decidedAt = new Date();
+  const claimed = await prisma.methodProposal.updateMany({
+    where: { id: input.proposalId, organizationId: input.organizationId, status: "pending" },
+    data: {
+      status: input.decision,
+      decidedBy: input.decidedBy ?? null,
+      decisionReason: input.decisionReason?.slice(0, 500) ?? null,
+      decidedAt,
+    },
+  });
+  const row = await prisma.methodProposal.findUnique({ where: { id: input.proposalId } });
+  if (!row || row.organizationId !== input.organizationId) return { kind: "not_found" };
+  if (claimed.count !== 1) return { kind: "already_decided", record: mapRow(row) };
+
+  void publishAgentMessage({
+    tenantId: input.organizationId,
+    sender: "council",
+    recipient: row.authorAgent as AgentRole,
+    kind: "council_consensus",
+    summary: `Proposal ${input.decision}: ${row.label}`,
+    payload: { proposalId: row.id, decision: input.decision, reason: input.decisionReason },
+    threadId: row.id,
+  });
+  return { kind: "decided", record: mapRow(row) };
+}
+
+/** Compatibility wrapper for read-only callers; decisions should use decideProposalOnce. */
 export async function decideProposal(input: DecideProposalInput): Promise<MethodProposalRecord | null> {
   try {
-    const existing = await prisma.methodProposal.findUnique({ where: { id: input.proposalId } });
-    if (!existing || existing.organizationId !== input.organizationId) return null;
-    if (existing.status !== "pending") return mapRow(existing);
-
-    const row = await prisma.methodProposal.update({
-      where: { id: input.proposalId },
-      data: {
-        status: input.decision,
-        decidedBy: input.decidedBy ?? null,
-        decisionReason: input.decisionReason?.slice(0, 500) ?? null,
-        decidedAt: new Date(),
-      },
-    });
-
-    void publishAgentMessage({
-      tenantId: input.organizationId,
-      sender: "council",
-      recipient: existing.authorAgent as AgentRole,
-      kind: "council_consensus",
-      summary: `Proposal ${input.decision}: ${existing.label}`,
-      payload: {
-        proposalId: existing.id,
-        decision: input.decision,
-        reason: input.decisionReason,
-      },
-      threadId: existing.id,
-    });
-
-    return mapRow(row);
+    const result = await decideProposalOnce(input);
+    return result.kind === "not_found" ? null : result.record;
   } catch {
     return null;
   }
