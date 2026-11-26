@@ -32,6 +32,8 @@ export default defineConfig({
       // react-dom, so load the root lucide-react (which imports root React);
       // desktop/node_modules/lucide-react would bind to a second React copy.
       { find: /^lucide-react$/, replacement: path.resolve(__dirname, "./node_modules/lucide-react") },
+      // Same reason for framer-motion: desktop motion components must bind to the root React in tests.
+      { find: /^framer-motion$/, replacement: path.resolve(__dirname, "./node_modules/framer-motion") },
       { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, "./$1") },
     ],
   },
