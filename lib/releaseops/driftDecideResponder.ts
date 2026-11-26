@@ -34,6 +34,16 @@ export interface DriftDecideRepo {
         decisionReason: string | null;
       };
     }): Promise<{ id: string; status: string }>;
+    /** Conditional transition from the status that was read. */
+    updateMany(args: {
+      where: { id: string; organizationId: string; status: string };
+      data: {
+        status: "acknowledged" | "suppressed" | "resolved";
+        decidedByUserId: string;
+        decidedAt: Date;
+        decisionReason: string | null;
+      };
+    }): Promise<{ count: number }>;
   };
 }
 
@@ -115,8 +125,8 @@ export async function buildDriftDecideResponse(
       input.action === "acknowledge" ? "acknowledged" :
       input.action === "suppress"    ? "suppressed"  : "resolved";
 
-    const updated = await repo.driftFinding.update({
-      where: { id: input.findingId },
+    const claimed = await repo.driftFinding.updateMany({
+      where: { id: input.findingId, organizationId: input.organizationId, status: finding.status },
       data: {
         status: next,
         decidedByUserId: input.actorUserId,
@@ -124,10 +134,13 @@ export async function buildDriftDecideResponse(
         decisionReason: reasonTrimmed && reasonTrimmed.length > 0 ? reasonTrimmed : null,
       },
     });
+    if (claimed.count !== 1) {
+      return { status: 409, body: { ok: false, error: "illegal_transition", hint: "The finding changed while you were deciding. Reload it." } };
+    }
 
     return {
       status: 200,
-      body: { ok: true, data: { id: updated.id, status: next, action: input.action } },
+      body: { ok: true, data: { id: input.findingId, status: next, action: input.action } },
     };
   } catch (err) {
     if (isMissingTable(err)) {

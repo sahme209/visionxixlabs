@@ -22,6 +22,13 @@ function makeRepo(): DriftDecideRepo & {
         updates.push({ id: where.id, status: data.status });
         return { id: where.id, status: data.status };
       },
+      async updateMany({ where, data }) {
+        const ex = rows.get(where.id);
+        if (!ex || ex.organizationId !== where.organizationId || ex.status !== where.status) return { count: 0 };
+        rows.set(where.id, { ...ex, status: data.status });
+        updates.push({ id: where.id, status: data.status });
+        return { count: 1 };
+      },
     },
   };
 }
@@ -132,5 +139,18 @@ describe("buildDriftDecideResponse", () => {
     expect(r.status).toBe(503);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("migration_pending");
+  });
+});
+
+describe("drift decision concurrency", () => {
+  it("lets only one of two concurrent decisions change the finding", async () => {
+    const repo = makeRepo();
+    repo._rows.set("dr_1", makeRow());
+    const [a, b] = await Promise.all([
+      buildDriftDecideResponse(repo, { organizationId: "o", findingId: "dr_1", actorUserId: "u1", action: "acknowledge" }, { now: NOW }),
+      buildDriftDecideResponse(repo, { organizationId: "o", findingId: "dr_1", actorUserId: "u2", action: "resolve" }, { now: NOW }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    expect(repo._updates).toHaveLength(1);
   });
 });
