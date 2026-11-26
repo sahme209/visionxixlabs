@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFigure, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Troubleshooting — V19 Documentation",
@@ -23,6 +23,7 @@ export default function TroubleshootingPage() {
       </Callout>
 
       <DocSection id="installation" title="Install or sign in" kicker="01">
+        <DocFigure src="/docs/website-download.webp" alt="The V19 download page listing installers by operating system" caption="The download page shows each installer and its signing status. Choose the build for your operating system and architecture." />
         <p>Check the selected release and installer on the download page. Choose the package for your operating system and architecture, then follow the installation guide. Desktop sign-in uses browser-approved pairing; return to the installed app to continue.</p>
         <p>Availability and verification depend on the selected release. This guide does not establish signing, platform acceptance, or a successful clean installation. Follow your organization’s software policy and platform protections.</p>
         <p><Link href="/download">Check downloads</Link> · <Link href="/docs/desktop-install">Install and sign in</Link></p>

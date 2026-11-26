@@ -38,7 +38,7 @@ import {isBotAiEvidenceContext,isBotAiCapabilities,isBotAiRunList,isBotAiRunResp
 import {readinessReportRequest} from './readinessReportTransport';
 import {isReadinessCapabilities,isReadinessRunList,isReadinessRunResponse,isReadinessReportResponse,isReadinessRunId,type ReadinessCapabilitiesDto,type ReadinessRunListDto,type ReadinessRunResponseDto,type ReadinessReportResponseDto,type ReadinessStartDto} from '../../../lib/axiom/bot/readinessRunDto';
 import {savedBotTaskRequest} from "./savedBotTaskTransport";
-import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskHistory,type SavedBotTaskResult,type SavedBotTaskListDto,type SavedBotTaskDetailDto,type SavedBotTaskHistoryDto,type SavedBotTaskCreateDto,type SavedBotTaskUpdateDto} from "../../../lib/axiom/bot/savedTaskContract";
+import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskHistory,isSavedBotTaskLastRuns,isSavedBotTaskRunHistory,type SavedBotTaskLastRunsDto,type SavedBotTaskRunHistoryDto,type SavedBotTaskResult,type SavedBotTaskListDto,type SavedBotTaskDetailDto,type SavedBotTaskHistoryDto,type SavedBotTaskCreateDto,type SavedBotTaskUpdateDto} from "../../../lib/axiom/bot/savedTaskContract";
 import { isCloudOnboardingReadiness, type CloudOnboardingReadiness } from '../../../lib/cloud/onboardingReadinessContract';
 import {isReleaseMergeTargets,isReleaseMergePlanEvidence,type ReleaseMergeTargets,type ReleaseMergePlanEvidence,type ReleaseMergeMethod} from "./releaseMergeContract";
 import { isReleaseBatchWait, isReleaseBatchWaitState, type ReleaseBatchWait, type ReleaseBatchWaitState } from "./releaseBatchWaitContract";
@@ -160,6 +160,7 @@ export interface AirflowAutomation {
 }
 export interface AirflowAutomationExecution { id: string; automationId: string; sourceDagId: string; sourceDagRunId: string; sourceDagState: string; status: string; attempt: number; errorCode: string | null; resultJson: unknown; createdAt: string }
 
+export interface DeploymentOutcomeSummaryDto { windowDays: number; recorded: number; inProgress: number; succeeded: number; failed: number; successRate: number | null; medianSeconds: number | null; truncated: boolean; daily?: number[]; previousRecorded?: number | null }
 export interface DeploymentExecutionEvidence {
   operation: "unknown";
   requestedOperation?: "service_restart";
@@ -595,6 +596,14 @@ export class DesktopClient {
   }
   listSavedBotTasks(cursor?:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskListDto>> {
     return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks${cursor?`?cursor=${encodeURIComponent(cursor)}`:""}`,undefined,isSavedBotTaskList,signal);
+  }
+  listSavedBotTaskLastRuns(ids:readonly string[],signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskLastRunsDto>> {
+    if(ids.length===0||ids.length>25||!ids.every(isSavedBotTaskId)||new Set(ids).size!==ids.length)return Promise.resolve({ok:false,error:"Invalid saved tasks.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/last-runs?ids=${ids.join(",")}`,undefined,(value):value is SavedBotTaskLastRunsDto=>isSavedBotTaskLastRuns(value,ids),signal);
+  }
+  savedBotTaskRunHistory(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskRunHistoryDto>> {
+    if(!isSavedBotTaskId(id))return Promise.resolve({ok:false,error:"Invalid saved task.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/${id}/runs`,undefined,(value):value is SavedBotTaskRunHistoryDto=>isSavedBotTaskRunHistory(value,id),signal);
   }
   getSavedBotTask(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskDetailDto>> {
     if(!isSavedBotTaskId(id))return Promise.resolve({ok:false,error:"Invalid saved task.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
@@ -1336,6 +1345,10 @@ export class DesktopClient {
 
   preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ evidence?: DeploymentExecutionEvidence; ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
     return this.post("/api/desktop/environments/deploy/preflight", input);
+  }
+
+  deploymentOutcomeSummary(): Promise<ApiResult<DeploymentOutcomeSummaryDto>> {
+    return this.get("/api/desktop/environments/deployments/outcome-summary");
   }
 
   listDeploymentExecutions(environmentId?: string): Promise<ApiResult<{ executions: DeploymentExecution[] }>> {

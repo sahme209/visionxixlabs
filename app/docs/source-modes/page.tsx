@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, Step } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, Step, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Source modes — V19 Documentation",
@@ -17,6 +17,7 @@ export default function SourceModesPage() {
         This guide describes registered repository controls in the current local preview. Your installed version may differ. It does not establish production readiness, current provider access or complete Governance enforcement. GitLab connector or GitLab sign-in availability is not established by this guide.
       </Callout>
 
+      <DocFigure src="/docs/desktop/repositories.webp" alt="The Repositories view in the V19 desktop app" caption="Repositories with the selected repository, branch and source, shown with synthetic example records." width={1600} height={1067} />
       <DocSection id="local-files" title="Local files on your computer" kicker="01 · Inspect a checkout">
         <p>In Repositories, the Local strip identifies the selected checkout and its branch. Open Clone or refresh repositories to inspect the source controls. The Local repositories folder lists the local checkouts V19 can discover there; choose the intended repository before opening a file.</p>
         <p>The editor can contain unsaved changes. A local selection is not a verified GitHub snapshot, and a saved folder selection is navigation metadata, not permission to access a different repository or execute a command.</p>

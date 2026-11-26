@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {desktopClient} from "../lib/desktopClient";
+import {formatRunElapsed} from "./DeploymentWorkflowEvidence";
 
 type RecordedEvent<EventType extends string> = {type: EventType; at: string};
 
@@ -44,10 +45,27 @@ export function RecordedReleaseEvents<EventType extends string>({subject, labels
     {loading && <p role="status">Loading {subject} history…</p>}
     {events === null && <p role="alert">Could not verify {subject} history.</p>}
     {events?.length === 0 && <p role="status">No {subject} events were recorded for this plan.</p>}
-    {events && events.length > 0 && <ol aria-label={`Recorded ${subject} events`} className="recorded-release-events space-y-1 text-xs text-zinc-400">
-      {events.map(event => <li key={event.type}>
-        <span>{labels[event.type]}</span><span className="recorded-release-event-separator" aria-hidden="true"> · </span><time dateTime={event.at}>{new Date(event.at).toLocaleString()}</time>
-      </li>)}
-    </ol>}
+    {events && events.length > 0 && (() => {
+      const first = validDate(events[0].at);
+      const last = validDate(events[events.length - 1].at);
+      const span = first && last && events.length > 1 ? formatRunElapsed(first, last) : null;
+      return <>
+        {span && <p className="recorded-release-events-span text-[11px] text-zinc-500">{events.length} recorded steps over {span}</p>}
+        <ol aria-label={`Recorded ${subject} events`} className="recorded-release-events space-y-1 text-xs text-zinc-400">
+          {events.map((event, index) => {
+            const at = validDate(event.at);
+            const elapsed = index > 0 && first && at ? formatRunElapsed(first, at) : null;
+            return <li key={event.type} data-last={index === events.length - 1 ? "true" : undefined}>
+              <span>{labels[event.type]}</span><span className="recorded-release-event-separator" aria-hidden="true"> · </span><time dateTime={event.at}>{at ? at.toLocaleString() : event.at}</time>{elapsed && <span className="recorded-release-event-elapsed">+{elapsed}</span>}
+            </li>;
+          })}
+        </ol>
+      </>;
+    })()}
   </div>;
+}
+
+function validDate(value: string): Date | null {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
 }

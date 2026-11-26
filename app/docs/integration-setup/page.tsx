@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, CodeBlock, DocFeedback, DocFooterNav, DocHeader, DocSection, Step } from "@/components/docs/DocPrimitives";
+import { Callout, CodeBlock, DocFeedback, DocFooterNav, DocHeader, DocSection, Step, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Release integration setup — V19 Documentation",
@@ -25,6 +25,8 @@ export default function IntegrationSetupPage() {
       <Callout>
         These callback addresses are for the service operator to register with each provider, not links to start a connection. Opening a callback directly will be rejected because there is no active authorization state. When your version offers the connection, start from its Connect control in the desktop app. Never share a callback containing authorization codes or state.
       </Callout>
+      <DocFigure src="/docs/desktop/apps-and-skills.webp" alt="The Apps and Skills view in the V19 desktop app" caption="Apps & Skills with connection states and the selected connector, shown with synthetic example records." />
+      <DocFigure src="/docs/cockpit/integrations.webp" alt="The Integrations page in the V19 cockpit in a browser" caption="Integrations in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
       <DocSection id="shared" title="Before connecting a provider" kicker="Service operator checklist">
         <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-300">
           <li>Set the production V19 origin as <code>NEXTAUTH_URL</code>; callback construction fails closed when the origin is not trusted.</li>

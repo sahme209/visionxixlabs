@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "ca79600b3d57bdded1db4e8da0a80efc51e9b6b11a43af04a8b3df4a6a398b36",
+      "sourceSha256": "2cdc28d1c2fcdae54ec3bf48560bbb5ee109ec38962ede6e0f97b332efdd4541",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -27,7 +27,7 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "76072a61c0a58313254a63d53de5d038bdfd3fb99d47ed5e13fe255b380985fd",
+      "sourceSha256": "60223e1808dbd0583751bdab2a6b005f346be740417b58fb5a413b28ef5307c3",
       "fields": [
         "Getting started with V19 Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
@@ -45,7 +45,7 @@
     {
       "href": "/docs/source-modes",
       "source": "app/docs/source-modes/page.tsx",
-      "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452",
+      "sourceSha256": "65d7c17aaac2f0ffb2c8f4d2ee8646cb54a2ef31d15e72197ada46f84306a5ac",
       "fields": [
         "Know which source you are using.",
         "A file on your computer, a connected GitHub repository and a recorded result are different sources. Check the source and target before asking for an explanation or preparing a change.",
@@ -60,7 +60,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "5984495b11b86ea023ed73dd73def2dee0d3ad0cd4da9de860729fe8397b0efa",
+      "sourceSha256": "36274c4f995a98e313145508af2eb819653098d3b172e88bf8490bf13d30e886",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -74,6 +74,7 @@
         "Inspect a failed Airflow run in Batches release dependencies",
         "Find older closed releases in Batches History",
         "Find release logs in desktop Batches",
+        "Open a release record in the browser",
         "Use the website for guidance",
         "Watch a V19 desktop recording or scripted tour",
         "Know who acts next",
@@ -83,7 +84,7 @@
     {
       "href": "/docs/aws-setup",
       "source": "app/docs/aws-setup/page.tsx",
-      "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef",
+      "sourceSha256": "5ab3d5bd458bce10f5799718f3852405c9ea4fffe444b265848a351cdc252bb1",
       "fields": [
         "Deploy through your workflow and your AWS role.",
         "V19 dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment.",
@@ -98,7 +99,7 @@
     {
       "href": "/docs/azure-setup",
       "source": "app/docs/azure-setup/page.tsx",
-      "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6",
+      "sourceSha256": "de079651c255215515439f229e08e04e8794c869705457ed7eb6d7d89c5a723b",
       "fields": [
         "Azure setup.",
         "V19 currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release.",
@@ -113,7 +114,7 @@
     {
       "href": "/docs/gcp-setup",
       "source": "app/docs/gcp-setup/page.tsx",
-      "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14",
+      "sourceSha256": "1df0ec1edec861498ce15a934c6a6501615b3f7c898bf00437922b14c7ba053d",
       "fields": [
         "GCP setup.",
         "V19 currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release.",
@@ -127,7 +128,7 @@
     {
       "href": "/docs/approval-workflow",
       "source": "app/docs/approval-workflow/page.tsx",
-      "sourceSha256": "9ff9ab926f51b3cf1e52b9f18accd79b515cce3eb2f1e2f43e99b39a9e580df5",
+      "sourceSha256": "fe8a150be015940b471ed1071b7d75406d449668f90c44f4d81641e17f4ee650",
       "fields": [
         "A write starts as a proposal.",
         "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
@@ -144,7 +145,7 @@
     {
       "href": "/docs/execution-plans",
       "source": "app/docs/execution-plans/page.tsx",
-      "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f",
+      "sourceSha256": "55a284e55115bb546249efddc3863085aef72bd2404e55a8adc27720135e4679",
       "fields": [
         "Understand a saved plan.",
         "A plan records intended work. Review, current access, execution and outcome evidence are separate steps.",
@@ -159,7 +160,7 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "d742abf6cbe402cee6ba3ffd3622dc9cfe702b277e9616360717290335ecf681",
+      "sourceSha256": "1cca2f41c3913e1ea148568079a004ca9fab62c591b5d7dd3d62b85aa9836559",
       "fields": [
         "Rollback is specific to the execution path.",
         "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
@@ -172,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1",
+      "sourceSha256": "5f3e7c1235212902ea03a3bbf36ff5fc808cfdef627f7f060a35460dcc6eb43c",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -186,7 +187,7 @@
     {
       "href": "/docs/releaseops/connectors",
       "source": "app/docs/releaseops/connectors/page.tsx",
-      "sourceSha256": "3009e5f09f12fcb0b110ca4cfb3385b8e54fe3525eb234ef0949e242e0cb79c3",
+      "sourceSha256": "502d64cde49c0055a749c50796f98284d74d28f25e1453a00251534c75c16c9b",
       "fields": [
         "Integration boundaries.",
         "What V19 can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
@@ -198,7 +199,7 @@
     {
       "href": "/docs/releaseops/readiness",
       "source": "app/docs/releaseops/readiness/page.tsx",
-      "sourceSha256": "958e54dc55e31bd99349a58909596d2a8b0ac3ed1c65eac050bd05d8d05946e1",
+      "sourceSha256": "7b45837ff3e1fcda789e76292e673a189595461e7192e8ce57fcb3c4e58ddba8",
       "fields": [
         "Deployment readiness.",
         "V19 assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
@@ -213,7 +214,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "4719f767edd4f5d37efdf766ee110e01e90fe49967ebb6190ef7cb6b945c58b5",
+      "sourceSha256": "d3f4c54b97a2ac0b8f79014138f3f20148ca89f1e822a8b19c58fdabf4fb24a8",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
@@ -231,7 +232,7 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "c88ee9bfa35d8dfebff854c0bc31150ce7af0b3b99266931e2cd9cecf0dcfd6e",
+      "sourceSha256": "1401baeda086cb14ee2987344a4929ec46a49ca37b236fd9a02971043a391f65",
       "fields": [
         "Operator integration configuration",
         "Use the setup for your provider and installed version. OAuth registration, workspace consent and connection validation are separate steps.",
@@ -250,7 +251,7 @@
     {
       "href": "/docs/security-model",
       "source": "app/docs/security-model/page.tsx",
-      "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8",
+      "sourceSha256": "b3347a53579133cba63c805029e14c1db0d5571ffaf8909f84929a21d0d9db15",
       "fields": [
         "The current V19 security model.",
         "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",
@@ -267,7 +268,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93",
+      "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else.",
@@ -283,7 +284,7 @@
     {
       "href": "/docs/oauth-setup",
       "source": "app/docs/oauth-setup/page.tsx",
-      "sourceSha256": "680695b89ce048b473059add80efbacddf429723b91984c33d38ee31cc929e0a",
+      "sourceSha256": "b3d1efff9453c7c3c1abb8e24bb031556b0b1755752dbde781436b8d87276821",
       "fields": [
         "Enable Google + GitHub sign-in",
         "V19 uses NextAuth. Google and GitHub sign-in options appear when the browser confirms that the host registered those providers.",
@@ -298,7 +299,7 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231",
+      "sourceSha256": "aac069a06ea70939a5e7cf641101ea1dbeb453333fd57b554c41adb92bdae058",
       "fields": [
         "Govern any AI agent.",
         "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",
@@ -312,7 +313,7 @@
     {
       "href": "/docs/offline-ai",
       "source": "app/docs/offline-ai/page.tsx",
-      "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7",
+      "sourceSha256": "719e4980c4e294862721ef92b81e204ed4b68a45a16ee0f54a240c689b712dbe",
       "fields": [
         "Keep model calls inside your private environment.",
         "Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback.",
@@ -328,7 +329,7 @@
     {
       "href": "/docs/trust-tools",
       "source": "app/docs/trust-tools/page.tsx",
-      "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847",
+      "sourceSha256": "c0b1c70c7ce9a82d04526d7db8f8c94572d824384760cbaf71e97d9414c45dd3",
       "fields": [
         "Prove, replay, preview.",
         "Three read-only tools on Control → Trust tools. Each states its limits.",
@@ -341,7 +342,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1",
+      "sourceSha256": "b8f9f46e8e94b5de9308f42eb1fec417980dda763806cc80f60803d5d9d0b9f1",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
@@ -354,7 +355,7 @@
     {
       "href": "/docs/batch-providers",
       "source": "app/docs/batch-providers/page.tsx",
-      "sourceSha256": "9a1491c42ea3efb1be6307c9845650ca18703b4956b2063cbcfc2c0b306fdb17",
+      "sourceSha256": "5bd9de49b699348c9cdd1bf2e3fee5f23dda8021c536898c3ac27463d439a96a",
       "fields": [
         "Prefect, Dagster and Argo, read-only.",
         "Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything.",
@@ -367,7 +368,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "dec08b7a1a73436d9e9a92e9ca630ef8e63dab8101054a652af3f1069265a5db",
+      "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304",
       "fields": [
         "Ask V19.",
         "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",
@@ -381,7 +382,7 @@
     {
       "href": "/docs/plugins",
       "source": "app/docs/plugins/page.tsx",
-      "sourceSha256": "795ebfbcf5e093ad0a6720b5e4f0c612607d2217510384f69591665d067ce3f0",
+      "sourceSha256": "0874cb4a12b61c77fe4020c0ec1ebdc30b4775a31299aaa483c747ec4eade08e",
       "fields": [
         "Find a workflow. Add guidance deliberately.",
         "Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready.",
@@ -395,7 +396,7 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b",
+      "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
@@ -408,7 +409,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083",
+      "sourceSha256": "d18e08636cea1d79df998f5d855adc6afba6337c49aa0242c0631de3f5747350",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -421,7 +422,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "dffe216ec18ed482a6a8dc716bc538788416b90007d21c4b403caa26d4b34d96",
+      "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -435,7 +436,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6",
+      "sourceSha256": "206d16ca701c5281ee2d2bce4acde4f584d47626b578af2bf09b5074dd91aeb5",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -452,7 +453,7 @@
     {
       "href": "/docs/usage-billing",
       "source": "app/docs/usage-billing/page.tsx",
-      "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7",
+      "sourceSha256": "04ba1b8c26e54ce685e322e1e4fa3777f8bd3b005eee9b8d71814982eb3523f9",
       "fields": [
         "See what you used and what it cost.",
         "Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated.",
@@ -465,7 +466,7 @@
     {
       "href": "/docs/settings",
       "source": "app/docs/settings/page.tsx",
-      "sourceSha256": "adf135bbc92e3d07004e867b77156f7f37d86877fc71c383bbb49af716c1dbaa",
+      "sourceSha256": "b1a9a8a4b8fea77d80e94d8a201ce0916ee72cba3e50a102ee41da83641121aa",
       "fields": [
         "Keep your profile and devices under control.",
         "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
@@ -480,7 +481,7 @@
     {
       "href": "/docs/troubleshooting",
       "source": "app/docs/troubleshooting/page.tsx",
-      "sourceSha256": "ffe466d8fb93f90026f59d6f983538fb752978802ad9a1177ddcc3bf6229ca3a",
+      "sourceSha256": "628ee02bb87da9c127b61b7ff05f3a9e48646e626ccf49d0e685487aea25e436",
       "fields": [
         "Troubleshooting",
         "Start with the visible problem. Installation, connection readiness, approval, and execution are separate checks.",
@@ -495,7 +496,7 @@
     {
       "href": "/docs/audit-logs",
       "source": "app/docs/audit-logs/page.tsx",
-      "sourceSha256": "3111f19e24c274735fd0d41765732ff2068f751da111353645a214c5c23dd4eb",
+      "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490",
       "fields": [
         "Read the evidence, not just the status.",
         "A saved decision, an attempted action and an observed external result answer different questions.",

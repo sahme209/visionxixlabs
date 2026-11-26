@@ -17,10 +17,27 @@ import type {AxiomBotDraft} from "./AxiomBotDraftTask";
 import {BotReadinessReportPanel} from "./BotReadinessReportPanel";
 import {BotTaskComposer} from "./BotTaskComposer";
 import {desktopClient} from "../lib/desktopClient";
-import type {SavedBotTaskDto,SavedBotTaskSummaryDto,SavedBotTaskContentDto,SavedBotTaskHistoryDto} from "../../../lib/axiom/bot/savedTaskContract";
+import type {SavedBotTaskDto,SavedBotTaskSummaryDto,SavedBotTaskContentDto,SavedBotTaskHistoryDto,SavedBotTaskLastRunDto,SavedBotTaskRunHistoryDto} from "../../../lib/axiom/bot/savedTaskContract";
+import {StatusBadge} from "./StatusBadge";
 interface PendingSave {content:SavedBotTaskContentDto;clientRequestId:string;taskId?:string;expectedVersion?:number}
 interface Props {headerActionsTarget?:HTMLDivElement|null;canManageActions?:boolean;recoveryIdentity?:ComputerInputRecoveryIdentity;observationIdentity?:{workspaceId:string;actorId:string};ownerKey:string;draft:AxiomBotDraft;onDraftChange:(draft:AxiomBotDraft)=>void;active?:boolean}
 /** Saved task editing, explicit tool-free Send, and the separate fixed readiness report. */
+const runFamilyLabel:Record<SavedBotTaskLastRunDto["family"],string>={ai_task:"AI task",readiness_run:"Readiness run",pull_request_evidence:"Pull request evidence"};
+/** Recorded facts only: run family, stored status and when it was last recorded. */
+/** Colour follows the stored status only: completed green, failed red, in progress blue; anything else stays neutral. */
+export function lastRunTone(run:SavedBotTaskLastRunDto|null):"green"|"red"|"blue"|undefined{
+ if(!run)return undefined;
+ if(/^(completed|succeeded|success)$/.test(run.status))return "green";
+ if(/^(failed|failure|error|cancelled|timed_out)$/.test(run.status))return "red";
+ if(/^(queued|running|in_progress|pending)$/.test(run.status))return "blue";
+ return undefined;
+}
+export function lastRunLabel(run:SavedBotTaskLastRunDto|null,currentVersion:number):string{
+ if(!run)return "No recorded runs";
+ const version=run.taskVersion===currentVersion?"this version":`version ${run.taskVersion}`;
+ return `Last run: ${runFamilyLabel[run.family]} · ${run.status.replaceAll("_"," ")} · ${version} · ${new Date(run.recordedAt).toLocaleDateString(undefined,{day:"numeric",month:"short"})}`;
+}
+
 export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,observationIdentity,ownerKey,draft,onDraftChange,active=true,canManageActions=false}:Props){
  const ai=useBotAiTask(ownerKey);
  const [inputSelection,setInputSelection]=useState<ComputerInputSelectionRef|null>(null);
@@ -97,6 +114,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  const initialConfig=useRef(desktopClient.config).current,initialRevision=useRef(desktopClient.getContextRevision()).current;
  const mounted=useRef(true),operation=useRef<AbortController|null>(null),requestKey=useRef<string|undefined>(undefined);
  if(!requestKey.current)requestKey.current=crypto.randomUUID();
+ const [lastRuns,setLastRuns]=useState<Record<string,SavedBotTaskLastRunDto|null>>({}),lastRunRead=useRef<AbortController|null>(null);
  const [selected,setSelected]=useState<SavedBotTaskDto|null>(null),[rows,setRows]=useState<SavedBotTaskSummaryDto[]>([]),[nextCursor,setNextCursor]=useState<string|null>(null);
  const [listState,setListState]=useState<"idle"|"loading"|"ready"|"error">("idle");
  const [busy,setBusy]=useState<"list"|"open"|"save"|"history">(),[error,setError]=useState<string>(),[note,setNote]=useState<string>();
@@ -124,10 +142,18 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
  async function loadList(cursor?:string){
   const controller=begin("list");if(!controller)return;setListState("loading");
   try{const result=await desktopClient.listSavedBotTasks(cursor,controller.signal);if(!current(controller))return;
-   if(result.ok){setRows(previous=>cursor?[...previous,...result.data.tasks.filter(task=>!previous.some(existing=>existing.id===task.id))]:result.data.tasks);setNextCursor(result.data.nextCursor);setListState("ready")}
+   if(result.ok){setRows(previous=>cursor?[...previous,...result.data.tasks.filter(task=>!previous.some(existing=>existing.id===task.id))]:result.data.tasks);setNextCursor(result.data.nextCursor);setListState("ready");void loadLastRuns(result.data.tasks.map(task=>task.id))}
    else{setError(result.error);setListState("error")}
   }catch{if(current(controller)){setError("Saved tasks are unavailable. Your unsent text is retained.");setListState("error")}}finally{finish(controller)}
  }
+ // Secondary read: the last recorded run per loaded task. Never blocks the list or editor; unavailable stays unknown.
+ async function loadLastRuns(ids:string[]){
+  if(ids.length===0)return;lastRunRead.current?.abort();const controller=new AbortController();lastRunRead.current=controller;
+  try{const result=await desktopClient.listSavedBotTaskLastRuns(ids,controller.signal);if(controller.signal.aborted||!mounted.current)return;
+   if(result.ok){const found=new Map(result.data.runs.map(run=>[run.taskId,run]));setLastRuns(previous=>({...previous,...Object.fromEntries(ids.map(id=>[id,found.get(id)??null]))}))}
+  }catch{/* unknown stays unknown */}finally{if(lastRunRead.current===controller)lastRunRead.current=null}
+ }
+ useEffect(()=>()=>lastRunRead.current?.abort(),[]);
  useEffect(()=>{if(active&&listState==="idle"&&!busy)void loadList()},[active,listState,busy]);
  function replaceEditor(task:SavedBotTaskDto|null){
   setSelectedEvidence(null);setInspectorTab("Details");setSelected(task);setCandidate(false);setEditorGeneration(value=>value+1);setHistory(undefined);setHistoryError(undefined);setConflict(false);setPending(undefined);setConfirmOpen(undefined);requestKey.current=crypto.randomUUID();
@@ -242,7 +268,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
     {listState==="ready"&&rows.length===0&&<p className="text-xs leading-5 text-zinc-500">No saved task drafts yet. Save a draft when you are ready.</p>}
     {listState==="ready"&&rows.length>0&&visibleRows.length===0&&<p className="text-xs text-zinc-500">No loaded tasks match.</p>}
     {listState==="error"&&<p className="text-xs leading-5 text-zinc-500">Saved tasks could not be loaded. Refresh to retry; the editor is retained.</p>}
-    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-400">Draft · version {task.version}</span></span></button></li>)}</ul>
+    <ul className="studio-task-rows">{visibleRows.map(task=><li key={task.id}><button data-help-id="bot.workspace.task-row" type="button" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?"true":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opacity-40 ${selected?.id===task.id?'bg-white/5':'hover:bg-white/5'}`} disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={event=>requestOpen(task.id,event.currentTarget)}><FileText aria-hidden="true" size={17}/><span className="min-w-0"><span className="block wrap-break-word">{task.title}</span><span className="mt-1 block text-[11px] text-zinc-400">Draft · version {task.version}</span>{task.id in lastRuns&&<span data-help-id="bot.workspace.task-last-run" className="mt-0.5 block text-[11px] text-zinc-400 status-text" data-tone={lastRunTone(lastRuns[task.id])}>{lastRunLabel(lastRuns[task.id],task.version)}</span>}</span></button></li>)}</ul>
     {nextCursor&&<button data-help-id="bot.workspace.tasks-more" type="button" className="btn-secondary mt-3" disabled={Boolean(busy)} onClick={()=>void loadList(nextCursor)}>More saved tasks</button>}
    </div>
   </section>
@@ -355,6 +381,7 @@ export function SavedBotTaskWorkspace({headerActionsTarget,recoveryIdentity,obse
      {history&&history.nextBeforeVersion!==null&&<button ref={olderHistory} data-help-id="bot.workspace.history-older" type="button"
       className="btn-secondary" aria-disabled={historyLocked} onClick={()=>{if(!historyLocked&&history.nextBeforeVersion!==null)void loadHistory(history.nextBeforeVersion)}}>Older history</button>}
     </section>}
+    {selected&&<SavedTaskRunHistory key={`runs:${selected.id}`} taskId={selected.id} version={selected.version}/>}
     <BotPullRequestEvidencePanel key={`pr:${selected?.id??"new"}:${selected?.version??0}`} ownerKey={ownerKey} task={selected} dirty={dirty} active={active&&inspectorOpen&&inspectorTab==="Details"} selectionDisabled={locked} onSelectEvidence={value=>{if(owns()&&!dirty&&!locked&&selected&&value.taskId===selected.id&&value.taskVersion===selected.version)setSelectedEvidence(value)}}/>
    </div>
    <div role="tabpanel" id={`bot-panel-${ownerKey}-Library`} aria-labelledby={`bot-tab-${ownerKey}-Library`} hidden={inspectorTab!=="Library"} className="pt-6"><BotReadinessReportPanel key={`${selected?.id??"new"}:${selected?.version??0}`} task={selected} dirty={dirty} active={active&&inspectorOpen&&inspectorTab==="Library"}/></div>
@@ -390,4 +417,30 @@ function DraftVersionComparison({saved,version,draft,candidate}:{
       </dl>
      </section>)}
  </details>;
+}
+
+/** Recorded runs for the selected saved task (read-only). Loads only on request; unavailable stays unknown. */
+function SavedTaskRunHistory({taskId,version}:{taskId:string;version:number}){
+ const [state,setState]=useState<{runs?:SavedBotTaskRunHistoryDto["runs"];error?:string;busy:boolean}>({busy:false});
+ const read=useRef<AbortController|null>(null);
+ useEffect(()=>()=>read.current?.abort(),[]);
+ async function load(){
+  read.current?.abort();const controller=new AbortController();read.current=controller;setState(previous=>({...previous,busy:true,error:undefined}));
+  try{const result=await desktopClient.savedBotTaskRunHistory(taskId,controller.signal);if(controller.signal.aborted)return;
+   setState(result.ok?{runs:result.data.runs,busy:false}:{busy:false,error:"Recorded runs could not be verified. Retry to check again."});
+  }catch{if(!controller.signal.aborted)setState({busy:false,error:"Recorded runs could not be verified. Retry to check again."})}
+ }
+ return <section aria-label="Recorded runs" className="studio-task-history-panel">
+  <h2>Recorded runs</h2>
+  <p>AI tasks, readiness runs and pull request evidence recorded for this task, newest first.</p>
+  <button data-help-id="bot.workspace.runs-open" type="button" className="btn-secondary" aria-disabled={state.busy} onClick={()=>{if(!state.busy)void load()}}>{state.runs?"Refresh runs":state.error?"Retry runs":"Show runs"}</button>
+  {state.busy&&<p role="status">Loading recorded runs…</p>}
+  {state.error&&<p role="alert">{state.error}</p>}
+  {state.runs?.length===0&&<p role="status">No runs are recorded for this task.</p>}
+  {state.runs&&state.runs.length>0&&<ul className="studio-task-run-list">{state.runs.map((run,index)=>{const tone=lastRunTone(run);return <li key={`${run.family}:${run.recordedAt}:${index}`}>
+   <StatusBadge tone={tone??"neutral"} shape={tone==="green"?"success":tone==="red"?"failure":tone==="blue"?"running":"dot"}>{run.status.replaceAll("_"," ")}</StatusBadge>
+   <span>{runFamilyLabel[run.family]} · {run.taskVersion===version?"this version":`version ${run.taskVersion}`}</span>
+   <time dateTime={run.recordedAt}>{new Date(run.recordedAt).toLocaleString()}</time>
+  </li>})}</ul>}
+ </section>;
 }

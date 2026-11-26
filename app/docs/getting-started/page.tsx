@@ -9,8 +9,7 @@ import {
     DocHeader,
     DocSection,
     Step,
-    TrustGrid,
-} from "@/components/docs/DocPrimitives";
+    TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "Getting started — V19 Documentation",
@@ -30,6 +29,7 @@ export default function GettingStartedPage() {
                 Use the desktop app for the operational workflows described in this guide. The website provides product information, documentation, a sample-data sandbox, and verified release downloads. Its signed-in web companion also provides profile, help, provider consent, and connection context, subject to workspace access and enabled features. Browser-assisted desktop pairing signs you into the app; it does not execute an operation.
             </Callout>
 
+            <DocFigure src="/docs/cockpit/overview.webp" alt="The Overview page in the V19 cockpit in a browser" caption="The cockpit Overview, shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
             <DocSection id="prereqs" title="Prerequisites" kicker="00 · Before you begin">
                 <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
                     <li>A supported macOS, Windows, or Linux system listed on the <Link href="/download">download page</Link></li>

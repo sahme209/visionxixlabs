@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Security model — V19 Documentation",
@@ -19,6 +19,7 @@ export default function SecurityModelPage() {
         The released AWS ECS path dispatches a tenant-owned GitHub Actions workflow and uses OIDC to assume the configured role. Azure and GCP deployment paths are not released, enterprise identity is configuration-only, and local infrastructure apply is disabled. Verify the signing and notarization status shown on the download page for the exact installer you use.
       </Callout>
 
+      <DocFigure src="/docs/cockpit/audit-security.webp" alt="The Audit and security page in the V19 cockpit" caption="Audit & security in the cockpit, shown for a new synthetic workspace." width={1600} height={1000} />
       <DocSection id="authentication" title="Desktop authentication" kicker="01 · Identity">
         <p>The installed application uses a browser approval handoff and scoped application session. The website is not a customer sign-in product. A packaged PKCE, expiry, logout, replay, recovery, and OS-keychain journey still requires exact-build verification.</p>
       </DocSection>

@@ -5,7 +5,7 @@ import {SlackConnectionManager} from "../components/SlackConnectionManager";
 import type {GithubReconnectChallenge} from "../../../lib/desktop/githubInstallationReconnectContract";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
-import { Check, CircleCheck, LockKeyhole, Plus, RefreshCw, Search, Settings, X } from "lucide-react";
+import { AlertTriangle, Check, CircleCheck, XCircle, LockKeyhole, Plus, RefreshCw, Search, Settings, X } from "lucide-react";
 import { z } from "zod";
 import { ProviderLogo, SkillIcon } from "../components/CatalogIcon";
 import { DesktopMcpTools } from "../components/DesktopMcpTools";
@@ -403,9 +403,16 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
           if(validationRecovery.split(',').includes(provider.id))action=<div className="flex flex-wrap gap-2"><button type="button" disabled={working!==null} className="btn-secondary" onClick={()=>void load()} aria-label={`Reload ${provider.name==='Microsoft Teams'?'Teams':provider.name} status`}>Reload status</button><button type="button" className="btn-secondary" onClick={onOpenSettings}>Review consent</button></div>;
           return <tr key={provider.id} data-inspected={inspectedProvider?.id === provider.id}>
             <th scope="row"><div className="studio-capability-name"><ProviderLogo provider={provider.id} /><div>{provider.name}<small>{provider.category}</small></div></div></th>
-            <td><span className="studio-catalog-reported-status" data-connected={configured && (connected || cloudReadOnly) && (state !== "validated_read_only" || provider.id !== "github" || readVerified)} data-read-verified={readVerified || undefined}>
-              {readVerified && <CircleCheck size={13} aria-hidden="true"/>}{displayState}
-            </span></td>
+            <td>{(() => {
+              const isConnected = configured && (connected || cloudReadOnly) && (state !== "validated_read_only" || provider.id !== "github" || readVerified);
+              const tone = state === "unavailable" || state === "checking" ? undefined
+                : isConnected ? "green" : state === "revoked" || state === "error" || state === "failed" ? "red"
+                : needsValidation || !configured ? "amber" : undefined;
+              const Icon = tone === "green" ? CircleCheck : tone === "red" ? XCircle : tone === "amber" ? AlertTriangle : undefined;
+              return <span className={`studio-catalog-reported-status${tone ? " status-badge" : ""}`} data-tone={tone} data-connected={isConnected} data-read-verified={readVerified || undefined}>
+                {Icon ? <Icon size={13} aria-hidden="true"/> : readVerified && <CircleCheck size={13} aria-hidden="true"/>}{displayState}
+              </span>;
+            })()}</td>
             <td>{evidence.repositoryAccess ?? <><span aria-hidden="true">—</span><span className="sr-only">{provider.id === "github" ? "Unavailable" : "Not applicable"}</span></>}</td>
             <td>{cloudReadOnly && provider.id !== "aws" ? `${provider.name} read-only access is connected. Agent scans and deployments remain unavailable.` : provider.detail}</td>
             <td>{evidence.recordedCheck ?? <><span aria-hidden="true">—</span><span className="sr-only">Unavailable</span></>}</td>

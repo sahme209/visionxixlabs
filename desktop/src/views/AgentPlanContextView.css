@@ -35,13 +35,7 @@ html:not([data-theme="light"]) .studio-agent-plan {
   gap: 6px 12px;
   font-size: 11px;
 }
-.studio-agent-plan-state {
-  padding: 2px 7px;
-  border: 1px solid var(--studio-plan-divider);
-  border-radius: 4px;
-  background: rgb(var(--axiom-surface));
-  color: rgb(var(--neutral-zinc-300));
-}
+.studio-agent-plan-state { display: inline-flex; }
 .studio-agent-plan-facts-heading {
   border-bottom: 1px solid var(--studio-plan-divider);
   font-size: 12px;
@@ -129,7 +123,7 @@ html:not([data-theme="light"]) .studio-agent-plan {
   padding-inline: 0;
 }
 .studio-agent-plan-approval-reads .btn-secondary:hover { color: rgb(var(--neutral-zinc-100)); }
-:is(.studio-agent-plan-evidence-body, .studio-agent-plan-approval-reads) button { width: 100%; text-align: start; }
+:is(.studio-agent-plan-evidence-body, .studio-agent-plan-approval-reads) button { width: 100%; text-align: start; justify-content: flex-start; }
 .studio-agent-plan-boundary {
   margin-top: 20px;
   padding: 10px;

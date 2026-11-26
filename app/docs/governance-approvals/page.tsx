@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Governance approvals — V19 Documentation",
  description: "Review and decide pending Agent actions on Control → Governance.",
@@ -9,6 +9,7 @@ export default function GovernanceApprovalsDocsPage() {
  return <>
   <DocHeader kicker="Workspace · Approvals" title="Decide pending Agent actions."
    summary="Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy." />
+  <DocFigure src="/docs/cockpit/governance.webp" alt="The Governance page in the V19 cockpit in a browser" caption="Governance in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="who" kicker="01" title="Who can decide">
    <p>Owners, admins, operators and security reviewers can record an approval. Nobody can approve their own proposal: another authorized reviewer must. The person who proposed an action can always cancel it.</p>
   </DocSection>

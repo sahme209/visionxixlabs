@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
 import { PERMISSIONS_FLOW_STAGES } from "@/lib/marketing/permissionsFlowModel";
 
@@ -31,6 +31,7 @@ export default function PermissionsModelPage() {
         <div className="mt-6"><PipeFlow stages={PERMISSIONS_FLOW_STAGES} label="The boundaries a request crosses" /></div>
       </section>
 
+      <DocFigure src="/docs/cockpit/members.webp" alt="The Members page in the V19 cockpit" caption="Members and roles in the cockpit, shown for a new synthetic workspace." width={1600} height={1000} />
       <DocSection id="roles" title="Workspace roles" kicker="01">
         <p>Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.</p>
       </DocSection>

@@ -742,11 +742,14 @@ it('shows only the selected request’s recorded lifecycle stages without trigge
 it('summarizes only loaded release requests and retains totals through directory filters',async()=>{
   render(createElement(App));
   fireEvent.click(await screen.findByRole('button',{name:'Deployments'}));
-  const summary=await screen.findByLabelText('Loaded release request summary');
-  expect(Array.from(summary.querySelectorAll('dd'),count=>count.textContent)).toEqual(['2','2','0','0']);
+  const summary=await screen.findByLabelText('Release request and recorded run summary');
+  const counts=()=>Array.from(summary.querySelectorAll('dd'),count=>count.textContent);
+  expect(counts().slice(0,2)).toEqual(['2','0']);
+  // Recorded run outcomes come from a separate read and never show a guessed zero.
+  await waitFor(()=>expect(counts().slice(2).every(value=>value==='Unavailable'||value==='—'||/%$|s$|m$/.test(value??''))).toBe(true));
   fireEvent.click(screen.getByRole('button',{name: /^Submitted$/}));
   expect(screen.getByText('No loaded releases match.')).toBeTruthy();
-  expect(Array.from(summary.querySelectorAll('dd'),count=>count.textContent)).toEqual(['2','2','0','0']);
+  expect(counts().slice(0,2)).toEqual(['2','0']);
   expect(requests.every(request=>request.method==='GET'||request.method==='HEAD')).toBe(true);
 });
 
@@ -757,7 +760,7 @@ it("counts loaded release records without claiming deployment outcomes", async (
   expect(summary.getByText("Loaded requests").nextElementSibling?.textContent).toBe("2");
   expect(summary.getByText("Draft requests").nextElementSibling?.textContent).toBe("2");
   expect(summary.getByText("Submitted requests").nextElementSibling?.textContent).toBe("0");
-  expect(summary.getByText("Closed requests").nextElementSibling?.textContent).toBe("0");
+  expect(summary.getByText(/Workflow runs/)).toBeTruthy();
   expect(summary.queryByText(/success|health/i)).toBeNull();
 });
 

@@ -27,7 +27,8 @@ import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvid
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
-import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
+import { desktopClient, type DeploymentExecution, type DeploymentOutcomeSummaryDto } from "../lib/desktopClient";
+import { StatusIconChip, type StatusShape, type StatusTone } from "../components/StatusBadge";
 import { createReleaseClosureDrafts, type ReleaseClosureDraft } from "../lib/releaseClosureDrafts";
 
 interface GeneratedPlaybook {
@@ -1264,17 +1265,35 @@ export function DeploymentRequestsView({ active = true, onIntakeOpenChange, save
   );
 }
 
+export function formatOutcomeDuration(seconds: number): string {
+  const minutes = Math.floor(seconds / 60), rest = seconds % 60;
+  if (minutes >= 60) return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+  return minutes > 0 ? `${minutes}m ${rest}s` : `${rest}s`;
+}
+
 function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}) {
-  const metrics = [
-    {label: "Loaded requests", count: requests.length},
-    {label: "Drafts", count: requests.filter(request => request.status === "draft").length},
-    {label: "Submitted", count: requests.filter(request => request.status === "submitted").length},
-    {label: "Closed", count: requests.filter(request => request.status === "closed").length},
+  // Recorded workflow outcomes over a stated window; unavailable stays unavailable, never zero.
+  const [outcomes, setOutcomes] = useState<DeploymentOutcomeSummaryDto | null | undefined>();
+  useEffect(() => {
+    let live = true;
+    Promise.resolve().then(() => desktopClient.deploymentOutcomeSummary()).then(result => { if (live) setOutcomes(result.ok && typeof result.data?.recorded === "number" ? result.data : null); }).catch(() => { if (live) setOutcomes(null); });
+    return () => { live = false; };
+  }, []);
+  const windowLabel = `Last ${outcomes?.windowDays ?? 30} days`;
+  const rate = outcomes === undefined ? "…" : outcomes === null ? "Unavailable" : outcomes.successRate === null ? "—" : `${outcomes.successRate}%`;
+  const median = outcomes === undefined ? "…" : outcomes === null ? "Unavailable" : outcomes.medianSeconds === null ? "—" : formatOutcomeDuration(outcomes.medianSeconds);
+  const metrics: Array<{label: string; value: string; window?: string; title?: string; tone?: StatusTone; shape?: StatusShape}> = [
+    {label: "Loaded requests", value: requests.length.toLocaleString()},
+    {label: "Submitted", value: requests.filter(request => request.status === "submitted").length.toLocaleString(), tone: "amber", shape: "waiting"},
+    {label: "Run success rate", value: rate, window: windowLabel, ...(outcomes?.successRate != null ? {tone: "green" as const, shape: "success" as const} : {}),
+      title: outcomes ? `${outcomes.succeeded} succeeded, ${outcomes.failed} failed of ${outcomes.recorded} recorded workflow runs${outcomes.truncated ? " (first 5,000)" : ""}` : undefined},
+    {label: "Median time to complete", value: median, window: windowLabel, title: "From recorded dispatch to recorded completion, queue time included"},
   ];
-  return <dl aria-label="Loaded release request summary" className="studio-release-summary">
-    {metrics.map(({label, count}) => <div key={label}>
-      <dt>{label}</dt>
-      <dd>{count.toLocaleString()}</dd>
+  return <dl aria-label="Release request and recorded run summary" className="studio-release-summary">
+    {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title}>
+      {tone && shape && <StatusIconChip tone={tone} shape={shape} size={13}/>}
+      <dt>{label}{window && <span className="studio-release-summary-window">{window}</span>}</dt>
+      <dd>{value}</dd>
     </div>)}
   </dl>;
 }

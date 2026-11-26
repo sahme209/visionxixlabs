@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "AWS ECS setup — V19 Documentation",
@@ -19,6 +19,7 @@ export default function AwsSetupPage() {
         The released deployment path does not ask the desktop app to store an AWS access key. The tenant-owned workflow exchanges its GitHub OIDC identity for short-lived AWS credentials.
       </Callout>
 
+      <DocFigure src="/docs/desktop/apps-and-skills.webp" alt="The Apps and Skills view listing cloud connections" caption="Apps & Skills lists AWS, Azure and Google Cloud connections with their recorded state. Synthetic example records." width={1600} height={1067} />
       <DocSection id="prepare" title="Prepare the repository" kicker="01">
         <p>Add the supported <code>.github/workflows/axiom-deploy-aws-ecs.yml</code> workflow to the repository selected in V19. Limit <code>workflow_dispatch</code> inputs and GitHub environment access to the values your team intends to permit.</p>
       </DocSection>

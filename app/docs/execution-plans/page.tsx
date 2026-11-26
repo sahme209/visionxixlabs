@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Execution plans — V19 Documentation",
@@ -17,6 +17,7 @@ export default function ExecutionPlansPage() {
       Availability depends on the installed version and supported workflow. Exact plan content and controls vary. Some workflows described in these guides are local previews, not production-activated features. A saved plan is not execution authority; this reference does not establish complete Governance enforcement or activation.
     </Callout>
 
+    <DocFigure src="/docs/desktop/agent.webp" alt="The Agent view in the V19 desktop app with a saved release plan open" caption="The Agent view with a saved plan and its recorded review, shown with synthetic example records." />
     <DocSection id="read" title="Read the proposed change" kicker="01">
       <p>Before reviewing a plan, identify what it proposes and where its effects would occur. Field names vary by workflow; inspect the exact record rather than assuming every plan contains the same fields.</p>
       <dl className="space-y-4">

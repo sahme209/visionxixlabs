@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
     title: "GCP setup — V19 Documentation",
@@ -20,6 +20,7 @@ export default function GcpSetupPage() {
                 The current GCP path validates project and service-account configuration shape and can render preview findings. It must not be presented as a successful live project scan. Live availability requires authenticated Compute, Storage, IAM, networking, and billing reads plus safe integration evidence.
             </Callout>
 
+            <DocFigure src="/docs/desktop/apps-and-skills.webp" alt="The Apps and Skills view listing cloud connections" caption="Apps & Skills lists AWS, Azure and Google Cloud connections with their recorded state. Synthetic example records." width={1600} height={1067} />
             <DocSection id="available" title="What is available" kicker="01">
                 <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
                     <li>Project ID and service-account JSON shape validation</li>

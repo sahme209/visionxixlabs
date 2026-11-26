@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -210,5 +211,15 @@ export function DocFeedback() {
         <ArrowRightIcon className="h-3.5 w-3.5" />
       </Link>
     </div>
+  );
+}
+
+/** Product screenshot with honest labelling: captures use synthetic example records. */
+export function DocFigure({ src, alt, caption, width = 1600, height = 1067 }: { src: string; alt: string; caption: string; width?: number; height?: number }) {
+  return (
+    <figure className="my-6">
+      <Image src={src} width={width} height={height} sizes="(min-width: 1024px) 760px, 100vw" className="h-auto w-full rounded-lg border border-white/10" alt={alt} />
+      <figcaption className="mt-2 text-xs text-zinc-400">{caption}</figcaption>
+    </figure>
   );
 }

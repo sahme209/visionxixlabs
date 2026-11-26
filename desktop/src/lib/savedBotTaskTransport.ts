@@ -12,7 +12,9 @@ export async function savedBotTaskRequest<T>(context:Context,method:"GET"|"POST"
  const config=context.getConfig(),revision=context.getRevision(),base=config.apiBase,token=config.sessionToken;
  const failure=(errorCode:string,outcomeUnconfirmed=false):SavedBotTaskResult<T>=>({ok:false,errorCode,outcomeUnconfirmed,error:messages[errorCode]??(outcomeUnconfirmed?"The save outcome is unconfirmed. Your text is retained; check saved history or retry the same save.":"Saved tasks are unavailable. Your unsent text is retained; retry when the service is available.")});
  if(!token?.startsWith("axm.desk."))return failure("desktop_session_required");
- if(!/^\/api\/desktop\/bot\/tasks(?:\/bot_[a-f0-9]{64}(?:\/history)?)?(?:\?(?:cursor=bot_[a-f0-9]{64}|beforeVersion=\d{1,10}))?$/.test(path))return failure("saved_task_input_invalid");
+ if(!/^\/api\/desktop\/bot\/tasks(?:\/bot_[a-f0-9]{64}(?:\/history)?)?(?:\?(?:cursor=bot_[a-f0-9]{64}|beforeVersion=\d{1,10}))?$/.test(path)
+  &&!(method==="GET"&&/^\/api\/desktop\/bot\/tasks\/last-runs\?ids=bot_[a-f0-9]{64}(?:,bot_[a-f0-9]{64}){0,24}$/.test(path))
+  &&!(method==="GET"&&/^\/api\/desktop\/bot\/tasks\/bot_[a-f0-9]{64}\/runs$/.test(path)))return failure("saved_task_input_invalid");
  if(signal?.aborted)return failure("saved_task_context_changed");
  const controller=new AbortController();let reason:string|undefined;let dispatched=false;let status:number|undefined;let response:Response|undefined;let activeReader:ReadableStreamDefaultReader<Uint8Array>|undefined;let timer:ReturnType<typeof setTimeout>|undefined;let rejectStop!:(error:Error)=>void;
  const stopped=new Promise<never>((_,reject)=>{rejectStop=reject});

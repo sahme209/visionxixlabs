@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid, DocFigure } from "@/components/docs/DocPrimitives";
 import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
 import { APPROVAL_FLOW_STAGES } from "@/lib/marketing/approvalFlowModel";
 
@@ -31,6 +31,7 @@ export default function ApprovalWorkflowPage() {
         Medium- and high-risk tool calls do not execute inside the decision loop. An authorized independent human reviewer must approve the exact persisted proposal. Approval permission is distinct from execution permission.
       </Callout>
 
+      <DocFigure src="/docs/desktop/deployments.webp" alt="The Deployments view in the V19 desktop app with a release selected" caption="Deployments with a selected release and its recorded approvals, shown with synthetic example records." />
       <DocSection id="risk" title="Risk classification" kicker="01">
         <ul className="ml-1 list-inside list-disc space-y-1.5 text-zinc-400">
           <li><strong>Low risk:</strong> read-only checks can execute inline and are still recorded.</li>

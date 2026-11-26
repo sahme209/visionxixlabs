@@ -217,3 +217,7 @@ html:not([data-theme="light"]) .bot-workspace .studio-task-summary { background:
   .studio-task-ai-setup { padding-inline: 15px; }
   .studio-task-composer .bot-prompt-surface > textarea { min-height: 120px; }
 }
+.studio-task-run-list { display: grid; gap: 8px; }
+.studio-task-run-list li { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; align-items: center; padding-block: 6px; border-bottom: 1px solid rgb(var(--axiom-border)); font-size: 12px; }
+.studio-task-run-list li > span:not(.status-badge) { color: rgb(var(--neutral-zinc-300)); }
+.studio-task-run-list time { grid-column: 2; color: rgb(var(--neutral-zinc-500)); font-size: 11px; }

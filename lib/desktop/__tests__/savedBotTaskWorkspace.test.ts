@@ -2,8 +2,8 @@
 import {createElement,useState} from "react";
 import {beforeEach,afterEach,it,expect,vi} from "vitest";
 import {render,screen,fireEvent,cleanup,act,within} from "@testing-library/react";
-const m=vi.hoisted(()=>({config:{sessionToken:"axm.desk.synthetic"},revision:0,list:vi.fn(),get:vi.fn(),create:vi.fn(),update:vi.fn(),history:vi.fn(),prCapabilities:vi.fn(),reportCapabilities:vi.fn(),reports:vi.fn(),prRuns:vi.fn(),jiraConnections:vi.fn(),jiraOwners:[] as any[]}));
-vi.mock("../../../desktop/src/lib/desktopClient",()=>({desktopClient:{get config(){return m.config},getContextRevision:()=>m.revision,subscribeContext:()=>()=>{},listSavedBotTasks:m.list,getSavedBotTask:m.get,createSavedBotTask:m.create,updateSavedBotTask:m.update,savedBotTaskHistory:m.history,botPrCapabilities:m.prCapabilities,readinessCapabilities:m.reportCapabilities,readinessReportsForTask:m.reports,botPrRunsForTask:m.prRuns}}));
+const m=vi.hoisted(()=>({config:{sessionToken:"axm.desk.synthetic"},revision:0,list:vi.fn(),lastRuns:vi.fn(),runs:vi.fn(),get:vi.fn(),create:vi.fn(),update:vi.fn(),history:vi.fn(),prCapabilities:vi.fn(),reportCapabilities:vi.fn(),reports:vi.fn(),prRuns:vi.fn(),jiraConnections:vi.fn(),jiraOwners:[] as any[]}));
+vi.mock("../../../desktop/src/lib/desktopClient",()=>({desktopClient:{get config(){return m.config},getContextRevision:()=>m.revision,subscribeContext:()=>()=>{},listSavedBotTasks:m.list,listSavedBotTaskLastRuns:m.lastRuns,savedBotTaskRunHistory:m.runs,getSavedBotTask:m.get,createSavedBotTask:m.create,updateSavedBotTask:m.update,savedBotTaskHistory:m.history,botPrCapabilities:m.prCapabilities,readinessCapabilities:m.reportCapabilities,readinessReportsForTask:m.reports,botPrRunsForTask:m.prRuns}}));
 vi.mock('../../../desktop/src/lib/jiraTicketDiscovery',async()=>({...await vi.importActual('../../../desktop/src/lib/jiraTicketDiscovery'),createJiraTicketDiscoveryClient:(owner:any,readCurrentOwner:any)=>{m.jiraOwners.push({owner,readCurrentOwner});return{connections:m.jiraConnections}}}));
 const native=vi.hoisted(()=>({current:vi.fn(),status:vi.fn(),select:vi.fn(),capture:vi.fn(),stop:vi.fn()}));
 vi.mock('../../../desktop/src/lib/nativeObservationAdapter',()=>({createNativeObservationAdapter:()=>native}));
@@ -326,4 +326,36 @@ it("opens the editor, draft context and exact history without replacing or uploa
  expect(screen.getByRole("textbox",{name:"Context to include"})).toHaveProperty("value","Keep unsent context");
  expect(m.create).not.toHaveBeenCalled();
  expect(m.update).not.toHaveBeenCalled();
+});
+
+it("shows the last recorded run for each loaded task without blocking the list",async()=>{
+ m.lastRuns.mockResolvedValueOnce({ok:true,data:{runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"completed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
+ render(createElement(Host));
+ await screen.findByRole("button",{name:"Open saved task Saved example"});
+ expect(m.lastRuns).toHaveBeenCalledWith([id],expect.any(AbortSignal));
+ expect(await screen.findByText(/^Last run: Readiness run · completed · this version · /)).toBeTruthy();
+});
+it("says when a task has no recorded runs and stays silent when the read is unavailable",async()=>{
+ m.lastRuns.mockResolvedValueOnce({ok:true,data:{runs:[]}});
+ const first=render(createElement(Host));
+ expect(await screen.findByText("No recorded runs")).toBeTruthy();
+ first.unmount();
+ m.lastRuns.mockResolvedValueOnce({ok:false,error:"Unavailable",errorCode:"saved_task_service_unavailable",outcomeUnconfirmed:false});
+ render(createElement(Host));
+ await screen.findByRole("button",{name:"Open saved task Saved example"});
+ await act(async()=>{await Promise.resolve()});
+ expect(screen.queryByText(/Last run:|No recorded runs/)).toBeNull();
+});
+
+it("shows a selected task's recorded runs only when asked, with stored status and version",async()=>{
+ m.runs.mockResolvedValueOnce({ok:true,data:{taskId:id,runs:[{taskId:id,taskVersion:0,family:"readiness_run",status:"failed",recordedAt:"2026-11-24T10:00:00.000Z"}]}});
+ render(createElement(Host));
+ fireEvent.click(await screen.findByRole("button",{name:"Open saved task Saved example"}));
+ const button=await screen.findByRole("button",{name:"Show runs"});
+ expect(m.runs).not.toHaveBeenCalled();
+ fireEvent.click(button);
+ const section=await screen.findByRole("region",{name:"Recorded runs"});
+ expect(await within(section).findByText("failed")).toBeTruthy();
+ expect(within(section).getByText("Readiness run · this version")).toBeTruthy();
+ expect(m.runs).toHaveBeenCalledWith(id,expect.any(AbortSignal));
 });

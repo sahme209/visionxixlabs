@@ -1,4 +1,5 @@
-import { ArrowLeft, ArrowRight, Box, Search, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Box, Search, X } from "lucide-react";
+import { StatusBadge, releaseRequestTone } from "./StatusBadge";
 import { useEffectEvent, useId, useImperativeHandle, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 
@@ -212,9 +213,9 @@ export function FocusedReleaseWorkspace({ items, children, directoryContext, req
             <span className="release-focus-item-title"><Box size={17} aria-hidden /><span>{item.title}{item.version !== undefined && <> <small>Version {item.version}</small></>}</span></span>
             <span><span className="release-focus-item-environment">{item.environment || "Unspecified"}</span></span>
             <span className="release-focus-item-state">
-              <span className="capitalize">{item.status.replaceAll("_", " ")}{item.busy ? " · Working" : ""}</span>
+              <span className="release-focus-state-line">{(() => { const t = releaseRequestTone(item.status); return <StatusBadge tone={t.tone} shape={t.shape}><span className="capitalize">{item.status.replaceAll("_", " ")}</span></StatusBadge>; })()}{item.busy ? <span className="ml-1">· Working</span> : null}</span>
               <small>{item.nextStep}</small>
-              {item.attention && <small className="release-focus-attention">Needs attention</small>}
+              {item.attention && <small className="release-focus-attention status-text" data-tone="amber"><AlertTriangle size={11} aria-hidden="true" className="mr-1 inline align-[-1px]"/>Needs attention</small>}
             </span>
             <span className="release-focus-item-review"><span className="sr-only">PR review: </span>{item.prReview ?? "Unavailable"}</span>
             <span className="release-focus-item-requester" title={requester ?? "Requester unavailable"}>

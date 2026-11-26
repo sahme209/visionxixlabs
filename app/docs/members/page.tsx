@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Members and roles — V19 Documentation",
  description: "Invite teammates, change roles, remove members and answer access requests on Control → Members.",
@@ -9,6 +9,7 @@ export default function MembersDocsPage() {
  return <>
   <DocHeader kicker="Workspace · People" title="Invite people and manage roles."
    summary="Owners and admins manage members on Control → Members. Every change is recorded in the audit log." />
+  <DocFigure src="/docs/cockpit/members.webp" alt="The Members page in the V19 cockpit in a browser" caption="Members in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="roles" kicker="01" title="Roles">
    <p><strong>Owner</strong>: full control, one per workspace; ownership moves only through an explicit handoff. <strong>Admin</strong>: manages members, billing, integrations and every engineer setting. <strong>Operator</strong>: runs scans, approves engineer actions and configures the workforce, but cannot manage billing or members. <strong>Security reviewer</strong>: reads findings, approvals and the audit trail, and can vote on approvals but not start engineer actions. <strong>Finance viewer</strong>: reads cost recommendations and panels, with no write access. <strong>Read-only</strong>: reads dashboards; no vote, run or manage.</p>
   </DocSection>

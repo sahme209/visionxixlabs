@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
  title: "Audit evidence — V19 Documentation",
  description: "Read saved decisions, attempts and outcome evidence without confusing approval with external success.",
@@ -11,6 +11,7 @@ export default function AuditLogsPage() {
   <DocHeader kicker="Workflow reference · Evidence" title="Read the evidence, not just the status."
    summary="A saved decision, an attempted action and an observed external result answer different questions." />
   <Callout title="Version and coverage">Coverage and available controls vary by installed version and supported workflow. This guide does not establish complete audit coverage, Governance activation or a certification. Some linked workflows describe local previews.</Callout>
+  <DocFigure src="/docs/cockpit/audit-security.webp" alt="The Audit & security page in the V19 cockpit in a browser" caption="Audit & security in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="desktop-settings" kicker="Desktop" title="View the audit log from desktop Settings">
    <p>In desktop versions with this shortcut, open <strong>Settings → View audit log</strong>. V19 opens the website’s Audit &amp; Security page for the workspace selected in the browser. A current workspace owner or administrator can review organization audit evidence. Check the browser workspace before reviewing records. Desktop and browser sign-in are separate.</p>
    <p>If the shortcut is unavailable in your installed version, sign in to the website and open the <Link href="/control/audit-security">Audit &amp; Security</Link> directly. If the browser fails to open from Settings, retry from the same button or use the website.</p>

@@ -1,9 +1,18 @@
 import {ReadableTime} from "../components/ReadableTime";
-import { ArrowRight, Box, ChevronRight, GitBranch, History, Layers, ListChecks, Sparkles, SquareStack } from "lucide-react";
+import { StatusBadge, StatusIconChip, releaseRequestTone, type StatusShape, type StatusTone } from "../components/StatusBadge";
+
+/** Recorded audit outcomes only; unknown keeps the neutral history glyph. */
+function auditOutcomeTone(outcome: string): {tone: StatusTone; shape: StatusShape} | null {
+  if (outcome === "ok") return {tone: "green", shape: "success"};
+  if (outcome === "rejected" || outcome === "error") return {tone: "red", shape: "failure"};
+  if (outcome === "skipped") return {tone: "neutral", shape: "dot"};
+  return null;
+}
+import { ArrowRight, Box, ChevronRight, FileText, GitBranch, History, Layers, ListChecks, Play, ShieldCheck, Sparkles, SquareStack, Undo2, Users } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { HOME_DRAFT_MAX_LENGTH, type HomePlanningContext, type HomePlanningIntent } from "../lib/agentDraftRequest";
-import { desktopClient } from "../lib/desktopClient";
+import { desktopClient, type DeploymentOutcomeSummaryDto } from "../lib/desktopClient";
 import { releaseJourney } from "../../../lib/customerJourney/journey";
 
 export interface SavedReleaseLink {
@@ -23,9 +32,8 @@ const releaseSummary = [
   {key: "loaded", label: "Loaded requests"},
   {key: "draft", label: "Draft requests"},
   {key: "submitted", label: "Submitted requests"},
-  {key: "closed", label: "Closed requests"},
 ] as const;
-type ReleaseCounts = Record<typeof releaseSummary[number]["key"], number>;
+type ReleaseCounts = Record<typeof releaseSummary[number]["key"] | "closed", number>;
 
 interface WelcomeViewProps {
   active?: boolean;
@@ -103,7 +111,7 @@ function HomeReleaseAudit({config, active}: {config: typeof desktopClient.config
         ? occurred.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit", hourCycle: "h23"})
         : fullTimestamp;
       return <li key={event.id}>
-        <History aria-hidden size={15}/>
+        {(() => { const t = auditOutcomeTone(event.outcome); return t ? <StatusIconChip tone={t.tone} shape={t.shape} size={12}/> : <History aria-hidden size={15}/>; })()}
         <div><p>{event.summary}</p><small>{event.outcome === "unknown" ? "Outcome unavailable" : `Outcome: ${event.outcome}`}</small></div>
         <ReadableTime dateTime={event.createdAtIso} fullText={fullTimestamp} displayText={timestamp}/>
       </li>;
@@ -342,6 +350,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
         <dt>{label}</dt>
         <dd>{ownedActivity?.counts?.[key].toLocaleString() ?? "—"}</dd>
       </div>)}
+      <WorkflowRunTrend/>
     </dl>
     <div className="studio-home-activity-layout">
     <div className="studio-home-activity-column">
@@ -374,7 +383,7 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
               className="studio-home-release-grid studio-home-release-row">
               <span className="studio-home-release-title"><Box aria-hidden size={16} /><span>{release.title}{" "}<small>v{release.version}</small></span></span>
               <span><span className="studio-home-environment">{release.environment || "Unspecified"}</span></span>
-              <span className="capitalize">{release.status.replaceAll("_", " ")}</span>
+              <span>{(() => { const t = releaseRequestTone(release.status); return <StatusBadge tone={t.tone} shape={t.shape}><span className="capitalize">{release.status.replaceAll("_", " ")}</span></StatusBadge>; })()}</span>
               <span>{Number.isFinite(updated.getTime()) ? <time dateTime={updated.toISOString()}>{updated.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</time> : "Unavailable"}</span>
             </button>
           </li>;
@@ -418,5 +427,50 @@ function StudioWelcomeView({ active = true, returnActivity, onBuild, onBot, onAu
     </nav>
     </div>
     </div>
+    <ReleasePipeline onOpen={onDeploy}/>
+  </section>;
+}
+
+/** Recorded workflow runs over the last 30 days with a daily sparkline; unknown stays unknown. */
+function WorkflowRunTrend() {
+  const [summary, setSummary] = useState<DeploymentOutcomeSummaryDto | null | undefined>();
+  useEffect(() => {
+    let live = true;
+    Promise.resolve().then(() => desktopClient.deploymentOutcomeSummary()).then(result => { if (live) setSummary(result.ok && typeof result.data?.recorded === "number" ? result.data : null); }).catch(() => { if (live) setSummary(null); });
+    return () => { live = false; };
+  }, []);
+  const daily = summary?.daily && summary.daily.length > 1 ? summary.daily : undefined;
+  const max = daily ? Math.max(1, ...daily) : 1;
+  const points = daily?.map((count, index) => `${(index / (daily.length - 1)) * 80},${22 - (count / max) * 20}`).join(" ");
+  const delta = summary && typeof summary.previousRecorded === "number" && summary.previousRecorded > 0
+    ? Math.round(((summary.recorded - summary.previousRecorded) / summary.previousRecorded) * 100) : undefined;
+  return <div className="studio-home-trend" title="Recorded workflow runs created in the last 30 days">
+    <dt>Workflow runs <span className="studio-release-summary-window">Last 30 days</span></dt>
+    <dd>{summary === undefined ? "…" : summary === null ? "Unavailable" : summary.recorded.toLocaleString()}</dd>
+    {delta !== undefined && <span className="studio-home-trend-delta">{delta >= 0 ? "↑" : "↓"} {Math.abs(delta)}%<span className="sr-only"> compared with the previous 30 days</span></span>}
+    {points && <svg className="studio-home-sparkline" viewBox="0 0 80 24" width="80" height="24" aria-hidden="true"><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/></svg>}
+  </div>;
+}
+
+const pipelineStages = [
+  {label: "Plan", detail: "Scope the exact change", Icon: FileText},
+  {label: "Approve", detail: "Independent review", Icon: Users},
+  {label: "Deploy", detail: "Governed execution", Icon: Play},
+  {label: "Validate", detail: "Recorded evidence", Icon: ShieldCheck},
+  {label: "Recover", detail: "Planned rollback", Icon: Undo2},
+] as const;
+
+/** The governed release path, as an explainer. It shows no live status. */
+export function ReleasePipeline({onOpen}: {onOpen: () => void}) {
+  return <section className="studio-home-pipeline" aria-labelledby="studio-home-pipeline-title">
+    <div className="studio-home-pipeline-head">
+      <div><h2 id="studio-home-pipeline-title">Release pipeline</h2><p>End-to-end path from plan to recovery. Each step needs its own recorded evidence.</p></div>
+      <button type="button" className="studio-home-pipeline-link" onClick={onOpen}>Open Deployments <ArrowRight size={14} aria-hidden="true"/></button>
+    </div>
+    <ol>{pipelineStages.map(({label, detail, Icon}, index) => <li key={label}>
+      <Icon size={18} aria-hidden="true"/>
+      <strong>{label}</strong><span>{detail}</span>
+      {index < pipelineStages.length - 1 && <ArrowRight className="studio-home-pipeline-arrow" size={16} aria-hidden="true"/>}
+    </li>)}</ol>
   </section>;
 }

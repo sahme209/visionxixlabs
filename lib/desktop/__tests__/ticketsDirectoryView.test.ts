@@ -901,3 +901,21 @@ it("applies and clears recorded ticket filters without changing the other contro
   expect(await screen.findByRole("button",{name:/Fixture production incident/})).toBeTruthy();
   expect(trigger.getAttribute("aria-label")).toBeNull();
 });
+
+it("shows the recorded linked release beside the timeline and opens it only on request", async () => {
+  m.releases.mockResolvedValue(linkedRecord);
+  show(scopedIdentity);
+  const panel = await screen.findByRole("region", {name: "Linked release"});
+  expect(m.releases).not.toHaveBeenCalled();
+  fireEvent.click(within(panel).getByRole("button", {name: "Open linked release"}));
+  expect(await within(panel).findByRole("link", {name: "Open release record in browser"})).toBeTruthy();
+  expect(m.releases).toHaveBeenCalledOnce();
+});
+
+it("keeps the linked release reference visible without an open action when pipeline read is absent", async () => {
+  show();
+  const panel = await screen.findByRole("region", {name: "Linked release"});
+  expect(within(panel).queryByRole("button", {name: "Open linked release"})).toBeNull();
+  expect(within(panel).getByText("Your role cannot open linked releases.")).toBeTruthy();
+  expect(m.releases).not.toHaveBeenCalled();
+});

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
+import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = { title: "Apps and skills — V19 Documentation", description: "Browse built-in workflows and manage workspace skill guidance without granting tool access.", alternates: { canonical: "/docs/plugins" } };
 export default function PluginsGuide() {
  return <>
   <DocHeader kicker="Workspace · Apps and skills" title="Find a workflow. Add guidance deliberately." summary="Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready." />
+  <DocFigure src="/docs/cockpit/plugins.webp" alt="The Apps & skills page in the V19 cockpit in a browser" caption="Apps & skills in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="browse" kicker="01" title="Browse the Apps and skills catalog">
    <p>Open <a href="/control/plugins">Apps &amp; skills</a>. Choose <em>Apps</em>, <em>Skills</em> or <em>Developer tools (MCP)</em>, then search by name, description or listed tools. Select an entry&apos;s name to inspect its description, status and tools or scopes.</p>
    <p>Apps are built-in V19 workflows, grouped by provider. They have no separate installation to remove. Choose <em>Manage access</em> to review the provider in Integrations, then use an available governed workflow to prepare an action.</p>
