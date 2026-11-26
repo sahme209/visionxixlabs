@@ -14,6 +14,7 @@ import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeployme
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 import { ConfigPromotionDemo } from "@/components/marketing/ConfigPromotionDemo";
 import { CheckGateDemo } from "@/components/marketing/CheckGateDemo";
+import { PolicyChangeDemo } from "@/components/marketing/PolicyChangeDemo";
 import { ProductDisclosure } from "@/components/marketing/ProductDisclosure";
 
 export const metadata: Metadata = {
@@ -107,6 +108,11 @@ export default function ProductPage() {
             <figcaption className="flex items-center justify-between gap-3 px-4 py-3 text-xs text-zinc-400"><span>Deployment checks per stage. Synthetic data.</span><Link href="/docs/releaseops#deployment-checks" className="shrink-0 text-zinc-200 underline underline-offset-4">Read the guide</Link></figcaption>
           </figure>
           <CheckGateDemo />
+        </section>
+        <section aria-labelledby="two-person-policy" className="mx-auto max-w-[1080px] px-5 pt-16 sm:px-8">
+          <h2 id="two-person-policy" className="text-2xl font-medium tracking-[-0.03em] text-zinc-100">Two people for every policy change</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Policy rules live in a file you can version in Git. One owner or admin requests a change; a different one approves it; it applies only if the rules have not changed since the request. Changes that loosen governance are called out first.</p>
+          <PolicyChangeDemo />
         </section>
 
         <section aria-labelledby="scripted-preview" className="mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10">
