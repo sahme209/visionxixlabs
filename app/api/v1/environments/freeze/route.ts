@@ -17,7 +17,7 @@ import { applyDeploymentFreeze } from "@/lib/releaseops/deploymentFreezeStore";
 
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "private, no-store" };
-export const API_FREEZE_MAX_HOURS = 24;
+const API_FREEZE_MAX_HOURS = 24;
 
 const bodySchema = z.object({
   scope: z.enum(["production", "all"]),
