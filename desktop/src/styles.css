@@ -1769,3 +1769,18 @@ html[data-theme="light"] {
 .release-risk-radar li[data-active], .release-risk-radar li:focus-visible { background: rgb(var(--axiom-surface)); }
 .release-risk-radar-axis { color: rgb(var(--neutral-zinc-200)); }
 .release-risk-radar-detail { min-width: 0; color: rgb(var(--neutral-zinc-400)); overflow-wrap: anywhere; }
+
+/* Change window timeline (Deployments, selected release). */
+.change-window-timeline { margin-top: 12px; padding: 14px 16px; border: 1px solid rgb(var(--axiom-border)); border-radius: 12px; }
+.change-window-timeline-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; }
+.change-window-timeline-head strong { font-weight: 500; color: rgb(var(--neutral-zinc-100)); font-variant-numeric: tabular-nums; }
+.change-window-timeline-head > span:last-child { margin-inline-start: auto; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
+.change-window-timeline-track { position: relative; height: 8px; margin-top: 12px; border-radius: 999px; background: var(--status-neutral-surface); overflow: visible; }
+.change-window-timeline-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--status-neutral); transition: width .6s cubic-bezier(.22,1,.36,1); }
+.change-window-timeline[data-phase="open"] .change-window-timeline-fill { background: linear-gradient(90deg, var(--status-green-surface), var(--status-green)); }
+.change-window-timeline[data-phase="ended"] .change-window-timeline-fill { background: var(--status-red-surface); }
+.change-window-timeline-now { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--status-green); box-shadow: 0 0 0 3px rgb(var(--axiom-bg)), 0 0 0 6px var(--status-green-surface); animation: change-window-pulse 2s ease-in-out infinite; }
+@keyframes change-window-pulse { 50% { box-shadow: 0 0 0 3px rgb(var(--axiom-bg)), 0 0 0 9px transparent; } }
+.change-window-timeline-ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: rgb(var(--neutral-zinc-400)); font-variant-numeric: tabular-nums; }
+.change-window-timeline-note { margin-top: 8px; font-size: 11px; color: rgb(var(--neutral-zinc-500)); }
+@media (prefers-reduced-motion: reduce) { .change-window-timeline-now { animation: none; } .change-window-timeline-fill { transition: none; } }
