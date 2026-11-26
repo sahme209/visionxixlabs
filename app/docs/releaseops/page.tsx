@@ -102,7 +102,7 @@ export default function ReleaseOpsDocOverviewPage() {
             </DocSection>
 
             <DocSection id="gitops" title="Argo CD and Flux" kicker="11">
-              <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. The connection forms and live acceptance with a real Argo CD instance or cluster are still pending.</p>
+              <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. Connect them under Release signals (see below); live acceptance with a real Argo CD instance or cluster is still pending.</p>
             </DocSection>
 
             <DocSection id="stability-warning" title="Stability early warning" kicker="12">
@@ -115,7 +115,12 @@ export default function ReleaseOpsDocOverviewPage() {
             </DocSection>
 
             <DocSection id="verification-signals" title="Verification signals from Sentry and Datadog" kicker="14">
-              <p>V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. The connection forms and live acceptance with real accounts are still pending.</p>
+              <p>V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. Connect them under Release signals (see below); live acceptance with real accounts is still pending.</p>
+            </DocSection>
+
+            <DocSection id="release-signals" title="Connect release signals" kicker="15">
+              <p>In the desktop app, under Settings, <strong>Release signals</strong> connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog and LaunchDarkly. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again.</p>
+              <p>Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as <code>monitors_read</code>. V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time.</p>
             </DocSection>
 
             <DocFooterNav

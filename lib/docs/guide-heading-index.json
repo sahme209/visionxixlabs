@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "40e10ce73973210630d1e39e7e535d1000e5a6af8e417cd647b73b397cb83ef8",
+      "sourceSha256": "648712c76367b1e61177d296a9c92c5d7d4737e52490c8b5e969321612c3e3bd",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -192,7 +192,8 @@
         "Argo CD and Flux",
         "Stability early warning",
         "Lambda, Cloud Run and Azure Functions",
-        "Verification signals from Sentry and Datadog"
+        "Verification signals from Sentry and Datadog",
+        "Connect release signals"
       ]
     },
     {

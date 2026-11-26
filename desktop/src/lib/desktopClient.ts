@@ -1252,6 +1252,9 @@ export class DesktopClient {
 
   disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
   /** Read-only Batches providers. Connecting grants observation only. */
+  signalConnection(provider: SignalProviderId): Promise<ApiResult<SignalConnectionState>> { return this.get(`/api/desktop/signals/${provider}/connection`); }
+  saveSignalConnection(provider: SignalProviderId, input: Record<string, string>): Promise<ApiResult<SignalConnectionState>> { return this.put(`/api/desktop/signals/${provider}/connection`, input); }
+  disconnectSignalConnection(provider: SignalProviderId): Promise<ApiResult<{ provider: SignalProviderId; disconnected: boolean }>> { return this.delete(`/api/desktop/signals/${provider}/connection`); }
   batchConnection(provider: BatchProviderId): Promise<ApiResult<BatchConnectionState>> { return this.get(`/api/desktop/batch/${provider}/connection`); }
   saveBatchConnection(provider: BatchProviderId, input: { baseUrl: string; token: string; namespace?: string }): Promise<ApiResult<BatchConnectionState>> { return this.put(`/api/desktop/batch/${provider}/connection`, input); }
   disconnectBatchConnection(provider: BatchProviderId): Promise<ApiResult<{ provider: BatchProviderId; disconnected: boolean }>> { return this.delete(`/api/desktop/batch/${provider}/connection`); }
@@ -2366,4 +2369,6 @@ function validOperationUuid(value:string){return typeof value==='string'&&/^[a-f
 
 
 export type BatchProviderId = "prefect" | "dagster" | "argo_workflows";
+export type SignalProviderId = "argo_cd" | "flux" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly";
+export interface SignalConnectionState { provider: SignalProviderId; label?: string; connected?: boolean; status: string; settings?: Record<string, string | number>; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
 export interface BatchConnectionState { provider: BatchProviderId; label?: string; connected?: boolean; status: string; baseUrl?: string | null; namespace?: string | null; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
