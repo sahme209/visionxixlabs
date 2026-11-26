@@ -42,7 +42,7 @@ export function DataBoundaryDiagram() {
   return (
     <figure className="my-8 rounded-2xl border border-white/10 bg-[#111111] p-5" aria-labelledby={`${id}-title`}>
       <figcaption id={`${id}-title`} className="text-sm font-medium text-zinc-100">Where your data goes</figcaption>
-      <p className="mt-1 text-xs text-zinc-500">Switch the AI mode and connectors to see which paths exist. This explains the documented design; it does not change any setting.</p>
+      <p className="mt-1 text-xs text-zinc-400">Switch the AI mode and connectors to see which paths exist. This explains the documented design; it does not change any setting.</p>
       <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
         <div role="radiogroup" aria-label="AI mode" className="inline-flex overflow-hidden rounded-lg border border-white/10">
           {(["cloud", "offline"] as const).map((m) => <button key={m} type="button" role="radio" aria-checked={mode === m}
@@ -62,7 +62,7 @@ export function DataBoundaryDiagram() {
         {list.map((f) => {
           const a = node(f.from as keyof typeof NODES), b = node(f.to as keyof typeof NODES);
           const on = f.id === current.id;
-          return <g key={f.id} className={on ? "text-sky-300" : "text-zinc-500"} style={{ cursor: "pointer" }} onClick={() => setActive(f.id)}>
+          return <g key={f.id} className={on ? "text-sky-300" : "text-zinc-400"} style={{ cursor: "pointer" }} onClick={() => setActive(f.id)}>
             <path d={`M${a.x + 70} ${a.y} C${(a.x + b.x) / 2} ${a.y} ${(a.x + b.x) / 2} ${b.y} ${b.x - 74} ${b.y}`} fill="none" stroke="currentColor" strokeWidth={on ? 2.5 : 1.5}
               strokeDasharray={f.crosses ? undefined : "4 4"} markerEnd={`url(#${id}-arrow)`} />
           </g>;
@@ -81,10 +81,10 @@ export function DataBoundaryDiagram() {
           className={`rounded-full border px-3 py-1 text-xs ${f.id === current.id ? "border-sky-300/60 bg-sky-300/10 text-sky-100" : "border-white/10 text-zinc-400 hover:text-zinc-200"}`}>{f.label}</button>)}
       </div>
       <div id={`${id}-panel`} role="tabpanel" className="mt-3 rounded-xl border border-white/8 bg-black/20 p-4 text-sm leading-6 text-zinc-300">
-        <p className="text-xs uppercase tracking-wider text-zinc-500">{current.crosses ? "Leaves your machine" : "Stays in your environment"}</p>
+        <p className="text-xs uppercase tracking-wider text-zinc-400">{current.crosses ? "Leaves your machine" : "Stays in your environment"}</p>
         <p className="mt-1">{current.detail}</p>
       </div>
-      <p className="mt-3 text-[11px] leading-5 text-zinc-500">Offline AI is a source preview: production enablement, model qualification and disconnected-installation acceptance are not complete. It does not certify that the whole application makes no external network calls.</p>
+      <p className="mt-3 text-[11px] leading-5 text-zinc-400">Offline AI is a source preview: production enablement, model qualification and disconnected-installation acceptance are not complete. It does not certify that the whole application makes no external network calls.</p>
     </figure>
   );
 }
