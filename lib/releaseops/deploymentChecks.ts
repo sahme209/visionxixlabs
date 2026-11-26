@@ -7,7 +7,7 @@ import { z } from "zod";
 
 export const CHECK_STAGES = ["plan", "validate", "approve", "deploy", "verify", "recover"] as const;
 export type CheckStage = (typeof CHECK_STAGES)[number];
-export const CHECK_KINDS = ["smoke_test", "health_check", "migration_dry_run", "custom_script", "manual_checklist", "security_scan", "supply_chain"] as const;
+export const CHECK_KINDS = ["smoke_test", "health_check", "migration_dry_run", "custom_script", "manual_checklist", "security_scan", "supply_chain", "resilience_experiment"] as const;
 export type CheckKind = (typeof CHECK_KINDS)[number];
 export const MAX_CHECKS_PER_WORKSPACE = 200;
 
@@ -22,6 +22,7 @@ export const checkSpecSchemas = {
   manual_checklist: z.object({ items: z.array(z.string().trim().min(1).max(300)).min(1).max(25) }).strict(),
   security_scan: z.object({ tool: z.string().trim().min(1).max(100), maxCritical: z.number().int().min(0).max(10_000), maxHigh: z.number().int().min(0).max(10_000) }).strict(),
   supply_chain: z.object({ evidence: z.enum(["sbom", "slsa_provenance", "sbom_and_provenance"]), verifier: z.string().trim().min(1).max(100) }).strict(),
+  resilience_experiment: z.object({ tool: z.string().trim().min(1).max(100), experiment: z.string().trim().min(1).max(200), environmentScope: z.enum(["non_production", "production"]) }).strict(),
 } as const;
 
 export const checkInputSchema = z.object({
@@ -58,4 +59,4 @@ export function stageCoverage(checks: readonly StoredCheck[]): { stages: StageCo
 }
 
 export const STAGE_LABEL: Record<CheckStage, string> = { plan: "Plan", validate: "Validate", approve: "Approve", deploy: "Deploy", verify: "Verify", recover: "Recover" };
-export const KIND_LABEL: Record<CheckKind, string> = { smoke_test: "Smoke test", health_check: "Health check", migration_dry_run: "Migration dry run", custom_script: "Custom script", manual_checklist: "Manual checklist", security_scan: "Security scan", supply_chain: "Supply-chain evidence" };
+export const KIND_LABEL: Record<CheckKind, string> = { smoke_test: "Smoke test", health_check: "Health check", migration_dry_run: "Migration dry run", custom_script: "Custom script", manual_checklist: "Manual checklist", security_scan: "Security scan", supply_chain: "Supply-chain evidence", resilience_experiment: "Resilience experiment" };

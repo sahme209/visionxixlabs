@@ -19,6 +19,7 @@ export function buildCheckDraftPrompt(description: string): string {
     "- manual_checklist: items (array of short strings)",
     "- security_scan: tool (string), maxCritical (integer), maxHigh (integer)",
     "- supply_chain: evidence (sbom | slsa_provenance | sbom_and_provenance), verifier (string)",
+    "- resilience_experiment: tool (string), experiment (string), environmentScope (non_production | production)",
     "Choose the stage where the check belongs (validate before approval, verify after deploy). Default to blocking for production safety checks, advisory otherwise.",
     "Never include secrets, tokens or ${{ }} expressions.",
     "",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection, DocFigure } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = { title: "Workspaces — V19 Documentation", description: "Choose your active browser workspace using current accepted membership.", alternates: { canonical: "/docs/workspaces" } };
@@ -32,6 +33,28 @@ export default function WorkspacesGuide() {
   <DocSection id="services" kicker="06" title="Service catalog">
    <DocFigure src="/docs/cockpit/services.webp" alt="The Services page listing repositories with guardrails and the latest run per environment" caption="Services for a synthetic workspace: guardrails and the latest recorded run in each environment." width={1600} height={1000} />
    <p>In the cockpit, <strong>Services</strong> lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository&apos;s last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.</p>
+  </DocSection>
+  <DocSection id="cockpit-pages" kicker="07" title="Every cockpit page">
+   <p>The cockpit sidebar, in order, with what each page is for:</p>
+   <ul className="mt-3 list-disc space-y-1 pl-5">
+    <li><strong>Overview</strong>: Workspace summary and next steps.</li>
+    <li><strong>Governance</strong>: Pending Agent approvals, roles, environment policy, promotion lifecycles and policy as code. <Link href="/docs/governance-approvals" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Insights</strong>: Delivery and recovery figures, and deployment check evidence. <Link href="#insights" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Services</strong>: Repositories with owners, guardrails and the latest run per environment. <Link href="#services" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Variables</strong>: Configuration per environment, feature switches and comparisons. <Link href="#variables" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Checks</strong>: Deployment checks per release stage, results and the generated CI workflow. <Link href="/docs/releaseops#deployment-checks" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>AI &amp; Agents</strong>: AI settings and Agent activity. <Link href="/docs/offline-ai" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Agent gateway</strong>: Governance keys and requests from external agents. <Link href="/docs/agent-gateway" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Trust tools</strong>: Read-only tools that inspect your connected systems. <Link href="/docs/trust-tools" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Airflow</strong>: Airflow connection and automations. <Link href="/docs/batch-providers" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Integrations</strong>: Connected providers and their status. <Link href="/docs/integration-setup" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Apps &amp; skills</strong>: Plugins and skills available to the workspace. <Link href="/docs/plugins" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Members</strong>: People, roles and invitations. <Link href="/docs/members" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Usage &amp; Billing</strong>: Plan, usage and invoices. <Link href="/docs/usage-billing" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Audit &amp; Security</strong>: Audit log and security settings. <Link href="/docs/audit-logs" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>API keys</strong>: Keys for CI, SDKs and agents, with scopes. <Link href="/docs/api-keys" className="underline underline-offset-4">Guide</Link></li>
+    <li><strong>Settings &amp; sessions</strong>: Your profile and signed-in devices. <Link href="/docs/settings" className="underline underline-offset-4">Guide</Link></li>
+   </ul>
   </DocSection>
   <DocFooterNav prev={{href:"/docs/mcp-tools",label:"MCP tools"}} next={{href:"/docs/members",label:"Members and roles"}} />
  </>;
