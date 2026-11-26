@@ -48,6 +48,12 @@ function makeRepo(): Stub {
         stub._rows.push(row);
         return row;
       },
+      async updateMany({ where, data }) {
+        const row = stub._rows.find((r) => r.id === where.id && r.organizationId === where.organizationId && r.status === where.status);
+        if (!row) return { count: 0 };
+        Object.assign(row, { status: data.status, reconciledByUserId: data.reconciledByUserId, reconciledAt: data.reconciledAt, reconciliationRef: data.reconciliationRef, updatedAt: new Date() });
+        return { count: 1 };
+      },
       async update({ where, data }) {
         const idx = stub._rows.findIndex((r) => r.id === where.id);
         if (idx < 0) throw new Error("not found");
@@ -270,5 +276,24 @@ describe("migration_pending", () => {
     expect(r.status).toBe(503);
     if (r.body.ok) throw new Error("expected error");
     expect(r.body.error).toBe("migration_pending");
+  });
+});
+
+describe("manual fix reconcile concurrency", () => {
+  it("lets exactly one of two concurrent reconcilers win", async () => {
+    const repo = makeRepo();
+    const created = await buildManualFixLogResponse(repo, {
+      organizationId: "o", loggedByUserId: "u", summary: "patched a",
+      fixedAtIso: "2026-05-26T12:00:00Z", environmentTier: "prod",
+    });
+    if (!created.body.ok) throw new Error("setup failed");
+    const id = created.body.data.fix.id;
+    const [a, b] = await Promise.all([
+      buildManualFixReconcileResponse(repo, { organizationId: "o", actorUserId: "u1", fixId: id, outcome: "reconciled" }),
+      buildManualFixReconcileResponse(repo, { organizationId: "o", actorUserId: "u2", fixId: id, outcome: "wont_fix" }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    const winner = a.status === 200 ? "reconciled" : "wont_fix";
+    expect(repo._rows.find((r) => r.id === id)?.status).toBe(winner);
   });
 });

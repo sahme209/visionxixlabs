@@ -6,7 +6,7 @@ const io = vi.hoisted(() => {
   const rows = new Map<string, Record<string, unknown>>();
   return {
     rows,
-    audit: vi.fn(async () => undefined),
+    audit: vi.fn(async (_input: unknown) => undefined),
     publish: vi.fn(async () => undefined),
     failNext: false,
     prisma: {
