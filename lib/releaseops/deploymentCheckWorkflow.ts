@@ -58,6 +58,8 @@ function job(c: GeneratableCheck): string[] | { skip: string } {
       return { skip: "evaluated by your monitoring; report its result with POST /api/v1/checks/results" };
     case "manual_checklist":
       return { skip: "confirmed by a person in V19, not in CI" };
+    case "resilience_experiment":
+      return { skip: `run with ${String(s.tool)} (${String(s.experiment)}) under your own safeguards; report the outcome with POST /api/v1/checks/results` };
     case "supply_chain":
       return { skip: `verified by ${String(s.verifier)} in your build pipeline (${String(s.evidence).replaceAll("_", " ")}); report pass or fail with POST /api/v1/checks/results` };
     case "security_scan":

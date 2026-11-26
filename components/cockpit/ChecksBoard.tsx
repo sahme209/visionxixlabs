@@ -13,6 +13,7 @@ const FIELDS: Record<CheckKind, Array<{ name: string; label: string; placeholder
   migration_dry_run: [{ name: "workflowPath", label: "Workflow file", placeholder: ".github/workflows/migrate.yml" }, { name: "job", label: "Job", placeholder: "dry-run" }],
   custom_script: [{ name: "scriptPath", label: "Script path in the repository", placeholder: "scripts/smoke.sh" }, { name: "runner", label: "Runs on", placeholder: "github_actions", options: ["github_actions", "customer_runner"] }],
   manual_checklist: [{ name: "items", label: "Items (one per line)", placeholder: "Status page updated\nOn-call notified", multiline: true }],
+  resilience_experiment: [{ name: "tool", label: "Tool", placeholder: "Gremlin, Chaos Mesh, AWS FIS…" }, { name: "experiment", label: "Experiment", placeholder: "Stop one task and confirm recovery" }, { name: "environmentScope", label: "Runs in", placeholder: "non_production", options: ["non_production", "production"] }],
   supply_chain: [{ name: "evidence", label: "Evidence", placeholder: "sbom", options: ["sbom", "slsa_provenance", "sbom_and_provenance"] }, { name: "verifier", label: "Verified by", placeholder: "cosign, slsa-verifier, syft…" }],
   security_scan: [{ name: "tool", label: "Scanner", placeholder: "Snyk, Trivy, CodeQL…" }, { name: "maxCritical", label: "Max critical findings", placeholder: "0", numeric: true }, { name: "maxHigh", label: "Max high findings", placeholder: "0", numeric: true }],
 };
@@ -43,6 +44,7 @@ function summary(c: Check): string {
     case "migration_dry_run": return `${s.workflowPath} · job ${s.job}`;
     case "custom_script": return `${s.scriptPath} on ${s.runner === "github_actions" ? "GitHub Actions" : "your runner"}`;
     case "manual_checklist": return `${(s.items as string[]).length} items`;
+    case "resilience_experiment": return `${s.experiment} with ${s.tool} (${String(s.environmentScope).replaceAll("_", " ")})`;
     case "supply_chain": return `${String(s.evidence).replaceAll("_", " ")} verified by ${s.verifier}`;
     case "security_scan": return `${s.tool} · at most ${s.maxCritical} critical, ${s.maxHigh} high`;
   }
