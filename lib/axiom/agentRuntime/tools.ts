@@ -125,7 +125,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "list_environments",
-    description: "List the workspace's configured deployment environments (dev/test/prod, etc.).",
+    description: "List the workspace's configured deployment environments (dev/test/prod, etc.) with their tags and whether the change window allows a deployment now: open, outside_window (with nextOpen), frozen (with reason and until) or refused_unreadable_rule. Plan deployments around frozen and closed environments instead of proposing them.",
     argsSchemaHint: "{} — no arguments.",
     riskLevel: "low",
   },

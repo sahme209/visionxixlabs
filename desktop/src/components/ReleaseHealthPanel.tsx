@@ -9,7 +9,11 @@ const VERDICT: Record<ReleaseSignalsDto["verification"]["verdict"], { label: str
   no_signals: { label: "No signals connected", tone: "text-zinc-400" },
 };
 
-export function ReleaseHealthPanel({ defaultRelease, commit }: { defaultRelease: string; commit: string | null }) {
+/**
+ * When the verdict is unhealthy and a last good version is recorded, the panel offers to prepare a
+ * rollback to it. Preparing only fills the deployment form; dispatch still goes through every gate.
+ */
+export function ReleaseHealthPanel({ defaultRelease, commit, rollback = null }: { defaultRelease: string; commit: string | null; rollback?: { commit: string; prepare: () => void } | null }) {
   const [release, setRelease] = useState(defaultRelease);
   const [state, setState] = useState<{ kind: "idle" | "busy" } | { kind: "done"; data: ReleaseSignalsDto } | { kind: "error"; message: string }>({ kind: "idle" });
   async function check() {
@@ -35,6 +39,9 @@ export function ReleaseHealthPanel({ defaultRelease, commit }: { defaultRelease:
           {(d.incidents.pagerduty !== null || d.incidents.opsgenie !== null) && <p className="text-zinc-400">Open incidents: {[d.incidents.pagerduty !== null ? `PagerDuty ${d.incidents.pagerduty}` : null, d.incidents.opsgenie !== null ? `Opsgenie ${d.incidents.opsgenie}` : null].filter(Boolean).join(" · ")}</p>}
           {d.staleFlags && d.staleFlags.length > 0 && <p className="text-zinc-400">Temporary flags still on after 30 days: {d.staleFlags.join(", ")}</p>}
           {d.verification.missing.length > 0 && <p className="text-zinc-500">Not available: {d.verification.missing.join(", ")}.</p>}
+          {d.verification.verdict === "unhealthy" && (rollback
+            ? <button data-help-id="settings.workspace.release-health-rollback" type="button" onClick={rollback.prepare} className="mt-1 rounded-md border border-rose-400/30 px-2.5 py-1 text-[11px] text-rose-100 hover:bg-rose-400/10">Prepare rollback to <span className="font-mono">{rollback.commit.slice(0, 12)}</span></button>
+            : <p className="text-zinc-400">No earlier good version is recorded here to roll back to.</p>)}
         </div>}
       </div>
     </div>);

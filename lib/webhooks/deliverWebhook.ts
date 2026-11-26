@@ -197,7 +197,7 @@ export async function deliverWebhookDelivery(deliveryId: string): Promise<Delive
 
   if (outcome.kind === "delivered") {
     finalStatus = "delivered";
-  } else if (outcome.retryable) {
+  } else if (outcome.retryable && envelope.type !== "webhook.ping") {
     const retry = computeWebhookRetry({ failedAttemptNumber: envelope.attemptNumber });
     if (retry.kind === "schedule_retry") {
       finalStatus = "retry";
@@ -245,7 +245,7 @@ export async function deliverWebhookDelivery(deliveryId: string): Promise<Delive
       where: { id: endpoint.id },
       data: { consecutiveFailures: 0 },
     });
-  } else if (outcome.retryable || outcome.kind === "deadletter_4xx") {
+  } else if (envelope.type !== "webhook.ping" && (outcome.retryable || outcome.kind === "deadletter_4xx")) {
     await prisma.webhookEndpoint.update({
       where: { id: endpoint.id },
       data: { consecutiveFailures: { increment: 1 } },

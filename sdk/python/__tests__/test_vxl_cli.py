@@ -18,7 +18,7 @@ import sys
 import time
 import unittest
 from io import StringIO
-from typing import Any, Dict
+from typing import Any, Dict, List
 from unittest.mock import patch
 
 # Make the sibling modules importable.
@@ -321,3 +321,66 @@ class GatewayCliTests(unittest.TestCase):
         client = _FakeGatewayClient(_req("approved", True), [])
         self.assertEqual(self._run(["outcome", "r1", "succeeded", "--detail", "ok"], client), vxl_cli.EXIT_OK)
         self.assertEqual(client.outcomes, [("r1", "succeeded", "ok")])
+
+
+# ============================ vxl config ============================
+
+
+class _FakeConfigClient:
+    def workspace_config(self) -> Dict[str, Any]:
+        return {"ok": True, "environments": [{"slug": "prod", "tier": "prod", "tags": ["region:eu"], "changeWindow": {"utcWindows": []}}], "variableSets": [], "variables": [{"key": "A", "value": "1", "scope": "workspace", "version": 1}], "checks": {"kind": "v19.checks", "version": 1, "checks": []}}
+
+
+class ConfigCliTests(unittest.TestCase):
+    def test_prints_a_summary(self) -> None:
+        args = vxl_cli.build_parser().parse_args(["config"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=_FakeConfigClient()), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertIn("prod  (prod)  region:eu  · change window set", out.getvalue())
+        self.assertIn("0 variable sets · 1 variables · 0 checks", out.getvalue())
+
+    def test_writes_sorted_json_without_the_ok_flag(self) -> None:
+        import json, tempfile, os as _os
+        with tempfile.TemporaryDirectory() as d:
+            path = _os.path.join(d, "v19-config.json")
+            args = vxl_cli.build_parser().parse_args(["config", "--output", path])
+            with patch.object(vxl_cli, "make_client", return_value=_FakeConfigClient()), patch("sys.stdout", new_callable=StringIO):
+                vxl_cli.dispatch(args)
+            with open(path, encoding="utf-8") as fh:
+                doc = json.loads(fh.read())
+            self.assertEqual(sorted(doc.keys()), ["checks", "environments", "variableSets", "variables"])
+
+
+# ============================ vxl freeze ============================
+
+
+class _FakeFreezeClient:
+    def __init__(self, response: Dict[str, Any]) -> None:
+        self.response = response
+        self.calls: List[Any] = []
+
+    def freeze_deployments(self, scope: str, hours: int, reason: str, idempotency_key: Any = None) -> Dict[str, Any]:
+        self.calls.append((scope, hours, reason, idempotency_key))
+        return self.response
+
+
+class FreezeCliTests(unittest.TestCase):
+    def test_freezes_production_by_default(self) -> None:
+        client = _FakeFreezeClient({"ok": True, "environments": ["Prod"], "skipped": [], "endsAt": "2026-11-27T16:00:00.000Z"})
+        args = vxl_cli.build_parser().parse_args(["freeze", "--reason", "Incident 42", "--idempotency-key", "pd-42-trigger"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=client), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertEqual(client.calls, [("production", 4, "Incident 42", "pd-42-trigger")])
+        self.assertIn("Frozen until 2026-11-27T16:00:00.000Z: Prod", out.getvalue())
+
+    def test_reports_a_duplicate(self) -> None:
+        client = _FakeFreezeClient({"ok": True, "duplicate": True, "summary": "x"})
+        args = vxl_cli.build_parser().parse_args(["freeze", "--scope", "all", "--hours", "2", "--reason", "Incident 42"])
+        out = StringIO()
+        with patch.object(vxl_cli, "make_client", return_value=client), patch("sys.stdout", out):
+            vxl_cli.dispatch(args)
+        self.assertIn("nothing changed", out.getvalue())
+        self.assertEqual(client.calls[0][:2], ("all", 2))
+

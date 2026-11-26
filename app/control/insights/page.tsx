@@ -8,6 +8,7 @@ import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
 import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { summarizeGateRefusals } from "@/lib/releaseops/gateRefusalSummary";
+import { summarizeAgentActivity } from "@/lib/agentGateway/agentActivitySummary";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,8 @@ export default async function InsightsPage() {
     return changeFailureRate(releases, new Set(withIncidents.map((i) => i.releaseId)));
   })().catch(() => null);
   const stability = await readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, now);
+  // Agent gateway activity; optional, so a read failure hides only this section.
+  const agents = await (async () => summarizeAgentActivity(await prisma.agentGatewayRequest.findMany({ where: { organizationId, createdAt: { gte: since } }, take: 5000, select: { status: true, reviewTriage: true, agentName: true } })))().catch(() => null);
   // Release-gate refusals recorded in the audit trail; optional, so a read failure hides only this section.
   const refusals = await (async () => summarizeGateRefusals(await prisma.auditEvent.findMany({ where: { organizationId, kind: "release.gate_refused", createdAt: { gte: since } }, take: 5000, select: { detailJson: true } })))().catch(() => null);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
@@ -128,6 +131,19 @@ export default async function InsightsPage() {
         <h2 id="insights-stability" className="text-base font-medium">Stability early warning · last 7 days against the 90 before</h2>
         {stability === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Release records could not be read. Nothing is shown rather than an estimate.</p>
           : <p className={`mt-3 max-w-2xl text-sm ${stability.level === "elevated" ? "text-amber-200" : "text-zinc-300"}`}>{stability.level === "elevated" ? "Elevated: " : stability.level === "steady" ? "Steady: " : ""}{stability.message}{stability.level === "elevated" ? " Production deployments ask for a reason until the rate settles." : ""}</p>}
+      </section>
+
+      <section aria-labelledby="insights-agents" className="mt-10">
+        <h2 id="insights-agents" className="text-base font-medium">AI agent requests · last {OUTCOME_WINDOW_DAYS} days</h2>
+        {agents === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Agent requests could not be read. Nothing is shown rather than an estimate.</p>
+          : agents.total === 0 ? <p className="mt-3 text-sm text-zinc-400">No AI agent asked for anything in this window.</p>
+          : <><dl className="mt-4 grid gap-3 sm:grid-cols-4">
+              <Metric label="Agent requests" value={agents.total.toLocaleString()} note={`${agents.agents} ${agents.agents === 1 ? "agent" : "agents"}`} />
+              <Metric label="Approved or allowed" value={agents.approved.toLocaleString()} />
+              <Metric label="Rejected or refused" value={agents.rejected.toLocaleString()} />
+              <Metric label="Waiting for a decision" value={agents.pending.toLocaleString()} />
+            </dl>
+            {agents.byLane.length > 0 && <p className="mt-3 text-xs text-zinc-400">By review lane: {agents.byLane.map((l) => `${l.label} ${l.count}`).join(" · ")}</p>}</>}
       </section>
 
       <section aria-labelledby="insights-gate-refusals" className="mt-10">

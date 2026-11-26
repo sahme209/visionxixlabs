@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
+import { evaluateChangeWindow, parseChangeWindowRule } from "../../../lib/releaseops/environmentChangeWindow";
 import { buildEnvironmentBoard, type BoardEnvironment } from "../../../lib/desktop/environmentBoard";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
 import { StatusIconChip, runResultTone } from "./StatusBadge";
 
 /** Latest recorded workflow run per repository and environment, in lifecycle order. Not the live deployed version. */
+/** Short label for an environment's change window right now; null when it has no window. */
+export function windowBadge(rule: unknown, now = new Date()): { label: string; title: string } | null {
+  const parsed = parseChangeWindowRule(rule ?? null);
+  if (parsed.kind === "none") return null;
+  if (parsed.kind === "unreadable") return { label: "window rule unreadable", title: "Deployments here are refused until the change window rule is fixed." };
+  const d = evaluateChangeWindow(parsed, now);
+  if (d.open) return { label: "window open", title: d.closesAt ? `Deployments allowed until ${new Date(d.closesAt).toUTCString()}` : "Deployments allowed" };
+  if (d.reason === "freeze") return { label: "frozen", title: `${d.freezeReason} until ${new Date(d.freezeEndsAt).toUTCString()}` };
+  return { label: "window closed", title: d.nextOpen ? `Next opening ${new Date(d.nextOpen.startUtc).toUTCString()}` : "No opening in the next 31 days" };
+}
+
 export function EnvironmentBoard({ executions }: { executions: DeploymentExecution[] }) {
   const [environments, setEnvironments] = useState<BoardEnvironment[] | null | undefined>();
   useEffect(() => {
@@ -40,7 +52,7 @@ export function EnvironmentBoard({ executions }: { executions: DeploymentExecuti
       </header>
       <div className="environment-board-scroll" role="region" aria-label="Environment board table" tabIndex={0}>
         <table>
-          <thead><tr><th scope="col">Repository</th>{board.environments.map(env => <th key={env.id} scope="col">{env.name}{env.tier.toLowerCase() !== env.name.toLowerCase() && <span>{env.tier}</span>}</th>)}</tr></thead>
+          <thead><tr><th scope="col">Repository</th>{board.environments.map(env => { const w = windowBadge(env.changeWindowRule); return <th key={env.id} scope="col">{env.name}{env.tier.toLowerCase() !== env.name.toLowerCase() && <span>{env.tier}</span>}{w && <span className="environment-board-window" title={w.title}>{w.label}</span>}</th>; })}</tr></thead>
           <tbody>{board.rows.map(row => <tr key={row.repository}>
             <th scope="row">{row.repository}{row.gaps.map(gap => <small key={gap.to} className="environment-board-gap">{gap.to} trails {gap.from} ({gap.commit})</small>)}</th>
             {row.cells.map((cell, index) => <td key={board.environments[index].id}>{cell ? (() => {

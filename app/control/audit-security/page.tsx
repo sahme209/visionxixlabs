@@ -51,6 +51,22 @@ export default async function AuditSecurityPage() {
         ))}
       </dl>
 
+      <form action="/api/control/audit-security/export" method="get" aria-labelledby="audit-export-heading" className="mt-6 rounded-xl border border-white/8 bg-[#111111] p-4">
+        <h2 id="audit-export-heading" className="text-sm font-medium">Export audit log</h2>
+        <p className="mt-1 text-xs leading-5 text-zinc-400">Download this workspace&apos;s audit records for a security tool or an auditor: time, action, outcome, actor, subject and correlation ID, newest first, up to 10,000 records. The export itself is recorded.</p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <label className="text-xs text-zinc-400">Period
+            <select name="days" defaultValue="30" className="mt-1 block rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-sm text-zinc-100">
+              <option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option>
+            </select></label>
+          <label className="text-xs text-zinc-400">Format
+            <select name="format" defaultValue="csv" className="mt-1 block rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-sm text-zinc-100">
+              <option value="csv">CSV (spreadsheets)</option><option value="ndjson">NDJSON (log tools)</option>
+            </select></label>
+          <button type="submit" className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-sm text-zinc-200 hover:bg-white/5">Download audit log</button>
+        </div>
+      </form>
+
       <OrganizationSessionsPanel />
 
       <AuditEvidencePanel records={records.map(record => ({ ...record, occurredAt: record.occurredAt.toISOString() }))} />

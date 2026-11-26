@@ -37,6 +37,7 @@ export default function RollbackPage() {
       <DocSection id="rollback-last-good" title="Roll back to the last good version" kicker="03">
         <p>In the desktop deploy form, after you choose a repository, V19 shows the last good version for that environment: the most recent successful deployment of a different commit than the one now running, or the last success if the latest attempt failed. Choose <em>Prepare rollback to this version</em> to fill the form with its tag or branch. A rollback is an ordinary deployment, so policy, checks, rings, change window and approvals still apply.</p>
         <p>A tag always points to the same commit. A branch may have moved since, so check readiness first: the form confirms when readiness resolves the same commit, and warns when the branch has moved. If it has, use a tag for that commit instead.</p>
+        <p>After a deployment, <em>Check release health</em> reads your connected tools. When the verdict is <strong>Unhealthy</strong> and a last good version is recorded, the panel offers <em>Prepare rollback</em> to that commit. It fills the deploy form the same way; nothing is dispatched until you check readiness and deploy, and every gate still applies.</p>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">

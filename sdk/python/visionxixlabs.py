@@ -106,6 +106,19 @@ class VisionXIXLabs:
         """
         return self._get(f"/api/v1/environments/{quote(slug, safe='')}/variables")
 
+    def freeze_deployments(
+        self, scope: str, hours: int, reason: str, idempotency_key: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """POST /api/v1/environments/freeze — stop deployments now, e.g. from an incident workflow.
+
+        Required scope: freeze:start. ``scope`` is "production" (prod tier) or "all"; ``hours`` is 1 to 24.
+        Only starts a freeze; ending one early stays with workspace owners and admins in the cockpit.
+        """
+        body: Dict[str, Any] = {"scope": scope, "hours": hours, "reason": reason}
+        if idempotency_key:
+            body["idempotencyKey"] = idempotency_key
+        return self._post("/api/v1/environments/freeze", body)
+
     def report_check_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """POST /api/v1/checks/results — report one deployment check run from CI as evidence.
 

@@ -36,3 +36,42 @@ describe("WebhooksBoard", () => {
     await waitFor(() => expect(screen.getByText(/private and internal addresses are refused/)).toBeTruthy());
   });
 });
+
+describe("WebhooksBoard recent deliveries", () => {
+  it("loads deliveries only when asked and labels outcomes", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json({ ok: true, data: { canEdit: false, endpoints: [{ id: "w1", name: "Slack", url: "https://hooks.example.com/x", subscribedEvents: ["deployment.blocked"], consecutiveFailures: 0, createdAt: "2026-11-27T00:00:00Z" }] } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { deliveries: [
+        { id: "d1", eventKind: "deployment.blocked", attemptNumber: 1, status: "delivered", httpStatus: 204, attemptedAt: "2026-11-27T10:00:00Z", nextAttemptAt: null, createdAt: "2026-11-27T10:00:00Z" },
+        { id: "d2", eventKind: "deployment.blocked", attemptNumber: 8, status: "deadletter", httpStatus: null, attemptedAt: "2026-11-27T11:00:00Z", nextAttemptAt: null, createdAt: "2026-11-27T11:00:00Z" },
+      ] } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(WebhooksBoard));
+    const toggle = await screen.findByRole("button", { name: "Show recent deliveries" });
+    expect(f).toHaveBeenCalledTimes(1);
+    fireEvent.click(toggle);
+    const table = await screen.findByRole("table", { name: "Recent deliveries for Slack" });
+    expect(f.mock.calls[1][0]).toBe("/api/control/webhooks/w1/deliveries");
+    expect(table.textContent).toContain("Delivered");
+    expect(table.textContent).toContain("Gave up");
+    expect(table.textContent).toContain("no response");
+  });
+});
+
+describe("WebhooksBoard test delivery", () => {
+  const list = { ok: true, data: { canEdit: true, endpoints: [{ id: "w1", name: "Slack", url: "https://hooks.example.com/x", subscribedEvents: ["deployment.blocked"], consecutiveFailures: 0, createdAt: "2026-11-27T00:00:00Z" }] } };
+  it("sends a test delivery and reports the receiver's answer", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json(list)).mockResolvedValueOnce(json({ ok: true, data: { status: "deadletter", httpStatus: 500 } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(WebhooksBoard));
+    fireEvent.click(await screen.findByRole("button", { name: "Send test delivery to Slack" }));
+    expect(await screen.findByText("Test delivery to Slack failed (HTTP 500). It will not be retried.")).toBeTruthy();
+    expect(f.mock.calls[1][0]).toBe("/api/control/webhooks/w1/test");
+    expect(f.mock.calls[1][1]).toMatchObject({ method: "POST" });
+  });
+  it("explains the one-per-minute limit", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(json(list)).mockResolvedValueOnce(json({ ok: false, error: "ping_rate_limited" }, 429)));
+    render(createElement(WebhooksBoard));
+    fireEvent.click(await screen.findByRole("button", { name: "Send test delivery to Slack" }));
+    expect(await screen.findByText(/One test delivery per webhook per minute/)).toBeTruthy();
+  });
+});

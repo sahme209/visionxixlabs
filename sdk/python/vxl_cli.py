@@ -267,6 +267,46 @@ def cmd_ask(args: argparse.Namespace) -> None:
     sys.exit(EXIT_OK if request.get("mayProceed") else EXIT_COMMAND_FAILED)
 
 
+def cmd_freeze(args: argparse.Namespace) -> None:
+    """Stop deployments now (POST /api/v1/environments/freeze). Scope: freeze:start. Only starts a freeze."""
+    client = make_client(args.api_key, args.base_url)
+    data = handle_api_call(lambda: client.freeze_deployments(args.scope, args.hours, args.reason, args.idempotency_key))
+    if args.json:
+        sys.stdout.write(json.dumps(data, indent=2, sort_keys=True) + "\n")
+        return
+    if data.get("duplicate"):
+        print("Already frozen for this idempotency key; nothing changed.")
+        return
+    print(color(f"Frozen until {data.get('endsAt')}: {', '.join(data.get('environments') or [])}", ANSI_BOLD))
+    for s in data.get("skipped") or []:
+        print(f"  not changed: {s}")
+    print("End it early from the cockpit Overview (owners and admins).")
+
+
+def cmd_config(args: argparse.Namespace) -> None:
+    """Print the workspace configuration as code (GET /api/v1/config). Scope: config:read."""
+    client = make_client(args.api_key, args.base_url)
+    data = handle_api_call(client.workspace_config)
+    if args.json or args.output:
+        doc = {k: data.get(k) for k in ("environments", "variableSets", "variables", "checks")}
+        text = json.dumps(doc, indent=2, sort_keys=True) + "\n"
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            print(f"Wrote {args.output}")
+            return
+        sys.stdout.write(text)
+        return
+    envs = data.get("environments") or []
+    print(color("Environments", ANSI_BOLD))
+    for e in envs:
+        tags = " ".join(e.get("tags") or [])
+        window = "change window set" if e.get("changeWindow") else "no change window"
+        print(f"  {e.get('slug')}  ({e.get('tier')})  {tags}  · {window}")
+    print()
+    print(f"{len(data.get('variableSets') or [])} variable sets · {len(data.get('variables') or [])} variables · {len((data.get('checks') or {}).get('checks') or [])} checks")
+
+
 def cmd_outcome(args: argparse.Namespace) -> None:
     """Report what happened after an allowed or approved action."""
     client = make_client(args.api_key, args.base_url)
@@ -641,6 +681,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_outcome.add_argument("outcome", choices=["succeeded", "failed", "abandoned"])
     p_outcome.add_argument("--detail", default=None)
 
+    p_config = sub.add_parser("config", help="Show the workspace configuration as code (needs config:read).")
+    p_config.add_argument("--output", "-o", default=None, help="Write the configuration as sorted JSON to this file.")
+
+    p_freeze = sub.add_parser("freeze", help="Stop deployments now, e.g. from an incident (needs freeze:start).")
+    p_freeze.add_argument("--scope", choices=["production", "all"], default="production", help="prod-tier environments (default) or all.")
+    p_freeze.add_argument("--hours", type=int, default=4, help="1 to 24 hours from now (default 4).")
+    p_freeze.add_argument("--reason", required=True, help="Shown to everyone who tries to deploy, e.g. 'Incident 42'.")
+    p_freeze.add_argument("--idempotency-key", default=None, help="Retries with the same key within 24 hours do not freeze again.")
+
     p_listen = sub.add_parser(
         "listen",
         help="Run a local HTTP server that verifies inbound webhook signatures.",
@@ -675,6 +724,10 @@ def dispatch(args: argparse.Namespace) -> None:
         return cmd_ask(args)
     if args.cmd == "outcome":
         return cmd_outcome(args)
+    if args.cmd == "config":
+        return cmd_config(args)
+    if args.cmd == "freeze":
+        return cmd_freeze(args)
     die(f"unknown command: {args.cmd}")
 
 

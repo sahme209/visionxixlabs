@@ -160,7 +160,7 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206",
+      "sourceSha256": "2101dc8c83496ffad9d1d02580b325f49b71cf0d6a634f6922f831cec189322e",
       "fields": [
         "Rollback is specific to the execution path.",
         "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "b70b056c4845ea0598244532f4f520c5011b4a848fe6966dbd807ba3cb114a31",
+      "sourceSha256": "b060c94ffcca65a838a03e5dc6cae9d3df33cf069a52511d1eb074084a2c3d99",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -357,7 +357,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "0e45c8cab5af0ffe1ce95fd2f6264cb97c91464ed4c4be721203e272b77b7a2d",
+      "sourceSha256": "bd5a06d3605a7c248cac0f34d234b25c6f5c13511bd75c44ee8a277abb6b2806",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
@@ -425,7 +425,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "2309be6fb66bc96e8c71f5621cb674eb43d1f80960bbc9b4c4afeacea10fb767",
+      "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -519,7 +519,7 @@
     {
       "href": "/docs/audit-logs",
       "source": "app/docs/audit-logs/page.tsx",
-      "sourceSha256": "456e16a36790aecaba82b7f72e1de72f51860ccc3e12e13d92c988a2e3590490",
+      "sourceSha256": "3717b27acd302265ddc9e0cd0de3c103d19a89033055c592303fb25c263d9570",
       "fields": [
         "Read the evidence, not just the status.",
         "A saved decision, an attempted action and an observed external result answer different questions.",

@@ -13,6 +13,17 @@ import { BATCH_OBSERVATION_TOOLS, executeBatchObservationTool, type BatchObserva
 import { executeReleaseHealthTool } from "./releaseHealthObservation";
 import { executeGitopsStateTool } from "./gitopsObservation";
 import { executeCiJobsTool } from "./ciJobsObservation";
+import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
+
+/** Whether the change window gate would allow a deployment right now, for the agent to plan around. */
+function deploymentWindowNow(rule: unknown, now: Date): Record<string, unknown> {
+  const parsed = parseChangeWindowRule(rule);
+  if (parsed.kind === "unreadable") return { status: "refused_unreadable_rule" };
+  const d = evaluateChangeWindow(parsed, now);
+  if (d.open) return { status: "open", ...(d.closesAt ? { closesAt: d.closesAt } : {}) };
+  if (d.reason === "freeze") return { status: "frozen", freezeReason: d.freezeReason, until: d.freezeEndsAt, nextOpen: d.nextOpen?.startUtc ?? null };
+  return { status: "outside_window", nextOpen: d.nextOpen?.startUtc ?? null };
+}
 import { executeCloudObservationTool, type CloudObservationContext } from "./cloudObservation";
 
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
@@ -75,7 +86,7 @@ interface TenantIntegrationConnectionRow {
 export interface ToolExecutionRepo {
   agentSkillInstallation?: AgentSkillRepo["agentSkillInstallation"];
   environment: {
-    findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string }>>;
+    findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string; tags?: string[]; changeWindowRuleJson?: unknown }>>;
   };
   deploymentExecution: {
     findMany(args: {
@@ -137,7 +148,8 @@ export async function executeReadOnlyTool(
   if (toolName === "list_cloud_accounts" || toolName === "read_aws_inventory") return executeCloudObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "list_environments") {
     const environments = await repo.environment.findMany({ where: { organizationId } });
-    return { ok: true, result: environments.map((e) => ({ id: e.id, slug: e.slug, name: e.name, tier: e.tier })) };
+    const now = new Date();
+    return { ok: true, result: environments.map((e) => ({ id: e.id, slug: e.slug, name: e.name, tier: e.tier, ...(e.tags ? { tags: e.tags } : {}), ...("changeWindowRuleJson" in e ? { deploymentWindow: deploymentWindowNow(e.changeWindowRuleJson, now) } : {}) })) };
   }
 
   if (toolName === "list_deployment_executions") {

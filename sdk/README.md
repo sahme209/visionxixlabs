@@ -70,7 +70,23 @@ environments (tier, tags and change window), variable sets, variables with
 their scope, and deployment checks in the `v19.checks/v1` file shape. Use an
 API key with the `config:read` scope. It is read-only; change configuration in
 the cockpit, where edits are governed and compare-and-set. Every SDK exposes
-`workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)`.
+`workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)`. From a terminal, `vxl config` prints a summary and
+`vxl config -o v19-config.json` writes it as sorted JSON, ready to commit and
+diff in a pull request.
+
+## Stop deployments from an incident (deployment freeze)
+
+`POST /api/v1/environments/freeze` freezes production (environments with the
+prod tier) or every environment from now, for 1 to 24 hours, with a reason that
+everyone who tries to deploy will see. Use an API key with the `freeze:start`
+scope, for example from a PagerDuty or Opsgenie workflow when a critical
+incident opens. A key can only start a freeze: ending one early stays with
+workspace owners and admins on the cockpit Overview. Pass an `idempotencyKey`
+(such as the incident ID plus "trigger") so a retried call within 24 hours does
+not freeze again. SDKs: `freezeDeployments()` / `freeze_deployments()` /
+`FreezeDeployments(ctx)`; CLI: `vxl freeze --reason "Incident 42" --hours 4`.
+Freezes apply to AI agents as well as people, and send the
+`deployment.freeze_started` webhook.
 
 ## Environment configuration at deploy time
 
@@ -266,6 +282,7 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/environments/{slug}/variables` | `pipeline:read` | `environmentVariables()` |
 | `GET  /api/v1/config` | `config:read` | `workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)` |
 | `POST /api/v1/checks/results`     | `checks:report`       | `reportCheckResult()` |
+| `POST /api/v1/environments/freeze` | `freeze:start`       | `freezeDeployments()` / `freeze_deployments()` / `FreezeDeployments(ctx)` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
@@ -351,8 +368,18 @@ coding.lint_failed                 coding.test_failed          airflow.action_pr
 airflow.automation_succeeded       airflow.automation_failed
 agent_gateway.request_pending      agent_gateway.request_decided
 agent_gateway.outcome_recorded     audit.integrity_failed
-workspace.access_requested         deployment.blocked
+workspace.access_requested         deployment.blocked          webhook.ping
+deployment.freeze_started          deployment.freeze_ended
 ```
+
+`deployment.freeze_started` fires when an owner or admin freezes deployments
+from the cockpit Overview. Payload: `{ reason, environments, scope, endsAt }`.
+`deployment.freeze_ended` fires when a freeze is ended early, with
+`{ reason, environments }`.
+
+`webhook.ping` is the test delivery an owner or admin sends with **Send test**
+on the Webhooks page. It is sent once, never retried, and carries
+`{ webhookName, message }`. Check its signature like any other delivery.
 
 `deployment.blocked` fires when a release gate refuses a desktop deployment:
 outside the environment's change window, during a freeze, while a stability
