@@ -1,5 +1,5 @@
 /** Octopus-style environment board from recorded workflow runs: one row per repository, one column per environment. */
-export interface BoardEnvironment { id: string; name: string; tier: string; displayOrder: number }
+export interface BoardEnvironment { id: string; name: string; tier: string; displayOrder: number; changeWindowRule?: unknown }
 export interface BoardExecution { id: string; environmentId: string; repositoryFullName: string; sourceRef: string | null; sourceCommitSha: string | null; status: string; conclusion: string | null; createdAt: string; completedAt: string | null; configDigest?: string | null }
 export interface BoardCell { executionId: string; ref: string | null; commit: string | null; status: string; conclusion: string | null; at: string; config?: string | null; sha?: string | null }
 export interface PromotionGap { from: string; to: string; commit: string | null }
