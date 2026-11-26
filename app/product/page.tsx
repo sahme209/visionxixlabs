@@ -15,6 +15,7 @@ import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 import { ConfigPromotionDemo } from "@/components/marketing/ConfigPromotionDemo";
 import { CheckGateDemo } from "@/components/marketing/CheckGateDemo";
 import { PolicyChangeDemo } from "@/components/marketing/PolicyChangeDemo";
+import { ReleaseFlowDiagram } from "@/components/marketing/ReleaseFlowDiagram";
 import { ProductDisclosure } from "@/components/marketing/ProductDisclosure";
 
 export const metadata: Metadata = {
@@ -84,6 +85,11 @@ export default function ProductPage() {
         <ControlPlaneModel />
         <ProductTour heading="Walk through the desktop app" />
         <section aria-label="How V19 fits together" className="mx-auto max-w-[1080px] px-5 pt-12 sm:px-8"><ArchitectureMap /></section>
+        <section aria-labelledby="release-flow" className="mx-auto max-w-[1080px] px-5 pt-16 sm:px-8">
+          <h2 id="release-flow" className="text-2xl font-medium tracking-[-0.03em] text-zinc-100">What happens at each stage of a release</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Choose a stage to see what V19 records, who signs off and which gates apply. The same gates apply whether a person or an AI agent starts the release.</p>
+          <ReleaseFlowDiagram />
+        </section>
         <section aria-labelledby="config-promotion" className="mx-auto max-w-[1080px] px-5 pt-16 sm:px-8">
           <h2 id="config-promotion" className="text-2xl font-medium tracking-[-0.03em] text-zinc-100">Configuration and promotion you can review</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Set configuration once with per-environment overrides and compare environments before promoting. Every desktop deployment records the configuration fingerprint it used, and Governance shows each repository&apos;s promotion order with any gaps.</p>
