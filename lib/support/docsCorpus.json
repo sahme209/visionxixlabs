@@ -853,21 +853,21 @@
    "title": "The recovery sequence",
    "text": "Resolve and record the task definition currently serving the target. Register or select the requested task definition and update the ECS service. Use ECS's own steady-state waiter as the deployment health boundary. On stabilization failure, restore the captured task definition. Wait for the restored service and preserve the workflow result as evidence.",
    "source": "app/docs/rollback/page.tsx",
-   "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206"
+   "sourceSha256": "2101dc8c83496ffad9d1d02580b325f49b71cf0d6a634f6922f831cec189322e"
   },
   {
    "href": "/docs/rollback#limits",
    "title": "Limits",
    "text": "This path restores the ECS task definition. It does not undo database migrations, external side effects, incompatible data changes, or changes made outside the workflow. Teams must keep application-level recovery steps in their own release procedure.",
    "source": "app/docs/rollback/page.tsx",
-   "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206"
+   "sourceSha256": "2101dc8c83496ffad9d1d02580b325f49b71cf0d6a634f6922f831cec189322e"
   },
   {
    "href": "/docs/rollback#rollback-last-good",
    "title": "Roll back to the last good version",
-   "text": "In the desktop deploy form, after you choose a repository, V19 shows the last good version for that environment: the most recent successful deployment of a different commit than the one now running, or the last success if the latest attempt failed. Choose Prepare rollback to this version to fill the form with its tag or branch. A rollback is an ordinary deployment, so policy, checks, rings, change window and approvals still apply. A tag always points to the same commit. A branch may have moved since, so check readiness first: the form confirms when readiness resolves the same commit, and warns when the branch has moved. If it has, use a tag for that commit instead.",
+   "text": "In the desktop deploy form, after you choose a repository, V19 shows the last good version for that environment: the most recent successful deployment of a different commit than the one now running, or the last success if the latest attempt failed. Choose Prepare rollback to this version to fill the form with its tag or branch. A rollback is an ordinary deployment, so policy, checks, rings, change window and approvals still apply. A tag always points to the same commit. A branch may have moved since, so check readiness first: the form confirms when readiness resolves the same commit, and warns when the branch has moved. If it has, use a tag for that commit instead. After a deployment, Check release health reads your connected tools. When the verdict is Unhealthy and a last good version is recorded, the panel offers Prepare rollback to that commit. It fills the deploy form the same way; nothing is dispatched until you check readiness and deploy, and every gate still applies.",
    "source": "app/docs/rollback/page.tsx",
-   "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206"
+   "sourceSha256": "2101dc8c83496ffad9d1d02580b325f49b71cf0d6a634f6922f831cec189322e"
   },
   {
    "href": "/docs/security-model#authentication",

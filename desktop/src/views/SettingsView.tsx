@@ -1751,6 +1751,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   if (!loaded) return <div className="px-4 py-3 text-[12px] text-zinc-500">Loading deploy target…</div>;
   if (loadError) return <div className="px-4 py-3 text-[12px] text-rose-300">{loadError}</div>;
 
+  const rollbackTarget = deployRepo ? findRollbackTarget(environmentExecutions, environmentId, deployRepo) : null;
+  const prepareRollback = (ref: string, kind: "branch" | "tag") => { setSourceRef(ref); setSourceKind(kind); setPullRequestNumber(""); setPromotedFromExecutionId(""); setReadiness(null); setRollbackPrepared(true); };
   return (
     <div className="border-t border-white/4 bg-black/20 px-4 py-3.5 space-y-3">
       <div className="rounded-lg border border-white/[0.07] bg-white/2.5 px-3 py-2.5 text-[12px] text-zinc-400">
@@ -1823,7 +1825,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           </div>
         )}
         {stabilityRequired && <textarea data-help-id="settings.workspace.deploy-stability-reason" aria-label="Reason to deploy during the stability warning" value={stabilityReason} onChange={(event) => setStabilityReason(event.target.value)} placeholder="Why this production deployment should go out now (at least 10 characters). It is recorded in the audit log." className="mt-3 min-h-16 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
-        {deployRepo && <RollbackCard target={findRollbackTarget(environmentExecutions, environmentId, deployRepo)} resolvedCommit={readiness?.sourceCommitSha ?? null} active={rollbackPrepared} onPrepare={(ref, kind) => { setSourceRef(ref); setSourceKind(kind); setPullRequestNumber(""); setPromotedFromExecutionId(""); setReadiness(null); setRollbackPrepared(true); }} />}
+        {deployRepo && rollbackTarget && <RollbackCard target={rollbackTarget} resolvedCommit={readiness?.sourceCommitSha ?? null} active={rollbackPrepared} onPrepare={prepareRollback} />}
         <BlockingChecksNote checks={blockingChecks} commit={readiness?.sourceCommitSha ?? null} bypass={emergencyBypass} />
         {readiness?.databaseChanges && <DatabaseChangesNote evidence={readiness.databaseChanges} />}
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
@@ -1834,7 +1836,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
             {readiness.pullRequestUrl && <> · <button data-help-id="settings.workspace.deploy-verified-pr-link" type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
           </div>
         )}
-        {execution && execution.environmentId === environmentId && <ReleaseHealthPanel key={execution.id} defaultRelease={execution.sourceRef ?? ""} commit={execution.sourceCommitSha} />}
+        {execution && execution.environmentId === environmentId && <ReleaseHealthPanel key={execution.id} defaultRelease={execution.sourceRef ?? ""} commit={execution.sourceCommitSha} rollback={rollbackTarget?.kind === "target" ? { commit: rollbackTarget.to.sourceCommitSha!, prepare: () => prepareRollback(rollbackTarget.to.sourceRef!, rollbackTarget.to.sourceKind === "tag" ? "tag" : "branch") } : null} />}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Workflow dispatched, but tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && execution.environmentId === environmentId && (

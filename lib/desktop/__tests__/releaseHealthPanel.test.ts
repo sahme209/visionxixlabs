@@ -24,4 +24,25 @@ describe("ReleaseHealthPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Check release health" }));
     await waitFor(() => expect(screen.getByText(/Use the release name/)).toBeTruthy());
   });
+  const unhealthy = { ok: true, data: { release: "v1.4.0", incidents: { pagerduty: null, opsgenie: null }, newIssues: [], monitors: null, staleFlags: [], unavailable: [], verification: { verdict: "unhealthy", reasons: ["2 new errors."], missing: [] } } };
+  it("offers to prepare a rollback to the last good version when the release is unhealthy", async () => {
+    m.signals.mockResolvedValue(unhealthy);
+    const prepare = vi.fn();
+    render(createElement(ReleaseHealthPanel, { defaultRelease: "v1.4.0", commit: null, rollback: { commit: "b".repeat(40), prepare } }));
+    fireEvent.click(screen.getByRole("button", { name: "Check release health" }));
+    fireEvent.click(await screen.findByRole("button", { name: `Prepare rollback to ${"b".repeat(12)}` }));
+    expect(prepare).toHaveBeenCalledTimes(1);
+  });
+  it("says when there is nothing to roll back to, and offers nothing for a healthy release", async () => {
+    m.signals.mockResolvedValue(unhealthy);
+    render(createElement(ReleaseHealthPanel, { defaultRelease: "v1.4.0", commit: null }));
+    fireEvent.click(screen.getByRole("button", { name: "Check release health" }));
+    expect(await screen.findByText("No earlier good version is recorded here to roll back to.")).toBeTruthy();
+    cleanup();
+    m.signals.mockResolvedValue({ ...unhealthy, data: { ...unhealthy.data, verification: { verdict: "healthy", reasons: [], missing: [] } } });
+    render(createElement(ReleaseHealthPanel, { defaultRelease: "v1.4.0", commit: null, rollback: { commit: "b".repeat(40), prepare: vi.fn() } }));
+    fireEvent.click(screen.getByRole("button", { name: "Check release health" }));
+    await screen.findByText("Healthy");
+    expect(screen.queryByRole("button", { name: /Prepare rollback/ })).toBeNull();
+  });
 });

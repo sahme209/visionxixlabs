@@ -160,7 +160,7 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "646e89c1fbd9f65e0b33d3ac963b5837f95661e5318967a7e9b3b7e72ec82206",
+      "sourceSha256": "2101dc8c83496ffad9d1d02580b325f49b71cf0d6a634f6922f831cec189322e",
       "fields": [
         "Rollback is specific to the execution path.",
         "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
