@@ -17,7 +17,7 @@ describe("read_release_health agent tool", () => {
   it("reads release signals for a paired, current member, read-only", async () => {
     const r = await executeReleaseHealthTool("org1", { release: "web@1", commit: "A".repeat(40) }, ctx());
     expect(r).toMatchObject({ ok: true, result: { kind: "release_health", authority: "observation_only", release: "web@1" } });
-    expect(m.results.mock.calls[0][0].where).toEqual({ organizationId: "org1", releaseRef: "a".repeat(40), stage: "verify" });
+    expect((m.results.mock.calls[0] as unknown as [{ where: unknown }])[0].where).toEqual({ organizationId: "org1", releaseRef: "a".repeat(40), stage: "verify" });
   });
   it("refuses without pairing, with bad arguments, or when authority lapses", async () => {
     expect(await executeReleaseHealthTool("org1", { release: "x" })).toEqual({ ok: false, error: "paired_release_health_required" });
