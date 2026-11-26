@@ -86,3 +86,16 @@ describe("ChecksBoard manual checklist confirmation", () => {
     expect(JSON.parse(f.mock.calls[1][1].body)).toEqual({ checkKey: "status-page", checkVersion: 2, commitSha: "a".repeat(40), confirmedItems: ["Post update", "Notify on-call"] });
   });
 });
+
+describe("ChecksBoard AI drafting", () => {
+  it("fills the form from a validated draft without saving", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json(board(true))).mockResolvedValueOnce(json({ ok: true, draft: { key: "health", name: "Health", kind: "smoke_test", stage: "verify", mode: "blocking", spec: { url: "https://a.example.invalid/h", expectStatus: 200, maxLatencyMs: 500 } } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(ChecksBoard));
+    fireEvent.change(await screen.findByLabelText("Describe the check"), { target: { value: "probe health" } });
+    fireEvent.click(screen.getByRole("button", { name: "Fill the form" }));
+    await waitFor(() => expect((screen.getByLabelText("URL") as HTMLInputElement).value).toBe("https://a.example.invalid/h"));
+    expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("Health");
+    expect(f).toHaveBeenCalledTimes(2);
+  });
+});

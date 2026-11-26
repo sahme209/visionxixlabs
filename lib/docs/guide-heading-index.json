@@ -173,7 +173,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "6f27410e31f9db8d8534f54989e96c7190b3641ca8bdcafe9cb4353adb83a51b",
+      "sourceSha256": "5b2f8c74c917754daeee8c9e87c14cf2d1a64ab3680e1feac141958e6ff6a425",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -440,7 +440,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "ec508d9f9bc94ffb25dd5489231cf457bfe9ca28a9e900accd6581f67fa318be",
+      "sourceSha256": "b5bfe2d7b4b0559e64a5059abdd28c2cdeba677b975e99fdf01409945a0f58f5",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
