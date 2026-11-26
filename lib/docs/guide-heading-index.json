@@ -411,7 +411,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "875b0e092cd34fb0913a50564533207fb60f1ccf608ffdd1cc9ac230f5f47a85",
+      "sourceSha256": "9d28beecc444b1b9ffdb1e3cbea39ff1c67e0ac37ab02b2ccb83289383df5ac2",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -441,7 +441,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "b5bfe2d7b4b0559e64a5059abdd28c2cdeba677b975e99fdf01409945a0f58f5",
+      "sourceSha256": "2adf214b6b6c8ec75f0e4b8a873838a988bbbaf304de9f791cce7ec1bed39f1c",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
