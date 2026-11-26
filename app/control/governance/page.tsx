@@ -11,6 +11,7 @@ import { fileProposalReview } from "@/lib/cockpit/fileProposalReview";
 import { ProposalFileDiff } from "@/components/cockpit/ProposalFileDiff";
 import { ApprovalDecisionButtons } from "./ApprovalDecisionButtons";
 import { PolicyAsCodePanel } from "@/components/cockpit/PolicyAsCodePanel";
+import { buildLifecycles, describeFinding } from "@/lib/releaseops/promotionLifecycle";
 
 export default async function GovernancePage() {
   const context = await currentContext();
@@ -23,6 +24,10 @@ export default async function GovernancePage() {
     prisma.environment.findMany({ where: { organizationId }, select: { id: true, name: true, slug: true, tier: true, approvalPolicyId: true }, orderBy: [{ displayOrder: "asc" }, { name: "asc" }] }),
     prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, argsJson: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
   ]);
+  // Read-only lifecycle view; a read failure hides the section instead of blocking Governance.
+  const branchPolicies = await prisma.branchEnvironmentPolicy.findMany({ where: { organizationId }, take: 500, select: { repositoryId: true, environmentId: true, branchPattern: true, requirePromotionFromEnvironmentId: true, enabled: true, repository: { select: { remoteOwner: true, remoteName: true } } } }).catch(() => null);
+  const lifecycles = branchPolicies ? buildLifecycles(environments.map((e) => ({ id: e.id, name: e.name, tier: e.tier })), branchPolicies.map((p) => ({ repositoryId: p.repositoryId, repositoryName: `${p.repository.remoteOwner}/${p.repository.remoteName}`, environmentId: p.environmentId, branchPattern: p.branchPattern, requirePromotionFromEnvironmentId: p.requirePromotionFromEnvironmentId, enabled: p.enabled }))) : null;
+  const envName = (id: string) => environments.find((e) => e.id === id)?.name ?? "an unknown environment";
   const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });
   const reviewTime = new Date();
   const unavailable = proposals.filter(p => !p.actionDigest || p.approvalExpiresAt && p.approvalExpiresAt <= reviewTime).length;
@@ -114,6 +119,21 @@ export default async function GovernancePage() {
           <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">{environments.map((environment) => <div key={environment.id} className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm">{environment.name}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{environment.slug}</p></div><div className="text-right"><p className="text-xs uppercase tracking-[0.12em] text-zinc-400">{environment.tier}</p><p className="mt-1 text-xs text-zinc-600">{environment.approvalPolicyId ? "Approval policy assigned" : "No approval policy assigned"}</p></div></div>)}</div>
         )}
       </section>
+      <section aria-labelledby="lifecycles-heading" className="border-t border-white/8 py-7">
+        <h2 id="lifecycles-heading" className="text-base font-medium">Promotion lifecycles</h2>
+        <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-400">The order releases move through environments for each repository, derived from enabled branch policies that require promotion from an earlier environment. Environments in the same box have no promotion order between them. Deployment checks enforce these rules; this view only shows them.</p>
+        {lifecycles === null ? <p className="mt-3 text-sm text-amber-300">Branch policies could not be read. Refresh to try again.</p>
+          : lifecycles.length === 0 ? <p className="mt-3 text-sm text-zinc-400">No enabled branch policies yet. Add them in the desktop app under Settings → Environments to define how releases are promoted.</p>
+          : <ul className="mt-4 space-y-4">{lifecycles.map((l) => (
+            <li key={l.repositoryId} className="rounded-xl border border-white/8 bg-[#111111] p-4">
+              <p className="font-mono text-xs text-zinc-300">{l.repositoryName}</p>
+              <ol aria-label={`Promotion order for ${l.repositoryName}`} className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                {l.phases.map((phase, i) => <li key={i} className="flex items-center gap-2">{i > 0 && <span aria-hidden="true" className="text-zinc-500">→</span>}<span className="rounded-md border border-white/10 px-2.5 py-1 text-zinc-100">{phase.map(envName).join(" · ")}</span></li>)}
+              </ol>
+              {l.findings.length > 0 && <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-amber-300">{l.findings.map((f, i) => <li key={i}>{describeFinding(f, envName)}</li>)}</ul>}
+            </li>))}</ul>}
+      </section>
+
       <PolicyAsCodePanel />
     </div>
   );

@@ -438,7 +438,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "4e1f348c5f8dbabde31633dc760dc1ce5aaeb223b8b34c9a2855787fe58319b9",
+      "sourceSha256": "6553670c78168a6022feabdefb7692101da4e683e9bdb7352813a1f05275952f",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -450,7 +450,8 @@
         "Workspace and platform approvals are different",
         "Read the result before trying again",
         "Different evidence answers different questions",
-        "Keep policy rules in Git"
+        "Keep policy rules in Git",
+        "Promotion lifecycles"
       ]
     },
     {

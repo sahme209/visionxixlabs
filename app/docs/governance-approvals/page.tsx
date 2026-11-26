@@ -36,6 +36,10 @@ export default function GovernanceApprovalsDocsPage() {
    <p>Owners and admins can choose <em>Download policy file</em> under Policy as code on the Governance page. The file lists this workspace's policy rules in a stable, sorted JSON format, so it can be reviewed and versioned like code.</p>
    <p>Paste a changed file and choose <em>Preview changes</em> to see added, changed and removed rules. Changes that weaken governance are listed under <em>Loosens governance</em>: a rule that no longer blocks releases, is disabled, newly allows exceptions, no longer requires evidence, or is removed. A preview never changes a rule; applying a policy change stays a separate, reviewed action.</p>
   </DocSection>
+  <DocSection id="lifecycles" kicker="08" title="Promotion lifecycles">
+   <p>Under <em>Promotion lifecycles</em>, Governance shows for each repository the order releases move through environments. The order comes from enabled branch policies that require promotion from an earlier environment; environments in the same box have no order between them.</p>
+   <p>Warnings point out gaps: a production environment that can receive a release never deployed to an earlier environment, promotion from the same or a later stage, promotion from an environment that no longer exists, and environments that require promotion from each other. Deployment checks enforce the policies; this view does not change them.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/members",label:"Members and roles"}} next={{href:"/docs/usage-billing",label:"Usage and billing"}} />
  </>;
 }
