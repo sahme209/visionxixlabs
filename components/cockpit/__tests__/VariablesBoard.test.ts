@@ -8,7 +8,7 @@ const board = (canEdit: boolean) => ({ ok: true, data: {
   canEdit,
   environments: [{ id: "dev", name: "Development", slug: "dev", tier: "development" }, { id: "prod", name: "Production", slug: "prod", tier: "production" }],
   variables: [{ key: "LOG_LEVEL", value: "info", scopeKey: "workspace", description: null, version: 1 }, { key: "LOG_LEVEL", value: "warn", scopeKey: "env:prod", description: null, version: 4 }, { key: "REPLICAS", value: "3", scopeKey: "env:prod", description: null, version: 1 }],
-  resolved: [{ environmentId: "dev", digest: "a".repeat(64) }, { environmentId: "prod", digest: "b".repeat(64) }],
+  resolved: [{ environmentId: "dev", digest: "a".repeat(64), variables: [{ key: "LOG_LEVEL", value: "info" }] }, { environmentId: "prod", digest: "b".repeat(64), variables: [{ key: "LOG_LEVEL", value: "warn" }, { key: "REPLICAS", value: "3" }], lastDeployment: { digest: "c".repeat(64), at: "2026-11-20T10:00:00Z", changedSince: true } }],
   gaps: [{ key: "REPLICAS", missingIn: ["dev"] }],
 } });
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status });
@@ -24,6 +24,10 @@ describe("VariablesBoard", () => {
     expect(screen.getByText(/missing in Development/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Edit LOG_LEVEL/ })).toBeNull();
     expect(screen.getByText("Only workspace owners and admins can change variables.")).toBeTruthy();
+    expect(screen.getByText(/LOG_LEVEL: "info" → "warn"/)).toBeTruthy();
+    expect(screen.getByText("only in Production")).toBeTruthy();
+    expect(screen.getByText(/Changed since the last deployment/)).toBeTruthy();
+    expect(screen.getByText("No deployment recorded with a fingerprint yet.")).toBeTruthy();
   });
   it("edits with the version that was read and reloads on a conflict", async () => {
     const f = vi.fn().mockResolvedValueOnce(json(board(true)))

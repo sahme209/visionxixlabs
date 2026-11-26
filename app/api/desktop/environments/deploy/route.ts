@@ -23,6 +23,7 @@ import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDeskto
 import { prisma } from "@/lib/db";
 import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteAuthority";
 import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
+import { recordDeploymentConfigSnapshot, type ConfigSnapshotRepo } from "@/lib/releaseops/deploymentConfigSnapshot";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -199,6 +200,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       },
     });
   }
+
+  // Evidence only: which configuration this environment resolved to at dispatch. Never blocks the deployment.
+  await recordDeploymentConfigSnapshot(prisma as unknown as ConfigSnapshotRepo, { organizationId, environmentId, executionId: reservation.reservation.id });
 
   const dispatchResult = await dispatchWorkflow({
     owner: repo.owner,

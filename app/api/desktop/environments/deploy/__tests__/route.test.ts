@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   reserveDeploymentDispatch: vi.fn(),
   releaseDeploymentDispatch: vi.fn(),
   settleDeploymentDispatch: vi.fn(),
+  configSnapshot: vi.fn(async () => ({ recorded: true, digest: "d", count: 0 })),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -52,6 +53,7 @@ vi.mock("@/lib/releaseops/auditEventResponder", async () => {
   );
   return { ...actual, appendAuditEvent: mocks.recordAudit };
 });
+vi.mock("@/lib/releaseops/deploymentConfigSnapshot", () => ({ recordDeploymentConfigSnapshot: mocks.configSnapshot }));
 vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
   reserveDeploymentDispatch: mocks.reserveDeploymentDispatch,
   releaseDeploymentDispatch: mocks.releaseDeploymentDispatch,
@@ -163,6 +165,20 @@ describe("POST /api/desktop/environments/deploy", () => {
     const auditCall = mocks.recordAudit.mock.calls[0][1];
     expect(auditCall.kind).toBe("release.deploy_triggered");
     expect(JSON.stringify(auditCall)).not.toContain("installation-token");
+    expect(mocks.configSnapshot).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "org-1", environmentId: "env_1" }));
+    expect(mocks.configSnapshot.mock.invocationCallOrder[0]).toBeLessThan(mocks.dispatchWorkflow.mock.invocationCallOrder[0]);
+  });
+
+  it("still dispatches when the configuration snapshot cannot be recorded", async () => {
+    mocks.configSnapshot.mockResolvedValueOnce({ recorded: false, reason: "unavailable" } as never);
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "124", runUrl: "https://api.github.test/runs/124", htmlUrl: "https://github.test/runs/124" } });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(200);
+    expect(mocks.dispatchWorkflow).toHaveBeenCalled();
   });
 
   it("fails closed when a configured branch policy does not match", async () => {

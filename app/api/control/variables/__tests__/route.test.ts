@@ -6,13 +6,14 @@ import { Prisma } from "@/lib/prismaClient";
 const m = vi.hoisted(() => ({
   ctx: vi.fn(), sameOrigin: vi.fn(() => true), audit: vi.fn(),
   envFindMany: vi.fn(), envFindFirst: vi.fn(),
-  varFindMany: vi.fn(), varCount: vi.fn(), varCreate: vi.fn(), varUpdateMany: vi.fn(), varDeleteMany: vi.fn(),
+  varFindMany: vi.fn(), execFindMany: vi.fn(async () => [] as unknown[]), varCount: vi.fn(), varCreate: vi.fn(), varUpdateMany: vi.fn(), varDeleteMany: vi.fn(),
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: m.ctx }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: m.sameOrigin }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
 vi.mock("@/lib/db", () => ({ prisma: {
   environment: { findMany: m.envFindMany, findFirst: m.envFindFirst },
+  deploymentExecution: { findMany: m.execFindMany },
   configVariable: { findMany: m.varFindMany, count: m.varCount, create: m.varCreate, updateMany: m.varUpdateMany, deleteMany: m.varDeleteMany },
 } }));
 import { DELETE, GET, POST } from "../route";
@@ -35,6 +36,16 @@ describe("/api/control/variables", () => {
     expect(body.data.canEdit).toBe(false);
     expect(body.data.resolved[1].variables).toEqual([{ key: "REGION", value: "eu", source: "workspace" }, { key: "REPLICAS", value: "3", source: "environment" }]);
     expect(body.data.gaps).toEqual([{ key: "REPLICAS", missingIn: ["dev"] }]);
+    expect(body.data.resolved[0].lastDeployment).toBeNull();
+  });
+  it("GET marks an environment whose configuration changed since its last recorded deployment", async () => {
+    m.envFindMany.mockResolvedValue([{ id: "prod", name: "Prod", slug: "prod", tier: "prod" }]);
+    m.varFindMany.mockResolvedValue([{ key: "REGION", value: "eu", scopeKey: "workspace", version: 1 }]);
+    m.execFindMany.mockResolvedValueOnce([{ environmentId: "prod", configDigest: "old", createdAt: new Date("2026-11-20T00:00:00Z") }, { environmentId: "prod", configDigest: "older", createdAt: new Date("2026-11-10T00:00:00Z") }]);
+    const body = await (await GET()).json();
+    expect(body.data.resolved[0].lastDeployment).toEqual({ digest: "old", at: "2026-11-20T00:00:00.000Z", changedSince: true });
+    m.execFindMany.mockRejectedValueOnce(new Error("down"));
+    expect((await (await GET()).json()).data.resolved[0].lastDeployment).toBe("unavailable");
   });
   it("refuses non-admins, cross-origin writes and credential-like values without writing", async () => {
     m.ctx.mockResolvedValue(viewer);

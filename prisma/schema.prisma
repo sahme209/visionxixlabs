@@ -3021,6 +3021,11 @@ model DeploymentExecution {
   conclusion         String?
   /// not_started | in_progress | succeeded | failed | unknown
   rollbackStatus     String    @default("not_started")
+  /// Fingerprint of the environment's resolved ConfigVariables when this
+  /// deployment was dispatched; null when not recorded.
+  configDigest       String?
+  /// Resolved variables at dispatch: [[key, value], ...] (plain configuration only).
+  configSnapshot     Json?
   lastObservedAt     DateTime?
   completedAt        DateTime?
   createdAt          DateTime  @default(now())
