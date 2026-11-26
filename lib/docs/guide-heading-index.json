@@ -412,7 +412,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "7202b8b4ea3a95bb926f832696f2fc6cde5f0e53478cdc8551e1c421215e2548",
+      "sourceSha256": "ceb20b0ce53e0260f6632e958f144d51d05fda8d86e695e6efaab4dccbc0e8d4",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
