@@ -79,3 +79,12 @@ it('finds General using the installed version keywords without changing preferen
   expect(screen.queryByRole('button',{name:'Models'})).toBeNull();
   expect(ports.write).not.toHaveBeenCalled();
 });
+
+it('compares the installed version with the latest published release without downloading anything',async()=>{
+  const {desktopClient}=await import('../../../desktop/src/lib/desktopClient');
+  const manifest=vi.spyOn(desktopClient,'releaseManifest').mockResolvedValue({ok:true,data:{source:'github_release',tag:'desktop-v8.0.0',assets:{}}} as never);
+  show();await screen.findByText('7.8.9');
+  expect(await screen.findByText('8.0.0 available')).toBeTruthy();
+  expect(ports.open).not.toHaveBeenCalled();expect(ports.write).not.toHaveBeenCalled();
+  manifest.mockRestore();
+});

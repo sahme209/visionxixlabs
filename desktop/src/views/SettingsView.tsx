@@ -41,6 +41,8 @@ import {
   Trees,
 } from "lucide-react";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
+import { StatusIconChip } from "../components/StatusBadge";
+import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
@@ -388,6 +390,7 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
     <section className="studio-settings-overview-links" aria-label="About this app">
       <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
+      <LatestReleaseRow installedVersion={installedVersion} />
       <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />
     </section>
     {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
@@ -2368,6 +2371,30 @@ type Option = { value: string; label: string };
 
 function SectionHeading({ title, detail }: { title: string; detail: string }) { return <div className="settings-section-heading mb-6"><h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>; }
 function Group({ label, children }: { label: string; children: ReactNode }) { return <section className="mb-6"><p className="mb-2 text-xs text-zinc-500">{label}</p><div className="overflow-hidden rounded-lg border border-white/5 bg-white/1.5">{children}</div></section>; }
+/** Latest published desktop release versus this install. Read-only: it never downloads or installs anything. */
+function LatestReleaseRow({ installedVersion }: { installedVersion: string | null | undefined }) {
+  const [tag, setTag] = useState<string | null | undefined>();
+  useEffect(() => {
+    let live = true;
+    Promise.resolve().then(() => desktopClient.releaseManifest()).then(result => { if (live) setTag(result.ok && typeof result.data?.tag === "string" ? result.data.tag : null); }).catch(() => { if (live) setTag(null); });
+    return () => { live = false; };
+  }, []);
+  const state = desktopUpdateState(installedVersion, tag);
+  const value = tag === undefined || installedVersion === undefined ? "Checking release…"
+    : state.kind === "current" ? `${state.latest} · up to date`
+    : state.kind === "available" ? `${state.latest} available`
+    : state.kind === "ahead" ? `${state.latest} · this build is newer`
+    : "Unavailable";
+  return <div className="flex items-start justify-between gap-8 border-b border-white/4.5 px-4 py-3.5 last:border-b-0" data-update={state.kind}>
+    <span className="text-sm text-zinc-400">Latest published</span>
+    <span className="inline-flex items-center gap-2 text-right font-mono text-xs text-zinc-200">
+      {state.kind === "current" && <StatusIconChip tone="green" shape="success" size={11}/>}
+      {state.kind === "available" && <StatusIconChip tone="blue" shape="waiting" size={11}/>}
+      {value}
+    </span>
+  </div>;
+}
+
 function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div className="flex items-start justify-between gap-8 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><span className="text-sm text-zinc-400">{label}</span><span className={`max-w-[65%] break-all text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span></div>; }
 function ActionRow({ title, detail, action }: { title: string; detail: string; action: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}</div>; }
 function ToggleRow({ title, detail, enabled, disabled, onToggle, action }: { title: string; detail: string; enabled: boolean; disabled: boolean; onToggle: () => void; action?: ReactNode }) { return <ActionRow title={title} detail={detail} action={<div className="flex items-center gap-3">{action}<button data-help-id="settings.workspace.preference-toggle" type="button" role="switch" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? "bg-emerald-600" : "bg-zinc-700"} disabled:opacity-50`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} /></button></div>} />; }
