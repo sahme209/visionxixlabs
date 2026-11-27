@@ -5727,3 +5727,28 @@ model InboundObservation {
   @@unique([organizationId, lane, provider, deliveryDigest, ordinal], map: "InboundObservation_delivery_item_key")
   @@index([organizationId, lane, receivedAt, id], map: "InboundObservation_workspace_read_idx")
 }
+
+/// Founder operations blueprint (C1): one company-wide map of departments, steps and links.
+/// Founder-only (ADMIN_EMAILS); not tenant data. Writers present the version they read.
+model FounderBlueprint {
+  id             String   @id
+  document       Json
+  version        Int      @default(1)
+  updatedByEmail String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// Every saved version of the founder blueprint, so any change can be reviewed or restored.
+model FounderBlueprintRevision {
+  id           String   @id @default(cuid())
+  blueprintId  String
+  version      Int
+  document     Json
+  summary      String
+  savedByEmail String
+  createdAt    DateTime @default(now())
+
+  @@unique([blueprintId, version])
+}
+
