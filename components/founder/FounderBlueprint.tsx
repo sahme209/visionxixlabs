@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { connectorPath, departmentCost, layoutBlueprint, SIGNAL_KEYS, STEP_STATUSES, stepCost, validateBlueprint, type Blueprint, type BlueprintStep, type SignalKey, type StepStatus } from "@/lib/founder/blueprint";
 import { TONE_DOT, type StatusTone } from "@/lib/cockpit/statusTone";
+import { applySuggestion, suggestBlueprintChanges, type Suggestion } from "@/lib/founder/blueprintSuggestions";
 
 type Signals = Partial<Record<SignalKey, number | null>>;
 type Loaded = { blueprint: Blueprint; version: number; saved: boolean; unreadable: boolean; updatedAt: string | null; updatedBy: string | null; signals: Signals };
@@ -34,6 +35,8 @@ export function FounderBlueprint() {
   const [message, setMessage] = useState<{ tone: "ok" | "warn"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [summary, setSummary] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [history, setHistory] = useState<Array<{ version: number; summary: string; savedByEmail: string; createdAt: string }> | "error" | null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -135,6 +138,12 @@ export function FounderBlueprint() {
   const signals = loaded.signals;
   const deptName = new Map(doc.departments.map((d) => [d.id, d.name]));
   const totalMonthly = doc.departments.reduce((n, d) => n + departmentCost(doc, d.id).monthlyTotal, 0);
+  const suggestions = suggestBlueprintChanges(doc, signals).filter((x) => !dismissed.has(x.id));
+  function act(sg: Suggestion) {
+    if (sg.kind === "mark_live") { setDoc(applySuggestion(doc!, sg)); setDirty(true); setMessage({ tone: "ok", text: `${sg.title.replace(/^Mark /, "Marked ")}. Save to keep it.` }); setDismissed(new Set([...dismissed, sg.id])); }
+    else if (sg.kind === "add_cost") { setShowSuggestions(false); if (mode === "map") fit(sg.departmentId); }
+    else { setShowSuggestions(false); setSelected(sg.stepId); }
+  }
 
   return (
     <div className="flex h-[calc(100vh-96px)] min-h-[560px] flex-col">
@@ -150,6 +159,7 @@ export function FounderBlueprint() {
           <button type="button" onClick={() => setView((v) => ({ ...v, scale: Math.min(1.6, v.scale * 1.15) }))} className="grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-zinc-200 hover:bg-white/10" aria-label="Zoom in">+</button>
           <button type="button" onClick={() => fit()} className="min-h-9 rounded-lg bg-white/5 px-3 text-xs text-zinc-200 hover:bg-white/10">Fit</button>
         </div>
+        <button type="button" aria-pressed={showSuggestions} onClick={() => { setShowSuggestions(!showSuggestions); setSelected(null); setHistory(null); }} className="min-h-9 rounded-lg bg-white/5 px-3 text-xs text-zinc-200 hover:bg-white/10">Suggestions{suggestions.length ? ` (${suggestions.length})` : ""}</button>
         <button type="button" disabled={!loaded.saved} onClick={() => void openHistory()} className="min-h-9 rounded-lg bg-white/5 px-3 text-xs text-zinc-200 hover:bg-white/10 disabled:opacity-40">History</button>
         <button type="button" aria-pressed={mode === "list"} onClick={() => setMode(mode === "map" ? "list" : "map")} className="min-h-9 rounded-lg bg-white/5 px-3 text-xs text-zinc-200 hover:bg-white/10">{mode === "map" ? "List view" : "Map view"}</button>
         <span className="ml-auto text-xs text-zinc-400">{doc.steps.length} steps · {usd(totalMonthly)} a month mapped · {loaded.saved ? `version ${loaded.version}` : "default draft, not saved"}{dirty ? " · unsaved changes" : ""}</span>
@@ -198,6 +208,17 @@ export function FounderBlueprint() {
           </div>
         )}
 
+        {showSuggestions && !step && history === null && (
+          <aside aria-label="Suggestions" className="absolute inset-y-0 right-0 z-10 w-full max-w-[380px] overflow-y-auto rounded-xl border border-white/10 bg-[#111111] p-4 shadow-2xl md:static md:z-auto md:shadow-none">
+            <div className="flex items-center justify-between"><h2 className="text-sm font-medium">Suggestions from V19 records</h2><button type="button" onClick={() => setShowSuggestions(false)} aria-label="Close suggestions" className="rounded-md px-2 py-0.5 text-zinc-400 hover:bg-white/5 hover:text-white">✕</button></div>
+            <p className="mt-1 text-xs text-zinc-500">Worked out from this map and live records. Nothing changes until you apply a suggestion and save.</p>
+            {suggestions.length === 0 ? <p className="mt-3 text-sm text-zinc-400">Nothing to suggest right now.</p> : (
+              <ul className="mt-3 space-y-2">{suggestions.map((sg) => <li key={sg.id} className={`rounded-lg border p-3 text-xs ${sg.kind === "needs_attention" ? "border-amber-300/40" : "border-white/8"}`}>
+                <p className="text-zinc-100">{sg.title}</p><p className="mt-0.5 text-zinc-400">{sg.reason}</p>
+                <div className="mt-2 flex gap-3"><button type="button" onClick={() => act(sg)} className="text-zinc-200 underline underline-offset-4">{sg.kind === "mark_live" ? "Apply" : sg.kind === "add_cost" ? "Show department" : "Open step"}</button><button type="button" onClick={() => setDismissed(new Set([...dismissed, sg.id]))} className="text-zinc-500 hover:text-zinc-300">Dismiss</button></div>
+              </li>)}</ul>)}
+          </aside>
+        )}
         {history !== null && !step && (
           <aside aria-label="Saved versions" className="absolute inset-y-0 right-0 z-10 w-full max-w-[380px] overflow-y-auto rounded-xl border border-white/10 bg-[#111111] p-4 shadow-2xl md:static md:z-auto md:shadow-none">
             <div className="flex items-center justify-between"><h2 className="text-sm font-medium">Saved versions</h2><button type="button" onClick={() => setHistory(null)} aria-label="Close saved versions" className="rounded-md px-2 py-0.5 text-zinc-400 hover:bg-white/5 hover:text-white">✕</button></div>

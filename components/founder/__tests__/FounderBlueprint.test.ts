@@ -65,3 +65,18 @@ describe("FounderBlueprint history", () => {
     expect(JSON.parse(f.mock.calls[2][1].body)).toEqual({ version: 1, expectedVersion: 2 });
   });
 });
+
+describe("FounderBlueprint suggestions", () => {
+  it("suggests from live records and applies a change only locally until saved", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(json({ ok: true, data: { ...loaded, signals: { leads_30d: 4, incidents_open: 1 } } })));
+    render(createElement(FounderBlueprint));
+    fireEvent.click(await screen.findByRole("button", { name: /^Suggestions \(\d+\)$/ }));
+    const panel = screen.getByRole("complementary", { name: "Suggestions" });
+    expect(within(panel).getByText('Look at "Incident detected"')).toBeTruthy();
+    const item = within(panel).getByText('Mark "Build target account list" as live').closest("li")!;
+    fireEvent.click(within(item).getByRole("button", { name: "Apply" }));
+    expect(screen.getByText(/Marked "Build target account list" as live\. Save to keep it\./)).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Build target account list, Outbound, Live/ })).toBeTruthy();
+    expect(screen.getByText(/unsaved changes/)).toBeTruthy();
+  });
+});
