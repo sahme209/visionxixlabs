@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { BusinessOverview as Overview } from "@/lib/founder/founderBusiness";
 import { roadmapCandidates } from "@/lib/founder/business";
 import { AutoRefresh } from "./AutoRefresh";
+import { SupportDrafts } from "./SupportDrafts";
 import { ARR_GOAL_CENTS, REVENUE_MULTIPLE, formatMonths, growthPlan } from "@/lib/founder/growth";
 
 const usd = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: cents < 10_000 ? 2 : 0 }).format(cents / 100);
@@ -140,6 +141,7 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
               <Table caption="Most asked unanswered questions" head={["Question", "Times"]} rows={s.topUnanswered.map((q) => [q.example, num(q.count)])} />
               <Table caption="Contact requests by source" head={["Source", "Requests"]} rows={s.leadsBySource.map((l) => [l.source.replaceAll("_", " "), num(l.count)])} />
             </div>
+            {s.topUnanswered.length > 0 && <SupportDrafts />}
           </>}
         </Section>
       </div>
