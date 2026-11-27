@@ -43,7 +43,7 @@
     },
     {
       "path": "/api/cron/reconcile-ai-gateway-usage",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/check-billing-alerts",
@@ -63,7 +63,7 @@
     },
     {
       "path": "/api/cron/airflow-automation-tick",
-      "schedule": "*/5 * * * *"
+      "schedule": "30 * * * *"
     },
     {
       "path": "/api/cron/alert-escalation-tick",
