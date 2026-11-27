@@ -34,7 +34,8 @@ import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type FormEvent, type Ref } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type DeploymentOutcomeSummaryDto } from "../lib/desktopClient";
-import { StatusIconChip, type StatusShape, type StatusTone } from "../components/StatusBadge";
+import { StatusIconChip, runResultTone, type StatusShape, type StatusTone } from "../components/StatusBadge";
+import { RunGrid } from "../components/RunGrid";
 import { createReleaseClosureDrafts, type ReleaseClosureDraft } from "../lib/releaseClosureDrafts";
 
 interface GeneratedPlaybook {
@@ -774,7 +775,7 @@ export function DeploymentRequestsView({ active = true, onIntakeOpenChange, save
         </div>
       </div>
 
-      {!loading && !loadError && !showForm && !showResolutionDraft && <LoadedReleaseSummary requests={requests} />}
+      {!loading && !loadError && !showForm && !showResolutionDraft && <LoadedReleaseSummary requests={requests} runs={executions} />}
 
       {resumeIntake && <p role="status" className="glass-card p-3 text-sm text-zinc-300">Your release intake is still in progress. Finish or leave it before opening another saved release.</p>}
       {savedRelease && !entryResolved && <StateCard>Checking the saved release version…</StateCard>}
@@ -1281,7 +1282,7 @@ export function formatOutcomeDuration(seconds: number): string {
   return minutes > 0 ? `${minutes}m ${rest}s` : `${rest}s`;
 }
 
-function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}) {
+function LoadedReleaseSummary({requests, runs}: {requests: DeploymentRequestSummary[]; runs: DeploymentExecution[]}) {
   // Recorded workflow outcomes over a stated window; unavailable stays unavailable, never zero.
   const [outcomes, setOutcomes] = useState<DeploymentOutcomeSummaryDto | null | undefined>();
   useEffect(() => {
@@ -1304,7 +1305,12 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
     {key: "failed", count: outcomes.failed, tone: "red", label: "failed"},
     {key: "inProgress", count: outcomes.inProgress, tone: "blue", label: "in progress"},
   ].filter(part => part.count > 0) : [];
-  return <dl aria-label="Release request and recorded run summary" className="studio-release-summary">
+  const gridItems = runs.slice(0, 30).reverse().map(run => {
+    const look = runResultTone(run.status, run.conclusion);
+    const stateLabel = run.conclusion ?? run.status.replaceAll("_", " ");
+    return {key: run.id, label: `${run.repositoryFullName}${run.sourceRef ? `@${run.sourceRef}` : ""}`, tone: look.tone, stateLabel: stateLabel.charAt(0).toUpperCase() + stateLabel.slice(1)};
+  });
+  return <><dl aria-label="Release request and recorded run summary" className="studio-release-summary">
     {metrics.map(({label, value, window, title, tone, shape}) => <div key={label} title={title} data-metric={label === "Run success rate" ? "rate" : undefined}>
       <dt>{label}{window && <span className="studio-release-summary-window">{window}</span>}</dt>
       <dd>{label === "Run success rate" && outcomes?.successRate != null
@@ -1315,7 +1321,8 @@ function LoadedReleaseSummary({requests}: {requests: DeploymentRequestSummary[]}
         <span className="studio-outcome-split-legend">{split.map(part => <span key={part.key} data-tone={part.tone}>{part.count.toLocaleString()} {part.label}</span>)}</span>
       </dd>}
     </div>)}
-  </dl>;
+  </dl>
+  {gridItems.length > 0 && <RunGrid label="Last 30 recorded deployment runs, oldest first" items={gridItems}/>}</>;
 }
 
 function SelectedReleaseLifecycle({request, workflow, deploymentEvent, providerDecision, onReviewPlans}: {

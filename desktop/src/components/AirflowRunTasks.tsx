@@ -1,3 +1,4 @@
+import { RunGrid, airflowTone } from "./RunGrid";
 import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import { observedAirflowInstant } from "../../../lib/desktop/releaseBatchReadinessContract";
 import { desktopClient, type AirflowTaskPage } from "../lib/desktopClient";
@@ -89,6 +90,7 @@ function AirflowRunTaskPages({ dagId, runId, release, inspectButtonRef, revision
       {page && (release && page.totalEntries === 0 ? "No task instances were observed for this run."
         : `${page.tasks.length ? `${page.offset + 1}–${page.offset + page.tasks.length}` : "0"} of ${page.totalEntries} tasks · observed state only`)}
     </p>
+    {page && page.tasks.length > 0 && <RunGrid label={`Task states for ${runLabel}`} items={page.tasks.map(task => ({key: JSON.stringify([task.taskId, task.mapIndex]), label: `${task.taskId}${task.mapIndex >= 0 ? ` [${task.mapIndex}]` : ""}`, tone: airflowTone(task.state), stateLabel: task.state ? task.state.replaceAll("_", " ") : "not scheduled"}))}/>}
     {page && release && page.tasks.length > 0 && <AirflowTaskWaterfall tasks={page.tasks}/>}
     {page && (release ? page.tasks.length > 0 && (
       <table aria-label="Observed task states" className="mt-2 w-full table-fixed text-start text-xs">
