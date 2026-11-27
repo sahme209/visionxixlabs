@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { render, screen, cleanup } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-const io=vi.hoisted(()=>({count:vi.fn(),policy:vi.fn(),checks:vi.fn(),results:vi.fn(),envs:vi.fn(async()=>[] as unknown[]),keys:vi.fn(async()=>[] as unknown[]),execs:vi.fn(async()=>{throw Error('not mocked')})}));
+const io=vi.hoisted(()=>({count:vi.fn(),policy:vi.fn(),checks:vi.fn(),results:vi.fn(),envs:vi.fn(async(_q?:unknown)=>[] as unknown[]),keys:vi.fn(async()=>[] as unknown[]),execs:vi.fn(async():Promise<unknown[]>=>{throw Error('not mocked')})}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>({isAuthenticated:true,organizationId:'org-g',email:'p@example.test',userId:'u',roles:['owner']})}));
 vi.mock('@/lib/db',()=>({prisma:{agentActionProposal:{count:io.count},orgMembership:{count:io.count},tenantIntegrationConnection:{count:io.count},environment:{count:io.count,findMany:io.envs},policyChangeRequest:{count:io.policy},deploymentCheck:{findMany:io.checks},deploymentCheckResult:{findMany:io.results},apiKey:{findMany:io.keys},deploymentExecution:{findMany:io.execs}}}));
 vi.mock('@/lib/billing/tenantBillingStore',()=>({readBillingPlanWithAvailability:async()=>null}));
@@ -35,7 +35,7 @@ it('links to agent firewall warnings',async()=>{
 });
 it('lists recent deployments with their outcome and environment',async()=>{
  io.execs.mockResolvedValueOnce([{id:'d1',environmentId:'e1',repositoryFullName:'acme/web',sourceRef:'v1.4.0',sourceCommitSha:'a'.repeat(40),status:'completed',conclusion:'failure',createdAt:new Date('2026-11-27T10:00:00Z'),workflowUrl:'https://github.com/acme/web/actions/runs/1'}]);
- io.envs.mockImplementation(async(q:{where:{id?:unknown}})=>q.where.id?[{id:'e1',name:'Production'}]:[]);
+ io.envs.mockImplementation(async(q?:unknown)=>(q as {where:{id?:unknown}}).where.id?[{id:'e1',name:'Production'}]:[]);
  render(await Overview());
  const list=screen.getByRole('list',{name:'Recent deployments'});
  expect(list.textContent).toContain('Failed (failure)');
