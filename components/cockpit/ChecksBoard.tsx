@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { StatusDot } from "./StatusDot";
 import { toneFor } from "@/lib/cockpit/statusTone";
+import { LIBRARY_CATEGORIES, libraryFor, type LibraryEntry } from "@/lib/releaseops/checkLibrary";
 import { CHECK_KINDS, CHECK_STAGES, KIND_LABEL, STAGE_LABEL, type CheckKind, type CheckStage } from "@/lib/releaseops/deploymentChecks";
 
 interface Check { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; spec: Record<string, unknown>; enabled: boolean; version: number }
@@ -115,6 +116,7 @@ export function ChecksBoard() {
       {board.canEdit ? (
         <form className="rounded-xl border border-white/8 bg-[#111111] p-5" onSubmit={(e) => { e.preventDefault(); void send("POST", { check: { key: draft.key.trim(), name: draft.name.trim(), kind: draft.kind, stage: draft.stage, mode: draft.mode, spec: specFrom(draft) }, enabled: draft.enabled, ...(editing ? { expectedVersion: draft.expectedVersion } : {}) }); }}>
           <h2 className="text-base font-medium">{editing ? `Edit ${draft.name}` : "Add a check"}</h2>
+          {!editing && <CheckLibraryPicker existing={new Set(board.checks.map((c) => c.key))} onPick={(e) => { setMessages(e.edit?.length ? [`Change the example ${e.edit.join(" and ")} before adding this check.`] : []); setDraft({ key: e.check.key, name: e.check.name, kind: e.check.kind, stage: e.check.stage, mode: e.check.mode, enabled: true, fields: fieldsFrom({ ...e.check, enabled: true, version: 1 } as Check) }); }} />}
           {!editing && <DraftWithAi onDraft={(d) => setDraft({ key: d.key, name: d.name, kind: d.kind, stage: d.stage, mode: d.mode, enabled: true, fields: fieldsFrom({ ...d, enabled: true, version: 1 } as Check) })} />}
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-xs text-zinc-400">Name<input required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={input} /></label>
@@ -227,5 +229,31 @@ function DraftWithAi({ onDraft }: { onDraft: (d: Omit<Check, "enabled" | "versio
         <button type="button" disabled={!text.trim() || state.kind === "busy"} onClick={() => void draft()} className="inline-flex min-h-8 items-center rounded-lg border border-white/12 px-3 text-xs text-zinc-200 disabled:opacity-50">{state.kind === "busy" ? "Drafting…" : "Fill the form"}</button>
         <span aria-live="polite" className={`text-xs ${state.kind === "error" ? "text-amber-300" : "text-zinc-400"}`}>{state.kind === "filled" ? "Draft filled below. Review it, then add the check." : state.kind === "error" ? state.message : "Uses your workspace's governed AI. Nothing is saved until you add the check."}</span>
       </div>
+    </details>);
+}
+
+function CheckLibraryPicker({ existing, onPick }: { existing: ReadonlySet<string>; onPick: (e: LibraryEntry) => void }) {
+  const available = libraryFor(existing);
+  if (!available.length) return null;
+  return (
+    <details className="mt-3 rounded-lg border border-white/8 p-3 text-sm">
+      <summary className="cursor-pointer text-zinc-300">Start from the library <span className="text-xs text-zinc-500">{available.length} reviewed checks</span></summary>
+      <p className="mt-2 text-xs leading-5 text-zinc-400">Each GitHub Action is pinned to the commit of a published release. Picking one fills the form below; nothing is saved until you add it.</p>
+      {LIBRARY_CATEGORIES.map((cat) => {
+        const entries = available.filter((e) => e.category === cat);
+        if (!entries.length) return null;
+        return (
+          <div key={cat} className="mt-3">
+            <h3 className="text-xs font-medium text-zinc-300">{cat}</h3>
+            <ul className="mt-1 space-y-1">{entries.map((e) => (
+              <li key={e.id} className="flex flex-wrap items-start gap-x-3 gap-y-1 rounded-md px-2 py-1.5 hover:bg-white/[0.03]">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-zinc-100">{e.check.name} <span className="text-xs text-zinc-500">{STAGE_LABEL[e.check.stage]} · {KIND_LABEL[e.check.kind]}</span></p>
+                  <p className="text-xs text-zinc-400">{e.summary}{e.source && <> Release <a href={e.source.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">{e.source.release}</a>.</>}</p>
+                </div>
+                <button type="button" onClick={() => onPick(e)} aria-label={`Use ${e.check.name}`} className="inline-flex min-h-8 items-center rounded-lg border border-white/12 px-3 text-xs text-zinc-200">Use</button>
+              </li>))}</ul>
+          </div>);
+      })}
     </details>);
 }
