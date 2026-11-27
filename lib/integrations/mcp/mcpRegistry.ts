@@ -34,6 +34,8 @@ export interface McpRegistryServer {
   /** How the server is reached: a hosted https endpoint, or a package the user would run locally. */
   connections: McpConnection[];
   remoteHosts: string[];
+  /** Hosted endpoints (https only, no credentials in the URL) a workspace can add. */
+  remotes: Array<{ type: "streamable-http" | "sse"; url: string }>;
   packageTypes: string[];
   status: string | null;
 }
@@ -54,7 +56,8 @@ export function parseRegistryPage(raw: unknown): { servers: McpRegistryServer[];
     if (!e.success) { dropped += 1; continue; }
     const s = e.data.server;
     const meta = e.data._meta?.["io.modelcontextprotocol.registry/official"] as { status?: unknown } | undefined;
-    const remoteHosts = [...new Set((s.remotes ?? []).flatMap((r) => { const u = httpsUrl(r.url); return u && (r.type === "streamable-http" || r.type === "sse") ? [new URL(u).host] : []; }))];
+    const remotes = (s.remotes ?? []).flatMap((r) => { const u = httpsUrl(r.url); return u && !u.includes("{") && (r.type === "streamable-http" || r.type === "sse") ? [{ type: r.type as "streamable-http" | "sse", url: u }] : []; }).slice(0, 5);
+    const remoteHosts = [...new Set(remotes.map((r) => new URL(r.url).host))];
     const packageTypes = [...new Set((s.packages ?? []).map((p) => clean(p.registryType, 40)).filter(Boolean))];
     const connections: McpConnection[] = [...(remoteHosts.length ? ["remote" as const] : []), ...(packageTypes.length ? ["local_package" as const] : [])];
     servers.push({
@@ -66,6 +69,7 @@ export function parseRegistryPage(raw: unknown): { servers: McpRegistryServer[];
       repositoryUrl: httpsUrl(s.repository?.url),
       connections,
       remoteHosts,
+      remotes,
       packageTypes,
       status: typeof meta?.status === "string" ? clean(meta.status, 40) : null,
     });

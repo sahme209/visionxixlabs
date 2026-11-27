@@ -11,7 +11,7 @@ describe("MCP registry catalog", () => {
     ], metadata: { nextCursor: "io.example/local:1.0.0" } });
     expect(out.dropped).toBe(1);
     expect(out.nextCursor).toBe("io.example/local:1.0.0");
-    expect(out.servers[0]).toEqual({ name: "io.example/db", title: "Example DB", description: "Query a database", version: "1.2.0", websiteUrl: "https://example.io/", repositoryUrl: "https://github.com/example/db", connections: ["remote", "local_package"], remoteHosts: ["mcp.example.io"], packageTypes: ["npm"], status: "active" });
+    expect(out.servers[0]).toEqual({ name: "io.example/db", title: "Example DB", description: "Query a database", version: "1.2.0", websiteUrl: "https://example.io/", repositoryUrl: "https://github.com/example/db", connections: ["remote", "local_package"], remoteHosts: ["mcp.example.io"], remotes: [{ type: "streamable-http", url: "https://mcp.example.io/mcp" }], packageTypes: ["npm"], status: "active" });
     expect(out.servers[1]).toMatchObject({ title: "io.example/local", websiteUrl: null, connections: ["local_package"], remoteHosts: [] });
   });
   it("rejects a malformed page", () => {

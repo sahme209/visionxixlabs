@@ -412,7 +412,7 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a",
+      "sourceSha256": "6082f507167a9d5d246e21d1b3811a2b573a6e7160c4ffa9e73c752e2754ee8e",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
@@ -420,7 +420,8 @@
         "Search with a public technical topic",
         "Two different MCP directions",
         "If a request is unavailable",
-        "Browse the public MCP server registry"
+        "Browse the public MCP server registry",
+        "Add hosted servers to your workspace"
       ]
     },
     {

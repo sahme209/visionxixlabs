@@ -21,6 +21,11 @@ export default function McpToolsGuide() {
    <p>Under <strong>MCP server registry</strong> on the MCP tools page, any workspace member can search the public registry at registry.modelcontextprotocol.io, which lists thousands of third-party MCP servers, or pick a topic such as kubernetes, aws or postgres. Each listing shows the publisher&apos;s name, version and description, whether the server is hosted at an https address or runs locally from a package, and a link to the publisher&apos;s page.</p>
    <p>Listings come from their publishers and are not reviewed by V19. Browsing does not connect to any server, send it workspace data or give an agent any tool. Making a listed server available to agents will need its own review and permissions; until then, only the reviewed tools above can be used.</p>
   </DocSection>
+  <DocSection id="workspace-servers" kicker="05" title="Add hosted servers to your workspace">
+   <p>Owners and admins can choose <strong>Add to workspace</strong> on any registry listing that is hosted at an https address. V19 stores only that address, never credentials, and the server starts disabled. Up to 50 servers can be added per workspace.</p>
+   <p><strong>Check connection</strong> starts an MCP session with the server and asks for its list of tools. The check sends no cookies, keys or workspace data, calls no tool, refuses addresses that resolve to private or local networks, follows no redirects, and stops after 8 seconds or 1 MB. It records the outcome (connected, needs credentials, unreachable, refused or not an MCP server) and the tool names. A server can be enabled only after a check that lists its tools, and a later check that fails disables it again.</p>
+   <p>Enabling marks a server as approved for the workspace. Agents cannot call its tools yet; that arrives with per-tool approval rules. Adding, enabling, disabling and removing are recorded in the audit log.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/plugins",label:"Apps and skills"}} next={{href:"/docs/workspaces",label:"Workspaces"}} />
  </>;
 }
