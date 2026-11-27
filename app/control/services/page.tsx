@@ -3,6 +3,7 @@ import Link from "next/link";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
+import { formatRunMinutes, summarizeDeliveryHealth, type DeliveryHealth } from "@/lib/releaseops/deliveryHealth";
 import { StatusDot } from "@/components/cockpit/StatusDot";
 import { TONE_DOT, toneFor } from "@/lib/cockpit/statusTone";
 import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
@@ -12,6 +13,10 @@ export const dynamic = "force-dynamic";
 const OUTCOME: Record<string, { label: string; tone: string }> = {
   succeeded: { label: "succeeded", tone: "text-emerald-300" }, failed: { label: "failed", tone: "text-red-300" },
   in_progress: { label: "in progress", tone: "text-sky-300" }, other: { label: "other", tone: "text-zinc-300" },
+};
+
+const HEALTH: Record<DeliveryHealth, { label: string; tone: "success" | "attention" | "failed" | "idle" }> = {
+  healthy: { label: "Healthy", tone: "success" }, degraded: { label: "Degraded", tone: "attention" }, failing: { label: "Failing", tone: "failed" }, idle: { label: "No recent runs", tone: "idle" },
 };
 
 export default async function ServicesPage() {
@@ -29,11 +34,35 @@ export default async function ServicesPage() {
     ]);
     return buildServiceCatalog(repos.map((r) => ({ id: r.id, fullName: `${r.remoteOwner}/${r.remoteName}`, defaultBranch: r.defaultBranch, codeownersPresent: r.codeownersPresent, protectedBranches: r.protectedBranches })), components, executions, environments);
   })().catch(() => null);
+  const health = await (async () => {
+    const [runs, environments] = await Promise.all([
+      prisma.deploymentExecution.findMany({ where: { organizationId, createdAt: { gte: new Date(Date.now() - 30 * 86_400_000) } }, orderBy: { createdAt: "desc" }, take: 2000, select: { environmentId: true, status: true, conclusion: true, createdAt: true, completedAt: true, lastObservedAt: true } }),
+      prisma.environment.findMany({ where: { organizationId }, select: { id: true, name: true, displayOrder: true } }),
+    ]);
+    return summarizeDeliveryHealth(runs, environments, new Date());
+  })().catch(() => null);
 
   return (
     <div>
       <h1 className="text-3xl font-semibold tracking-[-0.045em]">Services</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Every connected repository with its components and owners, its guardrails, and the latest recorded run in each environment over the last 90 days. Built from recorded data only; it is not the live state of your systems.</p>
+      <section aria-labelledby="delivery-health-heading" className="mt-8">
+        <h2 id="delivery-health-heading" className="text-base font-medium">Delivery health</h2>
+        <p className="mt-1 max-w-2xl text-sm text-zinc-400">How each environment&apos;s delivery pipeline has behaved over the last 30 days: success rate, typical run time, and runs that look stuck or lost tracking.</p>
+        {health === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Delivery health could not be read.</p>
+          : health.length === 0 ? <p className="mt-3 text-sm text-zinc-400">No environments yet.</p>
+          : <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{health.map((h) => (
+            <li key={h.environmentId} className={`rounded-xl border p-4 ${h.health === "failing" ? "border-rose-400/30" : h.health === "degraded" ? "border-amber-300/30" : "border-white/8"}`}>
+              <div className="flex items-center justify-between gap-2"><p className="truncate text-sm text-zinc-100">{h.name}</p><StatusDot tone={HEALTH[h.health].tone} label={HEALTH[h.health].label} className="text-xs" /></div>
+              <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                <div><dt className="text-zinc-500">Runs</dt><dd className="tabular-nums text-zinc-200">{h.runs}</dd></div>
+                <div><dt className="text-zinc-500">Succeeded</dt><dd className="tabular-nums text-zinc-200">{h.successRate === null ? "—" : `${h.successRate}%`}</dd></div>
+                <div><dt className="text-zinc-500">Median</dt><dd className="tabular-nums text-zinc-200">{h.medianMinutes === null ? "—" : formatRunMinutes(h.medianMinutes)}</dd></div>
+              </dl>
+              {h.reasons.length > 0 && <ul className="mt-2 space-y-0.5 text-xs text-zinc-400">{h.reasons.map((r) => <li key={r}>{r}</li>)}</ul>}
+              {h.lastRunAt && <p className="mt-2 text-[11px] text-zinc-500">Last run {new Date(h.lastRunAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p>}
+            </li>))}</ul>}
+      </section>
       {data === null ? <p role="status" className="mt-8 text-sm text-zinc-400">The service catalog could not be read. Nothing is shown rather than an estimate.</p>
         : data.rows.length === 0 ? <p className="mt-8 text-sm text-zinc-400">No repositories are connected yet. Connect a repository in the desktop app to see it here.</p>
         : (
