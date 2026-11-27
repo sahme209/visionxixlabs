@@ -14,7 +14,7 @@ export default async function ApiKeysPage() {
   return (
     <div>
       <h1>API keys</h1>
-      <p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Keys let AI agents (through the MCP gateway) and CI pipelines (through <code className="font-mono">vxl ask</code>) ask V19 before acting. Keys are limited to governance and read scopes and always expire. Whoever creates a key cannot approve requests made with it.</p>
+      <p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Keys let AI agents (through the MCP gateway) and CI pipelines (through <code className="font-mono">vxl ask</code>) ask V19 before acting. Keys get only the permissions you tick: governance, read, check reporting and starting a freeze. They always expire. Whoever creates a key cannot approve requests made with it.</p>
       {canManage ? <ApiKeysManager /> : <p role="alert" className="mt-4 text-sm text-zinc-400">Only workspace owners and admins can manage API keys.</p>}
     </div>
   );

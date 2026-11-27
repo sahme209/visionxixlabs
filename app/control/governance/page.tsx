@@ -40,8 +40,8 @@ export default async function GovernancePage() {
       <h1 className="text-2xl font-medium">Governance</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review pending Agent actions, workspace roles, and environment policies.</p>
 
-      <section aria-label="Governance next step" className="mt-6 rounded-xl border border-white/10 bg-white/2.5 p-4">
-        <p className="text-[10px] uppercase tracking-wider text-zinc-500">Your next step</p>
+      <section aria-label="Governance next step" className="mt-6 rounded-2xl bg-[#111111] p-4">
+        <p className="text-xs text-zinc-400">Your next step</p>
         <h2 className="mt-1 text-sm font-medium">{proposals.length ? "Review each exact pending action" : "No pending Agent decisions"}</h2>
         <p className="mt-2 text-xs leading-5 text-zinc-400">{canDecide ? "Inspect the target, content and current review below before deciding. Each action needs its own independent decision." : "An authorized independent reviewer handles the decisions below. You can inspect workspace roles and environment policies."}</p>
         {unavailable > 0 && <p role="status" className="mt-3 text-xs leading-5 text-amber-300">{unavailable} displayed {unavailable === 1 ? "proposal has" : "proposals have"} expired or lack an integrity binding. Request a fresh proposal; an old approval cannot restore it.</p>}
@@ -110,7 +110,7 @@ export default async function GovernancePage() {
       <section className="border-t border-white/8 py-7">
         <h2 className="text-base font-medium">Organization roles</h2>
         {members.length === 0 ? <p className="mt-3 text-sm text-zinc-500">No accepted organization memberships were found.</p> : (
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{members.map((entry) => <div key={entry.role} className="rounded-xl border border-white/8 bg-[#171717] p-4"><dt className="text-xs capitalize text-zinc-500">{entry.role.replaceAll("_", " ")}</dt><dd className="mt-2 text-xl tabular-nums">{entry._count._all}</dd></div>)}</dl>
+          <dl className="mt-3 flex flex-wrap gap-2">{members.map((entry) => <div key={entry.role} className="flex items-baseline gap-2 rounded-full bg-white/5 px-3 py-1.5"><dt className="text-xs capitalize text-zinc-400">{entry.role.replaceAll("_", " ")}</dt><dd className="text-sm tabular-nums text-zinc-100">{entry._count._all}</dd></div>)}</dl>
         )}
       </section>
 
