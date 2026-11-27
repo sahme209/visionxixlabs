@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { BusinessOverview as Overview } from "@/lib/founder/founderBusiness";
 import { roadmapCandidates } from "@/lib/founder/business";
 import { AutoRefresh } from "./AutoRefresh";
+import { ARR_GOAL_CENTS, REVENUE_MULTIPLE, formatMonths, growthPlan } from "@/lib/founder/growth";
 
 const usd = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: cents < 10_000 ? 2 : 0 }).format(cents / 100);
 const num = (n: number) => n.toLocaleString("en-US");
@@ -70,6 +71,8 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
         <Kpi label="Workspaces" value={c ? num(c.workspaces) : "Unavailable"} sub={c ? `+${c.new30} in 30 days · ${c.funnel.steps[3]?.count ?? 0} active this week` : undefined} />
         <Kpi label="AI margin, 30 days" value={ai ? (ai.marginPct === null ? "No AI billed" : `${ai.marginPct}%`) : "Unavailable"} sub={ai ? `${usd(ai.billedCents)} billed · ${usd(ai.costCents)} cost · ${num(ai.calls30)} calls` : undefined} tone={ai?.marginPct == null ? null : ai.marginPct >= 0 ? "good" : "bad"} />
       </div>
+
+      {r && <GrowthPath plan={growthPlan({ mrrListCents: r.mrrListCents, last30Cents: r.last30Cents, previous30Cents: r.previous30Cents, paidWorkspaces: r.paidWorkspaces, activeWorkspaces: c?.funnel.steps[3]?.count ?? 0, aiCostCents: ai?.costCents ?? 0, aiBilledCents: ai?.billedCents ?? 0 })} />}
 
       <section aria-labelledby="agents-heading" className="rounded-2xl border border-sky-400/20 bg-sky-400/[0.04] p-5">
         <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="agents-heading" className="text-base font-medium text-zinc-50">Agents running the company</h2><Link href="/founder/blueprint" className="text-xs text-zinc-300 underline underline-offset-4">Open the operations map</Link></div>
@@ -142,5 +145,27 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
       </div>
       <p className="text-[11px] text-zinc-500">Workspaces are shown by the end of their id, without names or emails. Recurring revenue uses list prices from active plans; collected revenue comes from payment and billing records.</p>
     </div>
+  );
+}
+
+function GrowthPath({ plan }: { plan: ReturnType<typeof growthPlan> }) {
+  const pct = (f: number | null, digits = 1) => (f === null ? "—" : `${(f * 100).toFixed(digits)}%`);
+  return (
+    <section aria-labelledby="growth-heading" className="rounded-2xl border border-white/8 bg-[#0f0f0f] p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="growth-heading" className="text-base font-medium text-zinc-50">Path to a $2B company</h2>
+        <p className="text-xs text-zinc-500">Goal: {usd(ARR_GOAL_CENTS)} a year in revenue, about $2B at {REVENUE_MULTIPLE}× revenue</p>
+      </div>
+      <div className="mt-3 h-2 rounded-full bg-white/5" role="img" aria-label={`${plan.progressPct.toFixed(3)}% of the way to the annual revenue goal`}><div className="h-2 rounded-full bg-sky-400" style={{ width: `${Math.max(plan.progressPct, plan.arrCents > 0 ? 0.5 : 0)}%` }} /></div>
+      <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div><dt className="text-xs text-zinc-400">Annual run-rate now</dt><dd className="mt-0.5 text-xl tabular-nums text-zinc-50">{usd(plan.arrCents)}</dd><dd className="text-[11px] text-zinc-500">Recurring plans plus the last 30 days collected, ×12</dd></div>
+        <div><dt className="text-xs text-zinc-400">Growth, month on month</dt><dd className={`mt-0.5 text-xl tabular-nums ${plan.monthlyGrowth === null ? "text-zinc-400" : plan.monthlyGrowth >= 0 ? "text-emerald-300" : "text-rose-300"}`}>{plan.monthlyGrowth === null ? "Not enough history" : pct(plan.monthlyGrowth)}</dd></div>
+        <div><dt className="text-xs text-zinc-400">Needed to reach the goal in 5 years</dt><dd className="mt-0.5 text-xl tabular-nums text-zinc-50">{plan.neededMonthlyGrowth5y === null ? "First revenue needed" : `${pct(plan.neededMonthlyGrowth5y)} a month`}</dd></div>
+        <div><dt className="text-xs text-zinc-400">Unit economics</dt><dd className="mt-0.5 text-sm tabular-nums text-zinc-200">{plan.arpaMonthlyCents === null ? "No paying workspaces yet" : `${usd(plan.arpaMonthlyCents)} a month per paying workspace`}</dd><dd className="text-[11px] text-zinc-500">{plan.aiCostPerActiveWorkspaceCents === null ? "" : `AI cost ${usd(plan.aiCostPerActiveWorkspaceCents)} per active workspace`}{plan.aiGrossMarginPct === null ? "" : ` · AI margin ${plan.aiGrossMarginPct}%`}</dd></div>
+      </dl>
+      <h3 className="mt-4 text-xs font-medium text-zinc-300">Milestones at the current pace</h3>
+      <ol className="mt-2 grid gap-2 sm:grid-cols-4">{plan.milestones.map((m) => <li key={m.arrCents} className={`rounded-lg border px-3 py-2 text-xs ${m.reached ? "border-emerald-400/30 bg-emerald-400/5" : "border-white/8"}`}><p className="tabular-nums text-zinc-100">{usd(m.arrCents)} a year</p><p className={m.reached ? "text-emerald-300" : "text-zinc-400"}>{formatMonths(m.monthsAtCurrentGrowth)}</p></li>)}</ol>
+      <p className="mt-3 text-[11px] text-zinc-500">A projection from the last two months of recorded revenue, not a forecast. It changes as revenue comes in.</p>
+    </section>
   );
 }

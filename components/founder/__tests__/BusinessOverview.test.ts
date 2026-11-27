@@ -30,6 +30,14 @@ describe("BusinessOverview", () => {
     expect(screen.getByRole("img", { name: "Revenue per day, last 30 days: $60.00 in total" })).toBeTruthy();
     expect(within(screen.getByRole("region", { name: "Product feedback" })).getByRole("status").textContent).toContain("could not be read");
   });
+  it("shows the path to the $2B goal from recorded revenue", () => {
+    render(createElement(BusinessOverview, { data, autopilot: { paused: false, runs: [] } }));
+    const g = screen.getByRole("region", { name: "Path to a $2B company" });
+    expect(g.textContent).toContain("$1,764");
+    expect(g.textContent).toContain("Not enough history");
+    expect(g.textContent).toContain("$147 a month per paying workspace");
+    expect(within(g).getAllByText("not at the current pace").length).toBe(4);
+  });
   it("says when the autopilot is paused", () => {
     render(createElement(BusinessOverview, { data, autopilot: { paused: true, runs: [] } }));
     expect(screen.getByText(/The autopilot is paused/)).toBeTruthy();
