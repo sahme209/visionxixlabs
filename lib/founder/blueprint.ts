@@ -4,12 +4,19 @@
  * Pure: schema, validation, cost math and layout. Storage and access live in the founder routes.
  */
 import { z } from "zod";
+import { defaultAutomationFor } from "./automationDefaults";
 
 export const BLUEPRINT_KIND = "v19.founder-blueprint";
 export const BLUEPRINT_VERSION = 1;
 export const STEP_STATUSES = ["draft", "in_progress", "testing", "live", "archived"] as const;
 export type StepStatus = (typeof STEP_STATUSES)[number];
 export const STEP_KINDS = ["step", "decision", "start", "end"] as const;
+/**
+ * Who runs a step: a person (manual), a person helped by an agent (assisted), an agent that acts
+ * only after the founder approves (approval), or V19 or an agent on its own (autonomous).
+ */
+export const AUTOMATION_MODES = ["manual", "assisted", "approval", "autonomous"] as const;
+export type AutomationMode = (typeof AUTOMATION_MODES)[number];
 /** Live V19 records a step can watch. Values are computed server-side for the founder only. */
 export const SIGNAL_KEYS = ["feedback_30d", "leads_30d", "deployments_failed_7d", "deployments_7d", "incidents_open", "freezes_active", "ai_cost_30d_cents", "agent_requests_pending", "webhook_failures_7d", "workspaces_total", "workspaces_new_30d"] as const;
 export type SignalKey = (typeof SIGNAL_KEYS)[number];
@@ -19,7 +26,7 @@ const text = (max: number) => z.string().max(max).refine((v) => !/[\u0000-\u0008
 const money = z.number().finite().min(0).max(10_000_000);
 
 const toolSchema = z.object({ name: text(80).pipe(z.string().min(1)), monthlyCost: money.default(0), oneTimeCost: money.default(0), active: z.boolean().default(true) }).strict();
-const stepSchema = z.object({
+const stepObject = z.object({
   id,
   departmentId: id,
   kind: z.enum(STEP_KINDS).default("step"),
@@ -34,7 +41,10 @@ const stepSchema = z.object({
   cost: z.object({ minutesPerRun: z.number().finite().min(0).max(100_000).default(0), runsPerMonth: z.number().finite().min(0).max(1_000_000).default(0), hourlyRate: money.default(0) }).strict().default({ minutesPerRun: 0, runsPerMonth: 0, hourlyRate: 0 }),
   tools: z.array(toolSchema).max(20).default([]),
   signal: z.enum(SIGNAL_KEYS).nullable().default(null),
+  automation: z.object({ mode: z.enum(AUTOMATION_MODES).default("manual"), agent: text(80).default("") }).strict().default({ mode: "manual", agent: "" }),
 }).strict();
+/** Steps saved before automation existed take the default for their id instead of "manual". */
+const stepSchema = z.preprocess((v) => (v && typeof v === "object" && !Array.isArray(v) && !("automation" in v) && typeof (v as { id?: unknown }).id === "string" ? { ...v, automation: defaultAutomationFor((v as { id: string }).id) } : v), stepObject);
 const departmentSchema = z.object({ id, name: text(60).pipe(z.string().min(1)), group: text(40).default("Company"), description: text(300).default("") }).strict();
 const linkSchema = z.object({ from: id, to: id, label: text(40).default("") }).strict();
 
@@ -44,6 +54,8 @@ export const blueprintSchema = z.object({
   departments: z.array(departmentSchema).min(1).max(40),
   steps: z.array(stepSchema).max(1000),
   links: z.array(linkSchema).max(3000),
+  /** The founder autopilot: when paused, it reads but never changes the map. */
+  autopilot: z.object({ paused: z.boolean().default(false) }).strict().default({ paused: false }),
 }).strict();
 
 export type Blueprint = z.infer<typeof blueprintSchema>;

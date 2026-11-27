@@ -120,6 +120,10 @@
     {
       "path": "/api/cron/compliance-control-check",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/founder-autopilot",
+      "schedule": "15 * * * *"
     }
   ]
 }

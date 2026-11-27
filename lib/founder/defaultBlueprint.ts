@@ -4,9 +4,10 @@
  * for the founder to edit. Costs start at zero until the founder enters them.
  */
 import { BLUEPRINT_KIND, BLUEPRINT_VERSION, type Blueprint, type BlueprintStep } from "./blueprint";
+import { defaultAutomationFor } from "./automationDefaults";
 
 type S = Partial<BlueprintStep> & Pick<BlueprintStep, "id" | "departmentId" | "title" | "col" | "row">;
-const step = (s: S): BlueprintStep => ({ kind: "step", status: "draft", owner: "", roles: [], notes: "", cost: { minutesPerRun: 0, runsPerMonth: 0, hourlyRate: 0 }, tools: [], signal: null, ...s });
+const step = (s: S): BlueprintStep => ({ kind: "step", status: "draft", owner: "", roles: [], notes: "", cost: { minutesPerRun: 0, runsPerMonth: 0, hourlyRate: 0 }, tools: [], signal: null, automation: defaultAutomationFor(s.id), ...s });
 
 export const DEFAULT_BLUEPRINT: Blueprint = {
   kind: BLUEPRINT_KIND,
@@ -24,6 +25,7 @@ export const DEFAULT_BLUEPRINT: Blueprint = {
     { id: "finance", name: "Finance", group: "Company", description: "Costs, budgets and billing." },
     { id: "ai-operations", name: "AI operations", group: "Operations", description: "Agents, models and their cost." },
   ],
+  autopilot: { paused: false },
   steps: [
     // GTM
     step({ id: "gtm-position", departmentId: "gtm", title: "Positioning and messaging", col: 0, row: 0 }),
