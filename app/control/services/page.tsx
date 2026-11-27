@@ -3,6 +3,8 @@ import Link from "next/link";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
+import { StatusDot } from "@/components/cockpit/StatusDot";
+import { toneFor } from "@/lib/cockpit/statusTone";
 import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
 import { SERVERLESS_PLATFORMS } from "@/lib/releaseops/serverlessDeployTemplates";
 
@@ -50,14 +52,17 @@ export default async function ServicesPage() {
                   <th scope="row" className="px-4 py-3 font-normal"><span className="font-mono text-xs text-zinc-100">{r.repository}</span>{r.components.length > 0 && <span className="mt-1 block text-xs text-zinc-400">{r.components.join(", ")}</span>}</th>
                   <td className="px-4 py-3 text-xs text-zinc-300">{r.owners.length ? r.owners.join(", ") : <span className="text-zinc-400">Not recorded</span>}</td>
                   <td className="px-4 py-3 text-xs"><span className={r.guardrails.codeowners ? "text-zinc-200" : "text-amber-300"}>{r.guardrails.codeowners ? "CODEOWNERS" : "No CODEOWNERS"}</span><br /><span className={r.guardrails.defaultBranchProtected ? "text-zinc-200" : "text-amber-300"}>{r.guardrails.defaultBranchProtected ? "Default branch protected" : "Default branch not protected"}</span></td>
-                  {r.environments.map((cell, i) => <td key={data.environments[i].id} className="px-4 py-3 text-xs">{cell ? <><span className="font-mono text-zinc-200">{cell.commit ?? "no commit"}</span><br /><span className={OUTCOME[cell.outcome].tone}>{OUTCOME[cell.outcome].label}</span> <span className="text-zinc-400">· {new Date(cell.at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></> : <span className="text-zinc-400">No recorded run</span>}</td>)}
+                  {r.environments.map((cell, i) => <td key={data.environments[i].id} className="px-4 py-3 text-xs">{cell ? <><span className="font-mono text-zinc-200">{cell.commit ?? "no commit"}</span><br /><StatusDot tone={toneFor(cell.outcome)} label={OUTCOME[cell.outcome].label} /> <span className="text-zinc-400">· {new Date(cell.at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></> : <span className="text-zinc-400">No recorded run</span>}</td>)}
                   <td className="px-4 py-3 text-xs text-zinc-300">{r.recentFailureRate === null ? <span className="text-zinc-400">—</span> : `${r.recentFailureRate}% of recent finished runs`}</td>
                 </tr>))}
               </tbody>
             </table>
           </div>)}
-      <section aria-labelledby="k8s-templates-heading" className="mt-10">
-        <h2 id="k8s-templates-heading" className="text-base font-medium">Kubernetes rollout templates</h2>
+      <h2 className="mt-10 text-base font-medium">Deploy templates</h2>
+      <p className="mt-1 max-w-2xl text-sm text-zinc-400">Download a GitHub Actions workflow for a rollout strategy. Open one to fill it in.</p>
+      <details className="group mt-4 rounded-xl border border-white/[0.07] px-4 py-3 open:pb-5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden"><h3 id="k8s-templates-heading" className="text-sm font-medium">Kubernetes rollout templates</h3><span aria-hidden className="text-xs text-zinc-500 group-open:rotate-90">›</span></summary>
+      <section aria-labelledby="k8s-templates-heading">
         <p className="mt-2 max-w-2xl text-sm text-zinc-400">Generate a GitHub Actions workflow for your repository. V19 dispatches it only after the environment&apos;s policy, checks, rings, change window and approvals pass. Cluster access stays in your CI through a KUBE_CONFIG secret.</p>
         <ul className="mt-3 max-w-2xl space-y-1 text-xs text-zinc-400">{ROLLOUT_STRATEGIES.map((s) => <li key={s.id}><span className="text-zinc-200">{s.label}:</span> {s.summary}</li>)}</ul>
         <form method="get" action="/api/control/templates/kubernetes" className="mt-4 flex max-w-3xl flex-wrap items-end gap-3">
@@ -77,9 +82,11 @@ export default async function ServicesPage() {
           <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download workflow</button>
         </form>
       </section>
+      </details>
 
-      <section aria-labelledby="serverless-templates-heading" className="mt-10">
-        <h2 id="serverless-templates-heading" className="text-base font-medium">Serverless deploy templates</h2>
+      <details className="group mt-3 rounded-xl border border-white/[0.07] px-4 py-3 open:pb-5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden"><h3 id="serverless-templates-heading" className="text-sm font-medium">Serverless deploy templates</h3><span aria-hidden className="text-xs text-zinc-500 group-open:rotate-90">›</span></summary>
+      <section aria-labelledby="serverless-templates-heading">
         <p className="mt-2 max-w-2xl text-sm text-zinc-400">Generate a GitHub Actions workflow that shifts traffic gradually and keeps the previous version for rollback. Cloud access uses short-lived sign-in (OIDC) that you set up in your cloud account, named in repository variables; no cloud keys are stored anywhere.</p>
         <ul className="mt-3 max-w-2xl space-y-1 text-xs text-zinc-400">{SERVERLESS_PLATFORMS.map((p) => <li key={p.id}><span className="text-zinc-200">{p.label}:</span> {p.summary}</li>)}</ul>
         <form method="get" action="/api/control/templates/serverless" className="mt-4 flex max-w-3xl flex-wrap items-end gap-3">
@@ -99,6 +106,7 @@ export default async function ServicesPage() {
           <button type="submit" className="inline-flex min-h-9 items-center rounded-full bg-[#f3f3f3] px-4 text-sm text-black hover:bg-white">Download serverless workflow</button>
         </form>
       </section>
+      </details>
 
       <p className="mt-6 max-w-2xl text-xs leading-5 text-zinc-400">Owners come from components recorded in V19. Guardrails come from the repository&apos;s last scan. See <Link href="/control/checks" className="underline underline-offset-4">Checks</Link> and <Link href="/control/governance" className="underline underline-offset-4">Governance</Link> for what gates each release.</p>
     </div>
