@@ -27,5 +27,15 @@ it("lists services with owners, guardrails and the latest run per environment, s
 it("shows nothing rather than an estimate when records cannot be read", async () => {
   io.runs.mockRejectedValue(new Error("db"));
   render(await Page());
-  expect(screen.getByRole("status").textContent).toContain("could not be read");
+  const statuses = screen.getAllByRole("status").map((n) => n.textContent);
+  expect(statuses).toEqual(["Delivery health could not be read.", expect.stringContaining("The service catalog could not be read")]);
+});
+it("shows delivery health per environment from the workspace's own runs", async () => {
+  io.runs.mockResolvedValue([{ repositoryFullName: "acme/api", environmentId: "stg", sourceCommitSha: "abcdef1234", status: "completed", conclusion: "failure", createdAt: new Date(Date.now() - 3_600_000), completedAt: new Date(Date.now() - 3_000_000), lastObservedAt: null }]);
+  render(await Page());
+  const section = screen.getByRole("region", { name: "Delivery health" });
+  expect(section.textContent).toContain("Staging");
+  expect(section.textContent).toContain("Degraded");
+  expect(section.textContent).toContain("0% of finished runs succeeded.");
+  expect(io.runs.mock.calls.every((c) => c[0].where.organizationId === "org_s")).toBe(true);
 });

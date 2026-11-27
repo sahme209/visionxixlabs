@@ -5752,3 +5752,32 @@ model FounderBlueprintRevision {
   @@unique([blueprintId, version])
 }
 
+
+/// A hosted MCP server a workspace added from the public MCP registry. V19 stores only the public
+/// https endpoint and what a connection check found (tool names); never credentials. Agents may call
+/// only tools in allowedTools, and only while the server is enabled.
+model WorkspaceMcpServer {
+  id               String    @id @default(cuid())
+  organizationId   String
+  /// Registry name, e.g. io.github.owner/server.
+  registryName     String
+  title            String
+  version          String?
+  remoteUrl        String
+  /// streamable-http | sse
+  transport        String
+  enabled          Boolean   @default(false)
+  lastCheckAt      DateTime?
+  /// ok | needs_credentials | unreachable | refused | invalid_response
+  lastCheckOutcome String?
+  lastCheckDetail  String?
+  toolNames        String[]  @default([])
+  /// Tools an owner or admin approved for agents to call. Always a subset of toolNames.
+  allowedTools     String[]  @default([])
+  addedByUserId    String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([organizationId, registryName])
+  @@index([organizationId])
+}

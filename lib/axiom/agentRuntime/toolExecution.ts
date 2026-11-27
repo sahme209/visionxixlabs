@@ -7,6 +7,7 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 
 import "server-only";
 import {searchInstalledMicrosoftLearn} from "@/lib/integrations/mcp/microsoftLearn";
+import {callWorkspaceMcpTool, listAgentMcpTools, type WorkspaceMcpRepo} from "@/lib/integrations/mcp/workspaceMcpCall";
 import type {AgentSkillRepo} from "./skillCatalog";
 import { executeAirflowObservationTool } from "./airflowObservation";
 import { BATCH_OBSERVATION_TOOLS, executeBatchObservationTool, type BatchObservationTool } from "./batchObservation";
@@ -76,6 +77,7 @@ interface TenantIntegrationConnectionRow {
 
 export interface ToolExecutionRepo {
   agentSkillInstallation?: AgentSkillRepo["agentSkillInstallation"];
+  workspaceMcpServer?: WorkspaceMcpRepo["workspaceMcpServer"];
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string; tags?: string[]; changeWindowRuleJson?: unknown }>>;
   };
@@ -130,6 +132,14 @@ export async function executeReadOnlyTool(
     if (!repo.agentSkillInstallation) return {ok:false,error:"mcp_not_enabled"};
     const result=await searchInstalledMicrosoftLearn({agentSkillInstallation:repo.agentSkillInstallation},organizationId,args.query);
     return result.ok ? {ok:true,result:{kind:"public_documentation",source:"Microsoft Learn MCP",...result.data}} : result;
+  }
+  if (toolName === "list_workspace_mcp_tools") {
+    if (!repo.workspaceMcpServer) return {ok:false,error:"mcp_servers_unavailable"};
+    return listAgentMcpTools({workspaceMcpServer:repo.workspaceMcpServer},organizationId);
+  }
+  if (toolName === "call_workspace_mcp_tool") {
+    if (!repo.workspaceMcpServer) return {ok:false,error:"mcp_servers_unavailable"};
+    return callWorkspaceMcpTool({workspaceMcpServer:repo.workspaceMcpServer},organizationId,args);
   }
   if (toolName === "list_airflow_dags" || toolName === "read_airflow_runs" || toolName === "read_airflow_tasks") return executeAirflowObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "read_release_health") return executeReleaseHealthTool(organizationId, args, cloudContext);

@@ -7,10 +7,10 @@ const TOPICS = ["kubernetes", "aws", "github", "postgres", "datadog", "jira", "s
 
 /**
  * Browse the public MCP server registry: thousands of third-party servers, shown as untrusted listings.
- * Browsing never connects to a server or grants an agent anything; enabling a server for agents goes
- * through review in a later step.
+ * Browsing never connects to a server or grants an agent anything. Owners and admins can add a hosted
+ * server to the workspace; it starts disabled until a connection check lists its tools.
  */
-export function McpRegistryBrowser() {
+export function McpRegistryBrowser({ onAdd, added, canAdd = false }: { onAdd?: (s: McpRegistryServer) => void; added?: ReadonlySet<string>; canAdd?: boolean } = {}) {
   const [query, setQuery] = useState("");
   const [servers, setServers] = useState<McpRegistryServer[] | null>(null);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export function McpRegistryBrowser() {
   return (
     <section aria-labelledby="mcp-registry-heading" className="mt-10 border-t border-white/8 pt-7">
       <h2 id="mcp-registry-heading" className="text-base font-medium">MCP server registry</h2>
-      <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-400">Thousands of third-party MCP servers from the public registry. Listings come from their publishers and are not reviewed by V19. Browsing connects to nothing and gives agents no new tools.</p>
+      <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-400">Thousands of third-party MCP servers from the public registry. Listings come from their publishers and are not reviewed by V19. Browsing connects to nothing and gives agents no new tools. Owners and admins can add hosted servers to the workspace above.</p>
       <form className="mt-4 flex max-w-xl gap-2" role="search" onSubmit={(e) => { e.preventDefault(); setServers(null); void load(query, null); }}>
         <label className="sr-only" htmlFor="mcp-registry-search">Search MCP servers</label>
         <input id="mcp-registry-search" value={query} onChange={(e) => setQuery(e.target.value)} maxLength={100} placeholder="Search, for example postgres, jira or kubernetes" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-100" />
@@ -52,6 +52,7 @@ export function McpRegistryBrowser() {
           <p className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-zinc-400">
             {s.connections.includes("remote") && <span>Hosted at {s.remoteHosts.slice(0, 2).join(", ")}</span>}
             {s.connections.includes("local_package") && <span>Runs locally ({s.packageTypes.join(", ")})</span>}
+            {canAdd && onAdd && s.remotes.length > 0 && (added?.has(s.name) ? <span className="text-emerald-300">Added</span> : <button type="button" onClick={() => onAdd(s)} aria-label={`Add ${s.title} to this workspace`} className="text-zinc-200 underline underline-offset-2">Add to workspace</button>)}
             {(s.repositoryUrl || s.websiteUrl) && <a href={(s.repositoryUrl ?? s.websiteUrl)!} target="_blank" rel="noopener noreferrer nofollow" className="underline underline-offset-2">Publisher page</a>}
           </p>
         </li>))}</ul>}

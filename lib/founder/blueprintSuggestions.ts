@@ -10,7 +10,7 @@ export type Suggestion =
   | { id: string; kind: "assign_owner"; stepId: string; title: string; reason: string }
   | { id: string; kind: "add_cost"; departmentId: string; title: string; reason: string };
 
-const ATTENTION: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d"]);
+const ATTENTION: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d", "unanswered_questions_30d", "at_risk_workspaces"]);
 
 export function suggestBlueprintChanges(b: Blueprint, signals: Partial<Record<SignalKey, number | null>>, limit = 12): Suggestion[] {
   const out: Suggestion[] = [];

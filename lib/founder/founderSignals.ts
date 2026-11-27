@@ -14,7 +14,7 @@ const safe = async (read: () => Promise<number>): Promise<number | null> => { tr
 
 export async function readFounderSignals(now = new Date()): Promise<FounderSignals> {
   const d7 = new Date(now.getTime() - 7 * DAY), d30 = new Date(now.getTime() - 30 * DAY);
-  const [feedback, leads, deploys7, failed7, incidents, freezes, aiCost, agentPending, webhookFails, workspaces, newWorkspaces] = await Promise.all([
+  const [feedback, leads, deploys7, failed7, incidents, freezes, aiCost, agentPending, webhookFails, workspaces, newWorkspaces, revenue, unanswered, atRisk] = await Promise.all([
     safe(() => prisma.feedbackRecord.count({ where: { createdAt: { gte: d30 } } })),
     safe(() => prisma.lead.count({ where: { createdAt: { gte: d30 } } })),
     safe(() => prisma.deploymentExecution.count({ where: { createdAt: { gte: d7 } } })),
@@ -26,8 +26,24 @@ export async function readFounderSignals(now = new Date()): Promise<FounderSigna
     safe(() => prisma.webhookDelivery.count({ where: { status: "deadletter", eventKind: { not: "webhook.ping" }, createdAt: { gte: d7 } } })),
     safe(async () => (await prisma.orgMembership.groupBy({ by: ["organizationId"], where: { acceptedAt: { not: null } } })).length),
     safe(async () => (await prisma.orgMembership.groupBy({ by: ["organizationId"], _min: { createdAt: true } })).filter((g) => (g._min.createdAt ?? now) >= d30).length),
+    safe(async () => {
+      const [addOns, settled, supporters] = await Promise.all([
+        prisma.addOnPurchase.aggregate({ where: { status: { in: ["paid", "partially_refunded"] }, createdAt: { gte: d30 } }, _sum: { pricePaidCents: true, refundedAmountCents: true } }),
+        prisma.aIUsageBillingSettlement.aggregate({ where: { status: "submitted", createdAt: { gte: d30 } }, _sum: { amountCents: true } }),
+        prisma.foundingSupporterPurchase.aggregate({ where: { status: "paid", createdAt: { gte: d30 } }, _sum: { amountCents: true, refundedAmountCents: true } }),
+      ]);
+      return (addOns._sum.pricePaidCents ?? 0) - (addOns._sum.refundedAmountCents ?? 0) + (settled._sum.amountCents ?? 0) + (supporters._sum.amountCents ?? 0) - (supporters._sum.refundedAmountCents ?? 0);
+    }),
+    safe(() => prisma.helpQueryRecord.count({ where: { verdict: "ask_axiom_unanswered", createdAt: { gte: d30 } } })),
+    safe(async () => {
+      const d14 = new Date(now.getTime() - 14 * DAY);
+      const plans = await prisma.tenantBillingPlan.findMany({ where: { OR: [{ status: "past_due" }, { cancelAtPeriodEnd: true }, { status: "active", tier: { not: "free" } }] }, select: { organizationId: true, status: true, cancelAtPeriodEnd: true }, take: 10_000 });
+      const [usage, deploys] = await Promise.all([prisma.usageEvent.groupBy({ by: ["organizationId"], where: { createdAt: { gte: d14 } } }), prisma.deploymentExecution.groupBy({ by: ["organizationId"], where: { createdAt: { gte: d14 } } })]);
+      const recent = new Set([...usage, ...deploys].map((r) => r.organizationId));
+      return plans.filter((p) => p.status === "past_due" || p.cancelAtPeriodEnd || !recent.has(p.organizationId)).length;
+    }),
   ]);
-  return { feedback_30d: feedback, leads_30d: leads, deployments_7d: deploys7, deployments_failed_7d: failed7, incidents_open: incidents, freezes_active: freezes, ai_cost_30d_cents: aiCost, agent_requests_pending: agentPending, webhook_failures_7d: webhookFails, workspaces_total: workspaces, workspaces_new_30d: newWorkspaces };
+  return { feedback_30d: feedback, leads_30d: leads, deployments_7d: deploys7, deployments_failed_7d: failed7, incidents_open: incidents, freezes_active: freezes, ai_cost_30d_cents: aiCost, agent_requests_pending: agentPending, webhook_failures_7d: webhookFails, workspaces_total: workspaces, workspaces_new_30d: newWorkspaces, revenue_30d_cents: revenue, unanswered_questions_30d: unanswered, at_risk_workspaces: atRisk };
 }
 
 export const SIGNAL_LABEL: Record<SignalKey, { label: string; format: "count" | "cents"; attentionWhenAbove?: number }> = {
@@ -42,4 +58,7 @@ export const SIGNAL_LABEL: Record<SignalKey, { label: string; format: "count" | 
   webhook_failures_7d: { label: "Webhook deliveries given up in 7 days", format: "count", attentionWhenAbove: 0 },
   workspaces_total: { label: "Workspaces", format: "count" },
   workspaces_new_30d: { label: "New workspaces in the last 30 days", format: "count" },
+  revenue_30d_cents: { label: "Revenue collected in the last 30 days", format: "cents" },
+  unanswered_questions_30d: { label: "Questions Ask V19 could not answer in 30 days", format: "count", attentionWhenAbove: 0 },
+  at_risk_workspaces: { label: "Paying workspaces at risk", format: "count", attentionWhenAbove: 0 },
 };

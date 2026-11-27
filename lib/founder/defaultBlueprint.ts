@@ -4,26 +4,28 @@
  * for the founder to edit. Costs start at zero until the founder enters them.
  */
 import { BLUEPRINT_KIND, BLUEPRINT_VERSION, type Blueprint, type BlueprintStep } from "./blueprint";
+import { defaultAutomationFor } from "./automationDefaults";
 
 type S = Partial<BlueprintStep> & Pick<BlueprintStep, "id" | "departmentId" | "title" | "col" | "row">;
-const step = (s: S): BlueprintStep => ({ kind: "step", status: "draft", owner: "", roles: [], notes: "", cost: { minutesPerRun: 0, runsPerMonth: 0, hourlyRate: 0 }, tools: [], signal: null, ...s });
+const step = (s: S): BlueprintStep => ({ kind: "step", status: "draft", owner: "", roles: [], notes: "", cost: { minutesPerRun: 0, runsPerMonth: 0, hourlyRate: 0 }, tools: [], signal: null, automation: defaultAutomationFor(s.id), ...s });
 
 export const DEFAULT_BLUEPRINT: Blueprint = {
   kind: BLUEPRINT_KIND,
   version: BLUEPRINT_VERSION,
   departments: [
+    { id: "revops", name: "Revenue", group: "Business", description: "Money in: credits, usage billing, plans, renewals and at-risk accounts." },
+    { id: "inbound", name: "Customers", group: "Business", description: "Visitors to signed-up, activated and active workspaces." },
+    { id: "product-support", name: "Support", group: "Business", description: "Questions and feedback from intake to answer, with doc gaps closed by agents." },
+    { id: "product-development", name: "Product", group: "Business", description: "From customer signal and parity items to merged change." },
+    { id: "ai-operations", name: "Agents and AI", group: "Business", description: "Agents customers run, models, cost and margin." },
+    { id: "finance", name: "Finance", group: "Business", description: "Costs, budgets and payouts." },
     { id: "gtm", name: "GTM", group: "Growth", description: "Positioning, website and launch." },
-    { id: "inbound", name: "Inbound", group: "Growth", description: "Visitors to signed-up workspaces." },
     { id: "outbound", name: "Outbound", group: "Growth", description: "Targeted outreach to engineering leaders." },
-    { id: "revops", name: "RevOps", group: "Revenue", description: "Pipeline, plans, credits and renewals." },
-    { id: "product-support", name: "Product support", group: "Customers", description: "Tickets from intake to resolution." },
-    { id: "product-development", name: "Product development", group: "Product", description: "From idea to merged change." },
-    { id: "release", name: "Release and deployment", group: "Product", description: "Website and desktop releases through V19's own gates." },
-    { id: "incidents", name: "Incident response", group: "Operations", description: "Detect, stop the line, recover and learn." },
-    { id: "partnerships", name: "Partnerships", group: "Revenue", description: "Integrations, plugins and marketplace partners." },
-    { id: "finance", name: "Finance", group: "Company", description: "Costs, budgets and billing." },
-    { id: "ai-operations", name: "AI operations", group: "Operations", description: "Agents, models and their cost." },
+    { id: "partnerships", name: "Partnerships", group: "Growth", description: "Integrations, plugins and marketplace partners." },
+    { id: "release", name: "Release and deployment", group: "Engineering", description: "Website and desktop releases through V19's own gates." },
+    { id: "incidents", name: "Incident response", group: "Engineering", description: "Detect, stop the line, recover and learn." },
   ],
+  autopilot: { paused: false },
   steps: [
     // GTM
     step({ id: "gtm-position", departmentId: "gtm", title: "Positioning and messaging", col: 0, row: 0 }),
@@ -45,11 +47,14 @@ export const DEFAULT_BLUEPRINT: Blueprint = {
     step({ id: "rev-eval", departmentId: "revops", title: "Enterprise evaluation", col: 0, row: 0 }),
     step({ id: "rev-credits", departmentId: "revops", title: "Prepaid AI credits", col: 0, row: 1, status: "testing" }),
     step({ id: "rev-renew", departmentId: "revops", title: "Renewal and expansion", col: 0, row: 2 }),
+    step({ id: "rev-collected", departmentId: "revops", title: "Revenue collected", col: 1, row: 1, status: "live", signal: "revenue_30d_cents" }),
+    step({ id: "rev-health", departmentId: "revops", title: "Customer health check", col: 1, row: 2, status: "live", signal: "at_risk_workspaces" }),
     // Product support
     step({ id: "sup-intake", departmentId: "product-support", title: "Feedback or ticket received", col: 0, row: 0, kind: "start", status: "live", signal: "feedback_30d" }),
     step({ id: "sup-docs", departmentId: "product-support", title: "Answered by docs?", col: 0, row: 1, kind: "decision", status: "testing" }),
     step({ id: "sup-ai", departmentId: "product-support", title: "Ask V19 reply with sources", col: 1, row: 1, status: "testing" }),
     step({ id: "sup-human", departmentId: "product-support", title: "Founder reviews and replies", col: 0, row: 2 }),
+    step({ id: "sup-gaps", departmentId: "product-support", title: "Unanswered questions become docs", col: 1, row: 2, status: "live", signal: "unanswered_questions_30d" }),
     step({ id: "sup-close", departmentId: "product-support", title: "Resolved and doc gap logged", col: 0, row: 3, kind: "end" }),
     // Product development
     step({ id: "dev-idea", departmentId: "product-development", title: "Idea or parity item", col: 0, row: 0, kind: "start" }),
@@ -82,6 +87,7 @@ export const DEFAULT_BLUEPRINT: Blueprint = {
     step({ id: "ai-webhooks", departmentId: "ai-operations", title: "Notifications delivered", col: 0, row: 2, status: "live", signal: "webhook_failures_7d" }),
   ],
   links: [
+    { from: "rev-credits", to: "rev-collected", label: "" }, { from: "rev-health", to: "rev-renew", label: "at risk" }, { from: "sup-ai", to: "sup-gaps", label: "no answer" },
     { from: "gtm-position", to: "gtm-website", label: "" }, { from: "gtm-website", to: "gtm-launch", label: "" },
     { from: "in-visit", to: "in-signup", label: "" }, { from: "in-signup", to: "in-activated", label: "" }, { from: "in-activated", to: "in-active", label: "yes" }, { from: "in-activated", to: "in-nurture", label: "no" },
     { from: "out-list", to: "out-enrich", label: "" }, { from: "out-enrich", to: "out-reach", label: "" }, { from: "out-reach", to: "out-demo", label: "" },
