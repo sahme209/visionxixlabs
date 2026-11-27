@@ -10,6 +10,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { redactSensitiveRepositoryEvidence } from "@/lib/axiom/agentRuntime/repositoryEvidenceRedaction";
+import { deploymentWindowNow } from "@/lib/releaseops/deploymentWindowNow";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -41,6 +42,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     prisma.agentActionProposal.findMany({ where: { conversationId: id }, orderBy: { createdAt: "asc" } }),
   ]);
 
+  // For proposals still awaiting a decision that name an environment, show whether its change window
+  // would allow the deployment right now. Advisory only: the gate is evaluated again at dispatch.
+  const pendingEnvIds = [...new Set(actions.filter((a) => a.status === "proposed").map((a) => environmentIdOf(a.argsJson)).filter((v): v is string => v !== null))];
+  const windows = new Map<string, Record<string, unknown>>();
+  if (pendingEnvIds.length) {
+    const now = new Date();
+    const envs = await prisma.environment.findMany({ where: { id: { in: pendingEnvIds.slice(0, 50) }, organizationId: String(session.organizationId) }, select: { id: true, name: true, changeWindowRuleJson: true } }).catch(() => []);
+    for (const e of envs) windows.set(e.id, { environment: e.name, ...deploymentWindowNow(e.changeWindowRuleJson, now) });
+  }
+
   return NextResponse.json({
     ok: true,
     data: {
@@ -50,8 +61,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       actions: actions.map((a) => ({
         id: a.id, requiresIndependentReviewer: a.proposedByUserId === String(session.userId), toolName: a.toolName, argsJson: redactSensitiveRepositoryEvidence(a.argsJson), riskLevel: a.riskLevel, status: a.status,
         resultJson: redactSensitiveRepositoryEvidence(a.resultJson), errorMessage: a.errorMessage, createdAt: a.createdAt.toISOString(),
+        deploymentWindow: a.status === "proposed" ? windows.get(environmentIdOf(a.argsJson) ?? "") ?? null : null,
         passport: (() => { const p = readChangePassport(a.passport); return p ? { agent: p.agent, model: p.model, tools: p.tools, digest: p.digest } : null; })(),
       })),
     },
   });
+}
+
+function environmentIdOf(args: unknown): string | null {
+  const v = args && typeof args === "object" && !Array.isArray(args) ? (args as Record<string, unknown>).environmentId : null;
+  return typeof v === "string" && v.length > 0 && v.length <= 64 ? v : null;
 }
