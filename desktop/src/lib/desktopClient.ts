@@ -1419,7 +1419,7 @@ export class DesktopClient {
   getAgentConversation(conversationId: string): Promise<ApiResult<{
     id: string; title: string | null;
     turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;
-    actions: Array<{ id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string; passport?: { agent: string; model: string | null; tools: string[]; digest: string } | null }>;
+    actions: Array<{ id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string; passport?: { agent: string; model: string | null; tools: string[]; digest: string } | null; deploymentWindow?: DeploymentWindowNow | null }>;
   }>> {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
@@ -2385,3 +2385,7 @@ export interface ReleaseSignalsDto {
 export type SignalProviderId = "argo_cd" | "flux" | "pagerduty" | "opsgenie" | "sentry" | "datadog" | "launchdarkly" | "unleash" | "jenkins";
 export interface SignalConnectionState { provider: SignalProviderId; label?: string; connected?: boolean; status: string; settings?: Record<string, string | number>; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
 export interface BatchConnectionState { provider: BatchProviderId; label?: string; connected?: boolean; status: string; baseUrl?: string | null; namespace?: string | null; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
+
+/** Whether an environment's change window allows a deployment right now (advisory; the gate runs again at dispatch). */
+export interface DeploymentWindowNow { environment?: string; status: "open" | "outside_window" | "frozen" | "refused_unreadable_rule"; closesAt?: string; freezeReason?: string; until?: string; nextOpen?: string | null }
+

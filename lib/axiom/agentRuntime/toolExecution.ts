@@ -13,17 +13,8 @@ import { BATCH_OBSERVATION_TOOLS, executeBatchObservationTool, type BatchObserva
 import { executeReleaseHealthTool } from "./releaseHealthObservation";
 import { executeGitopsStateTool } from "./gitopsObservation";
 import { executeCiJobsTool } from "./ciJobsObservation";
-import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
+import { deploymentWindowNow } from "@/lib/releaseops/deploymentWindowNow";
 
-/** Whether the change window gate would allow a deployment right now, for the agent to plan around. */
-function deploymentWindowNow(rule: unknown, now: Date): Record<string, unknown> {
-  const parsed = parseChangeWindowRule(rule);
-  if (parsed.kind === "unreadable") return { status: "refused_unreadable_rule" };
-  const d = evaluateChangeWindow(parsed, now);
-  if (d.open) return { status: "open", ...(d.closesAt ? { closesAt: d.closesAt } : {}) };
-  if (d.reason === "freeze") return { status: "frozen", freezeReason: d.freezeReason, until: d.freezeEndsAt, nextOpen: d.nextOpen?.startUtc ?? null };
-  return { status: "outside_window", nextOpen: d.nextOpen?.startUtc ?? null };
-}
 import { executeCloudObservationTool, type CloudObservationContext } from "./cloudObservation";
 
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";

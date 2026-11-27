@@ -24,7 +24,7 @@ import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Badge, riskToneFor } from "../components/Primitives";
-import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { desktopClient, type AgentSkillCatalogItem, type DeploymentWindowNow, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
 import { FileDiff } from "../components/FileDiff";
 
@@ -56,6 +56,8 @@ interface Proposal {
   requiresIndependentReviewer?: boolean;
   /** Change passport recorded when the Agent proposed this action. */
   passport?: { agent: string; model: string | null; tools: string[]; digest: string } | null;
+  /** For a pending deployment: whether the environment's change window allows it right now. */
+  deploymentWindow?: DeploymentWindowNow | null;
   toolName: string;
   argsJson: unknown;
   riskLevel: string;
@@ -1689,6 +1691,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <button type="button" disabled={deciding} onClick={() => onReviewLocally(localEdit, localEdits.length > 1 ? localEdits : undefined)} className="underline disabled:opacity-50">Review in local editor</button>
         <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
       </div>}
+      {proposal.deploymentWindow && proposal.deploymentWindow.status !== "open" && <p role="status" className="mb-3 text-[11px] text-amber-300">{deploymentWindowText(proposal.deploymentWindow)}</p>}
       {proposal.passport && <p className="mb-3 text-[11px] text-zinc-400">Change passport: {proposal.passport.agent} agent · model {proposal.passport.model ?? "workspace default"} · {proposal.passport.tools.length ? `tools ${proposal.passport.tools.join(", ")}` : "no tools"} · <span className="font-mono">{proposal.passport.digest.slice(0, 12)}</span></p>}
       {proposal.requiresIndependentReviewer && <p className="mb-3 text-xs text-amber-200">Another authorized reviewer must approve this action. You can cancel your proposal without running it.</p>}
       <p className="mb-3 text-xs text-zinc-400">Approval records this exact review only. The original requester executes separately with current access.</p>
@@ -1713,3 +1716,14 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
     </div>
   );
 }
+
+/** Plain words for a closed or frozen environment on a pending deployment proposal. */
+export function deploymentWindowText(w: DeploymentWindowNow): string {
+  const env = w.environment ?? "This environment";
+  const when = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : null);
+  if (w.status === "frozen") return `${env} is frozen (${w.freezeReason ?? "no reason recorded"}) until ${when(w.until) ?? "an unknown time"}. Approving now would be refused at dispatch.${w.nextOpen ? ` Next opening ${when(w.nextOpen)}.` : ""}`;
+  if (w.status === "outside_window") return `${env} is outside its change window. Approving now would be refused at dispatch.${w.nextOpen ? ` Next opening ${when(w.nextOpen)}.` : ""}`;
+  if (w.status === "refused_unreadable_rule") return `${env} has a change window that cannot be read, so deployments there are refused until it is fixed.`;
+  return "";
+}
+

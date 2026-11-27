@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   findFirst: vi.fn(),
   findManyTurns: vi.fn(),
   findManyActions: vi.fn(),
+  findManyEnvs: vi.fn(async (_q?: unknown): Promise<unknown[]> => []),
 }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/db", () => ({
@@ -13,6 +14,7 @@ vi.mock("@/lib/db", () => ({
     agentConversation: { findFirst: mocks.findFirst },
     agentConversationTurn: { findMany: mocks.findManyTurns },
     agentActionProposal: { findMany: mocks.findManyActions },
+    environment: { findMany: mocks.findManyEnvs },
   },
 }));
 
@@ -79,4 +81,19 @@ describe("GET /api/desktop/agent/conversations/[id]", () => {
     expect(body.data.actions[0].argsJson).toEqual({ path: ".env.production", evidenceRestricted: true });
     expect(argsJson._review.baseContent).toBe("fixture-private-base");
   });
+  it("shows whether a pending deployment proposal's environment is frozen right now", async () => {
+    mocks.findFirst.mockResolvedValue({ id: "conv_1", organizationId: "org-1", title: null });
+    const start = new Date(Date.now() - 3_600_000).toISOString(), end = new Date(Date.now() + 3_600_000).toISOString();
+    mocks.findManyActions.mockResolvedValue([
+      { id: "a1", proposedByUserId: "x", toolName: "trigger_aws_deploy", argsJson: { environmentId: "env_prod" }, riskLevel: "high", status: "proposed", createdAt: new Date("2026-01-01") },
+      { id: "a2", proposedByUserId: "x", toolName: "trigger_aws_deploy", argsJson: { environmentId: "env_prod" }, riskLevel: "high", status: "executed", createdAt: new Date("2026-01-01") },
+    ]);
+    mocks.findManyEnvs.mockResolvedValueOnce([{ id: "env_prod", name: "Production", changeWindowRuleJson: { freezes: [{ startUtc: start, endUtc: end, reason: "Incident 42" }] } }]);
+    const { GET } = await import("../route");
+    const body = await (await GET(request(), params)).json();
+    expect(body.data.actions[0].deploymentWindow).toMatchObject({ environment: "Production", status: "frozen", freezeReason: "Incident 42" });
+    expect(body.data.actions[1].deploymentWindow).toBeNull();
+    expect((mocks.findManyEnvs.mock.calls[0][0] as { where: unknown }).where).toEqual({ id: { in: ["env_prod"] }, organizationId: "org-1" });
+  });
 });
+
