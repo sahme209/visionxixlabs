@@ -18,6 +18,8 @@ export interface DeploymentOutcomeSummary {
   truncated: boolean;
   /** Recorded runs created per UTC day, oldest first, one entry per day of the window. */
   daily: number[];
+  /** The same days split by result: succeeded, failed, still running, and other or unrecorded. */
+  dailyOutcome: Array<{ succeeded: number; failed: number; running: number; other: number }>;
   /** Recorded runs created in the 30 days before this window, or null when unknown. */
   previousRecorded: number | null;
 }
@@ -27,11 +29,19 @@ const ACTIVE = new Set(["queued", "in_progress", "waiting", "pending", "requeste
 export function summarizeDeploymentOutcomes(rows: readonly ExecutionOutcomeRow[], truncated: boolean, now: Date = new Date(), previousRecorded: number | null = null): DeploymentOutcomeSummary {
   let inProgress = 0, succeeded = 0, failed = 0;
   const daily = new Array<number>(OUTCOME_WINDOW_DAYS).fill(0);
+  const dailyOutcome = Array.from({ length: OUTCOME_WINDOW_DAYS }, () => ({ succeeded: 0, failed: 0, running: 0, other: 0 }));
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   for (const row of rows) {
     const day = Date.UTC(row.createdAt.getUTCFullYear(), row.createdAt.getUTCMonth(), row.createdAt.getUTCDate());
     const index = OUTCOME_WINDOW_DAYS - 1 - Math.round((today - day) / 86_400_000);
-    if (index >= 0 && index < OUTCOME_WINDOW_DAYS) daily[index]++;
+    if (index >= 0 && index < OUTCOME_WINDOW_DAYS) {
+      daily[index]++;
+      const b = dailyOutcome[index];
+      if (row.conclusion === "success") b.succeeded++;
+      else if (row.conclusion && FAILED.has(row.conclusion)) b.failed++;
+      else if (!row.conclusion && ACTIVE.has(row.status)) b.running++;
+      else b.other++;
+    }
   }
   const durations: number[] = [];
   for (const row of rows) {
@@ -49,5 +59,5 @@ export function summarizeDeploymentOutcomes(rows: readonly ExecutionOutcomeRow[]
   const decided = succeeded + failed;
   return { windowDays: OUTCOME_WINDOW_DAYS, recorded: rows.length, inProgress, succeeded, failed,
     successRate: decided === 0 ? null : Math.round((succeeded / decided) * 1000) / 10, medianSeconds, truncated,
-    daily, previousRecorded: truncated ? null : previousRecorded };
+    daily, dailyOutcome, previousRecorded: truncated ? null : previousRecorded };
 }

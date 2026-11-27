@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gatewayService";
-import { ModuleIntro } from "@/components/portal/ModuleIntro";
+import { CockpitPageHeader } from "@/components/cockpit/CockpitPageHeader";
 import { AgentGatewayDecision } from "@/components/agentGateway/AgentGatewayDecision";
 import { prisma } from "@/lib/db";
 import { ALWAYS_ENFORCED, firewallPosture, type FirewallFinding } from "@/lib/agentGateway/agentFirewallPosture";
@@ -49,17 +49,11 @@ export default async function AgentGatewayPage() {
   const users = userIds.length ? await prisma.user.findMany({ where: { id: { in: userIds } }, select: { id: true, name: true, email: true } }).catch(() => []) : [];
   const nameOf = (id: string) => { const u = users.find((x) => x.id === id); return u ? u.name || u.email || null : null; };
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <ModuleIntro
-        title="Agent gateway"
-        explanation="AI agents such as Cursor, Claude Code or your own ask V19 before consequential actions. Review and decide them here."
-        helpsYouDo={["See every action an agent asked to take", "Approve or reject consequential actions", "Check reported outcomes against approvals"]}
-        connectFirst={["An API key with governance:read and governance:request scopes", "The V19 MCP server (/api/v1/mcp) added to your agent"]}
-        aiEngineers={[]}
-        approval={{ severity: "human_required", note: "Deploys, merges, infrastructure, data migrations, secrets and deletes need an owner or admin who did not mint the agent's key. Production secret reads and deletes are always refused. Agents self-report actions; this is a cooperative control point, not a sandbox." }}
-        storageKey="agent-gateway"
-        lastReviewed="2026-11-26"
-      />
+    <div className="w-full min-w-0">
+      <CockpitPageHeader title="Agent gateway" description="AI agents such as Cursor, Claude Code or your own ask V19 before consequential actions. Review and decide them here." howItWorks={<>
+        <p>Connect an agent with an API key that has the governance:read and governance:request permissions, or add the V19 MCP server (/api/v1/mcp) to it. Every action it asks to take appears here with its outcome.</p>
+        <p>Deploys, merges, infrastructure, data migrations, secrets and deletes need an owner or admin who did not create the agent&apos;s key. Production secret reads and deletes are always refused. Agents report their own actions: this is a cooperative control point, not a sandbox.</p>
+      </>} />
       <section aria-labelledby="agent-firewall-heading" className="mt-6 rounded-xl border border-white/8 bg-white/2 p-4">
         <h2 id="agent-firewall-heading" className="text-base font-medium text-zinc-100">Agent firewall</h2>
         <ul className="mt-3 space-y-1.5 text-sm text-zinc-300">{ALWAYS_ENFORCED.map((r) => <li key={r.id} className="flex gap-2"><span aria-hidden="true" className="text-emerald-300">✓</span><span>{r.rule}</span></li>)}</ul>
