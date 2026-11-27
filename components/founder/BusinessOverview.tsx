@@ -109,6 +109,14 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
             <Bars label="Signups per week, last 12 weeks" data={c.signupsWeekly.map((w) => ({ key: w.week.slice(5), value: w.count }))} format={num} />
             <h3 className="mt-4 text-xs font-medium text-zinc-300">Activation</h3>
             <ol className="mt-2 space-y-1.5">{c.funnel.steps.map((st) => <li key={st.label} className="text-xs"><div className="flex justify-between text-zinc-300"><span>{st.label}</span><span className="tabular-nums">{num(st.count)}{st.pct !== null ? ` · ${st.pct}%` : ""}</span></div><div className="mt-0.5 h-1.5 rounded-full bg-white/5"><div className="h-1.5 rounded-full bg-sky-400/70" style={{ width: `${st.pct ?? 0}%` }} /></div></li>)}</ol>
+            <h3 className="mt-4 text-xs font-medium text-zinc-300">Weekly retention</h3>
+            {c.retention === null ? <p className="mt-1 text-sm text-amber-300">Activity could not be read.</p> : c.retention.length === 0 ? <p className="mt-1 text-sm text-zinc-500">No signups in the last 8 weeks.</p> : (
+              <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[420px] text-center text-[11px] tabular-nums">
+                <caption className="sr-only">Share of each weekly signup cohort active in each following week</caption>
+                <thead className="text-zinc-500"><tr><th scope="col" className="pb-1 text-left font-normal">Signup week</th><th scope="col" className="pb-1 font-normal">Size</th>{c.retention[0].retained.map((_, k) => <th key={k} scope="col" className="pb-1 font-normal">W{k}</th>)}</tr></thead>
+                <tbody>{c.retention.map((row) => <tr key={row.cohortWeek}><th scope="row" className="py-0.5 pr-2 text-left font-normal text-zinc-300">{row.cohortWeek.slice(5)}</th><td className="text-zinc-300">{row.size}</td>{row.retained.map((v, k) => <td key={k} className="p-0.5">{v === null ? "" : <span className="block rounded px-1 py-0.5 text-zinc-100" style={{ backgroundColor: `rgba(56,189,248,${0.08 + (v / 100) * 0.55})` }}>{v}%</span>}</td>)}</tr>)}</tbody>
+              </table></div>)}
+            <p className="mt-1 text-[11px] text-zinc-500">Active means a recorded deployment or AI use that week.</p>
             <h3 className="mt-4 text-xs font-medium text-zinc-300">At risk</h3>
             {c.atRisk.length === 0 ? <p className="mt-1 text-sm text-zinc-500">No paying workspace looks at risk.</p> : <ul className="mt-1 space-y-1 text-xs">{c.atRisk.map((a, i) => <li key={i} className="flex justify-between gap-3"><span className="text-zinc-200">{a.label}</span><span className="text-amber-200">{a.reason}</span></li>)}</ul>}
           </>}

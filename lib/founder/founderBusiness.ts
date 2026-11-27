@@ -6,7 +6,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { PUBLIC_PLAN_CATALOG } from "@/lib/billing/publicPlanCatalog";
-import { changePct, dailySeries, funnel, marginPct, rankTopics, weeklyCounts, workspaceLabel, type Funnel } from "./business";
+import { changePct, cohortRetention, dailySeries, funnel, marginPct, rankTopics, weeklyCounts, workspaceLabel, type CohortRow, type Funnel } from "./business";
 
 const DAY = 86_400_000;
 const safe = async <T>(read: () => Promise<T>): Promise<T | null> => { try { return await read(); } catch { return null; } };
@@ -21,6 +21,8 @@ export interface BusinessOverview {
   customers: null | {
     workspaces: number; new30: number; signupsWeekly: Array<{ week: string; count: number }>; funnel: Funnel;
     atRisk: Array<{ label: string; reason: string }>;
+    /** Weekly signup cohorts over the last 8 weeks; null when activity could not be read. */
+    retention: CohortRow[] | null;
   };
   ai: null | {
     calls30: number; costCents: number; billedCents: number; marginPct: number | null;
@@ -95,7 +97,13 @@ export async function readBusinessOverview(now = new Date()): Promise<BusinessOv
         else if (p.cancelAtPeriodEnd) atRisk.push({ label: workspaceLabel(p.organizationId), reason: "Cancels at the end of the period" });
         else if (listPriceCents(p.tier) > 0 && !recent.has(p.organizationId)) atRisk.push({ label: workspaceLabel(p.organizationId), reason: "Paid plan, no activity in 14 days" });
       }
+      const d56 = new Date(now.getTime() - 56 * DAY);
+      const retention = await safe(async () => {
+        const rows = await prisma.$queryRaw<Array<{ org: string; at: Date }>>`SELECT DISTINCT "organizationId" AS org, date_trunc('day', "createdAt") AS at FROM "UsageEvent" WHERE "createdAt" >= ${d56} UNION SELECT DISTINCT "organizationId" AS org, date_trunc('day', "createdAt") AS at FROM "DeploymentExecution" WHERE "createdAt" >= ${d56}`;
+        return cohortRetention([...firstOwner.entries()].filter(([, d]) => d >= d56).map(([org, at]) => ({ org, at })), rows.map((r) => ({ org: r.org, at: new Date(r.at) })), 8, now);
+      });
       return {
+        retention,
         workspaces: orgs.size, new30: [...firstOwner.values()].filter((d) => d >= d30).length,
         signupsWeekly: weeklyCounts([...firstOwner.values()].filter((d) => d >= d84), 12, now),
         funnel: funnel([{ label: "Workspaces", count: orgs.size }, { label: "Connected a repository", count: repo.size }, { label: "Ran a deployment", count: deployed.size }, { label: "Active in the last 7 days", count: active.size }]),

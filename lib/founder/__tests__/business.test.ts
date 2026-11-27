@@ -32,3 +32,19 @@ describe("founder business shaping", () => {
     expect(r[0].reason).toBe("Asked 3 times and Ask V19 could not answer.");
   });
 });
+
+describe("cohortRetention", () => {
+  it("shows each signup week's share active in later weeks, with future weeks empty", async () => {
+    const { cohortRetention } = await import("../business");
+    const now = new Date("2026-11-27T12:00:00Z"); const W = 7 * 86_400_000;
+    const at = (weeksAgo: number) => new Date(now.getTime() - weeksAgo * W + 3_600_000);
+    const rows = cohortRetention(
+      [{ org: "a", at: at(3) }, { org: "b", at: at(3) }, { org: "c", at: at(1) }],
+      [{ org: "a", at: at(3) }, { org: "b", at: at(3) }, { org: "a", at: at(2) }, { org: "a", at: at(1) }, { org: "c", at: at(1) }, { org: "x", at: at(1) }],
+      3, now);
+    expect(rows).toEqual([
+      { cohortWeek: new Date(now.getTime() - 3 * W).toISOString().slice(0, 10), size: 2, retained: [100, 50, 50] },
+      { cohortWeek: new Date(now.getTime() - 1 * W).toISOString().slice(0, 10), size: 1, retained: [100, null, null] },
+    ]);
+  });
+});
