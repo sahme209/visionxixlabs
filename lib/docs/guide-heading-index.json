@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "76ab139625add3f38fd621ddc5c050604a59659e4b6599b14811ab2c5a4026d1",
+  "navigationSha256": "64d84b2f961e262e5c5ec0e10b35ff3e53eaf3cfcd1420cdb4dcbe1facb14b19",
   "guides": [
     {
       "href": "/docs",
@@ -421,6 +421,19 @@
         "Two different MCP directions",
         "If a request is unavailable",
         "Browse the public MCP server registry"
+      ]
+    },
+    {
+      "href": "/docs/plugin-manifest",
+      "source": "app/docs/plugin-manifest/page.tsx",
+      "sourceSha256": "5a68fc32426e4021ef848b762d788fda0e966dfe9b1535922dada699de1b46cd",
+      "fields": [
+        "Describe a plugin in one file.",
+        "A V19 plugin is a hosted MCP server plus a manifest that says what it offers and what it asks for. A valid manifest grants nothing on its own.",
+        "What the manifest contains",
+        "Check a manifest",
+        "Example",
+        "How plugins are trusted"
       ]
     },
     {

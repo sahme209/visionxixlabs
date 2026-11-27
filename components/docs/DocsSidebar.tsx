@@ -90,6 +90,7 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/ask-axiom", label: "Ask V19", icon: BookOpenIcon },
       { href: "/docs/plugins", label: "Apps and skills", icon: PuzzlePieceIcon },
       { href: "/docs/mcp-tools", label: "MCP documentation tools", icon: BookOpenIcon },
+      { href: "/docs/plugin-manifest", label: "Plugin manifest", icon: BookOpenIcon },
     ],
   },
   {

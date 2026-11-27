@@ -695,6 +695,27 @@
    "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
   },
   {
+   "href": "/docs/plugin-manifest#fields",
+   "title": "What the manifest contains",
+   "text": "The manifest is JSON with kind set to v19.plugin and version set to 1. It names the plugin ( id , name , pluginVersion in semantic versioning), the publisher (name, website and a security contact) and up to three categories. transport is the public https address of the plugin's MCP server (streamable HTTP). Local addresses and plain http are refused. tools lists every tool the server offers, up to 50. Each tool says whether it only reads ( readOnly ). A tool that writes must describe its effect , which is shown to the person approving it. webhookEvents lists V19 events the plugin wants, and apiScopes lists API key scopes it asks for. Only the scopes a workspace owner can grant to any key are allowed; wildcard and admin scopes are refused.",
+   "source": "app/docs/plugin-manifest/page.tsx",
+   "sourceSha256": "5a68fc32426e4021ef848b762d788fda0e966dfe9b1535922dada699de1b46cd"
+  },
+  {
+   "href": "/docs/plugin-manifest#check",
+   "title": "Check a manifest",
+   "text": "In the cockpit, Apps & skills → Build a plugin checks a pasted manifest and shows what a reviewer would see: the host, how many tools only read, each tool that writes with its effect, the scopes and the events. Checking runs in your browser and grants nothing.",
+   "source": "app/docs/plugin-manifest/page.tsx",
+   "sourceSha256": "5a68fc32426e4021ef848b762d788fda0e966dfe9b1535922dada699de1b46cd"
+  },
+  {
+   "href": "/docs/plugin-manifest#review",
+   "title": "How plugins are trusted",
+   "text": "Every tool that writes goes through the agent gateway and needs a person's approval each time, and freezes, change windows and the agent firewall apply. Read-only tools are still limited to what the workspace enables. Publishing and enabling plugins for agents is being added in steps; until then, a manifest is for preparing and checking a plugin.",
+   "source": "app/docs/plugin-manifest/page.tsx",
+   "sourceSha256": "5a68fc32426e4021ef848b762d788fda0e966dfe9b1535922dada699de1b46cd"
+  },
+  {
    "href": "/docs/plugins#browse",
    "title": "Browse the Apps and skills catalog",
    "text": "Open Apps & skills . Choose Apps , Skills or Developer tools (MCP) , then search by name, description or listed tools. Select an entry's name to inspect its description, status and tools or scopes. Apps are built-in V19 workflows, grouped by provider. They have no separate installation to remove. Choose Manage access to review the provider in Integrations, then use an available governed workflow to prepare an action.",
