@@ -1,4 +1,5 @@
 import { restartWorkflowSourceFromArgs } from "@/lib/tauri/agentRestartWorkflowSource";
+import { StatusDot } from "@/components/cockpit/StatusDot";
 import { githubPullRequestReviewFromArgs } from "@/lib/tauri/agentGithubPullRequestReview";
 import { githubBranchReviewFromArgs } from "@/lib/tauri/agentGithubBranchReview";
 import { redirect } from "next/navigation";
@@ -116,7 +117,7 @@ export default async function GovernancePage() {
       <section className="border-t border-white/8 py-7">
         <h2 className="text-base font-medium">Environment policy posture</h2>
         {environments.length === 0 ? <p className="mt-3 text-sm text-zinc-500">No environments are configured. Add them in the desktop app under Settings → Environments; their policy posture appears here once they exist.</p> : (
-          <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">{environments.map((environment) => <div key={environment.id} className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm">{environment.name}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{environment.slug}</p></div><div className="text-right"><p className="text-xs uppercase tracking-[0.12em] text-zinc-400">{environment.tier}</p><p className="mt-1 text-xs text-zinc-600">{environment.approvalPolicyId ? "Approval policy assigned" : "No approval policy assigned"}</p></div></div>)}</div>
+          <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">{environments.map((environment) => <div key={environment.id} className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm">{environment.name}</p><p className="mt-1 font-mono text-[11px] text-zinc-500">{environment.slug}</p></div><div className="flex flex-col items-end gap-1"><span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-zinc-300">{environment.tier}</span><StatusDot tone={environment.approvalPolicyId ? "success" : environment.tier === "prod" ? "attention" : "idle"} label={environment.approvalPolicyId ? "Approval policy assigned" : "No approval policy assigned"} /></div></div>)}</div>
         )}
       </section>
       <section aria-labelledby="lifecycles-heading" className="border-t border-white/8 py-7">
