@@ -111,8 +111,10 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .next/cache
+          # Exact-commit key only, so a rerun reuses its own cache. A fallback to another branch's
+          # webpack cache is the suspected cause of builds passing 10 GB (timeouts and OOM on PR 394 and
+          # on main after PR 393); locally a cold build peaks near 7 GB.
           key: nextjs-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
-          restore-keys: nextjs-${{ hashFiles('package-lock.json') }}-
 
       # Validate production compilation in GitHub without deploying or loading
       # Vercel production credentials. Git-triggered Vercel builds are disabled.
@@ -130,9 +132,9 @@ jobs:
 
       - name: Build production website (no deployment)
         env:
-          # 8 GB hit the heap limit on PR 380 and 10 GB on PR 394 (and on main after PR 393) as the
-          # route graph grew. 14 GB stays under the 16 GB runner plus 10 GB swap; Vercel builds use 16 GB.
-          NODE_OPTIONS: --max-old-space-size=14336
+          # 8 GB hit the heap limit on PR 380. 12 GB leaves room on the 16 GB runner for Next's own
+          # type check; 14 GB got the runner shut down. Vercel builds use 16 GB.
+          NODE_OPTIONS: --max-old-space-size=12288
         run: npm run build
 
       # Exercise these emitted routes before this same build can pass. Synthetic
