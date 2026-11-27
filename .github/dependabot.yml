@@ -35,6 +35,9 @@ updates:
       desktop-major: { update-types: ["major"] }
     ignore:
       - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
+      # The Windows installer templates and installed-payload checks are reviewed against Tauri CLI
+      # 2.12.4 exactly (scripts/windows_installed_acceptance.py). Move it only with that review.
+      - { dependency-name: "@tauri-apps/cli" }
   - package-ecosystem: cargo
     directory: "/desktop/src-tauri"
     schedule: { interval: weekly, day: monday }
