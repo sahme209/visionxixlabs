@@ -4,7 +4,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
 import { StatusDot } from "@/components/cockpit/StatusDot";
-import { toneFor } from "@/lib/cockpit/statusTone";
+import { TONE_DOT, toneFor } from "@/lib/cockpit/statusTone";
 import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
 import { SERVERLESS_PLATFORMS } from "@/lib/releaseops/serverlessDeployTemplates";
 
@@ -52,7 +52,7 @@ export default async function ServicesPage() {
                   <th scope="row" className="px-4 py-3 font-normal"><span className="font-mono text-xs text-zinc-100">{r.repository}</span>{r.components.length > 0 && <span className="mt-1 block text-xs text-zinc-400">{r.components.join(", ")}</span>}</th>
                   <td className="px-4 py-3 text-xs text-zinc-300">{r.owners.length ? r.owners.join(", ") : <span className="text-zinc-400">Not recorded</span>}</td>
                   <td className="px-4 py-3 text-xs"><span className={r.guardrails.codeowners ? "text-zinc-200" : "text-amber-300"}>{r.guardrails.codeowners ? "CODEOWNERS" : "No CODEOWNERS"}</span><br /><span className={r.guardrails.defaultBranchProtected ? "text-zinc-200" : "text-amber-300"}>{r.guardrails.defaultBranchProtected ? "Default branch protected" : "Default branch not protected"}</span></td>
-                  {r.environments.map((cell, i) => <td key={data.environments[i].id} className="px-4 py-3 text-xs">{cell ? <><span className="font-mono text-zinc-200">{cell.commit ?? "no commit"}</span><br /><StatusDot tone={toneFor(cell.outcome)} label={OUTCOME[cell.outcome].label} /> <span className="text-zinc-400">· {new Date(cell.at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></> : <span className="text-zinc-400">No recorded run</span>}</td>)}
+                  {r.environments.map((cell, i) => <td key={data.environments[i].id} className="px-4 py-3 text-xs">{cell ? <><span className="font-mono text-zinc-200">{cell.commit ?? "no commit"}</span><br /><StatusDot tone={toneFor(cell.outcome)} label={OUTCOME[cell.outcome].label} /> <span className="text-zinc-400">· {new Date(cell.at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>{cell.recent.length > 1 && <span role="img" aria-label={`Last ${cell.recent.length} runs, oldest first: ${cell.recent.map((o) => OUTCOME[o].label).join(", ")}`} className="mt-1.5 flex gap-[3px]">{cell.recent.map((o, i) => <span key={i} aria-hidden className={`h-2 w-2 rounded-[2px] ${TONE_DOT[toneFor(o)]}`} />)}</span>}</> : <span className="text-zinc-400">No recorded run</span>}</td>)}
                   <td className="px-4 py-3 text-xs text-zinc-300">{r.recentFailureRate === null ? <span className="text-zinc-400">—</span> : `${r.recentFailureRate}% of recent finished runs`}</td>
                 </tr>))}
               </tbody>

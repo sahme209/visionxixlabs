@@ -17,7 +17,7 @@ describe("buildServiceCatalog", () => {
     expect(out.environments.map((e) => e.id)).toEqual(["stg", "prod"]);
     const api = out.rows[0];
     expect(api).toMatchObject({ repository: "acme/api", components: ["Ledger worker", "Payments API"], owners: ["payments"], guardrails: { codeowners: true, defaultBranchProtected: true }, recentFailureRate: 50, lastDeployedAt: "2026-11-26T11:00:00.000Z" });
-    expect(api.environments).toEqual([{ environmentId: "stg", commit: "bbbbbbb", outcome: "failed", at: "2026-11-26T10:00:00.000Z" }, { environmentId: "prod", commit: "aaaaaaa", outcome: "in_progress", at: "2026-11-26T11:00:00.000Z" }]);
+    expect(api.environments).toEqual([{ environmentId: "stg", commit: "bbbbbbb", outcome: "failed", at: "2026-11-26T10:00:00.000Z", recent: ["succeeded", "failed"] }, { environmentId: "prod", commit: "aaaaaaa", outcome: "in_progress", at: "2026-11-26T11:00:00.000Z", recent: ["in_progress"] }]);
     expect(out.rows[1]).toMatchObject({ repository: "acme/web", owners: [], environments: [null, null], recentFailureRate: null, guardrails: { codeowners: false, defaultBranchProtected: false } });
   });
 });

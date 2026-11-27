@@ -12,7 +12,7 @@ export interface CatalogRow {
   components: string[];
   owners: string[];
   guardrails: { codeowners: boolean; defaultBranchProtected: boolean };
-  environments: Array<{ environmentId: string; commit: string | null; outcome: "succeeded" | "failed" | "in_progress" | "other"; at: string } | null>;
+  environments: Array<{ environmentId: string; commit: string | null; outcome: "succeeded" | "failed" | "in_progress" | "other"; at: string; /** Up to the last 10 outcomes here, oldest first. */ recent: Array<"succeeded" | "failed" | "in_progress" | "other"> } | null>;
   lastDeployedAt: string | null;
   recentFailureRate: number | null;
 }
@@ -32,8 +32,9 @@ export function buildServiceCatalog(repos: readonly CatalogRepository[], compone
       owners: [...new Set(comps.map((c) => c.ownerTeamLabel).filter((o): o is string => Boolean(o)))].sort(),
       guardrails: { codeowners: r.codeownersPresent, defaultBranchProtected: r.protectedBranches.includes(r.defaultBranch) },
       environments: envs.map((env) => {
-        const latest = runs.find((e) => e.environmentId === env.id);
-        return latest ? { environmentId: env.id, commit: latest.sourceCommitSha ? latest.sourceCommitSha.slice(0, 7) : null, outcome: outcomeOf(latest), at: latest.createdAt.toISOString() } : null;
+        const here = runs.filter((e) => e.environmentId === env.id);
+        const latest = here[0];
+        return latest ? { environmentId: env.id, commit: latest.sourceCommitSha ? latest.sourceCommitSha.slice(0, 7) : null, outcome: outcomeOf(latest), at: latest.createdAt.toISOString(), recent: here.slice(0, 10).reverse().map(outcomeOf) } : null;
       }),
       lastDeployedAt: runs[0]?.createdAt.toISOString() ?? null,
       recentFailureRate: finished.length ? Math.round((finished.filter((e) => e.conclusion !== "success").length / finished.length) * 100) : null,
