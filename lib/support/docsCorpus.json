@@ -531,21 +531,28 @@
    "title": "Prepare Microsoft Learn documentation search",
    "text": "An owner or admin opens Apps & skills → Developer tools (MCP) , chooses Microsoft Learn and confirms Install or Enable . Open MCP tools . Current membership and workspace access are required for requests; the saved installation must be enabled for search. Choose Check connection to see whether the fixed public server responds and offers documentation search. This checks availability only: it does not install the tool, grant cloud access or authorize Agent tools.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
+   "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a"
   },
   {
    "href": "/docs/mcp-tools#search",
    "title": "Search with a public technical topic",
    "text": "Enter a short topic, such as Azure App Service managed identity , then choose Search docs . Your topic is sent to Microsoft's public documentation server. Use public terms only; do not paste credentials, private code, personal information or internal incident details. Queries are limited to 300 characters; unsupported or secret-like input is refused. Results show titles, excerpts and links on learn.microsoft.com. They are external reference material, not evidence that your own deployment is configured correctly. V19 bounds request duration and response size, refuses redirects and rate-limits requests. This page lets V19 read a reviewed external documentation tool. To let an external agent request V19 governance decisions, use the separate Agent gateway guide . Neither connection grants the other's permissions.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
+   "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a"
   },
   {
    "href": "/docs/mcp-tools#recover",
    "title": "If a request is unavailable",
    "text": "Check the workspace's installation state first. Unknown storage state is not an enabled connection. A rate-limit message means wait before trying again. A failed or unconfirmed request is not proof that documentation was read; V19 requires an audit record before confirming it. Do not repeatedly resend sensitive or unsupported input.",
    "source": "app/docs/mcp-tools/page.tsx",
-   "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9"
+   "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a"
+  },
+  {
+   "href": "/docs/mcp-tools#registry",
+   "title": "Browse the public MCP server registry",
+   "text": "Under MCP server registry on the MCP tools page, any workspace member can search the public registry at registry.modelcontextprotocol.io, which lists thousands of third-party MCP servers, or pick a topic such as kubernetes, aws or postgres. Each listing shows the publisher's name, version and description, whether the server is hosted at an https address or runs locally from a package, and a link to the publisher's page. Listings come from their publishers and are not reviewed by V19. Browsing does not connect to any server, send it workspace data or give an agent any tool. Making a listed server available to agents will need its own review and permissions; until then, only the reviewed tools above can be used.",
+   "source": "app/docs/mcp-tools/page.tsx",
+   "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a"
   },
   {
    "href": "/docs/members#roles",
