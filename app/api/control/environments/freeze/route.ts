@@ -9,6 +9,7 @@ import type { CorrelationId, OrganizationId, UserId } from "@/lib/domain/ids";
 import { prisma } from "@/lib/db";
 import { MAX_FREEZE_HOURS, activeFreezes } from "@/lib/releaseops/deploymentFreeze";
 import { applyDeploymentFreeze } from "@/lib/releaseops/deploymentFreezeStore";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
       await auditRecord({ organizationId: ctx.organizationId as OrganizationId, actorUserId: ctx.userId as UserId, action: "governance.update", outcome: "success", entityRef: "deployment_freeze", correlationId: randomUUID() as CorrelationId, detail: { kind: body.action === "start" ? "deployment_freeze.start" : "deployment_freeze.end", reason: body.reason, environments: out.environments, ...(body.action === "start" ? { hours: body.hours, scope: body.scope } : {}) } });
     } catch { /* best-effort */ }
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: ctx.organizationId, kind: body.action === "start" ? "environment.freeze" : "environment.freeze_end", subjectKind: "environment", subjectId: `freeze:${randomUUID()}`, summary: body.action === "start" ? `Froze ${out.environments.join(", ")} until ${out.endsAt}: ${body.reason}` : `Ended freeze on ${out.environments.join(", ")}: ${body.reason}`, actorUserId: ctx.userId, detailJson: { source: "cockpit", reason: body.reason, environments: out.environments, ...(body.action === "start" ? { scope: body.scope, hours: body.hours, endsAt: out.endsAt } : {}) } });
     return NextResponse.json({ ok: true, data: { environments: out.environments, skipped: out.skipped } }, { headers: noStore });
   } catch {
     return fail("freezes_unavailable", 503);

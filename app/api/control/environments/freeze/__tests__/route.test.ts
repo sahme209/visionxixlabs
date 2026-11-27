@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-const m = vi.hoisted(() => ({ ctx: vi.fn(), admin: true, sameOrigin: true, findMany: vi.fn(), updateMany: vi.fn(), audit: vi.fn(), dispatch: vi.fn(async () => ({})), unenrolled: vi.fn(async () => true) }));
+const m = vi.hoisted(() => ({ ctx: vi.fn(), admin: true, sameOrigin: true, findMany: vi.fn(), updateMany: vi.fn(), audit: vi.fn(), dispatch: vi.fn(async () => ({})), append: vi.fn(async () => true), unenrolled: vi.fn(async () => true) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: m.ctx }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => m.admin }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => m.sameOrigin }));
@@ -9,6 +9,7 @@ vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
 vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: m.unenrolled }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: m.dispatch }));
 vi.mock("server-only", () => ({}));
+vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: m.append }));
 vi.mock("@/lib/prismaClient", () => ({ Prisma: { DbNull: "DbNull" } }));
 vi.mock("@/lib/db", () => {
   const tx = { environment: { updateMany: m.updateMany } };
@@ -38,6 +39,7 @@ describe("/api/control/environments/freeze", () => {
     expect(write.data.changeWindowRuleJson.freezes[0]).toMatchObject({ reason: "Incident 42" });
     expect(Date.parse(write.data.changeWindowRuleJson.freezes[0].endUtc) - Date.parse(write.data.changeWindowRuleJson.freezes[0].startUtc)).toBe(4 * 3_600_000);
     expect(m.dispatch).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org1", eventKind: "deployment.freeze_started", data: expect.objectContaining({ reason: "Incident 42", environments: ["Prod"], scope: "production" }) }));
+    expect(m.append).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ kind: "environment.freeze", actorUserId: "u1", detailJson: expect.objectContaining({ source: "cockpit", reason: "Incident 42", environments: ["Prod"] }) }));
     expect(m.audit).toHaveBeenCalledWith(expect.objectContaining({ entityRef: "deployment_freeze", detail: expect.objectContaining({ kind: "deployment_freeze.start", environments: ["Prod"] }) }));
   });
   it("ends a freeze early by reason, keeping it as a shortened record", async () => {

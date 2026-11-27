@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "b060c94ffcca65a838a03e5dc6cae9d3df33cf069a52511d1eb074084a2c3d99",
+      "sourceSha256": "d1283b4d49c685da1734a28dc906648bfb7eb1921784efb4070cc8998d42ebcf",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -425,7 +425,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d",
+      "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",

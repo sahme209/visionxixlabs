@@ -13,6 +13,7 @@ import { decideDesktopCommercialAccess } from "@/lib/desktop/desktopCommercialAc
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
 import { firewallPosture } from "@/lib/agentGateway/agentFirewallPosture";
+import { deploymentOutcomeLabel } from "@/lib/releaseops/deploymentOutcomeLabel";
 
 type Overview = {
   pendingActions: number;
@@ -61,18 +62,34 @@ async function readGovernanceAttention(organizationId: string): Promise<Governan
   }
 }
 
+type RecentDeployment = { id: string; environment: string; repositoryFullName: string; sourceRef: string | null; commit: string | null; outcome: string; tone: "ok" | "bad" | "neutral"; at: string; workflowUrl: string | null };
+
+/** The five most recent recorded deployments; optional, so a read failure hides only this section. */
+async function readRecentDeployments(organizationId: string): Promise<RecentDeployment[] | null> {
+  try {
+    const rows = await prisma.deploymentExecution.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, environmentId: true, repositoryFullName: true, sourceRef: true, sourceCommitSha: true, status: true, conclusion: true, createdAt: true, workflowUrl: true } });
+    const envIds = [...new Set(rows.map((r) => r.environmentId))];
+    const envs = envIds.length ? await prisma.environment.findMany({ where: { organizationId, id: { in: envIds } }, select: { id: true, name: true } }) : [];
+    const name = new Map(envs.map((e) => [e.id, e.name]));
+    return rows.map((r) => { const o = deploymentOutcomeLabel(r.status, r.conclusion); return { id: r.id, environment: name.get(r.environmentId) ?? "Removed environment", repositoryFullName: r.repositoryFullName, sourceRef: r.sourceRef, commit: r.sourceCommitSha ? r.sourceCommitSha.slice(0, 12) : null, outcome: o.label, tone: o.tone, at: r.createdAt.toISOString(), workflowUrl: r.workflowUrl && r.workflowUrl.startsWith("https://") ? r.workflowUrl : null }; });
+  } catch {
+    return null;
+  }
+}
+
 export default async function ControlOverviewPage() {
   const context = await currentContext();
   if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control");
   if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);
-  const [overview, billing, allowance, attention, stability] = await Promise.all([
+  const [overview, billing, allowance, attention, stability, deployments] = await Promise.all([
     readOverview(organizationId),
     readBillingPlanWithAvailability(organizationId).catch(() => null),
     withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId)).catch(() => ({ available: false } as const)),
     readGovernanceAttention(organizationId),
     readStabilityWarning(prisma as unknown as StabilityRepo, organizationId, new Date()),
+    readRecentDeployments(organizationId),
   ]);
   const plan = billing?.available ? billing.plan : null;
   // Same plan name as Usage & billing, so the two pages never disagree (for example "14-day trial" beside "Free · no plan").
@@ -120,6 +137,21 @@ export default async function ControlOverviewPage() {
         </section>
       )}
       <DeploymentFreezePanel />
+      {deployments && (
+        <section aria-labelledby="recent-deployments-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
+          <h2 id="recent-deployments-heading" className="text-xs font-normal text-zinc-400">Recent deployments</h2>
+          {deployments.length === 0 ? <p className="mt-3 text-sm text-zinc-300">No deployment has been recorded yet. Deploy from the desktop app; each run appears here with its outcome.</p> : (
+            <ul aria-label="Recent deployments" className="mt-3 divide-y divide-white/[0.06] text-sm">{deployments.map((d) => (
+              <li key={d.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
+                <span className={d.tone === "ok" ? "text-zinc-100" : d.tone === "bad" ? "text-amber-300" : "text-zinc-300"}>{d.outcome}</span>
+                <span className="text-zinc-300">{d.environment}</span>
+                <span className="font-mono text-xs text-zinc-400">{d.repositoryFullName}{d.sourceRef ? `@${d.sourceRef}` : ""}{d.commit ? ` · ${d.commit}` : ""}</span>
+                <span className="text-xs text-zinc-500">{new Date(d.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</span>
+                {d.workflowUrl && <a href={d.workflowUrl} target="_blank" rel="noreferrer" className="text-xs text-zinc-300 underline underline-offset-2">Workflow run</a>}
+              </li>))}</ul>)}
+          <Link href="/control/insights" className="mt-3 inline-flex text-xs text-zinc-300 underline underline-offset-4">Delivery insights</Link>
+        </section>
+      )}
       <section aria-label="V19 products and connections" className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">V19</h2><p className="mt-2 text-xs text-zinc-300">{desktopAccess?.title ?? "Access status unavailable"}</p><p className="mt-1 text-xs leading-5 text-zinc-400">Workspace access is checked by the desktop service. Paired devices are managed separately.</p><Link href="/control/settings?section=sessions" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Manage desktop sessions</Link></article>
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">Integrations</h2><p className="mt-2 text-xs leading-5 text-zinc-400">Connect workspace services and review their validated permissions.</p><Link href="/control/integrations" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Connect services</Link></article>

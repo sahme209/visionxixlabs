@@ -1,9 +1,9 @@
 /** @vitest-environment jsdom */
 import { render, screen, cleanup } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-const io=vi.hoisted(()=>({count:vi.fn(),policy:vi.fn(),checks:vi.fn(),results:vi.fn(),envs:vi.fn(async()=>[] as unknown[]),keys:vi.fn(async()=>[] as unknown[])}));
+const io=vi.hoisted(()=>({count:vi.fn(),policy:vi.fn(),checks:vi.fn(),results:vi.fn(),envs:vi.fn(async(_q?:unknown)=>[] as unknown[]),keys:vi.fn(async()=>[] as unknown[]),execs:vi.fn(async():Promise<unknown[]>=>{throw Error('not mocked')})}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>({isAuthenticated:true,organizationId:'org-g',email:'p@example.test',userId:'u',roles:['owner']})}));
-vi.mock('@/lib/db',()=>({prisma:{agentActionProposal:{count:io.count},orgMembership:{count:io.count},tenantIntegrationConnection:{count:io.count},environment:{count:io.count,findMany:io.envs},policyChangeRequest:{count:io.policy},deploymentCheck:{findMany:io.checks},deploymentCheckResult:{findMany:io.results},apiKey:{findMany:io.keys}}}));
+vi.mock('@/lib/db',()=>({prisma:{agentActionProposal:{count:io.count},orgMembership:{count:io.count},tenantIntegrationConnection:{count:io.count},environment:{count:io.count,findMany:io.envs},policyChangeRequest:{count:io.policy},deploymentCheck:{findMany:io.checks},deploymentCheckResult:{findMany:io.results},apiKey:{findMany:io.keys},deploymentExecution:{findMany:io.execs}}}));
 vi.mock('@/lib/billing/tenantBillingStore',()=>({readBillingPlanWithAvailability:async()=>null}));
 vi.mock('@/lib/billing/currentAIAllowance',()=>({readCurrentAIAllowance:async()=>({available:false})}));
 vi.mock('@/lib/billing/isolatedApplication/scope',()=>({withIsolatedWorkspaceScope:(_c:unknown,_m:unknown,op:()=>unknown)=>op()}));
@@ -32,4 +32,19 @@ it('links to agent firewall warnings',async()=>{
  io.keys.mockResolvedValueOnce([{name:'ci-all',scopes:['*'],expiresAt:null,revokedAt:null}]);
  render(await Overview());
  expect(screen.getByRole('link',{name:'1 agent firewall warning to review'}).getAttribute('href')).toBe('/control/agent-gateway#agent-firewall-heading');
+});
+it('lists recent deployments with their outcome and environment',async()=>{
+ io.execs.mockResolvedValueOnce([{id:'d1',environmentId:'e1',repositoryFullName:'acme/web',sourceRef:'v1.4.0',sourceCommitSha:'a'.repeat(40),status:'completed',conclusion:'failure',createdAt:new Date('2026-11-27T10:00:00Z'),workflowUrl:'https://github.com/acme/web/actions/runs/1'}]);
+ io.envs.mockImplementation(async(q?:unknown)=>(q as {where:{id?:unknown}}).where.id?[{id:'e1',name:'Production'}]:[]);
+ render(await Overview());
+ const list=screen.getByRole('list',{name:'Recent deployments'});
+ expect(list.textContent).toContain('Failed (failure)');
+ expect(list.textContent).toContain('Production');
+ expect(list.textContent).toContain('acme/web@v1.4.0 · '+'a'.repeat(12));
+ expect(screen.getByRole('link',{name:'Workflow run'}).getAttribute('href')).toBe('https://github.com/acme/web/actions/runs/1');
+ io.envs.mockReset(); io.envs.mockResolvedValue([]);
+});
+it('hides recent deployments when they cannot be read',async()=>{
+ render(await Overview());
+ expect(screen.queryByRole('heading',{name:'Recent deployments'})).toBeNull();
 });
