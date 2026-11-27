@@ -109,7 +109,7 @@ export default async function ControlOverviewPage() {
         <section aria-labelledby="current-plan-heading" className="flex min-h-48 flex-col rounded-2xl bg-[#111111] p-4">
           <div className="flex items-center justify-between gap-3"><h2 id="current-plan-heading" className="text-xs font-normal text-zinc-400">Current plan</h2><Link href="/control/plans" className="inline-flex min-h-8 items-center rounded-full bg-[#f3f3f3] px-3.5 text-[13px] text-black hover:bg-white">Review plans</Link></div>
           <p className="mt-4 text-2xl">{planName}</p>
-          <p className="mt-2 text-xs text-zinc-400">{plan ? `Subscription status: ${plan.status.replaceAll("_", " ")}` : "Billing status could not be verified."}</p>
+          <p className="mt-2 text-xs text-zinc-400">{plan ? "Free to explore. AI usage is prepaid and shown before each action." : "Billing status could not be verified."}</p>
           <Link href="/control/usage-billing" className="mt-auto pt-5 text-xs text-zinc-300 underline underline-offset-4">View usage &amp; billing</Link>
         </section>
         <section aria-labelledby="account-allowance-heading" className="rounded-2xl bg-[#111111] p-4">

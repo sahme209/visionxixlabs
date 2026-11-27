@@ -104,7 +104,6 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
   const creditUnavailable = !allowance.available;
   const planAvailable = billingRead.available && (!isolated || allowance.available);
   const anyUnavailable = unavailable || deploymentUnavailable || !billingRead.available || creditUnavailable;
-  const paidSeats = billing.seatQuantity ?? (publicPlanId === "free" ? publicPlan.includedSeats ?? 0 : 0);
 
   const usageSection = (<section className="mt-6 rounded-2xl border border-white/8 bg-[#171717] p-5 sm:p-7" aria-labelledby="usage-heading">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h2 id="usage-heading" className="text-lg font-medium">AI usage</h2><p className="mt-1 text-xs text-zinc-400">Current month · {period.key}</p><p className="mt-1 text-xs text-zinc-500">Customer debit is settled from Vercel Gateway generation cost; pending generations are never presented as free.</p></div><span className="text-sm font-medium">{unavailable ? "Settled amount unavailable" : `${money(usage.billedCents)} settled`}</span></div>
@@ -125,7 +124,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
     <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium">Usage & billing</h1>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Manage your plan, review usage, and access billing records.</p>
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">V19 is free to explore; AI usage is the only paid part and is prepaid. Review usage, credits and billing records here.</p>
 
       {returnedFromCheckout && <p role="status" className="mt-6 rounded-xl border border-white/8 p-4 text-sm leading-6 text-zinc-400">Returned from checkout. The URL does not confirm payment or grant access. Review the authoritative subscription and usage records below; verified billing events may still be processing.</p>}
 
@@ -150,7 +149,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
         </section>
       </div>
 
-<dl className="mt-5 grid gap-3 rounded-xl border border-white/8 bg-[#171717] p-5 sm:grid-cols-3">            <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {planAvailable ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
+<dl className="mt-5 grid gap-3 rounded-xl border border-white/8 bg-[#171717] p-5 sm:grid-cols-3">            <div><dt className="text-xs text-zinc-500">Members</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members}</dd><dd className="mt-1 text-[11px] text-zinc-600">No per-member charge</dd></div>
             <div><dt className="text-xs text-zinc-500">Deployment records this month</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : deployment.used}</dd>{isolated && <p className="mt-1 text-[11px] text-zinc-600">Deployment activity is unavailable in this isolated test environment.</p>}</div>
             <div><dt className="text-xs text-zinc-500">Gateway calls</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : usage.calls}</dd>{!unavailable && <dd className="mt-1 text-[11px] text-zinc-600">{usage.pendingCalls} awaiting cost settlement</dd>}</div></dl>
 {showWorkspaceBudget && <WorkspaceAIUsageBudgetPanel key={organizationId} organizationId={organizationId} />}
