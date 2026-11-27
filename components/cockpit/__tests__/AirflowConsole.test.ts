@@ -29,3 +29,17 @@ it('does not claim an empty list after a failed provider read',async()=>{
  fireEvent.click(screen.getByRole('button',{name:'Load DAGs'}));await waitFor(()=>expect(screen.getByRole('alert')).toBeTruthy());
  expect(screen.queryByText('No DAGs returned.')).toBeNull();expect(document.body.textContent).not.toContain('secret-provider');
 });
+it('shows run and task states as a coloured grid, and a run square opens its tasks',async()=>{
+ call.mockImplementation(async(url:string)=>new Response(JSON.stringify({ok:true,data:url.includes('view=tasks')?{tasks:[{taskId:'extract',mapIndex:-1,tryNumber:1,state:'success',startedAt:null,endedAt:null},{taskId:'load',mapIndex:-1,tryNumber:2,state:'up_for_retry',startedAt:null,endedAt:null}],totalEntries:2,offset:0}:url.includes('view=runs')?{runs:[{dagId:'daily',dagRunId:'run-2',state:'failed',startedAt:null,endedAt:null,logicalDate:null},{dagId:'daily',dagRunId:'run-1',state:'success',startedAt:null,endedAt:null,logicalDate:null}]}:url.includes('view=dags')?{dags:[{dagId:'daily',displayName:'Daily import',paused:false}]}:overview}),{status:200}));
+ render(createElement(AirflowConsole));await screen.findByText('Recorded connection: active');
+ fireEvent.click(screen.getByRole('button',{name:'Load DAGs'}));await screen.findByText('Daily import');
+ fireEvent.click(screen.getByRole('button',{name:'View runs for Daily import'}));
+ const grid=await screen.findByRole('figure',{name:'Run states for Daily import, oldest first'});
+ const squares=grid.querySelectorAll('button');
+ expect([...squares].map(b=>b.getAttribute('aria-label'))).toEqual(['run-1: Success','run-2: Failed']);
+ expect(grid.textContent).toContain('Succeeded 1');expect(grid.textContent).toContain('Failed 1');
+ fireEvent.click(squares[1]);
+ const tasks=await screen.findByRole('figure',{name:'Task states for the selected run'});
+ expect(tasks.textContent).toContain('Queued, retrying or skipped 1');
+ expect(call.mock.calls.map(c=>String(c[0])).join('|')).toContain('run=run-2');
+});
