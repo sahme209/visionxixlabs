@@ -1,5 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { StatusDot } from "./StatusDot";
+import { toneFor } from "@/lib/cockpit/statusTone";
 import { CHECK_KINDS, CHECK_STAGES, KIND_LABEL, STAGE_LABEL, type CheckKind, type CheckStage } from "@/lib/releaseops/deploymentChecks";
 
 interface Check { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; spec: Record<string, unknown>; enabled: boolean; version: number }
@@ -170,8 +172,7 @@ function LatestResultLine({ check, latest }: { check: Check; latest: LatestResul
   if (latest === "unavailable") return <p className="mt-1 text-xs text-zinc-400">Results could not be read.</p>;
   if (!latest) return <p className="mt-1 text-xs text-zinc-400">No result recorded yet.</p>;
   const when = new Date(latest.reportedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-  const tone = latest.status === "passed" ? "text-emerald-300" : latest.status === "failed" ? "text-red-300" : "text-amber-300";
-  return <p className="mt-1 text-xs text-zinc-400">Last result: <span className={tone}>{latest.status}</span> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}</p>;
+  return <p className="mt-1 text-xs text-zinc-400">Last result: <StatusDot tone={toneFor(latest.status)} label={latest.status} className="text-xs" /> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}</p>;
 }
 
 function ConfirmChecklist({ check, onRecorded }: { check: Check; onRecorded: () => void }) {
