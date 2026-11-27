@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { WEBHOOK_EVENT_CATALOG } from "@/lib/webhooks/webhookEventCatalog";
+import { StatusDot } from "./StatusDot";
+import { toneFor } from "@/lib/cockpit/statusTone";
 
 interface Endpoint { id: string; name: string; url: string; subscribedEvents: string[]; consecutiveFailures: number; createdAt: string }
 const ERRORS: Record<string, string> = {
@@ -36,7 +38,7 @@ function RecentDeliveries({ endpointId, name }: { endpointId: string; name: stri
       <tbody>{rows.map((d) => (
         <tr key={d.id} className="border-t border-white/[0.06] text-zinc-300">
           <td className="py-1 font-mono">{d.eventKind}</td><td className="py-1">{d.attemptNumber}</td>
-          <td className={d.status === "deadletter" ? "py-1 text-amber-300" : "py-1"}>{STATUS_LABEL[d.status] ?? d.status}{d.status === "retry" && d.nextAttemptAt ? ` at ${new Date(d.nextAttemptAt).toLocaleTimeString()}` : ""}</td>
+          <td className="py-1"><StatusDot tone={d.status === "deadletter" ? "failed" : d.status === "retry" || d.status === "queued" ? "attention" : toneFor(d.status)} label={`${STATUS_LABEL[d.status] ?? d.status}${d.status === "retry" && d.nextAttemptAt ? ` at ${new Date(d.nextAttemptAt).toLocaleTimeString()}` : ""}`} /></td>
           <td className="py-1">{d.httpStatus ?? "no response"}</td>
           <td className="py-1">{new Date(d.attemptedAt ?? d.createdAt).toLocaleString()}</td>
         </tr>))}</tbody>
@@ -92,7 +94,7 @@ export function WebhooksBoard() {
       {data.endpoints.length === 0 ? <p className="text-sm text-zinc-400">No webhooks yet.</p> : (
         <ul aria-label="Webhooks" className="divide-y divide-white/[0.07] rounded-xl border border-white/8">{data.endpoints.map((e) => (
           <li key={e.id} className="flex flex-wrap items-start gap-3 px-4 py-3 text-sm">
-            <div className="min-w-0 flex-1"><p className="text-zinc-100">{e.name}</p><p className="break-all font-mono text-xs text-zinc-400">{e.url}</p><p className="mt-1 text-xs text-zinc-400">{e.subscribedEvents.join(", ")}{e.consecutiveFailures > 0 ? <span className="text-amber-300"> · {e.consecutiveFailures} failed deliveries in a row</span> : null}</p>
+            <div className="min-w-0 flex-1"><p className="text-zinc-100">{e.name}</p><p className="break-all font-mono text-xs text-zinc-400">{e.url}</p><p className="mt-1 text-xs text-zinc-400">{e.subscribedEvents.join(", ")}{e.consecutiveFailures > 0 ? <> · <StatusDot tone="failed" label={`${e.consecutiveFailures} failed deliveries in a row`} /></> : null}</p>
               <button type="button" aria-expanded={open === e.id} onClick={() => setOpen(open === e.id ? null : e.id)} className="mt-1 text-xs text-zinc-300 underline underline-offset-2">{open === e.id ? "Hide recent deliveries" : "Show recent deliveries"}</button>
               {open === e.id && <RecentDeliveries key={deliveriesVersion} endpointId={e.id} name={e.name} />}</div>
             {data.canEdit && <button type="button" disabled={busy} onClick={() => void sendTest(e.id, e.name)} aria-label={`Send test delivery to ${e.name}`} className="text-xs text-zinc-300 underline underline-offset-2">Send test</button>}
