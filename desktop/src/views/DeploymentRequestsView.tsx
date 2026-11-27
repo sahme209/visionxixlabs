@@ -1322,7 +1322,7 @@ function LoadedReleaseSummary({requests, runs}: {requests: DeploymentRequestSumm
       </dd>}
     </div>)}
   </dl>
-  {gridItems.length > 0 && <RunGrid label="Last 30 recorded deployment runs, oldest first" items={gridItems}/>}</>;
+  {gridItems.length > 0 && <RunGrid label="Last 30 recorded deployment runs, oldest first" title="Recent deployment runs, oldest first" items={gridItems}/>}</>;
 }
 
 function SelectedReleaseLifecycle({request, workflow, deploymentEvent, providerDecision, onReviewPlans}: {

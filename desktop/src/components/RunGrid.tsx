@@ -8,11 +8,12 @@ const LEGEND: Array<[StatusTone, string]> = [["blue", "Running"], ["green", "Suc
  * carries a text label and tooltip, and is a button when it can be opened; counts sit beside the legend so
  * colour is never the only signal.
  */
-export function RunGrid({ label, items }: { label: string; items: RunGridItem[] }) {
+export function RunGrid({ label, items, title }: { label: string; items: RunGridItem[]; title?: string }) {
   const counts = new Map<StatusTone, number>();
   for (const i of items) counts.set(i.tone, (counts.get(i.tone) ?? 0) + 1);
   return (
     <figure aria-label={label} className="run-grid">
+      {title && <p className="run-grid-title">{title}</p>}
       <ul>{items.map((item) => {
         const title = `${item.label}: ${item.stateLabel}`;
         return <li key={item.key}>{item.onSelect

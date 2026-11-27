@@ -1848,16 +1848,17 @@ html[data-theme="light"] {
 .environment-board details > header { margin-top: 6px; }
 
 /* Run grid: one square per run, coloured by recorded result (Airflow-style). */
-.run-grid { margin: 12px 0 0; }
+.run-grid { margin: 14px 0 4px; }
+.run-grid-title { margin: 0 0 8px; font-size: 11px; color: var(--app-muted, #a1a1aa); }
 .run-grid ul { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .run-grid li > * { display: block; width: 14px; height: 14px; border: 0; padding: 0; border-radius: 3px; background: var(--status-neutral); }
 .run-grid button { cursor: pointer; }
 .run-grid button:hover { opacity: 0.8; }
 .run-grid button:focus-visible { outline: 2px solid var(--app-focus, #fff); outline-offset: 2px; }
-.run-grid [data-tone="green"] { background: var(--status-green); }
-.run-grid [data-tone="red"] { background: var(--status-red); }
-.run-grid [data-tone="blue"] { background: var(--status-blue); }
-.run-grid [data-tone="amber"] { background: var(--status-amber); }
+.run-grid li > [data-tone="green"] { background: var(--status-green); }
+.run-grid li > [data-tone="red"] { background: var(--status-red); }
+.run-grid li > [data-tone="blue"] { background: var(--status-blue); }
+.run-grid li > [data-tone="amber"] { background: var(--status-amber); }
 .run-grid figcaption { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 11px; color: var(--app-muted, #a1a1aa); }
 .run-grid figcaption span { display: inline-flex; align-items: center; gap: 6px; }
 .run-grid figcaption span::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--status-neutral); }
