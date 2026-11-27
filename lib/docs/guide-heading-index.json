@@ -357,10 +357,10 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "bd5a06d3605a7c248cac0f34d234b25c6f5c13511bd75c44ee8a277abb6b2806",
+      "sourceSha256": "79fac2a413c2925304bf4ce3260f5f76c1b82864f4b61ed5bb60562a4cc34a7a",
       "fields": [
         "Create a scoped, expiring key.",
-        "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
+        "Owners and admins manage keys on Control → API keys. Keys get only the permissions you tick: governance, read, check reporting and starting a freeze.",
         "Create a key",
         "Copy it once",
         "Separation of duties",

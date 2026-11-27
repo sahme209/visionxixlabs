@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function ApiKeysDocsPage() {
  return <>
   <DocHeader kicker="Workspace · Security" title="Create a scoped, expiring key."
-   summary="Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes." />
+   summary="Owners and admins manage keys on Control → API keys. Keys get only the permissions you tick: governance, read, check reporting and starting a freeze." />
   <DocFigure src="/docs/cockpit/api-keys.webp" alt="The API keys page in the V19 cockpit in a browser" caption="API keys in the cockpit (browser), shown for a new synthetic workspace. Your workspace shows its own records and the controls your role allows." width={1600} height={1000} />
   <DocSection id="create" kicker="01" title="Create a key">
    <p>Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints, report deployment check results, read configuration as code, start a deployment freeze (an incident tool can stop deployments; only owners and admins can end a freeze early). Wildcard, trigger and admin permissions are not available here.</p>
