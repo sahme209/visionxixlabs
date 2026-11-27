@@ -7,8 +7,9 @@ export const SIGNAL_TEXT: Record<SignalKey, string> = {
   feedback_30d: "Feedback, 30 days", leads_30d: "Leads, 30 days", deployments_7d: "Deployments, 7 days", deployments_failed_7d: "Failed deployments, 7 days",
   incidents_open: "Open incidents", freezes_active: "Frozen environments", ai_cost_30d_cents: "AI cost, 30 days", agent_requests_pending: "Agent requests waiting",
   webhook_failures_7d: "Webhooks given up, 7 days", workspaces_total: "Workspaces", workspaces_new_30d: "New workspaces, 30 days",
+  revenue_30d_cents: "Revenue, 30 days", unanswered_questions_30d: "Unanswered questions, 30 days", at_risk_workspaces: "Workspaces at risk",
 };
-export const ATTENTION_SIGNALS: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d"]);
+export const ATTENTION_SIGNALS: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d", "unanswered_questions_30d", "at_risk_workspaces"]);
 export const AUTOMATION_LABEL: Record<AutomationMode, string> = { manual: "Person", assisted: "Assisted", approval: "Agent, you approve", autonomous: "Autonomous" };
 export const AUTOMATION_SHORT: Record<AutomationMode, string> = { manual: "Person", assisted: "Assisted", approval: "Approval", autonomous: "Auto" };
 export const AUTOMATION_HELP: Record<AutomationMode, string> = {
@@ -18,4 +19,4 @@ export const AUTOMATION_HELP: Record<AutomationMode, string> = {
   autonomous: "V19 or an agent runs this step on its own and records what it did.",
 };
 export const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 100 ? 2 : 0 }).format(n);
-export const signalValue = (k: SignalKey, v: number | null | undefined) => (v === null || v === undefined ? "Unavailable" : k === "ai_cost_30d_cents" ? usd(v / 100) : v.toLocaleString());
+export const signalValue = (k: SignalKey, v: number | null | undefined) => (v === null || v === undefined ? "Unavailable" : k === "ai_cost_30d_cents" || k === "revenue_30d_cents" ? usd(v / 100) : v.toLocaleString());

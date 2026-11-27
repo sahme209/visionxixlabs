@@ -24,6 +24,9 @@ const AUTOMATION: Record<string, { mode: AutomationMode; agent: string }> = {
   "inc-freeze": { mode: "autonomous", agent: "V19 agent" },
   "ai-cost": { mode: "autonomous", agent: "V19 metering" },
   "ai-webhooks": { mode: "autonomous", agent: "V19 delivery" },
+  "rev-collected": { mode: "autonomous", agent: "V19 billing" },
+  "rev-health": { mode: "autonomous", agent: "V19 autopilot" },
+  "sup-gaps": { mode: "autonomous", agent: "Claude" },
   // Money, outside contact or hard to undo: the founder approves.
   "rel-approve": { mode: "approval", agent: AUTOPILOT },
   "rel-deploy": { mode: "approval", agent: "Claude" },

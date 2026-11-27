@@ -45,3 +45,13 @@ export async function runFounderAutopilot(now = new Date()): Promise<AutopilotRu
   if (saved === null) return { outcome: "changed_meanwhile", version, actions: [], proposals: [] };
   return { outcome: "applied", version: saved, actions: plan.actions, proposals: plan.proposals };
 }
+
+/** Whether the autopilot is paused, and its last 20 saved changes. */
+export async function readAutopilotState(): Promise<{ paused: boolean; runs: Array<{ version: number; summary: string; createdAt: string }> }> {
+  const [row, runs] = await Promise.all([
+    prisma.founderBlueprint.findUnique({ where: { id: BLUEPRINT_ID }, select: { document: true } }),
+    prisma.founderBlueprintRevision.findMany({ where: { blueprintId: BLUEPRINT_ID, savedByEmail: AUTOPILOT_ACTOR }, orderBy: { version: "desc" }, take: 20, select: { version: true, summary: true, createdAt: true } }),
+  ]);
+  const doc = row ? validateBlueprint(row.document) : null;
+  return { paused: doc?.ok ? doc.blueprint.autopilot.paused : false, runs: runs.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })) };
+}

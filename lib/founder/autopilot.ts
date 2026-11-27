@@ -12,11 +12,12 @@ export type AutopilotAction =
   | { kind: "note_attention"; stepId: string; text: string };
 export interface AutopilotPlan { next: Blueprint; actions: AutopilotAction[]; proposals: AutopilotAction[] }
 
-const ATTENTION: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d"]);
+const ATTENTION: ReadonlySet<SignalKey> = new Set(["deployments_failed_7d", "incidents_open", "freezes_active", "agent_requests_pending", "webhook_failures_7d", "unanswered_questions_30d", "at_risk_workspaces"]);
 const LABEL: Record<SignalKey, string> = {
   feedback_30d: "feedback in 30 days", leads_30d: "leads in 30 days", deployments_7d: "deployments in 7 days", deployments_failed_7d: "failed deployments in 7 days",
   incidents_open: "open incidents", freezes_active: "frozen environments", ai_cost_30d_cents: "AI cost in 30 days (cents)", agent_requests_pending: "agent requests waiting",
   webhook_failures_7d: "webhook deliveries given up in 7 days", workspaces_total: "workspaces", workspaces_new_30d: "new workspaces in 30 days",
+  revenue_30d_cents: "cents of revenue in 30 days", unanswered_questions_30d: "questions Ask V19 could not answer in 30 days", at_risk_workspaces: "paying workspaces at risk",
 };
 export const AUTOPILOT_MAX_ACTIONS = 20;
 export const AUTOPILOT_ACTOR = "autopilot@v19";

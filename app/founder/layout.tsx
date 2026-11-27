@@ -14,7 +14,7 @@ export default async function FounderLayout({ children }: { children: React.Reac
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
       <header className="flex items-center gap-4 border-b border-white/8 px-5 py-3">
         <Link href="/founder" className="text-sm font-medium tracking-tight">V19 Founder</Link>
-        <nav aria-label="Founder" className="flex gap-3 text-xs text-zinc-400"><Link href="/founder" className="hover:text-white">Company blueprint</Link><Link href="/control" className="hover:text-white">Cockpit</Link></nav>
+        <nav aria-label="Founder" className="flex gap-3 text-xs text-zinc-400"><Link href="/founder" className="hover:text-white">Company today</Link><Link href="/founder/blueprint" className="hover:text-white">Operations map</Link><Link href="/control" className="hover:text-white">Cockpit</Link></nav>
         <span className="ml-auto text-xs text-zinc-500">{founder.email}</span>
       </header>
       <main className="px-5 py-4">{children}</main>

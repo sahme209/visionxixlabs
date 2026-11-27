@@ -18,7 +18,7 @@ export const STEP_KINDS = ["step", "decision", "start", "end"] as const;
 export const AUTOMATION_MODES = ["manual", "assisted", "approval", "autonomous"] as const;
 export type AutomationMode = (typeof AUTOMATION_MODES)[number];
 /** Live V19 records a step can watch. Values are computed server-side for the founder only. */
-export const SIGNAL_KEYS = ["feedback_30d", "leads_30d", "deployments_failed_7d", "deployments_7d", "incidents_open", "freezes_active", "ai_cost_30d_cents", "agent_requests_pending", "webhook_failures_7d", "workspaces_total", "workspaces_new_30d"] as const;
+export const SIGNAL_KEYS = ["feedback_30d", "leads_30d", "deployments_failed_7d", "deployments_7d", "incidents_open", "freezes_active", "ai_cost_30d_cents", "agent_requests_pending", "webhook_failures_7d", "workspaces_total", "workspaces_new_30d", "revenue_30d_cents", "unanswered_questions_30d", "at_risk_workspaces"] as const;
 export type SignalKey = (typeof SIGNAL_KEYS)[number];
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,47}$/, "lowercase letters, digits and hyphens");
