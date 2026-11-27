@@ -107,7 +107,7 @@ export default async function ControlOverviewPage() {
       <CustomerJourneyEntry/>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <section aria-labelledby="current-plan-heading" className="flex min-h-48 flex-col rounded-2xl bg-[#111111] p-4">
-          <div className="flex items-center justify-between gap-3"><h2 id="current-plan-heading" className="text-xs font-normal text-zinc-400">Current plan</h2><Link href="/control/plans" className="inline-flex min-h-8 items-center rounded-full bg-[#f3f3f3] px-3.5 text-[13px] text-black hover:bg-white">Review plans</Link></div>
+          <div className="flex items-center justify-between gap-3"><h2 id="current-plan-heading" className="text-xs font-normal text-zinc-400">Current plan</h2><Link href="/control/plans" className="inline-flex min-h-8 items-center rounded-full bg-white/5 px-3.5 text-[13px] text-zinc-200 hover:bg-white/10">Review plans</Link></div>
           <p className="mt-4 text-2xl">{planName}</p>
           <p className="mt-2 text-xs text-zinc-400">{plan ? "Free to explore. AI usage is prepaid and shown before each action." : "Billing status could not be verified."}</p>
           <Link href="/control/usage-billing" className="mt-auto pt-5 text-xs text-zinc-300 underline underline-offset-4">View usage &amp; billing</Link>
@@ -137,7 +137,6 @@ export default async function ControlOverviewPage() {
           </ul>
         </section>
       )}
-      <DeploymentFreezePanel />
       {deployments && (
         <section aria-labelledby="recent-deployments-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
           <h2 id="recent-deployments-heading" className="text-xs font-normal text-zinc-400">Recent deployments</h2>
@@ -154,6 +153,7 @@ export default async function ControlOverviewPage() {
           <Link href="/control/insights" className="mt-3 inline-flex text-xs text-zinc-300 underline underline-offset-4">Delivery insights</Link>
         </section>
       )}
+      <DeploymentFreezePanel />
       <section aria-label="V19 products and connections" className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">V19</h2><p className="mt-2 text-xs text-zinc-300">{desktopAccess?.title ?? "Access status unavailable"}</p><p className="mt-1 text-xs leading-5 text-zinc-400">Workspace access is checked by the desktop service. Paired devices are managed separately.</p><Link href="/control/settings?section=sessions" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Manage desktop sessions</Link></article>
         <article className="rounded-2xl bg-[#111111] p-4"><h2 className="text-sm font-medium">Integrations</h2><p className="mt-2 text-xs leading-5 text-zinc-400">Connect workspace services and review their validated permissions.</p><Link href="/control/integrations" className="mt-4 inline-flex text-xs text-zinc-200 underline underline-offset-4">Connect services</Link></article>
