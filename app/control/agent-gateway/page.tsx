@@ -9,6 +9,8 @@ import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gatewayService";
 import { CockpitPageHeader } from "@/components/cockpit/CockpitPageHeader";
+import { StatusDot } from "@/components/cockpit/StatusDot";
+import type { StatusTone } from "@/lib/cockpit/statusTone";
 import { AgentGatewayDecision } from "@/components/agentGateway/AgentGatewayDecision";
 import { prisma } from "@/lib/db";
 import { ALWAYS_ENFORCED, firewallPosture, type FirewallFinding } from "@/lib/agentGateway/agentFirewallPosture";
@@ -31,10 +33,7 @@ async function readFirewallFindings(organizationId: string): Promise<FirewallFin
 export const metadata: Metadata = { title: "Agent gateway · V19" };
 export const dynamic = "force-dynamic";
 
-const STATUS_TONE: Record<string, string> = {
-  pending: "text-amber-200 border-amber-300/30", approved: "text-emerald-300 border-emerald-400/30", rejected: "text-rose-300 border-rose-400/30",
-  completed: "text-zinc-300 border-white/15", failed: "text-rose-300 border-rose-400/30", expired: "text-zinc-500 border-white/10",
-};
+const GATEWAY_TONE: Record<string, StatusTone> = { pending: "attention", approved: "success", rejected: "failed", completed: "success", failed: "failed", expired: "idle" };
 
 const TRUST_LABEL: Record<string, string> = { new: "New", building: "Building a record", reliable: "Reliable", needs_review: "Needs review" };
 
@@ -81,7 +80,7 @@ export default async function AgentGatewayPage() {
           <li key={r.id} className="rounded-xl border border-white/8 bg-white/2 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-sm text-zinc-100"><span className="font-mono text-zinc-400">{r.agentName}</span> · {r.actionKind} · {r.environment} · <span className="text-zinc-300">{r.target}</span></p>
-              <span className={`rounded-full border px-2 py-0.5 text-xs ${STATUS_TONE[r.status] ?? "text-zinc-400 border-white/10"}`}>{r.status} · {r.riskLevel} risk</span>
+              <span className="inline-flex items-center gap-2 text-xs"><StatusDot tone={GATEWAY_TONE[r.status] ?? "idle"} label={r.status} /><span className="text-zinc-400">· {r.riskLevel} risk</span></span>
             </div>
             {r.triage && <p className="mt-2 text-xs"><span className={`rounded-full border px-2 py-0.5 ${r.triage.lane === "two_person" ? "border-amber-300/40 text-amber-200" : r.triage.lane === "careful" ? "border-white/20 text-zinc-200" : "border-white/10 text-zinc-400"}`}>{LANE_LABEL[r.triage.lane]}</span> <span className="text-zinc-400">{r.triage.reason}</span>{r.awaitingSecondApprover && <span className="text-amber-200"> One admin has approved; a different admin must approve too.</span>}</p>}
             <p className="mt-2 text-sm leading-6 text-zinc-400">{r.summary}</p>
