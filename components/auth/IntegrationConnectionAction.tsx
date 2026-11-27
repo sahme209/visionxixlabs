@@ -113,7 +113,7 @@ export function IntegrationConnectionAction({
 
   if (!connected) {
     return (
-      <div className="flex flex-col items-end gap-1.5">
+      <div className="flex flex-col items-start gap-1.5">
         <button
           type="button"
           onClick={() => void connect()}
@@ -123,14 +123,14 @@ export function IntegrationConnectionAction({
         >
           {working === "connect" ? "Connecting…" : "Connect ↗"}
         </button>
-        {!configured && <p className="text-right text-[10px] text-zinc-500">Service connection unavailable</p>}
+        {!configured && <p className="text-[11px] text-zinc-500">Service connection unavailable</p>}
         {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
       </div>
     );
   }
 
   return (
-    <div ref={menu} className="relative flex flex-col items-end gap-1.5">
+    <div ref={menu} className="relative flex flex-col items-start gap-1.5">
       <button
         type="button"
         ref={manageButton}
@@ -144,7 +144,7 @@ export function IntegrationConnectionAction({
         <span aria-hidden className={`text-[9px] text-zinc-500 transition ${menuOpen ? "rotate-180" : ""}`}>▼</span>
       </button>
       {menuOpen && (
-        <div role="menu" className="absolute right-0 top-11 z-20 w-44 overflow-hidden rounded-xl border border-white/10 bg-[#191a1c] p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
+        <div role="menu" className="absolute left-0 top-11 z-20 w-44 overflow-hidden rounded-xl border border-white/10 bg-[#191a1c] p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
           <button type="button" role="menuitem" disabled={!configured} onClick={() => void connect()} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">Reconnect</button>
           <button type="button" role="menuitem" onClick={() => void transition(suspended ? "resume" : "suspend")} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">{suspended ? "Resume" : "Pause"}</button>
           <div className="my-1 border-t border-white/[0.07]" />

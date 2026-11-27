@@ -1,6 +1,7 @@
 import {CustomerJourneyEntry} from '@/components/shared/CustomerJourneyEntry';
 import Link from "next/link";
 import { DeploymentFreezePanel } from "@/components/cockpit/DeploymentFreezePanel";
+import { StateGrid } from "@/components/cockpit/StateGrid";
 import { redirect } from "next/navigation";
 
 import { currentContext } from "@/lib/auth/currentContext";
@@ -62,16 +63,16 @@ async function readGovernanceAttention(organizationId: string): Promise<Governan
   }
 }
 
-type RecentDeployment = { id: string; environment: string; repositoryFullName: string; sourceRef: string | null; commit: string | null; outcome: string; tone: "ok" | "bad" | "neutral"; at: string; workflowUrl: string | null };
+type RecentDeployment = { id: string; state: string; environment: string; repositoryFullName: string; sourceRef: string | null; commit: string | null; outcome: string; tone: "ok" | "bad" | "neutral"; at: string; workflowUrl: string | null };
 
-/** The five most recent recorded deployments; optional, so a read failure hides only this section. */
+/** The 30 most recent recorded deployments (grid) and the five newest (list); optional, so a read failure hides only this section. */
 async function readRecentDeployments(organizationId: string): Promise<RecentDeployment[] | null> {
   try {
-    const rows = await prisma.deploymentExecution.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, environmentId: true, repositoryFullName: true, sourceRef: true, sourceCommitSha: true, status: true, conclusion: true, createdAt: true, workflowUrl: true } });
+    const rows = await prisma.deploymentExecution.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 30, select: { id: true, environmentId: true, repositoryFullName: true, sourceRef: true, sourceCommitSha: true, status: true, conclusion: true, createdAt: true, workflowUrl: true } });
     const envIds = [...new Set(rows.map((r) => r.environmentId))];
     const envs = envIds.length ? await prisma.environment.findMany({ where: { organizationId, id: { in: envIds } }, select: { id: true, name: true } }) : [];
     const name = new Map(envs.map((e) => [e.id, e.name]));
-    return rows.map((r) => { const o = deploymentOutcomeLabel(r.status, r.conclusion); return { id: r.id, environment: name.get(r.environmentId) ?? "Removed environment", repositoryFullName: r.repositoryFullName, sourceRef: r.sourceRef, commit: r.sourceCommitSha ? r.sourceCommitSha.slice(0, 12) : null, outcome: o.label, tone: o.tone, at: r.createdAt.toISOString(), workflowUrl: r.workflowUrl && r.workflowUrl.startsWith("https://") ? r.workflowUrl : null }; });
+    return rows.map((r) => { const o = deploymentOutcomeLabel(r.status, r.conclusion); return { id: r.id, state: r.status === "completed" ? (r.conclusion ?? "unknown") : r.status, environment: name.get(r.environmentId) ?? "Removed environment", repositoryFullName: r.repositoryFullName, sourceRef: r.sourceRef, commit: r.sourceCommitSha ? r.sourceCommitSha.slice(0, 12) : null, outcome: o.label, tone: o.tone, at: r.createdAt.toISOString(), workflowUrl: r.workflowUrl && r.workflowUrl.startsWith("https://") ? r.workflowUrl : null }; });
   } catch {
     return null;
   }
@@ -108,7 +109,7 @@ export default async function ControlOverviewPage() {
         <section aria-labelledby="current-plan-heading" className="flex min-h-48 flex-col rounded-2xl bg-[#111111] p-4">
           <div className="flex items-center justify-between gap-3"><h2 id="current-plan-heading" className="text-xs font-normal text-zinc-400">Current plan</h2><Link href="/control/plans" className="inline-flex min-h-8 items-center rounded-full bg-[#f3f3f3] px-3.5 text-[13px] text-black hover:bg-white">Review plans</Link></div>
           <p className="mt-4 text-2xl">{planName}</p>
-          <p className="mt-2 text-xs text-zinc-400">{plan ? `Subscription status: ${plan.status.replaceAll("_", " ")}` : "Billing status could not be verified."}</p>
+          <p className="mt-2 text-xs text-zinc-400">{plan ? "Free to explore. AI usage is prepaid and shown before each action." : "Billing status could not be verified."}</p>
           <Link href="/control/usage-billing" className="mt-auto pt-5 text-xs text-zinc-300 underline underline-offset-4">View usage &amp; billing</Link>
         </section>
         <section aria-labelledby="account-allowance-heading" className="rounded-2xl bg-[#111111] p-4">
@@ -141,14 +142,15 @@ export default async function ControlOverviewPage() {
         <section aria-labelledby="recent-deployments-heading" className="mt-6 rounded-2xl bg-[#111111] p-4">
           <h2 id="recent-deployments-heading" className="text-xs font-normal text-zinc-400">Recent deployments</h2>
           {deployments.length === 0 ? <p className="mt-3 text-sm text-zinc-300">No deployment has been recorded yet. Deploy from the desktop app; each run appears here with its outcome.</p> : (
-            <ul aria-label="Recent deployments" className="mt-3 divide-y divide-white/[0.06] text-sm">{deployments.map((d) => (
+            <><StateGrid label="Last 30 deployments, oldest first" items={[...deployments].reverse().map((d) => ({ key: d.id, label: `${d.environment} ${d.repositoryFullName}${d.sourceRef ? `@${d.sourceRef}` : ""}`, state: d.state }))} />
+            <ul aria-label="Recent deployments" className="mt-3 divide-y divide-white/[0.06] text-sm">{deployments.slice(0, 5).map((d) => (
               <li key={d.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
                 <span className={d.tone === "ok" ? "text-zinc-100" : d.tone === "bad" ? "text-amber-300" : "text-zinc-300"}>{d.outcome}</span>
                 <span className="text-zinc-300">{d.environment}</span>
                 <span className="font-mono text-xs text-zinc-400">{d.repositoryFullName}{d.sourceRef ? `@${d.sourceRef}` : ""}{d.commit ? ` · ${d.commit}` : ""}</span>
                 <span className="text-xs text-zinc-500">{new Date(d.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</span>
                 {d.workflowUrl && <a href={d.workflowUrl} target="_blank" rel="noreferrer" className="text-xs text-zinc-300 underline underline-offset-2">Workflow run</a>}
-              </li>))}</ul>)}
+              </li>))}</ul></>)}
           <Link href="/control/insights" className="mt-3 inline-flex text-xs text-zinc-300 underline underline-offset-4">Delivery insights</Link>
         </section>
       )}

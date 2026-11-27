@@ -31,7 +31,7 @@ afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 describe("canonical customer billing evidence", () => {
   it("renders actual available records and scopes every financial query to the current tenant", async () => {
     render(await Page({}));
-    expect(value("Organization seats")).toBe("3 / 3");
+    expect(value("Members")).toBe("3");
     expect(value("Deployment records this month")).toBe("2");
     expect(value("Included AI allowance remaining")).toBe("$204.70");
     expect(value("Gateway calls")).toBe("2");
@@ -45,7 +45,7 @@ describe("canonical customer billing evidence", () => {
     io[boundary].mockRejectedValue(new Error("fixture database unavailable"));
     render(await Page({}));
     expect(screen.getByRole("alert")).toBeTruthy();
-    expect(value("Organization seats")).toBe("Unavailable");
+    expect(value("Members")).toBe("Unavailable");
     expect(value("Included AI allowance remaining")).toBe(["usage", "purchases"].includes(boundary) ? "Unavailable" : "$204.70");
     expect(value("Gateway calls")).toBe("Unavailable");
     expect(value("Input tokens")).toBe("Unavailable");
@@ -80,7 +80,7 @@ describe("canonical customer billing evidence", () => {
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
     expect(screen.getByRole("alert")).toBeTruthy();
     expect(value("Included AI allowance remaining")).toBe("Unavailable");
-    expect(value("Organization seats")).toBe("3 / unavailable");
+    expect(value("Members")).toBe("3");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
     expect(screen.queryByText(/listed plan and paid top-ups/)).toBeNull();

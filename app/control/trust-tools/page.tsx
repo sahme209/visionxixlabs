@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
-import { ModuleIntro } from "@/components/portal/ModuleIntro";
+import { CockpitPageHeader } from "@/components/cockpit/CockpitPageHeader";
 import { GovernanceTools } from "@/components/governanceTools/GovernanceTools";
 
 export const metadata: Metadata = { title: "Trust tools · V19" };
@@ -19,17 +19,12 @@ export default async function TrustToolsPage() {
   // Sealing needs a stable session id; the server route re-checks admin role regardless.
   const canSeal = ctx.sessionUserId ? await authorizedForOrganization(String(ctx.sessionUserId), organizationId, true) : false;
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <ModuleIntro
-        title="Trust tools"
-        explanation="Prove the audit log is untouched, test a rule against real history before enabling it, and see what a change touches before approving it."
-        helpsYouDo={["Verify the audit log has not been edited", "Download an anchor to keep outside V19, and check it later", "Replay a draft rule over the last 30 days", "Preview a change's blast radius and rollback"]}
-        connectFirst={["Audit activity in this workspace", "Approval history for replay (cloud actions)"]}
-        aiEngineers={[]}
-        approval={{ severity: "read_only", note: "Verify, anchors, replay and preview are read-only. Sealing is limited to owners and admins and only adds a seal; it never changes events. Nothing here enables a policy." }}
-        storageKey="trust-tools"
-        lastReviewed="2026-11-09"
-      />
+    <div className="w-full min-w-0">
+      <CockpitPageHeader title="Trust tools" description="Prove the audit log is untouched, test a rule against real history before enabling it, and see what a change touches before approving it." howItWorks={<>
+        <p>Verify the audit log has not been edited, download an anchor to keep outside V19 and check it later, replay a draft rule over the last 30 days, and preview a change&apos;s blast radius and rollback.</p>
+        <p>Verify, anchors, replay and preview are read-only. Sealing is limited to owners and admins and only adds a seal; it never changes events. Nothing here enables a policy.</p>
+      </>} />
+      <div className="mt-6" />
       <GovernanceTools organizationId={organizationId} canSeal={canSeal} />
     </div>
   );

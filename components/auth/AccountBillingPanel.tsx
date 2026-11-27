@@ -45,10 +45,10 @@ export function AccountBillingPanel({
       <p className="text-[10px] uppercase tracking-[0.18em] text-orange-300">Workspace plan</p>
       <div className="mt-3 flex items-center justify-between gap-3">
         <h2 className="text-xl font-medium tracking-[-0.03em] text-zinc-100">{planLabel}</h2>
-        <span className="rounded-full border border-white/8 bg-white/3 px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] text-zinc-400">{status.replaceAll("_", " ")}</span>
+        {status !== "no_plan" && <span className="rounded-full border border-white/8 bg-white/3 px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] text-zinc-400">{status.replaceAll("_", " ")}</span>}
       </div>
       <p className="mt-3 text-sm leading-6 text-zinc-500">
-        {billingEnabled ? "Manage invoices, payment methods, and your subscription in the secure billing portal." : "Self-service billing is still in review. The signed organization plan remains authoritative, and no charge can be started while billing is disabled."}
+        {billingEnabled ? "Manage invoices, payment methods, and your subscription in the secure billing portal." : "Free to explore with approvals, audit history and recovery included. Prepaid AI credits are not on sale yet, so no charge can be started here."}
       </p>
       <div className="mt-5">
         {billingEnabled && canManage && hasStripeCustomer ? (

@@ -5,6 +5,7 @@
 @source "../pages/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../components/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../desktop/src/components/FileDiff.tsx";
+@source "../lib/cockpit/**/*.ts";
 @source "./**/*.{js,ts,jsx,tsx,mdx}";
 
 @theme {

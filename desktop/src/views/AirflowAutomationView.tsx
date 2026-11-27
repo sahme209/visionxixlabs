@@ -1,3 +1,4 @@
+import { RunGrid, airflowTone } from "../components/RunGrid";
 import { isAirflowDeploymentUrl } from "../lib/airflowConnectionUrl";
 import { ProviderLogo } from "../components/CatalogIcon";
 import {DesktopDialog} from "../components/DesktopDialog";
@@ -246,6 +247,7 @@ function RunHistory({ runs, state, onRefresh, onInspect, watchRuns, onWatchChang
     {hasSelection && state === "ready" && <p role="status" className="mt-3 text-xs text-zinc-400">
       {runs.length} recent {runs.length === 1 ? "run" : "runs"} shown · {failedCount} failed
     </p>}
+    {hasSelection && state === "ready" && runs.length > 0 && <RunGrid label="Recent run states, oldest first" items={[...runs].reverse().map(run => ({key: run.dagRunId, label: run.dagRunId, tone: airflowTone(run.state), stateLabel: run.state ? run.state.replaceAll("_", " ") : "no status"}))}/>}
     <div className="mt-4 divide-y divide-white/6">
       {state === "loading" ? <p role="status" className="py-8 text-xs text-zinc-500">Loading run history…</p>
         : state === "unavailable" ? <p role="alert" className="py-8 text-xs text-amber-200">Run history could not be verified. Refresh to observe the provider’s current state.</p>

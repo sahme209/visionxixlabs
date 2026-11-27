@@ -133,10 +133,11 @@ export function JiraSetupCard({ scopeKey, canManage }: { scopeKey: string; canMa
    if (current()) window.location.assign(destination);
   });
  }
- return <article aria-labelledby="jira-setup-title" className="relative min-h-[118px] min-w-0 rounded-2xl bg-[#111111] p-3.5">
-  <div className="flex items-center gap-2.5"><ProviderLogo provider="jira" /><h2 id="jira-setup-title" className="text-[13px] font-medium text-zinc-100">Jira</h2></div>
-  <p className="mt-1 text-xs leading-5 text-zinc-500">Choose a Jira Cloud site and record a read-only validation.</p>
-  <p className="mt-1 text-[11px] leading-5 text-zinc-500">Current health is not checked. Issue creation, updates and closing are unavailable.</p>
+ return <article aria-labelledby="jira-setup-title" className="relative grid min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 rounded-xl px-2 py-3 hover:bg-white/[0.025]">
+  <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-white/5"><ProviderLogo provider="jira" /></span>
+  <div className="min-w-0">
+  <h2 id="jira-setup-title" className="text-[13px] font-medium text-zinc-100">Jira</h2>
+  <p className="mt-1 text-xs leading-5 text-zinc-400">Choose a Jira Cloud site and record a read-only validation. Current health is not checked. Issue creation, updates and closing are unavailable.</p>
   {!canManage ? <p className="mt-3 text-xs text-zinc-400">A workspace owner or administrator must continue Jira setup.</p> : <div className="mt-3 space-y-3">
    {busy && <p role="status" className="text-xs text-zinc-400">{busy === "summary" ? "Loading saved Jira records…" : busy === "sites" ? "Loading Jira sites…" : busy === "activate" ? "Recording read validation…" : "Starting Jira consent…"}</p>}
    {summary && <>
@@ -161,5 +162,6 @@ export function JiraSetupCard({ scopeKey, canManage }: { scopeKey: string; canMa
    {error && <p role="alert" className="text-xs leading-5 text-rose-300">{error}</p>}
    <button type="button" className={buttonClass} disabled={busy !== null} onClick={() => void reload()}>Reload saved status</button>
   </div>}
+  </div>
  </article>;
 }

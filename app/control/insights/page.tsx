@@ -9,6 +9,7 @@ import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { summarizeGateRefusals } from "@/lib/releaseops/gateRefusalSummary";
 import { summarizeFreezeHistory } from "@/lib/releaseops/freezeHistory";
+import { DailyOutcomeBars } from "@/components/cockpit/DailyOutcomeBars";
 import { summarizeAgentActivity } from "@/lib/agentGateway/agentActivitySummary";
 
 export const dynamic = "force-dynamic";
@@ -35,15 +36,6 @@ function duration(seconds: number | null): string {
   return h < 48 ? `${h}h ${m % 60}m` : `${Math.floor(h / 24)}d ${h % 24}h`;
 }
 
-function Sparkline({ values }: { values: readonly number[] }) {
-  if (values.length < 2) return null;
-  const max = Math.max(1, ...values), w = 240, h = 44;
-  const pts = values.map((v, i) => `${((i / (values.length - 1)) * w).toFixed(1)},${(h - 2 - (v / max) * (h - 6)).toFixed(1)}`).join(" ");
-  return <svg viewBox={`0 0 ${w} ${h}`} className="mt-3 h-11 w-full max-w-[260px] text-sky-300" role="img" aria-label={`Workflow runs per day over ${values.length} days, peak ${max}`}>
-    <polyline points={`0,${h} ${pts} ${w},${h}`} fill="currentColor" opacity="0.12" />
-    <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>;
-}
 
 function Metric({ label, value, note }: { label: string; value: string; note?: string }) {
   return <div className="rounded-xl border border-white/8 bg-[#111111] p-4"><dt className="text-xs text-zinc-400">{label}</dt><dd className="mt-2 text-2xl tabular-nums text-zinc-100">{value}</dd>{note && <dd className="mt-1 text-[11px] text-zinc-400">{note}</dd>}</div>;
@@ -105,7 +97,7 @@ export default async function InsightsPage() {
             <Metric label="Run success rate" value={outcome.successRate === null ? "—" : `${outcome.successRate}%`} note={`${outcome.succeeded} succeeded · ${outcome.failed} failed`} />
             <Metric label="Median time to complete" value={duration(outcome.medianSeconds)} note="Dispatch to recorded completion" />
           </dl>
-          {outcome.daily && <Sparkline values={outcome.daily} />}
+          {outcome.dailyOutcome && <DailyOutcomeBars days={outcome.dailyOutcome} endDate={now} label={`Workflow runs per day over the last ${OUTCOME_WINDOW_DAYS} days, by result`} />}
           {outcome.truncated && <p className="mt-2 text-xs text-zinc-400">Only the latest {OUTCOME_ROW_LIMIT.toLocaleString()} runs are counted.</p>}
         </>}
       </section>
