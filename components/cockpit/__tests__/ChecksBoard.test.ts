@@ -99,3 +99,25 @@ describe("ChecksBoard AI drafting", () => {
     expect(f).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("ChecksBoard check library", () => {
+  it("fills the form from a library entry, sends the pinned spec and asks to change example values", async () => {
+    const f = vi.fn().mockResolvedValueOnce(json(board(true))).mockResolvedValueOnce(json({ ok: true, data: { key: "trivy-fs", version: 1 } })).mockResolvedValueOnce(json(board(true)));
+    vi.stubGlobal("fetch", f);
+    render(createElement(ChecksBoard));
+    fireEvent.click(await screen.findByRole("button", { name: "Use Lighthouse audit" }));
+    expect(screen.getByText("Change the example inputs before adding this check.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Use Trivy filesystem scan" }));
+    expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("Trivy filesystem scan");
+    fireEvent.click(screen.getByRole("button", { name: "Add check" }));
+    await waitFor(() => expect(f).toHaveBeenCalledTimes(3));
+    expect(JSON.parse(f.mock.calls[1][1].body).check).toMatchObject({ key: "trivy-fs", kind: "marketplace_action", spec: { action: "aquasecurity/trivy-action", commit: "ed142fd0673e97e23eac54620cfb913e5ce36c25" } });
+  });
+  it("leaves out entries the workspace already has", async () => {
+    const check = { key: "lighthouse", name: "Lighthouse audit", kind: "manual_checklist", stage: "verify", mode: "advisory", spec: { items: ["x"] }, enabled: true, version: 1 };
+    vi.stubGlobal("fetch", vi.fn(async () => json(board(true, [check]))));
+    render(createElement(ChecksBoard));
+    await screen.findByRole("button", { name: "Use Trivy filesystem scan" });
+    expect(screen.queryByRole("button", { name: "Use Lighthouse audit" })).toBeNull();
+  });
+});

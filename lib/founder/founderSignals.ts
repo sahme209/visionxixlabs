@@ -23,7 +23,7 @@ export async function readFounderSignals(now = new Date()): Promise<FounderSigna
     safe(async () => { const envs = await prisma.environment.findMany({ where: { changeWindowRuleJson: { not: undefined } }, take: 5000, select: { id: true, name: true, tier: true, changeWindowRuleJson: true } }); return activeFreezes(envs, now).freezes.reduce((n, f) => n + f.environments.length, 0); }),
     safe(async () => (await prisma.usageEvent.aggregate({ where: { eventKind: { in: ["ai_invocation", "agent_run"] }, createdAt: { gte: d30 } }, _sum: { billedCents: true } }))._sum.billedCents ?? 0),
     safe(() => prisma.agentGatewayRequest.count({ where: { status: "pending" } })),
-    safe(() => prisma.webhookDelivery.count({ where: { status: "deadletter", createdAt: { gte: d7 } } })),
+    safe(() => prisma.webhookDelivery.count({ where: { status: "deadletter", eventKind: { not: "webhook.ping" }, createdAt: { gte: d7 } } })),
     safe(async () => (await prisma.orgMembership.groupBy({ by: ["organizationId"], where: { acceptedAt: { not: null } } })).length),
     safe(async () => (await prisma.orgMembership.groupBy({ by: ["organizationId"], _min: { createdAt: true } })).filter((g) => (g._min.createdAt ?? now) >= d30).length),
   ]);
