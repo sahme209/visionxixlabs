@@ -59,6 +59,14 @@ describe("/api/control/mcp/servers", () => {
     m.findFirst.mockResolvedValue(null);
     expect((await PATCH(req("PATCH", { id: "other", enabled: false }))).status).toBe(404);
   });
+  it("approves only tools the server listed, and records it", async () => {
+    m.findFirst.mockResolvedValue({ lastCheckOutcome: "ok", toolNames: ["a", "b"] });
+    expect((await PATCH(req("PATCH", { id: "s1", allowedTools: ["a", "a"] }))).status).toBe(200);
+    expect(m.updateMany.mock.calls[0][0]).toEqual({ where: { id: "s1", organizationId: "org_1" }, data: { allowedTools: ["a"] } });
+    expect(m.audit.mock.calls[0][0].detail).toMatchObject({ kind: "mcp_server.approve_tools", allowedTools: ["a"] });
+    expect((await (await PATCH(req("PATCH", { id: "s1", allowedTools: ["c"] }))).json()).error).toBe("mcp_tool_unknown");
+    expect((await PATCH(req("PATCH", { id: "s1", allowedTools: ["a"], enabled: true }))).status).toBe(400);
+  });
   it("removes only within the workspace", async () => {
     expect((await DELETE(req("DELETE", { id: "s1" }))).status).toBe(200);
     expect(m.deleteMany.mock.calls[0][0].where).toEqual({ id: "s1", organizationId: "org_1" });
@@ -70,10 +78,10 @@ describe("/api/control/mcp/servers", () => {
 describe("/api/control/mcp/servers/[id]/check", () => {
   const check = (id = "s1") => CHECK(new NextRequest(`http://localhost/api/control/mcp/servers/${id}/check`, { method: "POST" }), { params: Promise.resolve({ id }) });
   it("records the outcome and tool names, and disables a server that no longer passes", async () => {
-    m.findFirst.mockResolvedValue({ remoteUrl: "https://learn.microsoft.com/api/mcp", lastCheckAt: null });
+    m.findFirst.mockResolvedValue({ remoteUrl: "https://learn.microsoft.com/api/mcp", lastCheckAt: null, allowedTools: ["a", "gone"] });
     m.check.mockResolvedValue({ outcome: "ok", detail: "3 tools listed.", serverName: "x", tools: ["a", "b", "c"] });
     expect((await check()).status).toBe(200);
-    expect(m.updateMany.mock.calls[1][0].data).toMatchObject({ lastCheckOutcome: "ok", toolNames: ["a", "b", "c"] });
+    expect(m.updateMany.mock.calls[1][0].data).toMatchObject({ lastCheckOutcome: "ok", toolNames: ["a", "b", "c"], allowedTools: ["a"] });
     expect(m.updateMany.mock.calls[1][0].data.enabled).toBeUndefined();
     m.check.mockResolvedValue({ outcome: "unreachable", detail: "x", serverName: null, tools: [] });
     await check();

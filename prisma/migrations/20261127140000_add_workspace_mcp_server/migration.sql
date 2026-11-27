@@ -12,6 +12,7 @@ CREATE TABLE "WorkspaceMcpServer" (
     "lastCheckOutcome" TEXT,
     "lastCheckDetail" TEXT,
     "toolNames" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "allowedTools" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "addedByUserId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

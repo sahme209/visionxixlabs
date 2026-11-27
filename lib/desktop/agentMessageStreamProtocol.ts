@@ -20,6 +20,8 @@ export const AGENT_TOOL_ACTIVITY_LABELS: Readonly<Record<string, string>> = {
   read_gitops_state: "Reading GitOps state",
   read_ci_jobs: "Reading CI jobs",
   search_microsoft_docs: "Searching public Microsoft documentation",
+  list_workspace_mcp_tools: "Listing approved MCP tools",
+  call_workspace_mcp_tool: "Calling an approved MCP tool",
   list_cloud_accounts: "Checking connected cloud accounts",
   read_aws_inventory: "Reading AWS inventory",
   list_environments: "Checking environments",

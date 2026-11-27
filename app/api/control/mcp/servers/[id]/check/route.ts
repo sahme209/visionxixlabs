@@ -26,12 +26,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!id || id.length > 64) return fail("mcp_server_not_found", 404);
   const organizationId = String(c.organizationId);
   try {
-    const server = await prisma.workspaceMcpServer.findFirst({ where: { id, organizationId }, select: { remoteUrl: true, lastCheckAt: true } });
+    const server = await prisma.workspaceMcpServer.findFirst({ where: { id, organizationId }, select: { remoteUrl: true, lastCheckAt: true, allowedTools: true } });
     if (!server) return fail("mcp_server_not_found", 404);
     if (server.lastCheckAt && Date.now() - server.lastCheckAt.getTime() < MIN_INTERVAL_MS) return fail("check_rate_limited", 429);
     await prisma.workspaceMcpServer.updateMany({ where: { id, organizationId }, data: { lastCheckAt: new Date() } });
     const result = await checkMcpServer(server.remoteUrl);
-    await prisma.workspaceMcpServer.updateMany({ where: { id, organizationId }, data: { lastCheckAt: new Date(), lastCheckOutcome: result.outcome, lastCheckDetail: result.detail.slice(0, 300), toolNames: result.tools, ...(result.outcome === "ok" ? {} : { enabled: false }) } });
+    await prisma.workspaceMcpServer.updateMany({ where: { id, organizationId }, data: { lastCheckAt: new Date(), lastCheckOutcome: result.outcome, lastCheckDetail: result.detail.slice(0, 300), toolNames: result.tools, allowedTools: server.allowedTools.filter((t) => result.tools.includes(t)), ...(result.outcome === "ok" ? {} : { enabled: false }) } });
     return NextResponse.json({ ok: true, data: result }, { headers: noStore });
   } catch { return fail("mcp_check_unavailable", 503); }
 }

@@ -4,7 +4,7 @@ import type { McpRegistryServer } from "@/lib/integrations/mcp/mcpRegistry";
 import { McpRegistryBrowser } from "./McpRegistryBrowser";
 import { StatusDot } from "./StatusDot";
 
-interface Server { id: string; registryName: string; title: string; version: string | null; remoteUrl: string; transport: string; enabled: boolean; lastCheckAt: string | null; lastCheckOutcome: string | null; lastCheckDetail: string | null; toolNames: string[] }
+interface Server { id: string; registryName: string; title: string; version: string | null; remoteUrl: string; transport: string; enabled: boolean; lastCheckAt: string | null; lastCheckOutcome: string | null; lastCheckDetail: string | null; toolNames: string[]; allowedTools: string[] }
 const OUTCOME: Record<string, { label: string; tone: "success" | "attention" | "failed" | "idle" }> = {
   ok: { label: "Connected", tone: "success" }, needs_credentials: { label: "Needs credentials", tone: "attention" },
   unreachable: { label: "Unreachable", tone: "failed" }, refused: { label: "Refused", tone: "failed" }, invalid_response: { label: "Not an MCP server", tone: "failed" },
@@ -55,7 +55,7 @@ export function WorkspaceMcpServers() {
     <>
       <section aria-labelledby="workspace-mcp-heading" className="mt-10 border-t border-white/8 pt-7">
         <h2 id="workspace-mcp-heading" className="text-base font-medium">This workspace&apos;s MCP servers</h2>
-        <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-400">Hosted servers added from the registry. A connection check initializes the server and lists its tools without credentials and without calling any tool. Enabling marks a server as approved for this workspace. Agents cannot call its tools yet; that arrives with per-tool approval rules.</p>
+        <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-400">Hosted servers added from the registry. A connection check initializes the server and lists its tools without credentials and without calling any tool. Enable a server, then approve the individual tools agents may call. Agents never get tools you have not approved.</p>
         <p aria-live="polite" className={`mt-2 min-h-5 text-sm ${message?.tone === "warn" ? "text-amber-300" : "text-zinc-300"}`}>{message?.text ?? ""}</p>
         {data === "error" ? <p role="alert" className="text-sm text-amber-300">MCP servers could not be loaded.</p>
           : data === null ? <p className="text-sm text-zinc-400">Loading…</p>
@@ -68,7 +68,9 @@ export function WorkspaceMcpServers() {
                   <p className="text-sm text-zinc-100">{sv.title} <span className="font-mono text-xs text-zinc-500">{sv.registryName}{sv.version ? ` · ${sv.version}` : ""}</span></p>
                   <p className="mt-1 break-all font-mono text-[11px] text-zinc-400">{sv.remoteUrl}</p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 text-xs">{o ? <StatusDot tone={o.tone} label={o.label} className="text-xs" /> : <span className="text-zinc-500">Not checked yet</span>}{sv.lastCheckDetail && <span className="text-zinc-400">{sv.lastCheckDetail}</span>}<span className={sv.enabled ? "text-emerald-300" : "text-zinc-500"}>{sv.enabled ? "Enabled" : "Disabled"}</span></p>
-                  {sv.toolNames.length > 0 && <details className="mt-1 text-xs text-zinc-400"><summary className="cursor-pointer">{sv.toolNames.length} tool{sv.toolNames.length === 1 ? "" : "s"}</summary><p className="mt-1 break-words font-mono text-[11px] text-zinc-300">{sv.toolNames.join(", ")}</p></details>}
+                  {sv.toolNames.length > 0 && <details className="mt-1 text-xs text-zinc-400"><summary className="cursor-pointer">{sv.toolNames.length} tool{sv.toolNames.length === 1 ? "" : "s"} · {sv.allowedTools.length} approved for agents</summary>
+                    <fieldset className="mt-2"><legend className="sr-only">Tools agents may call on {sv.title}</legend><ul className="grid gap-1 sm:grid-cols-2">{sv.toolNames.map((t) => <li key={t}><label className="flex items-center gap-2 font-mono text-[11px] text-zinc-300"><input type="checkbox" disabled={!canEdit || busy !== null} checked={sv.allowedTools.includes(t)} onChange={(e) => void call("PATCH", "/api/control/mcp/servers", { id: sv.id, allowedTools: e.target.checked ? [...sv.allowedTools, t] : sv.allowedTools.filter((x) => x !== t) }, `tools:${sv.id}`)} />{t}</label></li>)}</ul></fieldset>
+                    <p className="mt-1 text-[11px] text-zinc-500">Agents can call only approved tools, and only while the server is enabled. Each call is limited to 4 KB of input with no secrets, and its output is treated as untrusted.</p></details>}
                 </div>
                 {canEdit && <div className="flex flex-wrap gap-3 text-xs">
                   <button type="button" disabled={busy !== null} onClick={() => void check(sv)} className="text-zinc-200 underline underline-offset-2 disabled:opacity-50">{busy === `check:${sv.id}` ? "Checking…" : "Check connection"}</button>

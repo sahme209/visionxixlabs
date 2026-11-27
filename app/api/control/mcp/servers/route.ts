@@ -27,7 +27,7 @@ async function member() {
 async function audit(ctx: { organizationId: string; userId: string }, kind: string, id: string, detail: Record<string, unknown>) {
   try { await auditRecord({ organizationId: ctx.organizationId as OrganizationId, actorUserId: ctx.userId as UserId, action: "governance.update", outcome: "success", entityRef: `workspace_mcp_server:${id}`, correlationId: randomUUID() as CorrelationId, detail: { kind, ...detail } }); } catch { /* best-effort */ }
 }
-const select = { id: true, registryName: true, title: true, version: true, remoteUrl: true, transport: true, enabled: true, lastCheckAt: true, lastCheckOutcome: true, lastCheckDetail: true, toolNames: true, createdAt: true } as const;
+const select = { id: true, registryName: true, title: true, version: true, remoteUrl: true, transport: true, enabled: true, lastCheckAt: true, lastCheckOutcome: true, lastCheckDetail: true, toolNames: true, allowedTools: true, createdAt: true } as const;
 
 export async function GET(): Promise<NextResponse> {
   const ctx = await member();
@@ -59,7 +59,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-const patchSchema = z.object({ id: z.string().min(1).max(64), enabled: z.boolean() }).strict();
+const patchSchema = z.union([
+  z.object({ id: z.string().min(1).max(64), enabled: z.boolean() }).strict(),
+  z.object({ id: z.string().min(1).max(64), allowedTools: z.array(z.string().min(1).max(120)).max(200) }).strict(),
+]);
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
   if (!isSameOriginRequest(request)) return fail("cross_origin_refused", 403);
@@ -69,8 +72,15 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   const body = patchSchema.safeParse(await request.json().catch(() => null));
   if (!body.success) return fail("invalid_payload", 400);
   try {
-    const current = await prisma.workspaceMcpServer.findFirst({ where: { id: body.data.id, organizationId: ctx.organizationId }, select: { lastCheckOutcome: true } });
+    const current = await prisma.workspaceMcpServer.findFirst({ where: { id: body.data.id, organizationId: ctx.organizationId }, select: { lastCheckOutcome: true, toolNames: true } });
     if (!current) return fail("mcp_server_not_found", 404);
+    if ("allowedTools" in body.data) {
+      const allowed = [...new Set(body.data.allowedTools)];
+      if (allowed.some((t) => !current.toolNames.includes(t))) return fail("mcp_tool_unknown", 400);
+      await prisma.workspaceMcpServer.updateMany({ where: { id: body.data.id, organizationId: ctx.organizationId }, data: { allowedTools: allowed } });
+      await audit(ctx, "mcp_server.approve_tools", body.data.id, { allowedTools: allowed });
+      return NextResponse.json({ ok: true }, { headers: noStore });
+    }
     if (body.data.enabled && current.lastCheckOutcome !== "ok") return fail("mcp_server_check_required", 409);
     await prisma.workspaceMcpServer.updateMany({ where: { id: body.data.id, organizationId: ctx.organizationId }, data: { enabled: body.data.enabled } });
     await audit(ctx, body.data.enabled ? "mcp_server.enable" : "mcp_server.disable", body.data.id, {});
