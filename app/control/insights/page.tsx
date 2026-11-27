@@ -8,6 +8,7 @@ import { checkEvidenceCoverage } from "@/lib/releaseops/checkEvidenceCoverage";
 import { changeFailureRate } from "@/lib/releaseops/changeFailureRate";
 import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabilityWarning";
 import { summarizeGateRefusals } from "@/lib/releaseops/gateRefusalSummary";
+import { summarizeFreezeHistory } from "@/lib/releaseops/freezeHistory";
 import { summarizeAgentActivity } from "@/lib/agentGateway/agentActivitySummary";
 
 export const dynamic = "force-dynamic";
@@ -76,6 +77,8 @@ export default async function InsightsPage() {
   const agents = await (async () => summarizeAgentActivity(await prisma.agentGatewayRequest.findMany({ where: { organizationId, createdAt: { gte: since } }, take: 5000, select: { status: true, reviewTriage: true, agentName: true } })))().catch(() => null);
   // Release-gate refusals recorded in the audit trail; optional, so a read failure hides only this section.
   const refusals = await (async () => summarizeGateRefusals(await prisma.auditEvent.findMany({ where: { organizationId, kind: "release.gate_refused", createdAt: { gte: since } }, take: 5000, select: { detailJson: true } })))().catch(() => null);
+  // Deployment freezes started or ended early; optional, so a read failure hides only this section.
+  const freezes = await (async () => summarizeFreezeHistory(await prisma.auditEvent.findMany({ where: { organizationId, kind: { in: ["environment.freeze", "environment.freeze_end"] }, createdAt: { gte: since } }, orderBy: { createdAt: "desc" }, take: 500, select: { kind: true, createdAt: true, detailJson: true } })))().catch(() => null);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
   const coverage = await (async () => {
     const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
@@ -151,6 +154,15 @@ export default async function InsightsPage() {
         {refusals === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Refusals could not be read. Nothing is shown rather than an estimate.</p>
           : refusals.total === 0 ? <p className="mt-3 text-sm text-zinc-400">No deployment was refused by a release gate in this window.</p>
           : <dl className="mt-4 grid gap-3 sm:grid-cols-3">{refusals.byReason.map((r) => <Metric key={r.reason} label={r.label} value={r.count.toLocaleString()} />)}</dl>}
+      </section>
+
+      <section aria-labelledby="insights-freezes" className="mt-10">
+        <h2 id="insights-freezes" className="text-base font-medium">Deployment freezes · last {OUTCOME_WINDOW_DAYS} days</h2>
+        {freezes === null ? <p role="status" className="mt-3 text-sm text-zinc-400">Freezes could not be read. Nothing is shown rather than an estimate.</p>
+          : freezes.started === 0 && freezes.ended === 0 ? <p className="mt-3 text-sm text-zinc-400">No workspace freeze was started in this window. Freeze production from the <Link href="/control" className="underline underline-offset-4">Overview</Link> during an incident.</p>
+          : <><p className="mt-3 text-sm text-zinc-300">{freezes.started} started · {freezes.ended} ended early</p>
+            <ul aria-label="Recent freezes" className="mt-3 space-y-1.5 text-sm text-zinc-300">{freezes.entries.map((f) => (
+              <li key={`${f.at}-${f.kind}`}><span className="text-zinc-400">{new Date(f.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</span> · {f.kind === "started" ? "Froze" : "Ended freeze on"} {f.environments.join(", ") || "environments"}{f.kind === "started" && f.endsAt ? ` until ${new Date(f.endsAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}` : ""}: {f.reason}{f.source === "api_key" ? " · by an API key" : f.source === "cockpit" ? " · from the cockpit" : ""}</li>))}</ul></>}
       </section>
 
       <section aria-labelledby="insights-checks" className="mt-10">

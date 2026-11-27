@@ -111,3 +111,13 @@ it("summarizes AI agent requests by decision and review lane", async () => {
   expect(value("Agent requests")).toContain("2");
   expect(screen.getByText("By review lane: Allowed by policy 1 · Two approvers 1")).toBeTruthy();
 });
+
+it("lists recent deployment freezes with where they came from", async () => {
+  io.audit.mockImplementation(async (q: { where: { kind: unknown } }) => typeof q.where.kind === "object"
+    ? [{ kind: "environment.freeze", createdAt: new Date("2026-11-20T10:00:00Z"), detailJson: { source: "api_key", reason: "PD Q1X", environments: ["Prod"] } }]
+    : []);
+  render(await Page());
+  const list = screen.getByRole("list", { name: "Recent freezes" });
+  expect(list.textContent).toMatch(/Froze Prod.*: PD Q1X · by an API key/);
+  expect(screen.getByText("1 started · 0 ended early")).toBeTruthy();
+});

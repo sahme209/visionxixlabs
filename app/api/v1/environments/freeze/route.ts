@@ -56,7 +56,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!out.ok) return NextResponse.json({ ok: false, error: out.error, ...(out.skipped?.length ? { skipped: out.skipped } : {}) }, { status: 409, headers: noStore });
     const summary = `API key froze ${out.environments.join(", ")} until ${out.endsAt}: ${reason}`;
     try {
-      await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "environment.freeze", subjectKind: "environment", subjectId: subjectId ?? `freeze:${auth.apiKeyId}:${Date.now()}`, summary, actorUserId: null, detailJson: { apiKeyId: auth.apiKeyId, scope, hours, reason, environments: out.environments } });
+      await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "environment.freeze", subjectKind: "environment", subjectId: subjectId ?? `freeze:${auth.apiKeyId}:${Date.now()}`, summary, actorUserId: null, detailJson: { source: "api_key", apiKeyId: auth.apiKeyId, scope, hours, reason, environments: out.environments, endsAt: out.endsAt } });
     } catch { /* best-effort */ }
     return NextResponse.json({ ok: true, environments: out.environments, skipped: out.skipped, endsAt: out.endsAt }, { status: 201, headers: noStore });
   } catch {
