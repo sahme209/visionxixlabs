@@ -25,7 +25,7 @@ describe("MCP registry catalog", () => {
   it("fetches without credentials or redirects and fails on errors", async () => {
     const f = vi.fn(async () => new Response(JSON.stringify({ servers: [], metadata: {} }), { status: 200 }));
     await fetchRegistryPage({}, f as unknown as typeof fetch);
-    expect(f.mock.calls[0][1]).toMatchObject({ redirect: "error", credentials: "omit" });
+    expect((f.mock.calls[0] as unknown as [string, RequestInit])[1]).toMatchObject({ redirect: "error", credentials: "omit" });
     await expect(fetchRegistryPage({}, (async () => new Response("x", { status: 503 })) as unknown as typeof fetch)).rejects.toThrow("registry_http_503");
   });
 });

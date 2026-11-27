@@ -52,6 +52,17 @@ function job(c: GeneratableCheck): string[] | { skip: string } {
         `          persist-credentials: false`,
         `      - name: Run script`,
         `        run: bash "$SCRIPT_PATH"`];
+    case "marketplace_action": {
+      const inputs = (s.inputs as string[]).map((line) => { const i = line.indexOf("="); return `          ${line.slice(0, i)}: ${q(line.slice(i + 1))}`; });
+      return [...head,
+        `    steps:`,
+        `      - uses: actions/checkout@v4`,
+        `        with:`,
+        `          persist-credentials: false`,
+        `      - name: ${q(`Run ${String(s.action)}`)}`,
+        `        uses: ${String(s.action)}@${String(s.commit)}`,
+        ...(inputs.length ? [`        with:`, ...inputs] : [])];
+    }
     case "migration_dry_run":
       return { skip: `runs in its own workflow (${String(s.workflowPath)}, job ${String(s.job)}) so its database access stays separate; start it there for this stage` };
     case "health_check":

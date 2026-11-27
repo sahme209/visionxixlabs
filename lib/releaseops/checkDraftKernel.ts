@@ -16,6 +16,7 @@ export function buildCheckDraftPrompt(description: string): string {
     "- health_check: metric (string), comparison (below | above), threshold (number), windowMinutes (integer)",
     "- migration_dry_run: workflowPath (relative path in the repository, e.g. .github/workflows/migrate.yml), job (string)",
     "- custom_script: scriptPath (relative path in the repository), runner (github_actions | customer_runner)",
+    "- marketplace_action: action (owner/repository from the GitHub Actions marketplace), commit (full 40-character SHA), inputs (array of name=value strings)",
     "- manual_checklist: items (array of short strings)",
     "- security_scan: tool (string), maxCritical (integer), maxHigh (integer)",
     "- supply_chain: evidence (sbom | slsa_provenance | sbom_and_provenance), verifier (string)",
