@@ -136,7 +136,7 @@ export default async function ControlIntegrationsPage() {
     <div className="w-full min-w-0">
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div><h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Integrations</h1><p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Connect source control, collaboration tools, and cloud services to your workspace.</p></div>
+        <div><h1 className="text-3xl font-semibold tracking-[-0.045em]">Integrations</h1><p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Connect source control, collaboration tools, and cloud services to your workspace.</p></div>
         <span className="text-xs text-zinc-600">{canManage ? "Administrator controls" : "Read-only access"}</span>
       </div>
 
