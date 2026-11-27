@@ -55,28 +55,28 @@
    "title": "Create a key",
    "text": "Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints, report deployment check results, read configuration as code, start a deployment freeze (an incident tool can stop deployments; only owners and admins can end a freeze early). Wildcard, trigger and admin permissions are not available here. The full key is shown once. V19 stores only a hash and a short prefix, so it cannot show the key again.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "79fac2a413c2925304bf4ce3260f5f76c1b82864f4b61ed5bb60562a4cc34a7a"
+   "sourceSha256": "3c77c8484087d918e1015ad20ceca4651dba502aa3395a6821b43e28128d5b8f"
   },
   {
    "href": "/docs/api-keys#duties",
    "title": "Separation of duties",
    "text": "The person who creates a key is recorded and cannot approve agent gateway requests made with that key. Another owner or admin must decide them.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "79fac2a413c2925304bf4ce3260f5f76c1b82864f4b61ed5bb60562a4cc34a7a"
+   "sourceSha256": "3c77c8484087d918e1015ad20ceca4651dba502aa3395a6821b43e28128d5b8f"
   },
   {
    "href": "/docs/api-keys#revoke",
    "title": "Revoke a key",
    "text": "Revoke a key from the list as soon as it may have been exposed or is no longer needed. Revocation takes effect immediately and is recorded in the audit log. A workspace can hold up to 20 active keys.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "79fac2a413c2925304bf4ce3260f5f76c1b82864f4b61ed5bb60562a4cc34a7a"
+   "sourceSha256": "3c77c8484087d918e1015ad20ceca4651dba502aa3395a6821b43e28128d5b8f"
   },
   {
    "href": "/docs/api-keys#ci",
    "title": "Use a key in CI",
    "text": "Two endpoints are built for pipelines. With read pipeline runs , GET /api/v1/environments/{\" \"}/variables returns an environment's resolved configuration and its fingerprint, so a deployment can load its settings and record which configuration it used. With report deployment check results , POST /api/v1/checks/results records the result of a deployment check for a commit; the workflow generated on the Checks page uses it when the repository has a V19_API_KEY secret. Store the key as a repository secret, give it only the permissions those calls need, and choose a short expiry. API calls also require an active paid plan for the workspace. Every SDK has matching methods.",
    "source": "app/docs/api-keys/page.tsx",
-   "sourceSha256": "79fac2a413c2925304bf4ce3260f5f76c1b82864f4b61ed5bb60562a4cc34a7a"
+   "sourceSha256": "3c77c8484087d918e1015ad20ceca4651dba502aa3395a6821b43e28128d5b8f"
   },
   {
    "href": "/docs/approval-workflow#risk",
