@@ -10,8 +10,10 @@ import { readStabilityWarning, type StabilityRepo } from "@/lib/releaseops/stabi
 import { summarizeGateRefusals } from "@/lib/releaseops/gateRefusalSummary";
 import { summarizeFreezeHistory } from "@/lib/releaseops/freezeHistory";
 import { DailyOutcomeBars } from "@/components/cockpit/DailyOutcomeBars";
+import { summarizeAiCostByTask } from "@/lib/billing/aiCostByTask";
 import { summarizeAgentActivity } from "@/lib/agentGateway/agentActivitySummary";
 
+const usd = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 export const dynamic = "force-dynamic";
 
 const INCIDENT_WINDOW_DAYS = 90;
@@ -71,6 +73,8 @@ export default async function InsightsPage() {
   const refusals = await (async () => summarizeGateRefusals(await prisma.auditEvent.findMany({ where: { organizationId, kind: "release.gate_refused", createdAt: { gte: since } }, take: 5000, select: { detailJson: true } })))().catch(() => null);
   // Deployment freezes started or ended early; optional, so a read failure hides only this section.
   const freezes = await (async () => summarizeFreezeHistory(await prisma.auditEvent.findMany({ where: { organizationId, kind: { in: ["environment.freeze", "environment.freeze_end"] }, createdAt: { gte: since } }, orderBy: { createdAt: "desc" }, take: 500, select: { kind: true, createdAt: true, detailJson: true } })))().catch(() => null);
+  // Measured AI cost per task from recorded usage; optional, so a read failure hides only this section.
+  const aiCost = await (async () => summarizeAiCostByTask(await prisma.usageEvent.findMany({ where: { organizationId, eventKind: { in: ["ai_invocation", "agent_run"] }, createdAt: { gte: since } }, orderBy: { createdAt: "desc" }, take: 10_000, select: { eventKind: true, model: true, inputTokens: true, outputTokens: true, billedCents: true, billingStatus: true, metadata: true } })))().catch(() => null);
   // Deployment check evidence for recorded runs; optional, so a read failure hides only this section.
   const coverage = await (async () => {
     const blocking = await prisma.deploymentCheck.findMany({ where: { organizationId, enabled: true, mode: "blocking" }, take: 200, select: { key: true } });
@@ -155,6 +159,21 @@ export default async function InsightsPage() {
           : <><p className="mt-3 text-sm text-zinc-300">{freezes.started} started · {freezes.ended} ended early</p>
             <ul aria-label="Recent freezes" className="mt-3 space-y-1.5 text-sm text-zinc-300">{freezes.entries.map((f) => (
               <li key={`${f.at}-${f.kind}`}><span className="text-zinc-400">{new Date(f.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</span> · {f.kind === "started" ? "Froze" : "Ended freeze on"} {f.environments.join(", ") || "environments"}{f.kind === "started" && f.endsAt ? ` until ${new Date(f.endsAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}` : ""}: {f.reason}{f.source === "api_key" ? " · by an API key" : f.source === "cockpit" ? " · from the cockpit" : ""}</li>))}</ul></>}
+      </section>
+
+      <section aria-labelledby="insights-ai-cost" className="mt-10">
+        <h2 id="insights-ai-cost" className="text-base font-medium">AI cost by task · last {OUTCOME_WINDOW_DAYS} days</h2>
+        {aiCost === null ? <p role="status" className="mt-3 text-sm text-zinc-400">AI usage could not be read. Nothing is shown rather than an estimate.</p>
+          : aiCost.calls === 0 ? <p className="mt-3 text-sm text-zinc-400">No AI usage was recorded in this window.</p>
+          : <><p className="mt-3 text-sm text-zinc-300">{aiCost.calls.toLocaleString()} AI calls · {usd(aiCost.totalSettledCents)} settled{aiCost.totalPendingCents > 0 ? ` · ${usd(aiCost.totalPendingCents)} awaiting settlement` : ""}</p>
+            <ul aria-label="AI cost by task" className="mt-4 max-w-3xl space-y-3">{aiCost.tasks.slice(0, 8).map((t) => {
+              const total = t.settledCents + t.pendingCents; const max = Math.max(1, ...aiCost.tasks.map((x) => x.settledCents + x.pendingCents));
+              return <li key={t.task} className="text-sm">
+                <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-zinc-200">{t.task}</span><span className="tabular-nums text-zinc-300">{usd(total)} <span className="text-xs text-zinc-500">· {t.calls.toLocaleString()} calls · {t.averageCents === null ? "—" : `${usd(t.averageCents)} per call`}</span></span></div>
+                <div aria-hidden="true" className="mt-1.5 flex h-1.5 overflow-hidden rounded-full bg-white/5"><span className="bg-sky-400" style={{ width: `${(t.settledCents / max) * 100}%` }} /><span className="bg-amber-300/70" style={{ width: `${(t.pendingCents / max) * 100}%` }} /></div>
+                <p className="mt-1 text-[11px] text-zinc-500">{t.tokens.toLocaleString()} tokens · {t.models.join(", ") || "model not recorded"}</p>
+              </li>; })}</ul>
+            <p className="mt-3 text-xs text-zinc-500">Blue is settled cost; amber is awaiting settlement. Cost is what V19 billed for each recorded call.</p></>}
       </section>
 
       <section aria-labelledby="insights-checks" className="mt-10">

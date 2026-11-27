@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn(), audit: vi.fn(), agentReqs: vi.fn() }));
+const io = vi.hoisted(() => ({ runs: vi.fn(), count: vi.fn(), incidents: vi.fn(), checks: vi.fn(), results: vi.fn(), releases: vi.fn(), audit: vi.fn(), agentReqs: vi.fn(), usage: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn(() => { throw new Error("redirect"); }) }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_insights", email: "owner@example.test", roles: ["owner"] }) }));
-vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results }, auditEvent: { findMany: io.audit }, agentGatewayRequest: { findMany: io.agentReqs } } }));
+vi.mock("@/lib/db", () => ({ prisma: { deploymentExecution: { findMany: io.runs, count: io.count }, deploymentIncident: { findMany: io.incidents }, release: { findMany: io.releases }, deploymentCheck: { findMany: io.checks }, deploymentCheckResult: { findMany: io.results }, auditEvent: { findMany: io.audit }, agentGatewayRequest: { findMany: io.agentReqs }, usageEvent: { findMany: io.usage } } }));
 import Page from "../page";
 
 const value = (label: string) => screen.getByText(label, { selector: "dt" }).parentElement!.querySelector("dd")!.textContent!.trim();
@@ -23,6 +23,7 @@ beforeEach(() => {
   io.results.mockResolvedValue([]);
   io.releases.mockResolvedValue([]);
   io.audit.mockResolvedValue([]);
+  io.usage.mockResolvedValue([]);
   io.agentReqs.mockResolvedValue([]);
   io.incidents.mockResolvedValue([{ status: "resolved", reportedAt: day(5), mitigatedAt: new Date(day(5).getTime() + 1_800_000), resolvedAt: new Date(day(5).getTime() + 7_200_000) }, { status: "open", reportedAt: day(1), mitigatedAt: null, resolvedAt: null }]);
 });
@@ -120,4 +121,17 @@ it("lists recent deployment freezes with where they came from", async () => {
   const list = screen.getByRole("list", { name: "Recent freezes" });
   expect(list.textContent).toMatch(/Froze Prod.*: PD Q1X · by an API key/);
   expect(screen.getByText("1 started · 0 ended early")).toBeTruthy();
+});
+
+it("shows measured AI cost by task with settled and pending amounts", async () => {
+  io.usage.mockResolvedValue([
+    { eventKind: "ai_invocation", model: "anthropic/claude-sonnet", inputTokens: 1000, outputTokens: 500, billedCents: 120, billingStatus: "settled", metadata: { route: "api/ai/generate" } },
+    { eventKind: "ai_invocation", model: "anthropic/claude-sonnet", inputTokens: 100, outputTokens: 50, billedCents: 30, billingStatus: "pending", metadata: { route: "api/ai/generate" } },
+  ]);
+  render(await Page());
+  expect(screen.getByText("2 AI calls · $1.20 settled · $0.30 awaiting settlement")).toBeTruthy();
+  const list = screen.getByRole("list", { name: "AI cost by task" });
+  expect(list.textContent).toContain("Agent and assistant replies");
+  expect(list.textContent).toContain("$0.75 per call");
+  expect(io.usage.mock.calls[0][0].where).toMatchObject({ organizationId: "org_insights" });
 });
