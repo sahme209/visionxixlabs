@@ -14,6 +14,7 @@ const FIELDS: Record<CheckKind, Array<{ name: string; label: string; placeholder
   health_check: [{ name: "metric", label: "Metric", placeholder: "http.5xx_rate" }, { name: "comparison", label: "Passes when value is", placeholder: "below", options: ["below", "above"] }, { name: "threshold", label: "Threshold", placeholder: "0.01", numeric: true }, { name: "windowMinutes", label: "Window (minutes)", placeholder: "10", numeric: true }],
   migration_dry_run: [{ name: "workflowPath", label: "Workflow file", placeholder: ".github/workflows/migrate.yml" }, { name: "job", label: "Job", placeholder: "dry-run" }],
   custom_script: [{ name: "scriptPath", label: "Script path in the repository", placeholder: "scripts/smoke.sh" }, { name: "runner", label: "Runs on", placeholder: "github_actions", options: ["github_actions", "customer_runner"] }],
+  marketplace_action: [{ name: "action", label: "GitHub Action", placeholder: "aquasecurity/trivy-action" }, { name: "commit", label: "Pinned commit SHA", placeholder: "40-character commit of the release you reviewed" }, { name: "inputs", label: "Inputs (name=value, one per line)", placeholder: "scan-type=fs\nseverity=CRITICAL,HIGH", multiline: true }],
   manual_checklist: [{ name: "items", label: "Items (one per line)", placeholder: "Status page updated\nOn-call notified", multiline: true }],
   resilience_experiment: [{ name: "tool", label: "Tool", placeholder: "Gremlin, Chaos Mesh, AWS FIS…" }, { name: "experiment", label: "Experiment", placeholder: "Stop one task and confirm recovery" }, { name: "environmentScope", label: "Runs in", placeholder: "non_production", options: ["non_production", "production"] }],
   supply_chain: [{ name: "evidence", label: "Evidence", placeholder: "sbom", options: ["sbom", "slsa_provenance", "sbom_and_provenance"] }, { name: "verifier", label: "Verified by", placeholder: "cosign, slsa-verifier, syft…" }],
@@ -46,6 +47,7 @@ function summary(c: Check): string {
     case "migration_dry_run": return `${s.workflowPath} · job ${s.job}`;
     case "custom_script": return `${s.scriptPath} on ${s.runner === "github_actions" ? "GitHub Actions" : "your runner"}`;
     case "manual_checklist": return `${(s.items as string[]).length} items`;
+    case "marketplace_action": return `${s.action}@${String(s.commit).slice(0, 12)}${(s.inputs as string[]).length ? ` · ${(s.inputs as string[]).length} inputs` : ""}`;
     case "resilience_experiment": return `${s.experiment} with ${s.tool} (${String(s.environmentScope).replaceAll("_", " ")})`;
     case "supply_chain": return `${String(s.evidence).replaceAll("_", " ")} verified by ${s.verifier}`;
     case "security_scan": return `${s.tool} · at most ${s.maxCritical} critical, ${s.maxHigh} high`;

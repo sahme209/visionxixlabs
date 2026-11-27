@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "76ab139625add3f38fd621ddc5c050604a59659e4b6599b14811ab2c5a4026d1",
+  "navigationSha256": "64d84b2f961e262e5c5ec0e10b35ff3e53eaf3cfcd1420cdb4dcbe1facb14b19",
   "guides": [
     {
       "href": "/docs",
@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "d1283b4d49c685da1734a28dc906648bfb7eb1921784efb4070cc8998d42ebcf",
+      "sourceSha256": "a1eba347cbe1a783366bb0257d4f472f69e1652eca22a2e7d4b7b72f818aafe5",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -412,14 +412,28 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "c005f88809f5cfa69a185561a12476e1f0ca229eb1e436edec672047a64d3ac9",
+      "sourceSha256": "2c9dd270cb4fb1cc696f9a2b67f03af77ab186f10de79fbfec770688fc755d9a",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
         "Prepare Microsoft Learn documentation search",
         "Search with a public technical topic",
         "Two different MCP directions",
-        "If a request is unavailable"
+        "If a request is unavailable",
+        "Browse the public MCP server registry"
+      ]
+    },
+    {
+      "href": "/docs/plugin-manifest",
+      "source": "app/docs/plugin-manifest/page.tsx",
+      "sourceSha256": "5a68fc32426e4021ef848b762d788fda0e966dfe9b1535922dada699de1b46cd",
+      "fields": [
+        "Describe a plugin in one file.",
+        "A V19 plugin is a hosted MCP server plus a manifest that says what it offers and what it asks for. A valid manifest grants nothing on its own.",
+        "What the manifest contains",
+        "Check a manifest",
+        "Example",
+        "How plugins are trusted"
       ]
     },
     {

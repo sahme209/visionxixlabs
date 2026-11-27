@@ -13,7 +13,7 @@ export interface GateResult { checkKey: string; checkVersion: number; status: st
 export type GateBlock = { key: string; name: string; stage: CheckStage; reason: "no_result" | "failed" | "stale_version" | "expired" };
 export type GateOutcome = { ok: true; satisfied: string[]; notEnforceable: string[] } | { ok: false; blocked: GateBlock[]; satisfied: string[]; notEnforceable: string[] };
 
-const REPORTED: ReadonlySet<CheckKind> = new Set(["smoke_test", "custom_script", "migration_dry_run", "manual_checklist", "health_check", "security_scan", "supply_chain", "resilience_experiment"]);
+const REPORTED: ReadonlySet<CheckKind> = new Set(["smoke_test", "custom_script", "migration_dry_run", "manual_checklist", "health_check", "security_scan", "supply_chain", "resilience_experiment", "marketplace_action"]);
 
 export function evaluateStageGate(input: { checks: readonly GateCheck[]; results: readonly GateResult[]; startingStage: CheckStage; commitSha: string; now: Date }): GateOutcome {
   const before = new Set(CHECK_STAGES.slice(0, CHECK_STAGES.indexOf(input.startingStage)));

@@ -17,6 +17,10 @@ export default function McpToolsGuide() {
   <DocSection id="recover" kicker="03" title="If a request is unavailable">
    <p>Check the workspace&apos;s installation state first. Unknown storage state is not an enabled connection. A rate-limit message means wait before trying again. A failed or unconfirmed request is not proof that documentation was read; V19 requires an audit record before confirming it. Do not repeatedly resend sensitive or unsupported input.</p>
   </DocSection>
+  <DocSection id="registry" kicker="04" title="Browse the public MCP server registry">
+   <p>Under <strong>MCP server registry</strong> on the MCP tools page, any workspace member can search the public registry at registry.modelcontextprotocol.io, which lists thousands of third-party MCP servers, or pick a topic such as kubernetes, aws or postgres. Each listing shows the publisher&apos;s name, version and description, whether the server is hosted at an https address or runs locally from a package, and a link to the publisher&apos;s page.</p>
+   <p>Listings come from their publishers and are not reviewed by V19. Browsing does not connect to any server, send it workspace data or give an agent any tool. Making a listed server available to agents will need its own review and permissions; until then, only the reviewed tools above can be used.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/plugins",label:"Apps and skills"}} next={{href:"/docs/workspaces",label:"Workspaces"}} />
  </>;
 }
