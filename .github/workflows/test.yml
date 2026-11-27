@@ -130,8 +130,9 @@ jobs:
 
       - name: Build production website (no deployment)
         env:
-          # 8 GB hit the heap limit on PR 380 as the route graph grew; swap above covers the extra.
-          NODE_OPTIONS: --max-old-space-size=10240
+          # 8 GB hit the heap limit on PR 380 and 10 GB on PR 394 (and on main after PR 393) as the
+          # route graph grew. 14 GB stays under the 16 GB runner plus 10 GB swap; Vercel builds use 16 GB.
+          NODE_OPTIONS: --max-old-space-size=14336
         run: npm run build
 
       # Exercise these emitted routes before this same build can pass. Synthetic
