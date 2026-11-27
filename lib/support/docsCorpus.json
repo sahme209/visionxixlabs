@@ -1154,56 +1154,56 @@
    "title": "Choose an active workspace",
    "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#recover",
    "title": "Recover unavailable workspace access",
    "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#devices",
    "title": "Browser context and paired devices are separate",
    "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#insights",
    "title": "Delivery insights for the workspace",
    "text": "In the cockpit, Insights shows how often the workspace ships and how quickly it recovers: workflow runs and runs per week, run success rate and median time to complete over the last 30 days, and open incidents with median time to mitigate and resolve over the last 90 days. Figures come only from recorded workflow runs and incidents. A workflow failure is not always a failed change, and lead time from commit is not measured, so treat these as operating signals rather than DORA certification. When blocking deployment checks exist, Insights also counts how many recorded deployments in the window had passing evidence for every one of them, how many had a failed check, and how many had no evidence (for example runs before a check was added, or emergency bypasses). It uses today's blocking checks and matches results by commit. Insights also summarizes AI agent requests over the last 30 days: how many there were and from how many agents, how many were approved or allowed, rejected or refused, or are still waiting, and how they were sorted into review lanes. Insights also counts deployments refused by a release gate in the last 30 days, by reason: outside the change window, during a freeze, a stability warning without a reason, blocking checks not passed, or the previous ring not deployed. A rising count shows where the release process is slowing teams down. Insights also shows a change failure rate: of the releases that finished in the last 90 days, the share that ended failed or ro",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#variables",
    "title": "Configuration variables per environment",
    "text": "In the cockpit, Variables holds plain configuration such as a base URL, log level or feature switch. Set a workspace default, then override it for an environment that needs a different value; environments without an override inherit the default. A notice lists names that are set for some environments but have no default, so a missing value is visible before a release. Each environment shows a short fingerprint of what it resolves to, which changes whenever any value it sees changes. Owners and admins can add, edit and remove variables. Edits carry the version you loaded, so a change made by someone else in the meantime is reported instead of overwritten. Names and values that look like credentials are refused: keep secrets in scoped credentials. Passing variables into deployment workflows is not connected yet, so this page does not change any running service. When the desktop app dispatches a deployment to an environment, V19 records that environment's fingerprint and resolved values with the deployment. Each fingerprint card then says whether the configuration still matches the last recorded deployment or has changed since. Feature switches shows every variable named FEATURE_… as on, off or its value in each environment, so staged exposure is visible at a glance. Compare before promoting lists the values that differ between two environments, and names that exist in only one of them. If the snapshot cannot be recorded, the deployment still runs and the card says no fingerprin",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#services",
    "title": "Service catalog",
    "text": "In the cockpit, Services lists every connected repository with its components and owning teams, its guardrails (whether a CODEOWNERS file exists and whether the default branch is protected, from the repository's last scan), the latest recorded run in each environment over the last 90 days, and how many recent finished runs failed. It is built from recorded data only and is not the live state of your systems; owners appear once components are recorded in V19.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#webhooks",
    "title": "Webhooks",
    "text": "In the cockpit, Webhooks sends V19 events to an address you choose, for example a Slack or pager bridge. Owners and admins add a webhook with a name, a public https:// address and the events it should receive, such as deployment.blocked or agent_gateway.request_pending . Each event in the list says when it fires. When you add a webhook, V19 shows its signing secret once. Copy it into your receiver and check the signature on every delivery. Private and internal addresses are refused, and a webhook that keeps failing is switched off automatically. Revoke a webhook at any time; members can see the list but cannot change it. Choose Show recent deliveries under a webhook to see its last 25 attempts: the event, the attempt number, whether it was delivered, will retry or was given up, and the HTTP status your receiver returned. Event contents and your receiver's replies are not shown there. Owners and admins can choose Send test to send one signed webhook.ping delivery and see the HTTP status your receiver returned. A test is sent once, is never retried and does not count toward switching the webhook off; one test per webhook per minute is allowed.",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   },
   {
    "href": "/docs/workspaces#cockpit-pages",
    "title": "Every cockpit page",
-   "text": "The cockpit sidebar, in order, with what each page is for: Overview : Workspace summary and next steps. Governance : Pending Agent approvals, roles, environment policy, promotion lifecycles and policy as code. Guide Insights : Delivery and recovery figures, deployment check evidence and the release evidence pack. Guide Services : Repositories with owners, guardrails, the latest run per environment, and Kubernetes rollout templates. Guide Variables : Configuration per environment, variable sets, feature switches and comparisons. Guide Checks : Deployment checks per release stage, results and the generated CI workflow. Guide AI & Agents : AI settings and Agent activity. Guide Agent gateway : Governance keys and requests from external agents. Guide Trust tools : Read-only tools that inspect your connected systems. Guide Airflow : Airflow connection and automations. Guide Integrations : Connected providers and their status. Guide Apps & skills : Plugins and skills available to the workspace. Guide Members : People, roles and invitations. Guide Usage & Billing : Plan, usage and invoices. Guide Audit & Security : Audit log and security settings. Guide API keys : Keys for CI, SDKs and agents, with scopes. Guide Webhooks : Send chosen events to Slack, a pager or your own service. Guide Settings & sessions : Your profile and signed-in devices. Guide",
+   "text": "The cockpit sidebar, in order, with what each page is for: Overview : Workspace summary, release governance, deployment freeze, the five most recent deployments with their outcome, and next steps. Governance : Pending Agent approvals, roles, environment policy, promotion lifecycles and policy as code. Guide Insights : Delivery and recovery figures, deployment check evidence and the release evidence pack. Guide Services : Repositories with owners, guardrails, the latest run per environment, and Kubernetes rollout templates. Guide Variables : Configuration per environment, variable sets, feature switches and comparisons. Guide Checks : Deployment checks per release stage, results and the generated CI workflow. Guide AI & Agents : AI settings and Agent activity. Guide Agent gateway : Governance keys and requests from external agents. Guide Trust tools : Read-only tools that inspect your connected systems. Guide Airflow : Airflow connection and automations. Guide Integrations : Connected providers and their status. Guide Apps & skills : Plugins and skills available to the workspace. Guide Members : People, roles and invitations. Guide Usage & Billing : Plan, usage and invoices. Guide Audit & Security : Audit log and security settings. Guide API keys : Keys for CI, SDKs and agents, with scopes. Guide Webhooks : Send chosen events to Slack, a pager or your own service. Guide Settings & sessions : Your profile and signed-in devices. Guide",
    "source": "app/docs/workspaces/page.tsx",
-   "sourceSha256": "ee7d0987306476597ff7b2d5e5946074dd75f67376ffca1d6da2ec00eb47e75d"
+   "sourceSha256": "5414bc7538d29c521dd6a3da5dac83fa6b962befce8cbbd56cf82e6d4a0d9369"
   }
  ]
 }

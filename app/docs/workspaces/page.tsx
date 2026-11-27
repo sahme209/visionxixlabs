@@ -50,7 +50,7 @@ export default function WorkspacesGuide() {
   <DocSection id="cockpit-pages" kicker="08" title="Every cockpit page">
    <p>The cockpit sidebar, in order, with what each page is for:</p>
    <ul className="mt-3 list-disc space-y-1 pl-5">
-    <li><strong>Overview</strong>: Workspace summary and next steps.</li>
+    <li><strong>Overview</strong>: Workspace summary, release governance, deployment freeze, the five most recent deployments with their outcome, and next steps.</li>
     <li><strong>Governance</strong>: Pending Agent approvals, roles, environment policy, promotion lifecycles and policy as code. <Link href="/docs/governance-approvals" className="underline underline-offset-4">Guide</Link></li>
     <li><strong>Insights</strong>: Delivery and recovery figures, deployment check evidence and the release evidence pack. <Link href="#insights" className="underline underline-offset-4">Guide</Link></li>
     <li><strong>Services</strong>: Repositories with owners, guardrails, the latest run per environment, and Kubernetes rollout templates. <Link href="#services" className="underline underline-offset-4">Guide</Link></li>
