@@ -47,3 +47,21 @@ describe("FounderBlueprint", () => {
     expect(screen.queryByRole("application")).toBeNull();
   });
 });
+
+describe("FounderBlueprint history", () => {
+  it("lists saved versions and restores one", async () => {
+    const f = vi.fn()
+      .mockResolvedValueOnce(json({ ok: true, data: { ...loaded, saved: true, version: 2 } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { revisions: [{ version: 2, summary: "Second", savedByEmail: "f@x.test", createdAt: "2026-11-27T07:00:00Z" }, { version: 1, summary: "First", savedByEmail: "f@x.test", createdAt: "2026-11-27T06:00:00Z" }] } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { version: 3 } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { ...loaded, saved: true, version: 3 } }));
+    vi.stubGlobal("fetch", f);
+    render(createElement(FounderBlueprint));
+    fireEvent.click(await screen.findByRole("button", { name: "History" }));
+    const panel = await screen.findByRole("complementary", { name: "Saved versions" });
+    expect(within(panel).getByText("Version 2 · current")).toBeTruthy();
+    fireEvent.click(within(panel).getByRole("button", { name: "Restore this version" }));
+    expect(await screen.findByText("Restored version 1 as version 3.")).toBeTruthy();
+    expect(JSON.parse(f.mock.calls[2][1].body)).toEqual({ version: 1, expectedVersion: 2 });
+  });
+});
