@@ -18,9 +18,9 @@ export default function AgentGatewayDocsPage() {
   </DocSection>
   <DocSection id="decisions" kicker="02" title="How requests are decided">
    <dl className="space-y-4">
-    <div><dt className="font-semibold text-white">Allowed</dt><dd>Low-risk work such as reading code, editing a branch or opening a pull request in development or staging.</dd></div>
-    <div><dt className="font-semibold text-white">Needs approval</dt><dd>Merges, dependency changes, infrastructure, deploys (unless <a href="#release-autopilot" className="underline underline-offset-4">release autopilot</a> covers them), data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval.</dd></div>
-    <div><dt className="font-semibold text-white">Denied</dt><dd>Reading production secrets and deleting production resources. These are never approvable through the gateway. While a production environment is frozen, production deploys, merges, infrastructure changes and data migrations are denied too, with the freeze&apos;s reason.</dd></div>
+    <div><dt className="font-semibold text-white">Allowed</dt><dd>Low-risk work such as reading code, editing a branch, opening a pull request or changing a feature flag in development or staging.</dd></div>
+    <div><dt className="font-semibold text-white">Needs approval</dt><dd>Production feature flag changes (<code>flag_change</code>), merges, dependency changes, infrastructure, deploys (unless <a href="#release-autopilot" className="underline underline-offset-4">release autopilot</a> covers them), data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval.</dd></div>
+    <div><dt className="font-semibold text-white">Denied</dt><dd>Reading production secrets and deleting production resources. These are never approvable through the gateway. While a production environment is frozen, production deploys, merges, infrastructure changes, data migrations and feature flag changes are denied too, with the freeze&apos;s reason.</dd></div>
    </dl>
   </DocSection>
   <DocSection id="approve" kicker="03" title="Approve or reject">

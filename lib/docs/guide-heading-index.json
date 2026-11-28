@@ -313,7 +313,7 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "4cfcd61d4fd85dcb8dd417c433de682062b37af9df70ff9caab2cfbf490daa63",
+      "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3",
       "fields": [
         "Govern any AI agent.",
         "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",

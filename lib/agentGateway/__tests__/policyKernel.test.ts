@@ -90,3 +90,14 @@ describe("gateway policy with change impact (A13)", () => {
     expect(parseGatewayAction({ ...base, changedFiles: [""] })).toEqual({ ok: false, error: "invalid_changed_files" });
   });
 });
+
+describe("feature flag changes", () => {
+  it("are routine outside production, need approval in production and stop during a production freeze", async () => {
+    const { applyProductionFreeze } = await import("../policyKernel");
+    expect(evaluateGatewayPolicy(act("flag_change", "staging")).decision).toBe("allow");
+    const prod = evaluateGatewayPolicy(act("flag_change", "production"));
+    expect(prod).toMatchObject({ decision: "require_approval", riskLevel: "medium" });
+    expect(applyProductionFreeze(prod, act("flag_change", "production"), [{ environment: "Production", reason: "Incident", until: null }]).decision).toBe("deny");
+    expect(evaluateGatewayPolicy(act("flag_change", "unknown")).decision).toBe("require_approval");
+  });
+});

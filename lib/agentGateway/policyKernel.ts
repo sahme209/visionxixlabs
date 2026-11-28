@@ -24,6 +24,7 @@ export const ACTION_KINDS = [
   "secret_access",
   "delete_resource",
   "run_command",       // arbitrary shell/tool command
+  "flag_change",       // turn a feature flag on or off, or change its rollout (LaunchDarkly, Unleash, ...)
 ] as const;
 export type ActionKind = (typeof ACTION_KINDS)[number];
 export const ENVIRONMENTS = ["development", "staging", "production", "unknown"] as const;
@@ -41,6 +42,8 @@ const BASE_RISK: Readonly<Record<ActionKind, RiskLevel>> = {
   read: "low", code_change: "low", open_pull_request: "low",
   merge: "medium", dependency_change: "medium", run_command: "medium",
   infra_change: "high", deploy: "high", data_migration: "high", secret_access: "high", delete_resource: "high",
+  // A flag flip outside production is routine; in production it changes what customers see, so it needs approval.
+  flag_change: "low",
 };
 const bump = (r: RiskLevel): RiskLevel => (r === "low" ? "medium" : "high");
 
@@ -130,7 +133,7 @@ export function mayProceed(req: { status: string; policyDecision: string; expire
   return { proceed: false, reason: req.status };
 }
 
-const FREEZE_BLOCKED: ReadonlySet<ActionKind> = new Set(["deploy", "infra_change", "data_migration", "delete_resource", "merge"]);
+const FREEZE_BLOCKED: ReadonlySet<ActionKind> = new Set(["deploy", "infra_change", "data_migration", "delete_resource", "merge", "flag_change"]);
 /**
  * A production freeze applies to agents too: while any production environment is frozen, an agent's
  * production deploy, merge, infrastructure change, data migration or delete is denied with the freeze's
