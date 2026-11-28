@@ -30,7 +30,7 @@ jobs:
             go get github.com/hashicorp/terraform-plugin-framework@latest
             go mod tidy
           fi
-      - run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - run: test -z "$(gofmt -l .)" || { gofmt -d .; exit 1; }
       - run: go vet ./...
       - run: go test ./...
       - run: go build -o terraform-provider-v19 .
