@@ -2,14 +2,14 @@
  * Self-service API key policy (workspace owners/admins in /control). Pure.
  *
  * Tighter than the platform-admin mint path on purpose: only governance, read,
- * evidence-reporting, tighten-only (freeze:start) and propose-only (policy:propose) scopes, no wildcards, no
+ * evidence-reporting, tighten-only (freeze:start) and propose-only (policy:propose) and identity-provider (scim:provision) scopes, no wildcards, no
  * trigger/admin verbs, a mandatory expiry of at
  * most 90 days, and a cap on active keys per workspace. Closed unions make an
  * unknown scope a compile error, not a silent grant.
  */
 import type { ApiKeyScope } from "./apiKeyScope";
 
-export const SELF_SERVICE_SCOPES = ["governance:read", "governance:request", "pipeline:read", "release_gate:read", "webhook:read", "checks:report", "config:read", "freeze:start", "policy:propose"] as const satisfies readonly ApiKeyScope[];
+export const SELF_SERVICE_SCOPES = ["governance:read", "governance:request", "pipeline:read", "release_gate:read", "webhook:read", "checks:report", "config:read", "freeze:start", "policy:propose", "scim:provision"] as const satisfies readonly ApiKeyScope[];
 export type SelfServiceScope = (typeof SELF_SERVICE_SCOPES)[number];
 export const MAX_ACTIVE_KEYS = 20;
 export const MAX_EXPIRY_DAYS = 90;

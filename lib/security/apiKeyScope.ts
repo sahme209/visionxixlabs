@@ -54,6 +54,9 @@ export type ApiKeyScope =
   // Policy as code: propose a policy file (Terraform, CI). Nothing applies until a different admin approves it.
   | "policy:propose"
   | "policy:*"
+  // SCIM user provisioning from the company identity provider (Entra ID, Okta). Never grants a role by itself.
+  | "scim:provision"
+  | "scim:*"
   // Catch-all (Enterprise only — admin route must verify before granting)
   | "*";
 
@@ -69,6 +72,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set<ApiKeyScope>([
   "config:read", "config:*",
   "freeze:start", "freeze:*",
   "policy:propose", "policy:*",
+  "scim:provision", "scim:*",
   "*",
 ]);
 

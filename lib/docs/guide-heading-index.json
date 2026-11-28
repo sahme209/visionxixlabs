@@ -464,7 +464,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "063b8724964ed4b0b61113f31ee0efd1fdbbfa316190b6e26c53182373f76981",
+      "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -472,7 +472,8 @@
         "Invite a teammate",
         "Links expire",
         "Change a role or remove someone",
-        "Access requests"
+        "Access requests",
+        "Provision people from your identity provider (SCIM)"
       ]
     },
     {
