@@ -53,7 +53,9 @@ func (d *configDataSource) Metadata(_ context.Context, req datasource.MetadataRe
 }
 
 func (d *configDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	str := func(desc string) schema.StringAttribute { return schema.StringAttribute{Computed: true, Description: desc} }
+	str := func(desc string) schema.StringAttribute {
+		return schema.StringAttribute{Computed: true, Description: desc}
+	}
 	resp.Schema = schema.Schema{
 		Description: "The workspace's environments, plain configuration variables (secret references stay unresolved) and deployment checks.",
 		Attributes: map[string]schema.Attribute{
@@ -135,4 +137,3 @@ func nonNil(s []string) []string {
 	}
 	return s
 }
-
