@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.24"
+          go-version: "1.25"
       - name: Resolve modules when go.sum is not committed yet
         run: |
           if [ ! -f go.sum ]; then
