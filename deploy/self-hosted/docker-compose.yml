@@ -1,4 +1,4 @@
-# V19 self-hosted: PostgreSQL, a one-shot migration step and the app.
+# V19 self-hosted: PostgreSQL, a one-shot database setup step (deploy/self-hosted/migrate.mjs) and the app.
 # The app shares the database container's network, so it reaches PostgreSQL on localhost and the
 # app's database TLS rules (verified TLS for any non-local host) stay unchanged.
 #   cp .env.example .env   # then fill it in
@@ -32,7 +32,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://v19:${POSTGRES_PASSWORD}@127.0.0.1:5432/v19
-    command: ["npx", "prisma", "migrate", "deploy"]
+    command: ["node", "deploy/self-hosted/migrate.mjs"]
     depends_on:
       db:
         condition: service_healthy
