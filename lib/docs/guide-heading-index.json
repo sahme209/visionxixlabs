@@ -227,7 +227,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d",
+      "sourceSha256": "cebec44f8499745264517c4f819d44bf0224e900de05f3e1f8e01ae4d5f8cfcc",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
