@@ -90,12 +90,12 @@ export default function DesktopInstallPage() {
           <p>When a matching detached <code>.asc</code> signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release.</p>
         </Step>
         <Step number={3} title="Install or run">
-          <p>Run the commands for the package you verified. These examples use v0.1.27. Substitute the exact filename for the version you downloaded.</p>
-          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`chmod +x ./V19_0.1.27_amd64.AppImage
-./V19_0.1.27_amd64.AppImage
+          <p>Run the commands for the package you verified. These examples use v0.1.28. Substitute the exact filename for the version you downloaded.</p>
+          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`chmod +x ./V19_0.1.28_amd64.AppImage
+./V19_0.1.28_amd64.AppImage
 
-sudo dpkg -i ./V19_0.1.27_amd64.deb
-sudo rpm -i ./V19-0.1.27-1.x86_64.rpm`}</pre>
+sudo dpkg -i ./V19_0.1.28_amd64.deb
+sudo rpm -i ./V19-0.1.28-1.x86_64.rpm`}</pre>
         </Step>
         <Step number={4} title="Sign in">
           <p>Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.</p>
@@ -113,16 +113,16 @@ sudo rpm -i ./V19-0.1.27-1.x86_64.rpm`}</pre>
         <p>IT teams can push V19 from their own software catalog or company app store with Microsoft Intune, Configuration Manager (SCCM), Jamf or their Linux package tooling. Every installer is listed with its SHA-256 checksum and a detached GPG signature on the release page; verify them before you add a package to your catalog.</p>
         <h3 className="mt-5 text-[15px] font-medium text-white">Windows (Intune, SCCM, other tools)</h3>
         <p>Use the <code>.msi</code>. It installs for all users under Program Files and keeps the same upgrade code in every release, so a newer MSI replaces the older one. In Intune, add it as a line-of-business app; Intune detects it by its product code. Silent install and removal:</p>
-        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`msiexec /i V19_0.1.27_x64_en-US.msi /qn /norestart
-msiexec /x V19_0.1.27_x64_en-US.msi /qn /norestart`}</pre>
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`msiexec /i V19_0.1.28_x64_en-US.msi /qn /norestart
+msiexec /x V19_0.1.28_x64_en-US.msi /qn /norestart`}</pre>
         <p>The installers are not yet Authenticode-signed, so SmartScreen can warn when people install by hand; managed installs are not affected. The Microsoft Store edition (V19 Studio), once listed, is signed by Microsoft and can be deployed from Intune as a Microsoft Store app.</p>
         <h3 className="mt-5 text-[15px] font-medium text-white">macOS (Jamf, Intune)</h3>
         <p>The disk images are signed and notarized. Deploy the <code>.dmg</code> directly where your tool supports disk images, such as Intune&apos;s macOS app (DMG) type, or turn it into a package for Jamf:</p>
-        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`hdiutil attach V19_0.1.27_aarch64.dmg -nobrowse -mountpoint /tmp/v19
-pkgbuild --component /tmp/v19/V19.app --install-location /Applications V19-0.1.27.pkg
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`hdiutil attach V19_0.1.28_aarch64.dmg -nobrowse -mountpoint /tmp/v19
+pkgbuild --component /tmp/v19/V19.app --install-location /Applications V19-0.1.28.pkg
 hdiutil detach /tmp/v19`}</pre>
         <h3 className="mt-5 text-[15px] font-medium text-white">Linux</h3>
-        <p>Add the <code>.deb</code> or <code>.rpm</code> to your internal repository and install it with your configuration tooling, for example <code>apt install ./V19_0.1.27_amd64.deb</code> or <code>dnf install ./V19-0.1.27-1.x86_64.rpm</code>.</p>
+        <p>Add the <code>.deb</code> or <code>.rpm</code> to your internal repository and install it with your configuration tooling, for example <code>apt install ./V19_0.1.28_amd64.deb</code> or <code>dnf install ./V19-0.1.28-1.x86_64.rpm</code>.</p>
         <h3 className="mt-5 text-[15px] font-medium text-white">Organization settings</h3>
         <p>From V19 0.1.28, IT can place a settings file on each computer. V19 reads it when it starts, and people cannot change it without administrator rights:</p>
         <ul className="list-disc space-y-1 pl-5 text-zinc-400">
