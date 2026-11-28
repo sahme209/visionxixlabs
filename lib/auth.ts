@@ -279,6 +279,21 @@ export const authOptions: NextAuthOptions = {
               return false;
             }
             const mappedRole = gate.role as (typeof ALL_ORG_ROLES)[number];
+            // Someone the company directory deprovisioned through SCIM must not be re-admitted by
+            // a later SSO sign-in. Only an admin re-admits them (lib/iam/scim/scimService.ts).
+            try {
+              const deprovisioned = await prisma.scimProvisionedIdentity.findFirst({
+                where: { organizationId: gate.organizationId, email: normalizedEmail, scimActive: false },
+                select: { id: true },
+              });
+              if (deprovisioned) {
+                await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.scim_deprovisioned" });
+                return false;
+              }
+            } catch {
+              await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.provider_lookup_unavailable" });
+              return false;
+            }
             try {
               const seatClaim = await claimOrganizationSeat(prisma as unknown as OrganizationSeatClaimRepo, {
                 userId: dbUser.id,
