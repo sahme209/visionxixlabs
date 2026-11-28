@@ -48,6 +48,7 @@ import { findRollbackTarget, rollbackCommitMatches, type RollbackTarget } from "
 import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
+import { DESKTOP_DISTRIBUTION } from "../lib/distribution";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
@@ -396,7 +397,9 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
       <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
       <LatestReleaseRow installedVersion={installedVersion} />
-      <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />
+      {DESKTOP_DISTRIBUTION === "microsoft_store"
+        ? <InfoRow label="Desktop updates" value="Installed from the Microsoft Store, which installs updates" />
+        : <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />}
     </section>
     {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
     </div>
