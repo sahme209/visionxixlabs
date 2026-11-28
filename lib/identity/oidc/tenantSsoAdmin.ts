@@ -1,13 +1,14 @@
 /**
- * Admin steps that take a company OIDC connection from "pending" to "active":
- *  1. setOidcClient: store the client id and the encrypted client secret (clears any earlier test).
+ * Admin steps that take a company OIDC or SAML connection from "pending" to "active":
+ *  1. OIDC: setOidcClient stores the client id and encrypted secret (clears any earlier test).
+ *     SAML: the IdP metadata saved with the connection must be usable (HTTPS SSO URL, signing cert).
  *  2. verifyDomains: each managed domain must publish a DNS TXT record proving the workspace owns it.
  *  3. A test sign-in (tenantSsoService, mode "test") must succeed.
  *  4. activate: only when all of the above hold and the test is less than 24 hours old.
  * No step returns the secret. Public mail domains can never be managed.
  */
 import { createHash } from "node:crypto";
-import { PUBLIC_EMAIL_DOMAINS, tenantClientSecretContext, type ProviderRow } from "./tenantSsoService";
+import { PUBLIC_EMAIL_DOMAINS, protocolConfigured, tenantClientSecretContext, type ProviderRow } from "./tenantSsoService";
 import { discover } from "./tenantOidc";
 
 export const TEST_MAX_AGE_MS = 24 * 60 * 60_000;
@@ -38,13 +39,13 @@ export function publicProvider(p: ProviderRow & { lastTestAssertionAt: Date | nu
   };
 }
 
-async function load(db: AdminDb, organizationId: string, id: string) {
+async function load(db: AdminDb, organizationId: string, id: string, protocol?: "oidc") {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) return null;
-  return db.tenantIdentityProvider.findFirst({ where: { id, organizationId, protocol: "oidc", status: { in: ["pending", "active", "needs_attention"] } } });
+  return db.tenantIdentityProvider.findFirst({ where: { id, organizationId, ...(protocol ? { protocol } : {}), status: { in: ["pending", "active", "needs_attention"] } } });
 }
 
 export async function setOidcClient(db: AdminDb, deps: { encrypt(plain: string, context: string): string; fetch?: typeof fetch }, input: { organizationId: string; id: string; clientId: unknown; clientSecret: unknown }): Promise<AdminResult> {
-  const p = await load(db, input.organizationId, input.id);
+  const p = await load(db, input.organizationId, input.id, "oidc");
   if (!p) return fail(404, "provider_not_found");
   if (typeof input.clientId !== "string" || !/^[\x21-\x7e]{1,256}$/.test(input.clientId.trim())) return fail(422, "client_id_invalid");
   if (typeof input.clientSecret !== "string" || input.clientSecret.length < 8 || input.clientSecret.length > 512 || /[\x00-\x1f]/.test(input.clientSecret)) return fail(422, "client_secret_invalid");
@@ -78,7 +79,7 @@ export async function activate(db: AdminDb, input: { organizationId: string; id:
   const p = await load(db, input.organizationId, input.id);
   if (!p) return fail(404, "provider_not_found");
   if (p.status === "active") return { status: 200, body: { ok: true, data: { id: p.id, status: "active" } } };
-  if (!p.oidcClientId || !p.encryptedClientSecret) return fail(409, "client_not_configured");
+  if (!protocolConfigured(p)) return fail(409, p.protocol === "saml" ? "saml_metadata_invalid" : "client_not_configured");
   const unverified = p.managedDomains.filter((d) => !p.verifiedDomains.includes(d) || PUBLIC_EMAIL_DOMAINS.has(d));
   if (p.managedDomains.length === 0 || unverified.length) return fail(409, "domains_not_verified", unverified.join(", "));
   if (!p.lastTestAssertionAt || input.now.getTime() - p.lastTestAssertionAt.getTime() > TEST_MAX_AGE_MS) return fail(409, "test_sign_in_required", "Run a test sign-in in the last 24 hours before activating.");

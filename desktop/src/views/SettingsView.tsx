@@ -1940,14 +1940,14 @@ function IdentitySection() {
           />
         ))}
       </Group>
-      {(providers ?? []).filter((p) => p.protocol === "oidc" && !p.revokedAt && p.status !== "revoked").map((p) => <OidcSetupPanel key={p.id} provider={p} onChanged={load} />)}
+      {(providers ?? []).filter((p) => (p.protocol === "oidc" || p.protocol === "saml") && !p.revokedAt && p.status !== "revoked").map((p) => <OidcSetupPanel key={p.id} provider={p} onChanged={load} />)}
       <NewIdentityProviderForm onCreated={load} />
       <ScimPreviewPanel />
     </div>
   );
 }
 
-/** The four steps that make a company OIDC connection usable: client, domains, test, activate. */
+/** The steps that make a company OIDC or SAML connection usable: client (OIDC), domains, test, activate. */
 function OidcSetupPanel({ provider, onChanged }: { provider: IdentityProviderListItem; onChanged: () => void }) {
   const [clientId, setClientId] = useState(provider.oidcClientId ?? "");
   const [clientSecret, setClientSecret] = useState("");
@@ -1968,6 +1968,13 @@ function OidcSetupPanel({ provider, onChanged }: { provider: IdentityProviderLis
   return (
     <Group label={`Set up company sign-in: ${provider.issuerOrEntityId}`}>
       <div className="space-y-4 px-4 py-3.5 text-xs text-zinc-400">
+        {provider.protocol === "saml" ? (
+          <div className="space-y-1">
+            <p className="text-zinc-200">1. Add V19 to your identity provider</p>
+            <p>Service provider metadata: <code className="select-all break-all text-zinc-200">{`https://visionxixlabs.com/api/sso/saml/${provider.id}/metadata`}</code></p>
+            <p>Entity ID is the same URL. Reply (ACS) URL: <code className="select-all text-zinc-200">https://visionxixlabs.com/api/sso/saml/acs</code>. Send the email as the NameID and sign the assertion.</p>
+          </div>
+        ) : <>
         <p>Register this redirect URI with your identity provider: <code className="text-zinc-200">https://visionxixlabs.com/api/sso/oidc/callback</code></p>
         <div className="space-y-2">
           <p className="text-zinc-200">1. Client {provider.clientSecretSet ? "(secret set)" : ""}</p>
@@ -1975,6 +1982,7 @@ function OidcSetupPanel({ provider, onChanged }: { provider: IdentityProviderLis
           <input aria-label="OIDC client secret" type="password" autoComplete="off" className={inputClass} placeholder={provider.clientSecretSet ? "New client secret" : "Client secret"} value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} />
           <button type="button" className={button} disabled={busy !== null || !clientId.trim() || !clientSecret} onClick={() => void run("client", async () => { const r = await desktopClient.setIdentityProviderOidcClient(provider.id, { clientId: clientId.trim(), clientSecret }); setClientSecret(""); return r; }, "Client saved. Run a new test sign-in.")}>{busy === "client" ? "Saving…" : "Save client"}</button>
         </div>
+        </>}
         <div className="space-y-2">
           <p className="text-zinc-200">2. Prove each domain with a DNS TXT record</p>
           <ul className="space-y-1">

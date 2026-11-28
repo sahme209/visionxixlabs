@@ -15,6 +15,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { authorizationRequest, discover, exchangeCode, OidcError, stateKey, verifyIdToken, type OidcDiscovery } from "./tenantOidc";
 import { evaluateSsoSignIn, type SsoSignInRepo } from "../ssoSignInGate";
 import { ALL_ORG_ROLES } from "../identityProviderResponder";
+import { parseIdpMetadata, samlAuthorize, samlValidate, SamlError, spEndpoints } from "../saml/tenantSaml";
 
 export const ATTEMPT_TTL_MS = 10 * 60_000;
 export const TICKET_TTL_MS = 2 * 60_000;
@@ -22,7 +23,7 @@ export const PUBLIC_EMAIL_DOMAINS = new Set(["gmail.com", "googlemail.com", "out
 
 export interface ProviderRow {
   id: string; organizationId: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; verifiedDomains: string[];
-  roleMappingJson: unknown; requireMfaClaim: boolean; oidcClientId: string | null; encryptedClientSecret: string | null;
+  roleMappingJson: unknown; requireMfaClaim: boolean; oidcClientId: string | null; encryptedClientSecret: string | null; metadataDocument?: string;
 }
 export interface AttemptRow {
   id: string; providerId: string; organizationId: string; mode: string; encryptedSecrets: string; callbackUrl: string; expiresAt: Date; consumedAt: Date | null;
@@ -70,54 +71,85 @@ export function safeCallback(value: unknown): string {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") && !value.includes("\\") && value.length <= 512 ? value : "/control";
 }
 
-/** Usable for sign-in: active, OIDC, configured, and every managed domain DNS-verified. */
-export function signInReady(p: ProviderRow): boolean {
-  return p.status === "active" && p.protocol === "oidc" && !!p.oidcClientId && !!p.encryptedClientSecret && p.managedDomains.length > 0
-    && p.managedDomains.every((d) => p.verifiedDomains.includes(d) && !PUBLIC_EMAIL_DOMAINS.has(d));
+/** The protocol-specific configuration is complete: an OIDC client, or SAML IdP metadata V19 can use. */
+export function protocolConfigured(p: ProviderRow): boolean {
+  if (p.protocol === "oidc") return !!p.oidcClientId && !!p.encryptedClientSecret;
+  if (p.protocol === "saml") { try { parseIdpMetadata(p.metadataDocument ?? ""); return true; } catch { return false; } }
+  return false;
 }
 
-export async function startSignIn(deps: SsoDeps, input: { email: unknown; callbackUrl: unknown; redirectUri: string; mode: "signin" | "test"; testProviderId?: string; testOrganizationId?: string }): Promise<StartResult> {
+/** Usable for sign-in: active, configured, and every managed domain DNS-verified (never a public mail domain). */
+export function signInReady(p: ProviderRow): boolean {
+  return p.status === "active" && protocolConfigured(p) && p.managedDomains.length > 0
+    && p.managedDomains.every((d) => p.verifiedDomains.includes(d) && !PUBLIC_EMAIL_DOMAINS.has(d));
+}
+const TESTABLE = ["pending", "active", "needs_attention"];
+
+export async function startSignIn(deps: SsoDeps, input: { email: unknown; callbackUrl: unknown; redirectUri: string; origin?: string; mode: "signin" | "test"; testProviderId?: string; testOrganizationId?: string }): Promise<StartResult> {
   const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
   if (!EMAIL.test(email)) return { ok: false, reason: "sso.email_invalid" };
   const domain = email.split("@")[1];
   let provider: ProviderRow | null;
   if (input.mode === "test") {
-    provider = await deps.db.tenantIdentityProvider.findFirst({ where: { id: input.testProviderId, organizationId: input.testOrganizationId, protocol: "oidc", status: { in: ["pending", "active", "needs_attention"] } } });
+    provider = await deps.db.tenantIdentityProvider.findFirst({ where: { id: input.testProviderId, organizationId: input.testOrganizationId, status: { in: TESTABLE } } });
     if (!provider || !provider.managedDomains.includes(domain)) return { ok: false, reason: "sso.no_provider_for_domain" };
   } else {
-    const rows = (await deps.db.tenantIdentityProvider.findMany({ where: { status: "active", protocol: "oidc", managedDomains: { has: domain } } })).filter(signInReady);
+    const rows = (await deps.db.tenantIdentityProvider.findMany({ where: { status: "active", managedDomains: { has: domain } } })).filter(signInReady);
     if (rows.length !== 1) return { ok: false, reason: rows.length ? "sso.ambiguous_provider" : "sso.no_provider_for_domain" };
     provider = rows[0];
   }
-  if (!provider.oidcClientId || !provider.encryptedClientSecret) return { ok: false, reason: "sso.provider_incomplete" };
-  let d: OidcDiscovery;
-  try { d = await discover(provider.issuerOrEntityId, deps.fetch); } catch (e) { return { ok: false, reason: e instanceof OidcError ? e.code : "sso.discovery_unavailable" }; }
-  const req = authorizationRequest(d, provider.oidcClientId, input.redirectUri, email, deps.random);
-  const id = stateKey(req.state), now = deps.now?.() ?? new Date();
-  await deps.db.ssoLoginAttempt.create({
+  if (!protocolConfigured(provider)) return { ok: false, reason: "sso.provider_incomplete" };
+  const now = deps.now?.() ?? new Date();
+  const store = async (id: string, secrets: Record<string, string>) => deps.db.ssoLoginAttempt.create({
     data: {
       id, providerId: provider.id, organizationId: provider.organizationId, mode: input.mode, callbackUrl: safeCallback(input.callbackUrl),
-      encryptedSecrets: deps.encrypt(JSON.stringify({ nonce: req.nonce, codeVerifier: req.codeVerifier, email }), attemptContext(id)),
+      encryptedSecrets: deps.encrypt(JSON.stringify({ ...secrets, email, createdAt: now.toISOString() }), attemptContext(id)),
       expiresAt: new Date(now.getTime() + ATTEMPT_TTL_MS),
     },
   });
+  if (provider.protocol === "saml") {
+    if (!input.origin) return { ok: false, reason: "sso.unavailable" };
+    const state = (deps.random ?? randomBytes)(32).toString("base64url");
+    let auth;
+    try { auth = await samlAuthorize(parseIdpMetadata(provider.metadataDocument ?? ""), spEndpoints(input.origin, provider.id), state); }
+    catch { return { ok: false, reason: "sso.saml_metadata_invalid" }; }
+    await store(stateKey(state), { requestId: auth.requestId });
+    return { ok: true, redirectUrl: auth.url };
+  }
+  if (!provider.oidcClientId) return { ok: false, reason: "sso.provider_incomplete" };
+  let d: OidcDiscovery;
+  try { d = await discover(provider.issuerOrEntityId, deps.fetch); } catch (e) { return { ok: false, reason: e instanceof OidcError ? e.code : "sso.discovery_unavailable" }; }
+  const req = authorizationRequest(d, provider.oidcClientId, input.redirectUri, email, deps.random);
+  await store(stateKey(req.state), { nonce: req.nonce, codeVerifier: req.codeVerifier });
   return { ok: true, redirectUrl: req.url };
 }
 
-export async function completeCallback(deps: SsoDeps, input: { state: unknown; code: unknown; error: unknown; redirectUri: string }): Promise<CallbackResult> {
-  if (typeof input.state !== "string" || input.state.length < 20 || input.state.length > 200) return { ok: false, reason: "sso.state_invalid" };
-  const id = stateKey(input.state), now = deps.now?.() ?? new Date();
+type Secrets = { email: string; createdAt?: string; nonce?: string; codeVerifier?: string; requestId?: string };
+type Claimed = { ok: false; reason: string } | { ok: true; id: string; now: Date; attempt: AttemptRow; secrets: Secrets; provider: ProviderRow };
+
+/** Consumes the attempt named by `state` exactly once and loads its provider, which must still be usable for that protocol. */
+async function claimAttempt(deps: SsoDeps, state: unknown, protocol: "oidc" | "saml"): Promise<Claimed> {
+  if (typeof state !== "string" || state.length < 20 || state.length > 200) return { ok: false, reason: "sso.state_invalid" };
+  const id = stateKey(state), now = deps.now?.() ?? new Date();
   const attempt = await deps.db.ssoLoginAttempt.findUnique({ where: { id } });
   if (!attempt) return { ok: false, reason: "sso.state_invalid" };
   // Exactly-once: a replayed or late callback loses this race and changes nothing.
   const won = await deps.db.ssoLoginAttempt.updateMany({ where: { id, consumedAt: null, expiresAt: { gt: now } }, data: { consumedAt: now } });
   if (won.count !== 1) return { ok: false, reason: "sso.state_expired_or_used" };
-  if (typeof input.error === "string" && input.error) return { ok: false, reason: "sso.idp_refused" };
-  let secrets: { nonce: string; codeVerifier: string; email: string };
+  let secrets: Secrets;
   try { secrets = JSON.parse(deps.decrypt(attempt.encryptedSecrets, attemptContext(id))); } catch { return { ok: false, reason: "sso.state_invalid" }; }
   const provider = await deps.db.tenantIdentityProvider.findFirst({ where: { id: attempt.providerId, organizationId: attempt.organizationId } });
-  const usable = provider && (attempt.mode === "test" ? ["pending", "active", "needs_attention"].includes(provider.status) && provider.protocol === "oidc" : signInReady(provider));
-  if (!provider || !usable || !provider.oidcClientId || !provider.encryptedClientSecret) return { ok: false, reason: "sso.provider_unavailable" };
+  const usable = provider && provider.protocol === protocol && (attempt.mode === "test" ? TESTABLE.includes(provider.status) && protocolConfigured(provider) : signInReady(provider));
+  if (!provider || !usable) return { ok: false, reason: "sso.provider_unavailable" };
+  return { ok: true, id, now, attempt, secrets, provider };
+}
+
+export async function completeCallback(deps: SsoDeps, input: { state: unknown; code: unknown; error: unknown; redirectUri: string }): Promise<CallbackResult> {
+  const c = await claimAttempt(deps, input.state, "oidc");
+  if (!c.ok) return c;
+  if (typeof input.error === "string" && input.error) return { ok: false, reason: "sso.idp_refused" };
+  const { provider, secrets } = c;
+  if (!provider.oidcClientId || !provider.encryptedClientSecret || !secrets.nonce || !secrets.codeVerifier) return { ok: false, reason: "sso.provider_unavailable" };
   let identity;
   try {
     const d = await discover(provider.issuerOrEntityId, deps.fetch);
@@ -129,12 +161,37 @@ export async function completeCallback(deps: SsoDeps, input: { state: unknown; c
     await deps.denied({ email: secrets.email, reason });
     return { ok: false, reason };
   }
+  return finishSignIn(deps, c, identity);
+}
+
+/** Validates a POSTed SAMLResponse for the attempt named by RelayState, then finishes like OIDC. */
+export async function completeSamlResponse(deps: SsoDeps, input: { relayState: unknown; samlResponse: unknown; origin: string }): Promise<CallbackResult> {
+  const c = await claimAttempt(deps, input.relayState, "saml");
+  if (!c.ok) return c;
+  const { provider, secrets } = c;
+  if (typeof input.samlResponse !== "string" || !input.samlResponse || input.samlResponse.length > 512 * 1024 || !secrets.requestId) return { ok: false, reason: "sso.saml_response_invalid" };
+  let identity;
+  try {
+    identity = await samlValidate(parseIdpMetadata(provider.metadataDocument ?? ""), spEndpoints(input.origin, provider.id), {
+      samlResponse: input.samlResponse, requestId: secrets.requestId, requestCreatedAt: secrets.createdAt ? new Date(secrets.createdAt) : c.attempt.expiresAt, managedDomains: provider.managedDomains,
+    });
+  } catch (e) {
+    const reason = e instanceof SamlError ? e.code : "sso.saml_response_invalid";
+    await deps.denied({ email: secrets.email, reason });
+    return { ok: false, reason };
+  }
+  return finishSignIn(deps, c, identity);
+}
+
+/** After a verified assertion or ID token: test mode records the test; sign-in applies every workspace rule and issues the ticket. */
+async function finishSignIn(deps: SsoDeps, c: Extract<Claimed, { ok: true }>, identity: { email: string; claims: Record<string, unknown> }): Promise<CallbackResult> {
+  const { id, now, attempt, provider } = c;
   if (attempt.mode === "test") {
     await deps.db.tenantIdentityProvider.update({ where: { id: provider.id }, data: { lastTestAssertionAt: now } });
     return { ok: true, kind: "test_passed", providerId: provider.id };
   }
   const deny = async (reason: string): Promise<CallbackResult> => { await deps.denied({ email: identity.email, reason }); return { ok: false, reason }; };
-  const gate = await evaluateSsoSignIn(deps.db, { email: identity.email, claims: identity.claims as Record<string, unknown> });
+  const gate = await evaluateSsoSignIn(deps.db, { email: identity.email, claims: identity.claims });
   if (gate.kind === "denied") return deny(gate.reason);
   if (gate.organizationId !== provider.organizationId) return deny("sso.issuer_mismatch");
   if (!(ALL_ORG_ROLES as readonly string[]).includes(gate.role) || gate.role === "owner") return deny("sso.role_mapping_invalid");

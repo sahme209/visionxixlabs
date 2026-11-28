@@ -116,7 +116,10 @@ function buildProviders(): NextAuthOptions["providers"] {
       })
     );
   }
-  if (process.env.GITLAB_SIGN_IN_CLIENT_ID && process.env.GITLAB_SIGN_IN_CLIENT_SECRET) {
+  // GitLab: a confidential app (client secret) or a public app that relies on PKCE alone, which
+  // needs only the non-secret application ID. PKCE, state and nonce are checked either way.
+  if (process.env.GITLAB_SIGN_IN_CLIENT_ID) {
+    const gitlabSecret = process.env.GITLAB_SIGN_IN_CLIENT_SECRET;
     providers.push({
       id: "gitlab",
       name: "GitLab",
@@ -124,7 +127,7 @@ function buildProviders(): NextAuthOptions["providers"] {
       wellKnown: `${GITLAB_ISSUER}/.well-known/openid-configuration`,
       authorization: { params: { scope: "openid email" } },
       clientId: process.env.GITLAB_SIGN_IN_CLIENT_ID,
-      clientSecret: process.env.GITLAB_SIGN_IN_CLIENT_SECRET,
+      ...(gitlabSecret ? { clientSecret: gitlabSecret } : { client: { token_endpoint_auth_method: "none" as const } }),
       idToken: true,
       checks: ["pkce", "state", "nonce"],
       profile(profile) {
@@ -157,7 +160,7 @@ function buildProviders(): NextAuthOptions["providers"] {
  *  sign-in page can disable buttons cleanly rather than fail mid-redirect. */
 export const enabledOAuthProviders = {
   google: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
-  gitlab: Boolean(process.env.GITLAB_SIGN_IN_CLIENT_ID && process.env.GITLAB_SIGN_IN_CLIENT_SECRET),
+  gitlab: Boolean(process.env.GITLAB_SIGN_IN_CLIENT_ID),
   github: Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
   cognito: Boolean(process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER),
 };

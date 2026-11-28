@@ -26,6 +26,11 @@ export function tenantSsoDeps(): SsoDeps {
   };
 }
 
+/** V19's own canonical origin (never taken from request headers). */
+export function ssoOrigin(): string | null {
+  return canonicalAuthOrigin(process.env.NEXTAUTH_URL);
+}
+
 /** The one redirect URI every company registers with its identity provider. */
 export function ssoRedirectUri(): string | null {
   const origin = canonicalAuthOrigin(process.env.NEXTAUTH_URL);

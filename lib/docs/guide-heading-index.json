@@ -464,7 +464,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2",
+      "sourceSha256": "df9ee3c187ce551d3e29732b5adcb12a611061aa0240e398b79a874ee908e630",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -474,7 +474,7 @@
         "Change a role or remove someone",
         "Access requests",
         "Provision people from your identity provider (SCIM)",
-        "Company sign-in (single sign-on with OIDC)"
+        "Company sign-in (single sign-on with OIDC or SAML)"
       ]
     },
     {
