@@ -25,6 +25,15 @@ export default function MembersDocsPage() {
   <DocSection id="requests" kicker="04" title="Access requests">
    <p>Members can ask for a higher role through Ask V19. Owners and admins see requests from the last 30 days under <em>Access requests</em>, with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.</p>
   </DocSection>
+  <DocSection id="scim" kicker="05" title="Provision people from your identity provider (SCIM)">
+   <p>Microsoft Entra ID, Okta and other SCIM 2.0 directories can keep your V19 workspace in step with your company directory. Create an API key with the <code>scim:provision</code> scope under API keys, then in your identity provider&apos;s provisioning settings enter:</p>
+   <ul className="list-disc space-y-1 pl-5 text-zinc-400">
+    <li>Tenant or base URL: <code>https://visionxixlabs.com/api/scim/v2</code></li>
+    <li>Secret token: the API key (sent as a bearer token)</li>
+    <li>Matching attribute: <code>userName</code> (the person&apos;s email). Users only; group provisioning is not used.</li>
+   </ul>
+   <p>When the directory adds someone, V19 records them as provisioned but grants nothing: they still join through an invite, and their role comes from the workspace. When the directory deactivates or removes someone, V19 signs them out of every desktop session in this workspace straight away and suspends their membership. The record and the audit trail are kept. The workspace owner is never suspended by SCIM, so a directory mistake cannot lock you out. Reactivating someone in the directory does not restore access by itself: an admin re-admits them. Every change appears in the audit log with the API key that made it. API keys expire after at most 90 days, so put a reminder in your directory to replace the token.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/workspaces",label:"Workspaces"}} next={{href:"/docs/governance-approvals",label:"Governance approvals"}} />
  </>;
 }
