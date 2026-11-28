@@ -46,6 +46,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "macOS": {
+      "entitlements": "Entitlements.plist"
+    },
     "windows": {
       "wix": {
         "upgradeCode": "a3c7da37-1792-51f2-8b3a-8848b1b33f88",

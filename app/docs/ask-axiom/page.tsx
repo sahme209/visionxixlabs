@@ -27,6 +27,10 @@ export default function AskAxiomDocsPage() {
    <p>Choose <strong>Review a support request</strong> to carry the question to the contact form in the same tab. Review and edit it before you send. The question stays out of the page address, and opening the form does not submit a request. Ask V19 can also record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions.</p>
    <p>It can also run three fixed actions, governed like any other agent: <em>seal the audit log</em> (owners and admins), <em>verify the audit log</em> (any member) and <em>list API keys expiring soon</em> (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.</p>
   </DocSection>
+  <DocSection id="dictation" kicker="05" title="Speak instead of type">
+   <p>Choose the microphone next to the question box to dictate. Each finished phrase is added to the box for you to review; nothing is sent until you send it. Choose the microphone again to stop. The same button is in the desktop Agent request box.</p>
+   <p>The button appears only where your browser or system offers speech recognition. Your browser may send audio to its own speech service. If the button is missing or reports a problem, use your system dictation instead: press Fn twice on a Mac, or Windows key + H on Windows.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/batch-providers",label:"Batch providers"}} next={{href:"/docs/plugins",label:"Apps and skills"}} />
  </>;
 }

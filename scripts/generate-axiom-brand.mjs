@@ -1,3 +1,5 @@
+// Website icons now come from scripts/generate-vxix-site-icons.mjs (vxix code mark). Running this script
+// overwrites them with the old mark; use it only for the desktop icons it also writes.
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import sharp from 'sharp';

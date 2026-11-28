@@ -386,7 +386,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304",
+      "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc",
       "fields": [
         "Ask V19.",
         "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",
@@ -394,7 +394,8 @@
         "Answers from the docs",
         "Fuller AI answers",
         "Help with your workspace",
-        "What it can do for you"
+        "What it can do for you",
+        "Speak instead of type"
       ]
     },
     {
