@@ -28,7 +28,7 @@ if [ -n "$WORKSPACES" ]; then
   fields+=("\"allowedWorkspaceIds\": [$ids]")
 fi
 case "$NOTICES" in "") ;; true|false) fields+=("\"updateNotices\": $NOTICES");; *) fail "update notices must be true or false";; esac
-if [ "${#fields[@]:-0}" -eq 0 ] 2>/dev/null || [ -z "${fields+x}" ]; then body=$'{}\n'; else body="{"; for i in "${!fields[@]}"; do body+=$'\n  '"${fields[$i]}"; [ "$i" -lt $((${#fields[@]} - 1)) ] && body+=","; done; body+=$'\n}\n'; fi
+if [ -z "${fields[*]+x}" ]; then body=$'{}\n'; else body="{"; for i in "${!fields[@]}"; do body+=$'\n  '"${fields[$i]}"; [ "$i" -lt $((${#fields[@]} - 1)) ] && body+=","; done; body+=$'\n}\n'; fi
 dir="$(dirname "$TARGET")"
 mkdir -p "$dir"
 tmp="$(mktemp "$dir/.policy.XXXXXX")"
