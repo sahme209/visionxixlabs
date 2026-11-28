@@ -124,7 +124,9 @@ class VisionXIXLabs:
 
         Required scope: checks:report. Keys: checkKey, checkVersion, stage, status
         (passed | failed | error), idempotencyKey, and optionally durationMs, runUrl,
-        environmentSlug, releaseRef. Idempotent on idempotencyKey.
+        environmentSlug, releaseRef, and monthlyCostUsd for cost estimate checks
+        (V19 then decides pass or fail against the check's limit and returns
+        recordedStatus, statusReason and monthlyCostDeltaCents). Idempotent on idempotencyKey.
         """
         return self._post("/api/v1/checks/results", result)
 

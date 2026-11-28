@@ -126,6 +126,13 @@ curl -fsS -X POST -H "Authorization: Bearer $VXL_API_KEY" -H 'Content-Type: appl
   https://visionxixlabs.com/api/v1/checks/results
 ```
 
+For a **cost estimate** check, add `monthlyCostUsd` (Infracost's
+`totalMonthlyCost`). V19 compares it with the previous estimate for a
+different commit and records `failed` with `statusReason: "over_cost_limit"`
+when the increase is above the check's limit, whatever status CI sent. The
+response includes `recordedStatus`, `statusReason` and `monthlyCostDeltaCents`.
+`monthlyCostUsd` is refused for other check kinds.
+
 ## Webhook signature verification
 
 When you register a webhook endpoint, the platform returns a `secret`

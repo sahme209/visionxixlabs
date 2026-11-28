@@ -89,6 +89,8 @@ export interface CheckResultInput {
   releaseRef?: string;
   /** Unique per check run, e.g. `${runId}-${attempt}-${checkKey}`; retries with the same key record once. */
   idempotencyKey: string;
+  /** Cost estimate checks only: estimated monthly cost in US dollars. V19 decides pass or fail against the check's limit. */
+  monthlyCostUsd?: number;
 }
 
 export interface FreezeDeploymentsInput {
@@ -106,7 +108,7 @@ export type FreezeDeploymentsResponse =
   | { ok: true; duplicate: true; summary: string };
 
 export type CheckResultResponse =
-  | { ok: true; recorded: true; currentVersion: number; stale: boolean }
+  | { ok: true; recorded: true; currentVersion: number; stale: boolean; recordedStatus?: "passed" | "failed" | "error"; statusReason?: "over_cost_limit" | "cost_missing" | null; monthlyCostDeltaCents?: number | null }
   | { ok: true; recorded: false; duplicate: true };
 
 export interface ReleaseGateResponse {

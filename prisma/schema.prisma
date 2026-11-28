@@ -3008,6 +3008,10 @@ model DeploymentCheckResult {
   idempotencyKey  String
   apiKeyId        String
   reportedAt      DateTime @default(now())
+  /// Cost estimate checks: estimated monthly cost in US cents, as reported by CI.
+  monthlyCostCents Int?
+  /// Why V19 recorded a status different from the one CI reported (over_cost_limit | cost_missing).
+  statusReason    String?
 
   @@unique([organizationId, idempotencyKey])
   @@index([organizationId, checkKey, reportedAt])

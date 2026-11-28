@@ -130,6 +130,9 @@ type CheckResultInput struct {
 	EnvironmentSlug string `json:"environmentSlug,omitempty"`
 	ReleaseRef      string `json:"releaseRef,omitempty"`
 	IdempotencyKey  string `json:"idempotencyKey"`
+
+	// MonthlyCostUSD is for cost estimate checks only; V19 decides pass or fail against the check's limit.
+	MonthlyCostUSD *float64 `json:"monthlyCostUsd,omitempty"`
 }
 
 // CheckResultResponse reports whether the result was recorded or was a duplicate.
@@ -139,6 +142,11 @@ type CheckResultResponse struct {
 	Duplicate      bool `json:"duplicate,omitempty"`
 	CurrentVersion int  `json:"currentVersion,omitempty"`
 	Stale          bool `json:"stale,omitempty"`
+
+	// Cost estimate checks: the status V19 recorded, why it differs from CI's, and the change from the previous estimate.
+	RecordedStatus        string  `json:"recordedStatus,omitempty"`
+	StatusReason          *string `json:"statusReason,omitempty"`
+	MonthlyCostDeltaCents *int64  `json:"monthlyCostDeltaCents,omitempty"`
 }
 
 type ReleaseGateResponse struct {

@@ -49,4 +49,16 @@ describe("generateCheckWorkflow", () => {
     expect(report.run).toContain("/api/v1/checks/results");
     expect(report.run).toContain('--arg idem "$RUN_KEY-$V19_CHECK_KEY"');
   });
+  it("estimates cost with the pinned Infracost action and reports the monthly cost to V19", () => {
+    const out = generateCheckWorkflow([c({ key: "infra-cost", name: "Cost", kind: "cost_estimate", stage: "validate", spec: { tool: "infracost", path: "infra/prod", maxMonthlyIncreaseUsd: 500 } }), c({})]);
+    expect(parseDocument(out.yaml).errors).toEqual([]);
+    const js = parseDocument(out.yaml).toJS() as { jobs: Record<string, { env: Record<string, string>; steps: Array<{ uses?: string; with?: Record<string, string>; run?: string }> }> };
+    const job = js.jobs.check_infra_cost;
+    expect(job.env.COST_PATH).toBe("infra/prod");
+    expect(job.steps.some((st) => st.uses === "infracost/actions/setup@a5783eb98adc93aa7a0049fce0abb06fdd30770a" && st.with?.["api-key"] === "${{ secrets.INFRACOST_API_KEY }}")).toBe(true);
+    const report = job.steps.find((st) => st.run?.includes("/api/v1/checks/results"))!.run!;
+    expect(report).toContain("monthlyCostUsd");
+    expect(js.jobs.check_health_probe.steps.find((st) => st.run?.includes("/api/v1/checks/results"))!.run).not.toContain("monthlyCostUsd");
+  });
 });
+

@@ -31,9 +31,18 @@ export async function GET(): Promise<NextResponse> {
     const order = (stage: string) => { const i = (CHECK_STAGES as readonly string[]).indexOf(stage); return i < 0 ? CHECK_STAGES.length : i; };
     const checks = [...rows].sort((a, b) => order(a.stage) - order(b.stage));
     // Latest reported result per check; optional evidence, so a read failure only hides it.
-    const results = await (async () => prisma.deploymentCheckResult.findMany({ where: { organizationId: ctx.organizationId }, orderBy: { reportedAt: "desc" }, take: 500, select: { checkKey: true, checkVersion: true, status: true, runUrl: true, reportedAt: true } }))().catch(() => null);
-    const latest: Record<string, { status: string; checkVersion: number; runUrl: string | null; reportedAt: string }> = {};
-    for (const r of results ?? []) if (!latest[r.checkKey]) latest[r.checkKey] = { status: r.status, checkVersion: r.checkVersion, runUrl: r.runUrl, reportedAt: r.reportedAt.toISOString() };
+    const results = await (async () => prisma.deploymentCheckResult.findMany({ where: { organizationId: ctx.organizationId }, orderBy: { reportedAt: "desc" }, take: 500, select: { checkKey: true, checkVersion: true, status: true, runUrl: true, reportedAt: true, releaseRef: true, monthlyCostCents: true, statusReason: true } }))().catch(() => null);
+    const latest: Record<string, { status: string; checkVersion: number; runUrl: string | null; reportedAt: string; monthlyCostCents?: number; previousMonthlyCostCents?: number; statusReason?: string }> = {};
+    for (const r of results ?? []) {
+      const seen = latest[r.checkKey];
+      if (!seen) {
+        latest[r.checkKey] = { status: r.status, checkVersion: r.checkVersion, runUrl: r.runUrl, reportedAt: r.reportedAt.toISOString(), ...(r.monthlyCostCents !== null && r.monthlyCostCents !== undefined ? { monthlyCostCents: r.monthlyCostCents } : {}), ...(r.statusReason ? { statusReason: r.statusReason } : {}) };
+        continue;
+      }
+      // Cost estimates: the previous estimate for a different commit, so the board can show the change.
+      const first = (results ?? []).find((x) => x.checkKey === r.checkKey)!;
+      if (seen.monthlyCostCents !== undefined && seen.previousMonthlyCostCents === undefined && r.monthlyCostCents !== null && r.monthlyCostCents !== undefined && r.releaseRef !== first.releaseRef) seen.previousMonthlyCostCents = r.monthlyCostCents;
+    }
     return NextResponse.json({ ok: true, data: { canEdit: ctx.isAdmin, checks, coverage: stageCoverage(checks as unknown as StoredCheck[]), latestResults: results === null ? null : latest } }, { headers: noStore });
   } catch {
     return fail("checks_unavailable", 503);
