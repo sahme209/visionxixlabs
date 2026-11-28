@@ -1,0 +1,43 @@
+name: Terraform provider
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "sdk/terraform-provider-v19/**"
+      - ".github/workflows/terraform-provider.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: sdk/terraform-provider-v19
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.24"
+      - name: Resolve modules when go.sum is not committed yet
+        run: |
+          if [ ! -f go.sum ]; then
+            go get github.com/hashicorp/terraform-plugin-framework@latest
+            go mod tidy
+          fi
+      - run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build -o terraform-provider-v19 .
+      - name: Keep the resolved module files
+        uses: actions/upload-artifact@v7
+        with:
+          name: terraform-provider-go-mod
+          path: |
+            sdk/terraform-provider-v19/go.mod
+            sdk/terraform-provider-v19/go.sum
