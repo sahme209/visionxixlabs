@@ -296,7 +296,11 @@ describe("desktop first-run contract", () => {
 
   it("restricts the native transport to the product API allowlist", () => {
     const transport = readFileSync(join(root, "desktop/src-tauri/src/http.rs"), "utf8");
-    expect(transport).toContain('const API_ORIGIN: &str = "https://visionxixlabs.com"');
+    // The origin is visionxixlabs.com unless the administrator-only policy file names the company's own server.
+    expect(transport).toContain("crate::server_origin::api_origin()?");
+    const origin = readFileSync(join(root, "desktop/src-tauri/src/server_origin.rs"), "utf8");
+    expect(origin).toContain('pub const DEFAULT_ORIGIN: &str = "https://visionxixlabs.com"');
+    expect(origin).toContain('url.scheme() != "https"');
     expect(transport).toContain('path.starts_with("/api/")');
     expect(transport).toContain("redirect(reqwest::redirect::Policy::none())");
     expect(transport).toContain('"authorization"');
