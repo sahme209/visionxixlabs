@@ -20,9 +20,14 @@ describe.each(["macos", "linux"])("v19-policy-%s.sh", (os) => {
   it("writes a file the app accepts", () => {
     const r = run("full", ["Example Health IT", "org_abc, org-2", "false"]);
     expect(r.status).toBe(0);
-    expect(parse(r.file)).toEqual({ kind: "ok", path: r.file, policy: { managedBy: "Example Health IT", allowedWorkspaceIds: ["org_abc", "org-2"], updateNotices: false } });
+    expect(parse(r.file)).toEqual({ kind: "ok", path: r.file, policy: { managedBy: "Example Health IT", allowedWorkspaceIds: ["org_abc", "org-2"], updateNotices: false, serverUrl: null } });
     const empty = run("empty", ["", "", ""]);
     expect(parse(empty.file)).toMatchObject({ kind: "ok", policy: { managedBy: null, allowedWorkspaceIds: null, updateNotices: true } });
+  });
+  it("sets the company's own V19 server and refuses a non-HTTPS one", () => {
+    const r = run("server", ["", "", "", "https://v19.corp.example:8443/"]);
+    expect(parse(r.file)).toMatchObject({ kind: "ok", policy: { serverUrl: "https://v19.corp.example:8443" } });
+    expect(run("server-bad", ["", "", "", "http://v19.corp.example"]).status).not.toBe(0);
   });
   it("accepts Jamf-style parameters 4 to 6", () => {
     const r = run("jamf", ["/", "host", "user", "Acme", "org_x", "true"]);

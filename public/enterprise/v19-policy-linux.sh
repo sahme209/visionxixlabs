@@ -3,9 +3,10 @@
 # Arguments: $1 = managedBy (company name shown in Settings, optional)
 #            $2 = allowed workspace IDs, comma-separated (optional)
 #            $3 = update notices: "true" or "false" (optional, default true)
+#            $4 = your own V19 server, https://host[:port] (optional; self-hosted or air-gapped)
 # V19_POLICY_FILE overrides the target path (testing only).
 set -euo pipefail
-if [ -n "${4-}${5-}${6-}" ]; then MANAGED_BY="${4-}"; WORKSPACES="${5-}"; NOTICES="${6-}"; else MANAGED_BY="${1-}"; WORKSPACES="${2-}"; NOTICES="${3-}"; fi
+if [ -n "${4-}${5-}${6-}${7-}" ] && [ "$#" -ge 5 ]; then MANAGED_BY="${4-}"; WORKSPACES="${5-}"; NOTICES="${6-}"; SERVER="${7-}"; else MANAGED_BY="${1-}"; WORKSPACES="${2-}"; NOTICES="${3-}"; SERVER="${4-}"; fi
 TARGET="${V19_POLICY_FILE:-/etc/v19/policy.json}"
 fail() { echo "V19 policy: $1" >&2; exit 1; }
 fields=()
@@ -28,6 +29,10 @@ if [ -n "$WORKSPACES" ]; then
   fields+=("\"allowedWorkspaceIds\": [$ids]")
 fi
 case "$NOTICES" in "") ;; true|false) fields+=("\"updateNotices\": $NOTICES");; *) fail "update notices must be true or false";; esac
+if [ -n "$SERVER" ]; then
+  [[ "$SERVER" =~ ^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?/?$ ]] || fail "server URL must be https://host or https://host:port"
+  fields+=("\"serverUrl\": \"${SERVER%/}\"")
+fi
 if [ -z "${fields[*]+x}" ]; then body=$'{}\n'; else body="{"; for i in "${!fields[@]}"; do body+=$'\n  '"${fields[$i]}"; [ "$i" -lt $((${#fields[@]} - 1)) ] && body+=","; done; body+=$'\n}\n'; fi
 dir="$(dirname "$TARGET")"
 mkdir -p "$dir"

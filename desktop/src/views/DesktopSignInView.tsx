@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { retrySavedDesktopSignIn } from "../lib/activeDesktopCredential";
 import { signInWithBrowser } from "../lib/desktopPairing";
 import { verifyAndSaveApiKey } from "../lib/apiKeyStore";
-import { type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+
+function serviceHost(): string {
+  try { return new URL(desktopClient.config.apiBase).host; } catch { return "visionxixlabs.com"; }
+}
 
 export function DesktopSignInView({
   onSignedIn,
@@ -134,7 +138,7 @@ export function DesktopSignInView({
             Cancel
           </button>
         )}
-        <p className="mt-5 text-xs leading-5 text-zinc-400">Both options open visionxixlabs.com in your default browser. {DESKTOP_PRODUCT_NAME} never embeds your identity-provider password.</p>
+        <p className="mt-5 text-xs leading-5 text-zinc-400">Both options open {serviceHost()} in your default browser. {DESKTOP_PRODUCT_NAME} never embeds your identity-provider password.</p>
         <details className="group mt-6 rounded-xl border border-white/6 bg-white/1.5 p-4 text-left transition-colors open:border-white/9 open:bg-white/2.5">
           <summary className="cursor-pointer text-xs font-medium text-zinc-500 transition-colors group-hover:text-zinc-300">Enterprise recovery sign-in</summary>
           <p className="mt-3 text-xs leading-5 text-zinc-400">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>

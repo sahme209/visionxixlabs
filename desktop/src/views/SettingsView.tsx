@@ -400,6 +400,7 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
       <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
       {managedPolicy?.kind === "ok" && managedPolicy.policy.managedBy && <InfoRow label="Managed by" value={managedPolicy.policy.managedBy} />}
+      {managedPolicy?.kind === "ok" && managedPolicy.policy.serverUrl && <InfoRow label="V19 server" value={managedPolicy.policy.serverUrl} />}
       {managedPolicy?.kind === "ok" && !managedPolicy.policy.updateNotices
         ? <InfoRow label="Desktop updates" value="Handled by your organization" />
         : <><LatestReleaseRow installedVersion={installedVersion} />

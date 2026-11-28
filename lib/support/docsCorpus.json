@@ -272,56 +272,56 @@
    "title": "Installer availability and download pauses",
    "text": "Check Windows availability and the corresponding macOS and Linux links ask the service to check the current release manifest for that platform. If the service confirms an installer, the link can continue to the matching file. Desktop downloads are temporarily paused means the required service storage checks are unavailable. Release status unavailable means the current installer status could not be verified. To recheck installer availability, choose Recheck release status on the download page . From the installer availability screen, choose Return to downloads . Check the release and platform details before installing.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#current-state",
    "title": "What the current desktop build delivers",
    "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#requirements",
    "title": "System requirements",
    "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Browser engine for Tailwind 4 source builds — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer. Network — HTTPS access to the configured V19 API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#install-macos",
    "title": "Install — macOS (Apple Silicon + Intel)",
    "text": "Visit /download . Choose Apple Silicon or Intel. A verified download link points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag V19 to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#install-windows",
    "title": "Install — Windows x64",
    "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch V19, and approve the desktop pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#install-linux",
    "title": "Install — Linux x64",
    "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. Run the commands for the package you verified. These examples use v0.1.28. Substitute the exact filename for the version you downloaded. chmod +x ./V19_0.1.28_amd64.AppImage ./V19_0.1.28_amd64.AppImage sudo dpkg -i ./V19_0.1.28_amd64.deb sudo rpm -i ./V19-0.1.28-1.x86_64.rpm Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#updates",
    "title": "Desktop installer updates, website deployments and release notes",
    "text": "A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer. In releases that include About this app , open Settings → General and check Installed version . This value comes from the installed app. Unavailable means it could not be read, not that a newer version is installed. Older releases may not have this section. Review releases opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer's verification details. The current desktop installer does not update automatically. Check the download page for a newer verified tag and install it manually. Review the public V19 release notes before upgrading.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/desktop-install#enterprise",
    "title": "Deploy V19 across your organization",
    "text": "IT teams can push V19 from their own software catalog or company app store with Microsoft Intune, Configuration Manager (SCCM), Jamf or their Linux package tooling. Every installer is listed with its SHA-256 checksum and a detached GPG signature on the release page; verify them before you add a package to your catalog. Windows (Intune, SCCM, other tools) Use the .msi . It installs for all users under Program Files and keeps the same upgrade code in every release, so a newer MSI replaces the older one. In Intune, add it as a line-of-business app; Intune detects it by its product code. Silent install and removal: msiexec /i V19_0.1.28_x64_en-US.msi /qn /norestart msiexec /x V19_0.1.28_x64_en-US.msi /qn /norestart The installers are not yet Authenticode-signed, so SmartScreen can warn when people install by hand; managed installs are not affected. The Microsoft Store edition (V19 Studio), once listed, is signed by Microsoft and can be deployed from Intune as a Microsoft Store app. macOS (Jamf, Intune) The disk images are signed and notarized. Deploy the .dmg directly where your tool supports disk images, such as Intune's macOS app (DMG) type, or turn it into a package for Jamf: hdiutil attach V19_0.1.28_aarch64.dmg -nobrowse -mountpoint /tmp/v19 pkgbuild --component /tmp/v19/V19.app --install-location /Applications V19-0.1.28.pkg hdiutil detach /tmp/v19 Linux Add the .deb or .rpm to your internal repository and install it with your configuration tooling, for example apt install ",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "51ff5464b2fd5759f1bccf20a0e57ad629d069c0900e2bef01da0180bba22e6a"
+   "sourceSha256": "43cf175425acf853ccdd6f8ae4c4424b95ca225e73f1629725666dee1774b34d"
   },
   {
    "href": "/docs/execution-plans#read",
