@@ -26,6 +26,14 @@ class RenderManifestTest(unittest.TestCase):
         self.assertEqual(ident.get("Name"), "VisionXIXLabs.V19.Placeholder")
         self.assertEqual(ident.get("Version"), "0.1.27.0")
 
+    def test_reserved_store_identity_renders(self):
+        text, placeholder = render(TEMPLATE, "0.1.27", "15640VisionXIXLabs.V19Studio", "CN=D5866528-F43C-4DB9-BF7A-06E79642AD6E", "VisionXIXLabs", "V19 Studio")
+        self.assertFalse(placeholder)
+        root = ET.fromstring(text)
+        self.assertEqual(root.find("m:Identity", NS).get("Name"), "15640VisionXIXLabs.V19Studio")
+        self.assertEqual(root.find("m:Properties/m:DisplayName", NS).text, "V19 Studio")
+        self.assertEqual(root.find(".//uap:VisualElements", NS).get("DisplayName"), "V19 Studio")
+
     def test_partner_center_identity_is_used_and_escaped(self):
         text, placeholder = render(TEMPLATE, "0.1.27", "12345Samir.V19", "CN=1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D", "Samir & Co")
         self.assertFalse(placeholder)

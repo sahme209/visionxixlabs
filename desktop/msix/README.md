@@ -20,10 +20,12 @@ NSIS installers stay as they are (unsigned) for machines without the Store.
 
 ## Store identity
 
-Partner Center → the app → Product identity gives three values (not secrets). Set them as repository
-variables: `MSIX_IDENTITY_NAME` (Package/Identity/Name), `MSIX_PUBLISHER` (Package/Identity/Publisher,
-starts with `CN=`) and `MSIX_PUBLISHER_DISPLAY_NAME`. Without them the workflow uses a placeholder
-identity and marks the run "testing only": such a package installs locally but cannot be uploaded.
+"V19 Studio" is reserved in Partner Center (Store ID 9NT5CQGD24GL); the first submission is due by
+about 2027-02-28 or the reservation lapses. Its Product identity values (not secrets) are set as
+repository variables: `MSIX_IDENTITY_NAME` = `15640VisionXIXLabs.V19Studio`, `MSIX_PUBLISHER` =
+`CN=D5866528-F43C-4DB9-BF7A-06E79642AD6E`, `MSIX_PUBLISHER_DISPLAY_NAME` = `VisionXIXLabs` and
+`MSIX_DISPLAY_NAME` = `V19 Studio` (must match the reserved name). Without them the workflow uses a
+placeholder identity and marks the run "testing only".
 
 ## Not covered by the workflow
 

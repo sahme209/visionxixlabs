@@ -3,7 +3,8 @@ name: Desktop Microsoft Store package
 # Builds the V19 desktop app as an MSIX package for the Microsoft Store. The Store signs the package
 # after certification, so this workflow uploads it unsigned: no certificate or secret is involved.
 # Identity values come from Partner Center (Product identity) through the repository variables
-# MSIX_IDENTITY_NAME, MSIX_PUBLISHER and MSIX_PUBLISHER_DISPLAY_NAME; until they exist a placeholder
+# MSIX_IDENTITY_NAME, MSIX_PUBLISHER, MSIX_PUBLISHER_DISPLAY_NAME and MSIX_DISPLAY_NAME (the reserved app
+# name); until they exist a placeholder
 # identity is used and the summary says the package is for testing only.
 # Before uploading, the job installs the package with a throwaway test certificate, checks that the
 # app starts and the sign-in link is registered, and removes it again.
@@ -33,6 +34,7 @@ jobs:
       MSIX_IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME }}
       MSIX_PUBLISHER: ${{ vars.MSIX_PUBLISHER }}
       MSIX_PUBLISHER_DISPLAY_NAME: ${{ vars.MSIX_PUBLISHER_DISPLAY_NAME }}
+      MSIX_DISPLAY_NAME: ${{ vars.MSIX_DISPLAY_NAME }}
     steps:
       - uses: actions/checkout@v7
         env:
@@ -74,7 +76,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$stage/Assets" | Out-Null
           Copy-Item "desktop/src-tauri/target/$env:TARGET/release/axiom-desktop.exe" $stage
           Copy-Item desktop/msix/Assets/*.png "$stage/Assets/"
-          $out = python scripts/msix/render_manifest.py desktop/msix/AppxManifest.template.xml "$stage/AppxManifest.xml" $version "$env:MSIX_IDENTITY_NAME" "$env:MSIX_PUBLISHER" "$env:MSIX_PUBLISHER_DISPLAY_NAME"
+          $out = python scripts/msix/render_manifest.py desktop/msix/AppxManifest.template.xml "$stage/AppxManifest.xml" $version "$env:MSIX_IDENTITY_NAME" "$env:MSIX_PUBLISHER" "$env:MSIX_PUBLISHER_DISPLAY_NAME" "$env:MSIX_DISPLAY_NAME"
           if ($LASTEXITCODE -ne 0) { throw 'manifest rendering failed' }
           $placeholder = [bool](@($out) -match 'placeholder_identity=true')
           $sdk = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin' -Directory | Where-Object Name -Match '^10\.' | Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1

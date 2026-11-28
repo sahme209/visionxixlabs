@@ -5,7 +5,9 @@ Identity values come from Partner Center (the app's Product identity page). Unti
 placeholders below are used; such a package installs for testing but cannot be uploaded to the Store,
 and the summary says so.
 
-Usage: render_manifest.py <template> <out> <semver> [identity_name] [publisher] [publisher_display_name]
+Usage: render_manifest.py <template> <out> <semver> [identity_name] [publisher] [publisher_display_name] [display_name]
+
+The display name must match the name reserved in Partner Center.
 """
 import re
 import sys
@@ -15,6 +17,7 @@ PLACEHOLDER = {
     "IDENTITY_NAME": "VisionXIXLabs.V19.Placeholder",
     "PUBLISHER": "CN=V19 Placeholder Publisher",
     "PUBLISHER_DISPLAY_NAME": "Vision XIX Labs",
+    "DISPLAY_NAME": "V19",
 }
 
 
@@ -29,7 +32,9 @@ def msix_version(semver: str) -> str:
     return ".".join(str(p) for p in parts) + ".0"
 
 
-def validate(identity_name: str, publisher: str, display: str) -> None:
+def validate(identity_name: str, publisher: str, display: str, app_name: str = "V19") -> None:
+    if not (1 <= len(app_name) <= 256) or re.search(r"[\r\n]", app_name):
+        raise ValueError("display name must be one line of 1-256 characters")
     if not re.fullmatch(r"[A-Za-z0-9.-]{3,50}", identity_name):
         raise ValueError("identity name must be 3-50 letters, digits, dots or dashes")
     if not re.fullmatch(r"CN=[^\r\n<>\"&]{1,8000}", publisher):
@@ -38,13 +43,14 @@ def validate(identity_name: str, publisher: str, display: str) -> None:
         raise ValueError("publisher display name must be one line of 1-256 characters")
 
 
-def render(template: str, semver: str, identity_name: str = "", publisher: str = "", display: str = "") -> tuple[str, bool]:
+def render(template: str, semver: str, identity_name: str = "", publisher: str = "", display: str = "", app_name: str = "") -> tuple[str, bool]:
     values = {
         "IDENTITY_NAME": identity_name or PLACEHOLDER["IDENTITY_NAME"],
         "PUBLISHER": publisher or PLACEHOLDER["PUBLISHER"],
         "PUBLISHER_DISPLAY_NAME": display or PLACEHOLDER["PUBLISHER_DISPLAY_NAME"],
+        "DISPLAY_NAME": app_name or PLACEHOLDER["DISPLAY_NAME"],
     }
-    validate(values["IDENTITY_NAME"], values["PUBLISHER"], values["PUBLISHER_DISPLAY_NAME"])
+    validate(values["IDENTITY_NAME"], values["PUBLISHER"], values["PUBLISHER_DISPLAY_NAME"], values["DISPLAY_NAME"])
     values["VERSION"] = msix_version(semver)
     out = template
     for key, value in values.items():
@@ -60,7 +66,7 @@ def main(argv: list[str]) -> int:
         print(__doc__, file=sys.stderr)
         return 2
     template_path, out_path, semver = argv[1:4]
-    extra = (argv[4:] + ["", "", ""])[:3]
+    extra = (argv[4:] + ["", "", "", ""])[:4]
     with open(template_path, encoding="utf-8") as f:
         text, placeholder = render(f.read(), semver, *extra)
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
