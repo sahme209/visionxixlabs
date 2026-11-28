@@ -118,28 +118,35 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask V19 is not confident, it shows the closest guides and offers to open a support request for you to review. Follow a source link to open the guide or page. The chat closes and keyboard focus moves to the cited section or to the page heading. Open Ask V19 again to return to the conversation. Try a plain question such as How do I set up GCP? or How do I block a GitHub Actions deploy until someone approves? The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
+   "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
+   "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask V19 can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
+   "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
    "text": "Choose Review a support request to carry the question to the contact form in the same tab. Review and edit it before you send. The question stays out of the page address, and opening the form does not submit a request. Ask V19 can also record an access request for a workspace admin to review in Members. Keep the reference to help an admin locate the request. Roles and approvals remain separate decisions. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "5c0e3c33083129f3ea5777880fb6c0b7c5420c3e90803f1072fded5dedb8a304"
+   "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc"
+  },
+  {
+   "href": "/docs/ask-axiom#dictation",
+   "title": "Speak instead of type",
+   "text": "Choose the microphone next to the question box to dictate. Each finished phrase is added to the box for you to review; nothing is sent until you send it. Choose the microphone again to stop. The same button is in the desktop Agent request box. The button appears only where your browser or system offers speech recognition. Your browser may send audio to its own speech service. If the button is missing or reports a problem, use your system dictation instead: press Fn twice on a Mac, or Windows key + H on Windows.",
+   "source": "app/docs/ask-axiom/page.tsx",
+   "sourceSha256": "b16195b0240c5c948e18cf3be68686877adac74b61ba71b7eecaa17167dd1bbc"
   },
   {
    "href": "/docs/audit-logs#desktop-settings",
