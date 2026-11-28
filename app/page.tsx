@@ -11,6 +11,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { ProductBento } from "@/components/marketing/ProductBento";
+import { HomeFaq } from "@/components/marketing/HomeFaq";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { ProductTour } from "@/components/marketing/ProductTour";
@@ -97,6 +99,8 @@ export default function Home() {
 
         <ProductTour />
 
+        <ProductBento />
+
         <section className="px-5 py-24 sm:px-8 lg:px-10" aria-labelledby="public-benefits-title">
           <div className="mx-auto max-w-[1080px]">
             <div className="public-section-intro"><p>// Built for engineering teams</p><h2 id="public-benefits-title">More context.<br/><span>Clearer decisions.</span></h2></div>
@@ -108,6 +112,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <HomeFaq />
 
         <section className="mx-auto max-w-[1128px] px-6 py-24 text-center">
           <div className="rounded-xl bg-[#171615] px-6 py-16">
