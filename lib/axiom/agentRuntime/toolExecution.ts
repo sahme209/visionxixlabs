@@ -8,6 +8,8 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import "server-only";
 import {searchInstalledMicrosoftLearn} from "@/lib/integrations/mcp/microsoftLearn";
 import {callWorkspaceMcpTool, listAgentMcpTools, type WorkspaceMcpRepo} from "@/lib/integrations/mcp/workspaceMcpCall";
+import {CHECK_WORKFLOW_PATH, generateCheckWorkflow, type GeneratableCheck} from "@/lib/releaseops/deploymentCheckWorkflow";
+import {MAX_CHECKS_PER_WORKSPACE} from "@/lib/releaseops/deploymentChecks";
 import type {AgentSkillRepo} from "./skillCatalog";
 import { executeAirflowObservationTool } from "./airflowObservation";
 import { BATCH_OBSERVATION_TOOLS, executeBatchObservationTool, type BatchObservationTool } from "./batchObservation";
@@ -78,6 +80,7 @@ interface TenantIntegrationConnectionRow {
 export interface ToolExecutionRepo {
   agentSkillInstallation?: AgentSkillRepo["agentSkillInstallation"];
   workspaceMcpServer?: WorkspaceMcpRepo["workspaceMcpServer"];
+  deploymentCheck?: { findMany(args: { where: { organizationId: string }; take: number; select: Record<string, true> }): Promise<unknown[]> };
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string; tags?: string[]; changeWindowRuleJson?: unknown }>>;
   };
@@ -132,6 +135,14 @@ export async function executeReadOnlyTool(
     if (!repo.agentSkillInstallation) return {ok:false,error:"mcp_not_enabled"};
     const result=await searchInstalledMicrosoftLearn({agentSkillInstallation:repo.agentSkillInstallation},organizationId,args.query);
     return result.ok ? {ok:true,result:{kind:"public_documentation",source:"Microsoft Learn MCP",...result.data}} : result;
+  }
+  if (toolName === "read_deployment_checks_workflow") {
+    if (!repo.deploymentCheck) return {ok:false,error:"checks_unavailable"};
+    try {
+      const rows = await repo.deploymentCheck.findMany({ where: { organizationId }, take: MAX_CHECKS_PER_WORKSPACE, select: { key: true, name: true, kind: true, stage: true, mode: true, enabled: true, spec: true, version: true } });
+      const out = generateCheckWorkflow(rows as unknown as GeneratableCheck[]);
+      return {ok:true,result:{kind:"generated_workflow",path:CHECK_WORKFLOW_PATH,yaml:out.yaml,included:out.included,skipped:out.skipped}};
+    } catch { return {ok:false,error:"checks_unavailable"}; }
   }
   if (toolName === "list_workspace_mcp_tools") {
     if (!repo.workspaceMcpServer) return {ok:false,error:"mcp_servers_unavailable"};

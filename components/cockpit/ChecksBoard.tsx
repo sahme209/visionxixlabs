@@ -166,6 +166,7 @@ function WorkflowPreview({ revision }: { revision: string }) {
           <button type="button" className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-zinc-200" onClick={() => { void navigator.clipboard?.writeText(state.yaml).then(() => setCopied(true), () => setCopied(false)); }}>{copied ? "Copied" : "Copy"}</button>
           <a href="/api/control/checks/workflow?format=yaml" className="inline-flex min-h-9 items-center rounded-lg border border-white/12 px-3 text-zinc-200">Download</a>
         </div>
+        <AgentPullRequestPrompt path={state.path} />
         {state.skipped.length > 0 && <ul className="mt-3 list-disc pl-5 text-xs leading-5 text-zinc-400">{state.skipped.map((s) => <li key={s.key}><span className="font-mono">{s.key}</span>: not in this file, {s.reason}.</li>)}</ul>}
         <pre tabIndex={0} aria-label="Generated workflow" className="mt-3 max-h-96 overflow-auto rounded-lg border border-white/10 bg-black/40 p-3 font-mono text-xs leading-5 text-zinc-200">{state.yaml}</pre>
       </div>}
@@ -256,4 +257,20 @@ function CheckLibraryPicker({ existing, onPick }: { existing: ReadonlySet<string
           </div>);
       })}
     </details>);
+}
+
+const AGENT_PR_PROMPT = (path: string) => `Open the V19 deployment checks workflow as a pull request in <owner/repository>. Read it with read_deployment_checks_workflow, then create a branch, commit it to ${path}, and open a pull request into the default branch. Explain which checks it runs.`;
+
+/** The governed way to add the workflow to a repository: the desktop Agent proposes branch, commit and PR, each approved by a person. */
+function AgentPullRequestPrompt({ path }: { path: string }) {
+  const [copied, setCopied] = useState(false);
+  const text = AGENT_PR_PROMPT(path);
+  return (
+    <div className="mt-3 rounded-lg border border-white/8 p-3 text-xs">
+      <p className="text-zinc-200">Have the Agent open it as a pull request</p>
+      <p className="mt-1 leading-5 text-zinc-400">In the desktop app, ask the Agent with the prompt below and put your repository in place of the placeholder. It reads this workflow, then proposes a branch, a commit and a pull request; each one waits for a person&apos;s approval, like any other change.</p>
+      <pre className="mt-2 whitespace-pre-wrap rounded-md bg-black/40 p-2 font-mono text-[11px] text-zinc-300">{text}</pre>
+      <button type="button" className="mt-2 inline-flex min-h-8 items-center rounded-lg border border-white/12 px-3 text-zinc-200" onClick={() => { void navigator.clipboard?.writeText(text).then(() => setCopied(true), () => setCopied(false)); }}>{copied ? "Copied" : "Copy prompt"}</button>
+    </div>
+  );
 }
