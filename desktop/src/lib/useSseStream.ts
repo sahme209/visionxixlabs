@@ -31,7 +31,8 @@ import {
 } from "./approvalsStore";
 import { drainVoteQueue } from "./voteQueue";
 
-const DEFAULT_API_BASE = "https://visionxixlabs.com";
+import { desktopApiOrigin } from "./desktopTransport";
+const DEFAULT_API_BASE = desktopApiOrigin();
 const MAX_BACKOFF_MS = 30_000;
 const PERMANENT_AUTH_ERRORS = new Set([
   "token_expired", "token_revoked", "unknown_token", "missing_scope",

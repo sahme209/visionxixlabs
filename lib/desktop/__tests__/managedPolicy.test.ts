@@ -11,13 +11,13 @@ describe("managed policy", () => {
   });
   it("reads managedBy, allowed workspaces and update notices", () => {
     const s = parseManagedPolicy(found(JSON.stringify({ managedBy: " Example Health IT ", allowedWorkspaceIds: ["org_a", "org_a", "org_b"], updateNotices: false })));
-    expect(s).toEqual({ kind: "ok", path: "/etc/v19/policy.json", policy: { managedBy: "Example Health IT", allowedWorkspaceIds: ["org_a", "org_b"], updateNotices: false } });
+    expect(s).toEqual({ kind: "ok", path: "/etc/v19/policy.json", policy: { managedBy: "Example Health IT", allowedWorkspaceIds: ["org_a", "org_b"], updateNotices: false, serverUrl: null } });
     expect(workspaceAllowed(s, "org_b")).toBe("allowed");
     expect(workspaceAllowed(s, "org_x")).toBe("not_allowed");
   });
   it("defaults update notices on and allows any workspace when no list is set", () => {
     const s = parseManagedPolicy(found("{}"));
-    expect(s.kind === "ok" && s.policy).toEqual({ managedBy: null, allowedWorkspaceIds: null, updateNotices: true });
+    expect(s.kind === "ok" && s.policy).toEqual({ managedBy: null, allowedWorkspaceIds: null, updateNotices: true, serverUrl: null });
     expect(workspaceAllowed(s, "anything")).toBe("allowed");
   });
   it("fails closed on anything it does not understand", () => {
@@ -27,5 +27,12 @@ describe("managed policy", () => {
       expect(workspaceAllowed(s, "org_a")).toBe("policy_invalid");
     }
     expect(parseManagedPolicy({ status: "invalid", path: "p", reason: "too_large" })).toEqual({ kind: "invalid", path: "p", reason: "too_large" });
+  });
+  it("accepts a company server as a plain HTTPS origin and locks on anything else", () => {
+    const ok = parseManagedPolicy(found(JSON.stringify({ serverUrl: "https://v19.corp.example:8443/" })));
+    expect(ok.kind === "ok" && ok.policy.serverUrl).toBe("https://v19.corp.example:8443");
+    for (const bad of ["http://v19.corp.example", "https://v19.corp.example/app", "https://u:p@v19.corp.example", "https://v19.corp.example?x", 5]) {
+      expect(parseManagedPolicy(found(JSON.stringify({ serverUrl: bad })))).toMatchObject({ kind: "invalid", reason: "serverUrl" });
+    }
   });
 });

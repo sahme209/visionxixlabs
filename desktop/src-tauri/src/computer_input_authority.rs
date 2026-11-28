@@ -1,7 +1,6 @@
 //! Native-only paired owner attestation. No caller URL, bearer, org or allow flag.
 use serde_json::{json,Value};
 use std::time::Duration;
-const ORIGIN:&str="https://visionxixlabs.com";
 fn task(s:&str)->bool{s.len()==68&&s.starts_with("bot_")&&s[4..].bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
 fn token(s:&str)->bool{s.len()<=4096&&s.starts_with("axm.desk.")&&s.split('.').count()==4&&s.split('.').skip(2).all(|v|!v.is_empty()&&v.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_'))}
 #[cfg(test)]fn valid_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value)->bool{valid_action_binding(v,nonce,task_id,version,meta,"textedit_set_text")}
@@ -61,7 +60,7 @@ async fn attest_action(app:&tauri::AppHandle,task_id:&str,version:u32,action:&st
  let nonce=secure_nonce()?;
  let request_start=monotonic_now()?;
  let client=reqwest::Client::builder().redirect(reqwest::redirect::Policy::none()).connect_timeout(Duration::from_secs(3)).timeout(Duration::from_secs(5)).build().map_err(|_|"owner_service_unavailable")?;
- let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{ORIGIN}/api/desktop/bot/tasks/{task_id}/computer-authority")).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":action})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}
+ let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{}/api/desktop/bot/tasks/{task_id}/computer-authority",crate::server_origin::api_origin().map_err(|_|"owner_service_unavailable")?)).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":action})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}
  if r.content_length().map(|n|n>8192).unwrap_or(false){return Err("owner_service_unavailable")}let date_headers:Vec<_>=r.headers().get_all(reqwest::header::DATE).iter().collect();if date_headers.len()!=1{return Err("owner_proof_time_invalid")}let server_date=date_headers[0].to_str().map_err(|_|"owner_proof_time_invalid")?.to_owned();let mut bytes=Vec::new();while let Some(chunk)=r.chunk().await.map_err(|_|"owner_service_unavailable")?{if bytes.len()+chunk.len()>8192{return Err("owner_service_unavailable")}bytes.extend_from_slice(&chunk)}Ok((serde_json::from_slice::<Value>(&bytes).map_err(|_|"owner_proof_binding_invalid")?,server_date))}).await.map_err(|_|"owner_service_unavailable")??;
  if !super::exact(&result,&["ok","data"])||result["ok"]!=true||!valid_action_binding(&result["data"],&nonce,task_id,version,&meta,action){return Err("owner_proof_binding_invalid".into())}
  if read_selected(app).map_err(|_|"owner_credential_unavailable")?.2!=snapshot{return Err("owner_credential_unavailable".into())}

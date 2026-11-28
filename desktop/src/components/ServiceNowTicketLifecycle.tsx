@@ -22,7 +22,7 @@ function Session({requestId,releaseStatus}:{requestId:string;releaseStatus:strin
   try{const identity=await desktopClient.verifyCurrentCredential();if(!owns())return;
    if(!identity.ok||identity.data.kind!=='desktop_session'||!identity.data.userId||!['owner','admin'].includes(identity.data.role??'')||!identity.data.capabilities.includes('connections:manage'))throw Error('workspace_admin_required');
    const query=new URLSearchParams({expectedOrganizationId:identity.data.organizationId,expectedUserId:identity.data.userId});
-   await open(`https://visionxixlabs.com/account/integrations/servicenow?${query}`);
+   await open(`${desktopClient.config.apiBase}/account/integrations/servicenow?${query}`);
   }catch{if(owns())setError('ServiceNow setup could not be opened. Verify your workspace administrator access and try again. Your saved actions are unchanged.')}
   finally{opening.current=false;if(owns())setBusy(false)}
  }

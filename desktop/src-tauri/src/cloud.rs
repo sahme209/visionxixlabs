@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
-use tauri_plugin_store::StoreExt;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ConnectorStatus {
@@ -86,11 +85,7 @@ pub async fn validate_aws_credentials(
     external_id: String,
 ) -> Result<ConnectorStatus, String> {
     let client = http_client()?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    let endpoint = store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let endpoint = crate::server_origin::api_origin()?.to_string();
     let token = read_bearer_token(&app);
 
     let resp = with_bearer(
@@ -136,11 +131,7 @@ pub async fn validate_azure_credentials(
     client_secret: String,
 ) -> Result<ConnectorStatus, String> {
     let client = http_client()?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    let endpoint = store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let endpoint = crate::server_origin::api_origin()?.to_string();
     let token = read_bearer_token(&app);
 
     let resp = with_bearer(
@@ -186,11 +177,7 @@ pub async fn validate_gcp_credentials(
     service_account_key: String,
 ) -> Result<ConnectorStatus, String> {
     let client = http_client()?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    let endpoint = store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let endpoint = crate::server_origin::api_origin()?.to_string();
     let token = read_bearer_token(&app);
 
     let resp = with_bearer(
@@ -231,11 +218,7 @@ pub async fn validate_gcp_credentials(
 #[tauri::command]
 pub async fn get_connector_status(app: tauri::AppHandle) -> Result<Vec<ConnectorStatus>, String> {
     let client = http_client()?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    let endpoint = store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let endpoint = crate::server_origin::api_origin()?.to_string();
     let token = read_bearer_token(&app);
 
     let resp = with_bearer(
@@ -273,11 +256,7 @@ pub async fn run_cloud_scan(
     scan_type: String,
 ) -> Result<ScanResult, String> {
     let client = http_client()?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    let endpoint = store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string());
+    let endpoint = crate::server_origin::api_origin()?.to_string();
 
     let plugin_id = match (provider.as_str(), scan_type.as_str()) {
         ("aws", "security") => "aws:iam-exposure-scan",

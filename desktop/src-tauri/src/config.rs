@@ -171,22 +171,16 @@ pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Resul
 }
 
 #[tauri::command]
-pub async fn get_api_endpoint(app: tauri::AppHandle) -> Result<String, String> {
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-
-    Ok(store
-        .get("api_endpoint")
-        .and_then(|v| v.as_str().map(String::from))
-        .unwrap_or_else(|| "https://visionxixlabs.com".to_string()))
+pub async fn get_api_endpoint() -> Result<String, String> {
+    // The service origin is fixed per install: visionxixlabs.com, or the server named by the
+    // organization policy file (server_origin.rs). It is never a user setting.
+    crate::server_origin::api_origin().map(str::to_string)
 }
 
 #[tauri::command]
-pub async fn set_api_endpoint(app: tauri::AppHandle, endpoint: String) -> Result<(), String> {
-    let endpoint = normalize_api_endpoint(&endpoint)?;
-    let store = app.store("config.json").map_err(|e| e.to_string())?;
-    store.set("api_endpoint", serde_json::json!(endpoint));
-    store.save().map_err(|e| e.to_string())?;
-    Ok(())
+pub async fn set_api_endpoint(endpoint: String) -> Result<(), String> {
+    normalize_api_endpoint(&endpoint)?;
+    Err("The V19 server address can only be set by your organization's policy file.".to_string())
 }
 
 fn normalize_api_endpoint(input: &str) -> Result<String, String> {

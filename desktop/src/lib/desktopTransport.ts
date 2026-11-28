@@ -1,7 +1,23 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { MAX_AGENT_STREAM_BYTES } from "../../../lib/desktop/agentMessageStreamProtocol";
 
-const API_ORIGIN = "https://visionxixlabs.com";
+const DEFAULT_API_ORIGIN = "https://visionxixlabs.com";
+// The one service origin for this launch, resolved natively from the organization policy file
+// (src-tauri/src/server_origin.rs). Set once at startup, before any request; never a user setting.
+let API_ORIGIN = DEFAULT_API_ORIGIN;
+let apiOriginLocked = false;
+
+/** Applies the native-resolved service origin. Only the first call counts. */
+export function setDesktopApiOrigin(origin: string): boolean {
+  if (apiOriginLocked) return origin === API_ORIGIN;
+  let url: URL;
+  try { url = new URL(origin); } catch { return false; }
+  if (url.protocol !== "https:" || url.username || url.password || url.pathname !== "/" || url.search || url.hash) return false;
+  API_ORIGIN = url.origin;
+  apiOriginLocked = true;
+  return true;
+}
+export const desktopApiOrigin = () => API_ORIGIN;
 const nativeFetch = globalThis.fetch.bind(globalThis);
 let bearerToken: string | undefined;
 const activeStreamCancels = new Set<() => void>();

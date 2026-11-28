@@ -96,7 +96,7 @@ function OutlookConnection({embedded, revision}: {embedded: boolean; revision: n
       const result = await desktopClient.verifyCurrentCredential();
       if (!ownsRequest(controller)) return;
       if (!result.ok || result.data.kind !== 'desktop_session' || !result.data.userId || !result.data.capabilities.includes('connections:manage')) throw Error();
-      await open('https://visionxixlabs.com/account/integrations/outlook?' + new URLSearchParams({
+      await open(`${desktopClient.config.apiBase}/account/integrations/outlook?` + new URLSearchParams({
         expectedOrganizationId: result.data.organizationId, expectedUserId: result.data.userId,
       }));
     } catch {

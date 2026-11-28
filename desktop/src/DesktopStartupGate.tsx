@@ -2,6 +2,18 @@ import { DESKTOP_PRODUCT_NAME } from "./lib/desktopMetadata";
 import {useEffect, useRef, useState} from "react";
 import App from "./App";
 import {hydrateDesktopCredential} from "./lib/activeDesktopCredential";
+import {invoke} from "@tauri-apps/api/core";
+import {setDesktopApiOrigin} from "./lib/desktopTransport";
+import {desktopClient} from "./lib/desktopClient";
+
+/** Resolves the service origin (visionxixlabs.com, or the organization's own server) before anything runs. */
+const nativeRuntime = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+async function resolveServerOrigin(): Promise<void> {
+  try {
+    const origin = await invoke<string>("get_server_origin");
+    if (setDesktopApiOrigin(origin)) desktopClient.setApiBase(origin);
+  } catch { /* An invalid managed server URL: the policy gate in App shows the locked screen. */ }
+}
 
 /** A stalled vault read never unlocks operations or activates a late identity. */
 export function DesktopStartupGate() {
@@ -10,7 +22,9 @@ export function DesktopStartupGate() {
   useEffect(() => {
     let mounted = true; const generation = ++lifetime.current;
     // Effect replay observes the same vault read instead of opening another prompt.
-    hydration.current ??= hydrateDesktopCredential(controller.current.signal).catch(() => undefined);
+    hydration.current ??= (nativeRuntime()
+      ? resolveServerOrigin().then(() => hydrateDesktopCredential(controller.current.signal))
+      : hydrateDesktopCredential(controller.current.signal)).catch(() => undefined);
     const timer = window.setTimeout(() => {if (mounted) setStalled(true);}, 15000);
     void hydration.current.then(() => {window.clearTimeout(timer); if (mounted) setReady(true);});
     return () => {

@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod managed_policy;
+mod server_origin;
 mod cloud;
 mod computer_observation;
 mod application_focus;
@@ -102,6 +103,7 @@ fn main() {
             config::get_preferences,
             config::set_preferences,
             config::get_api_endpoint,
+            server_origin::get_server_origin,
             config::set_api_endpoint,
             tray::set_tray_badge,
             tray::set_tray_pending_list,

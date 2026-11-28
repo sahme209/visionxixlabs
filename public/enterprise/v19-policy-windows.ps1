@@ -12,6 +12,7 @@ param(
   [string]$ManagedBy = "",
   [string[]]$AllowedWorkspaceIds = @(),
   [Nullable[bool]]$UpdateNotices = $null,
+  [string]$ServerUrl = "",
   [string]$Path = (Join-Path $env:ProgramData "VisionXIXLabs\V19\policy.json")
 )
 $ErrorActionPreference = "Stop"
@@ -27,6 +28,10 @@ if ($ids.Count -gt 0) {
   $policy.allowedWorkspaceIds = $ids
 }
 if ($null -ne $UpdateNotices) { $policy.updateNotices = [bool]$UpdateNotices }
+if ($ServerUrl) {
+  if ($ServerUrl -notmatch '^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?/?$') { throw "ServerUrl must be https://host or https://host:port." }
+  $policy.serverUrl = $ServerUrl.TrimEnd('/')
+}
 $json = if ($policy.Count -eq 0) { "{}" } else { ConvertTo-Json -InputObject $policy -Depth 3 }
 # A single workspace ID must stay an array in the file.
 if ($ids.Count -eq 1) { $json = $json -replace '"allowedWorkspaceIds":\s*"([^"]+)"', '"allowedWorkspaceIds": ["$1"]' }

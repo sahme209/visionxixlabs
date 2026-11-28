@@ -24,7 +24,8 @@ fn entry(app: &tauri::AppHandle, key: &str) -> Result<keyring::Entry, String> {
     if key.trim().is_empty() {
         return Err("Secure-storage key cannot be empty.".to_string());
     }
-    keyring::Entry::new(credential_service(&app.config().identifier)?, key).map_err(|_| "Secure storage is unavailable.".to_string())
+    let key = crate::server_origin::credential_key(key)?;
+    keyring::Entry::new(credential_service(&app.config().identifier)?, &key).map_err(|_| "Secure storage is unavailable.".to_string())
 }
 
 fn read_keyring_value(app: &tauri::AppHandle, key: &str) -> Result<Option<Value>, String> {
@@ -50,6 +51,10 @@ fn write_keyring_value(app: &tauri::AppHandle, key: &str, value: &Value) -> Resu
 pub(crate) fn read_value(app: &tauri::AppHandle, key: &str) -> Result<Option<Value>, String> {
     if let Some(value) = read_keyring_value(app, key)? {
         return Ok(Some(value));
+    }
+    // The pre-vault plaintext store only ever held visionxixlabs.com sessions.
+    if crate::server_origin::api_origin()? != crate::server_origin::DEFAULT_ORIGIN {
+        return Ok(None);
     }
 
     let store = app

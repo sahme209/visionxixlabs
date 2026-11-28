@@ -5,7 +5,6 @@ use tauri::ipc::Channel;
 use tokio::sync::{mpsc, oneshot};
 use std::time::Duration;
 
-const API_ORIGIN: &str = "https://visionxixlabs.com";
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -28,7 +27,7 @@ fn validated_url(path: &str) -> Result<String, String> {
     if !path.starts_with("/api/") || path.contains("\\") || path.contains("\n") || path.contains("\r") {
         return Err("Only Vision XIX Labs API paths are allowed.".to_string());
     }
-    Ok(format!("{API_ORIGIN}{path}"))
+    Ok(format!("{}{path}", crate::server_origin::api_origin()?))
 }
 
 fn ticket_amendment_path(path: &str) -> bool {
