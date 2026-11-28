@@ -2957,6 +2957,27 @@ model WorkspaceReleaseAutopilot {
   updatedAt          DateTime @updatedAt
 }
 
+/// Workspace runbook: a versioned procedure (steps with the approval each needs). V19 does not run it.
+model WorkspaceRunbook {
+  id              String   @id @default(cuid())
+  organizationId  String
+  key             String
+  title           String
+  /// manual | incident | deployment_failed | freeze | scheduled
+  trigger         String
+  /// [{ title, detail, approval: none | one_admin | two_admins }]
+  steps           Json
+  enabled         Boolean  @default(true)
+  /// Increments on every edit.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
 model PolicyChangeRequest {
   id              String    @id @default(cuid())
   organizationId  String

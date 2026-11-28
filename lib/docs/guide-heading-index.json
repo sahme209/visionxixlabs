@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "9942631909dd2f9f37985aa36ceb8ec857962aaa8b0ed0b2dfcca202f7d57f7f",
+      "sourceSha256": "57c2189d768ba4057d57f21e36f1af5eab384c2a772ec3034e2aec4217739eb7",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -188,6 +188,7 @@
         "Database changes in a deployment",
         "Change windows and freezes",
         "Kubernetes rolling, blue/green and canary",
+        "Runbooks",
         "Release evidence pack",
         "Argo CD and Flux",
         "Stability early warning",

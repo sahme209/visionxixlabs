@@ -44,6 +44,11 @@ const BAD_VERBS = [
   { re: /\bauto[-_ ]execute\b/i, reason: "runbook body must say 'stage' / 'propose', not 'auto-execute'" },
 ];
 
+/** Reasons a step body is refused outright (destructive commands that must not sit in a runbook as written). */
+export function forbiddenStepReasons(body: string): string[] {
+  return FORBIDDEN_PATTERNS.filter(({ re }) => re.test(body)).map(({ reason }) => reason);
+}
+
 export function validateRunbookSteps(steps: readonly ProposedRunbookStep[]): RunbookValidation {
   const warnings: string[] = [];
   const errors: string[] = [];

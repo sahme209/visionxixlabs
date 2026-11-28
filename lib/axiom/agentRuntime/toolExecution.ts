@@ -1,3 +1,4 @@
+import { RUNBOOK_TRIGGERS, validateRunbook } from "@/lib/releaseops/runbookLibrary";
 import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Executes the "low" risk, read-only tools. It never touches a write path.
@@ -81,6 +82,7 @@ export interface ToolExecutionRepo {
   agentSkillInstallation?: AgentSkillRepo["agentSkillInstallation"];
   workspaceMcpServer?: WorkspaceMcpRepo["workspaceMcpServer"];
   deploymentCheck?: { findMany(args: { where: { organizationId: string }; take: number; select: Record<string, true> }): Promise<unknown[]> };
+  workspaceRunbook?: { findMany(args: { where: { organizationId: string; enabled: true; trigger?: string }; orderBy: { key: "asc" }; take: number; select: Record<string, true> }): Promise<Array<{ key: string; title: string; trigger: string; steps: unknown; version: number }>> };
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string; tags?: string[]; changeWindowRuleJson?: unknown }>>;
   };
@@ -143,6 +145,17 @@ export async function executeReadOnlyTool(
       const out = generateCheckWorkflow(rows as unknown as GeneratableCheck[]);
       return {ok:true,result:{kind:"generated_workflow",path:CHECK_WORKFLOW_PATH,yaml:out.yaml,included:out.included,skipped:out.skipped}};
     } catch { return {ok:false,error:"checks_unavailable"}; }
+  }
+  if (toolName === "list_workspace_runbooks") {
+    if (!repo.workspaceRunbook) return {ok:false,error:"runbooks_unavailable"};
+    if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).some(key => key !== "trigger")) return {ok:false,error:"invalid_runbook_filter"};
+    const trigger = args.trigger;
+    if (trigger !== undefined && !(RUNBOOK_TRIGGERS as readonly unknown[]).includes(trigger)) return {ok:false,error:"invalid_runbook_filter"};
+    try {
+      const rows = await repo.workspaceRunbook.findMany({ where: { organizationId, enabled: true, ...(trigger ? { trigger: trigger as string } : {}) }, orderBy: { key: "asc" }, take: 50, select: { key: true, title: true, trigger: true, steps: true, version: true } });
+      const runbooks = rows.flatMap((r) => { const v = validateRunbook({ key: r.key, title: r.title, trigger: r.trigger, steps: r.steps, enabled: true }); return v.ok ? [{ key: r.key, title: r.title, trigger: r.trigger, version: r.version, steps: v.runbook.steps }] : []; });
+      return {ok:true,result:{kind:"workspace_runbooks",note:"Procedure text written by this workspace. It describes what people do and never approves or performs an action.",runbooks}};
+    } catch { return {ok:false,error:"runbooks_unavailable"}; }
   }
   if (toolName === "list_workspace_mcp_tools") {
     if (!repo.workspaceMcpServer) return {ok:false,error:"mcp_servers_unavailable"};

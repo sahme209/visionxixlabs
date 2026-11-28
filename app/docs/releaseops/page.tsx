@@ -103,29 +103,35 @@ export default function ReleaseOpsDocOverviewPage() {
               <p>A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running so you can switch back. A canary runs the new image in a small canary Deployment, watches readiness and restarts for the minutes you choose, promotes to the main Deployment, and always scales the canary back to zero. The workflow uses only kubectl and checks the image reference before using it.</p>
             </DocSection>
 
-            <DocSection id="evidence-pack" title="Release evidence pack" kicker="10">
+            <DocSection id="runbooks" title="Runbooks" kicker="10">
+              <DocFigure src="/docs/cockpit/runbooks.webp" alt="The Runbooks page with two runbooks and the approval each step needs" caption="Runbooks for a synthetic workspace: a failed deploy and freezing production during an incident, with the steps that need an admin's approval." width={1600} height={1000} />
+              <p>The cockpit&apos;s <strong>Runbooks</strong> page keeps your team&apos;s procedures for failed deploys, incidents, freezes and routine work. Each runbook has a key, when it applies, and steps. Each step says what to do and the approval it needs: none, one admin, or two different admins. Start from a template (a failed deploy, freezing production during an incident, rotating a leaked API key) or write your own. Owners and admins edit runbooks; every edit increases the version, and an edit is refused if someone changed the runbook in the meantime. Steps that contain destructive commands, such as <code>rm -rf /</code>, <code>DROP TABLE</code> or <code>terraform destroy</code>, are refused.</p>
+              <p>Choose <em>Download runbooks file</em> to keep them in Git. The desktop Agent can read enabled runbooks to suggest the right one. V19 does not run runbooks in your systems: a step that changes something is done by a person, or by an agent through the gateway with its own approvals.</p>
+            </DocSection>
+
+            <DocSection id="evidence-pack" title="Release evidence pack" kicker="11">
               <p>In the cockpit, <strong>Insights → Export release evidence</strong> downloads one JSON file for a repository commit: every recorded deployment of it (environment, who, when, policy, reviewed pull request, configuration fingerprint and outcome), every check result CI reported for it, and audit events on those deployments. Configuration values are not included, only their fingerprints. Missing evidence is listed under <code>gaps</code> rather than invented.</p>
               <p>The file carries a SHA-256 digest of its canonical JSON (sorted keys, without the export time), so exporting the same records again gives the same digest and an auditor can recompute it. Every export is recorded in the audit log.</p>
             </DocSection>
 
-            <DocSection id="gitops" title="Argo CD and Flux" kicker="11">
+            <DocSection id="gitops" title="Argo CD and Flux" kicker="12">
               <p>V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. Connect them under Release signals (see below); live acceptance with a real Argo CD instance or cluster is still pending.</p>
             </DocSection>
 
-            <DocSection id="stability-warning" title="Stability early warning" kicker="12">
+            <DocSection id="stability-warning" title="Stability early warning" kicker="13">
               <p>V19 compares the change failure rate of releases finished in the last 7 days with the 90 days before. When at least three recent releases failed, rolled back or had an incident reported against them, and the recent rate is at least 20% and well above the earlier rate, Overview and Insights show a stability warning. While it is active, the desktop app asks for a reason before a production deployment and records that reason in the audit log. If release records cannot be read, nothing is blocked.</p>
             </DocSection>
 
-            <DocSection id="serverless-templates" title="Lambda, Cloud Run and Azure Functions" kicker="13">
+            <DocSection id="serverless-templates" title="Lambda, Cloud Run and Azure Functions" kicker="14">
               <p>In the cockpit, <strong>Services</strong> also generates serverless deploy workflows. For AWS Lambda, it publishes a new version, sends it a share of traffic on an alias named <code>live</code>, and moves all traffic back if that version reports errors. For Google Cloud Run, it deploys a revision with no traffic, sends it a share, watches readiness, then moves all traffic to it. For Azure Functions, it deploys to a <code>staging</code> slot, checks a health path, and swaps it into production.</p>
               <p>Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment&apos;s gates pass.</p>
             </DocSection>
 
-            <DocSection id="verification-signals" title="Verification signals from Sentry and Datadog" kicker="14">
+            <DocSection id="verification-signals" title="Verification signals from Sentry and Datadog" kicker="15">
               <p>V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. Connect them under Release signals (see below); live acceptance with real accounts is still pending.</p>
             </DocSection>
 
-            <DocSection id="release-signals" title="Connect release signals" kicker="15">
+            <DocSection id="release-signals" title="Connect release signals" kicker="16">
               <p>In the desktop app, under Settings, <strong>Release signals</strong> connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog, LaunchDarkly, Unleash and Jenkins. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again.</p>
               <p>Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as <code>monitors_read</code>. V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time.</p>
               <p>After a deployment, the desktop deploy form offers <em>Check release health</em>. Enter the release name your tools use (it starts as the deployed tag or branch). V19 then reads every connected signal at once: open PagerDuty and Opsgenie incidents, new Sentry issues first seen in that release, alerting Datadog monitors, LaunchDarkly temporary flags still on after 30 days or Unleash flags marked stale but still on, and Verify-stage check results for the commit. It shows one verdict with the reasons. A tool that is not connected, or does not answer, is listed as not available and never counted as healthy. The Agent can read the same release health with its read-only <code>read_release_health</code> tool when you ask how a release is doing, the state of connected Argo CD and Flux applications with <code>read_gitops_state</code>, and Jenkins jobs with <code>read_ci_jobs</code>.</p>

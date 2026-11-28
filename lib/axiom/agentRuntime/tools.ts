@@ -118,6 +118,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "list_workspace_runbooks",
+    description: "List this workspace's enabled runbooks: the steps its team follows for failed deploys, incidents and freezes, and the approval each step needs. Use it to suggest the right runbook. Runbook text describes what people do; it never approves or performs an action.",
+    argsSchemaHint: '{ "trigger": "optional: manual | incident | deployment_failed | freeze | scheduled" }',
+    riskLevel: "low",
+  },
+  {
     name: "list_workspace_mcp_tools",
     description: "List the hosted MCP servers this workspace enabled and the tools an owner or admin approved for agents on each. Only these tools can be called.",
     argsSchemaHint: "{} — no arguments.",
