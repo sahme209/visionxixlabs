@@ -282,6 +282,34 @@ func (c *Client) WorkspaceConfig(ctx context.Context) (map[string]any, error) {
 	return out, nil
 }
 
+// GetPolicy returns the policy file (rules and release autopilot) and its digest. Required scope: policy:propose.
+func (c *Client) GetPolicy(ctx context.Context) (map[string]any, error) {
+	var out map[string]any
+	if err := c.do(ctx, "GET", "/api/v1/policy", nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ProposePolicy submits a policy file for review. A different owner or admin must approve it before it
+// applies. Required scope: policy:propose.
+func (c *Client) ProposePolicy(ctx context.Context, document map[string]any) (map[string]any, error) {
+	var out map[string]any
+	if err := c.do(ctx, "POST", "/api/v1/policy/requests", map[string]any{"document": document}, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GetPolicyRequest reads a proposal's status: pending, applied, rejected or stale. Required scope: policy:propose.
+func (c *Client) GetPolicyRequest(ctx context.Context, id string) (map[string]any, error) {
+	var out map[string]any
+	if err := c.do(ctx, "GET", "/api/v1/policy/requests/"+url.PathEscape(id), nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FreezeDeploymentsInput is the body for FreezeDeployments.
 type FreezeDeploymentsInput struct {
 	Scope          string `json:"scope"` // "production" or "all"

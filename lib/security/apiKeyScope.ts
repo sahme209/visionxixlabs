@@ -51,6 +51,9 @@ export type ApiKeyScope =
   // Deployment freeze: incident tooling can start a freeze (tightens only); ending one stays with people
   | "freeze:start"
   | "freeze:*"
+  // Policy as code: propose a policy file (Terraform, CI). Nothing applies until a different admin approves it.
+  | "policy:propose"
+  | "policy:*"
   // Catch-all (Enterprise only — admin route must verify before granting)
   | "*";
 
@@ -65,6 +68,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set<ApiKeyScope>([
   "checks:report", "checks:*",
   "config:read", "config:*",
   "freeze:start", "freeze:*",
+  "policy:propose", "policy:*",
   "*",
 ]);
 

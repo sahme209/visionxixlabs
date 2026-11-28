@@ -290,6 +290,9 @@ Every subcommand supports `--json` for piping into `jq`.
 | `GET  /api/v1/config` | `config:read` | `workspaceConfig()` / `workspace_config()` / `WorkspaceConfig(ctx)` |
 | `POST /api/v1/checks/results`     | `checks:report`       | `reportCheckResult()` |
 | `POST /api/v1/environments/freeze` | `freeze:start`       | `freezeDeployments()` / `freeze_deployments()` / `FreezeDeployments(ctx)` |
+| `GET  /api/v1/policy`             | `policy:propose`      | `getPolicy()` / `get_policy()` / `GetPolicy(ctx)` |
+| `POST /api/v1/policy/requests`    | `policy:propose`      | `proposePolicy()` / `propose_policy()` / `ProposePolicy(ctx)` / `proposePolicy(document:)`; a different admin approves before it applies |
+| `GET  /api/v1/policy/requests/{id}` | `policy:propose`    | `getPolicyRequest()` / `get_policy_request()` / `GetPolicyRequest(ctx)` / `policyRequest(id:)` |
 | `POST /api/v1/pipelines/runs`     | `pipeline:trigger`    | `startCodingRun()`    |
 | `GET  /api/v1/pipelines/runs/{id}`| `pipeline:read`       | `pipelineRun(id)`     |
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |

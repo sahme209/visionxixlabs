@@ -32,10 +32,10 @@ func (p *v19Provider) Metadata(_ context.Context, _ provider.MetadataRequest, re
 
 func (p *v19Provider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Reads V19 workspace configuration (environments, variables and deployment checks). Read-only: changes go through the V19 cockpit's reviewed paths.",
+		Description: "V19 workspace configuration. Reads environments, variables and deployment checks; proposes policy changes, which a different workspace admin approves before they apply.",
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{Optional: true, Description: "V19 address. Defaults to V19_ENDPOINT or https://visionxixlabs.com."},
-			"api_key":  schema.StringAttribute{Optional: true, Sensitive: true, Description: "API key with the config:read scope. Defaults to V19_API_KEY."},
+			"api_key":  schema.StringAttribute{Optional: true, Sensitive: true, Description: "API key with the config:read scope (and policy:propose for v19_policy). Defaults to V19_API_KEY."},
 		},
 	}
 }
@@ -59,9 +59,12 @@ func (p *v19Provider) Configure(ctx context.Context, req provider.ConfigureReque
 	}
 	client := &Client{Endpoint: clean, APIKey: key}
 	resp.DataSourceData = client
+	resp.ResourceData = client
 }
 
-func (p *v19Provider) Resources(context.Context) []func() resource.Resource { return nil }
+func (p *v19Provider) Resources(context.Context) []func() resource.Resource {
+	return []func() resource.Resource{NewPolicyResource}
+}
 
 func (p *v19Provider) DataSources(context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{NewConfigDataSource}

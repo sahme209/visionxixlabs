@@ -18,3 +18,13 @@ output "production_environments" {
 output "blocking_checks" {
   value = [for c in data.v19_config.workspace.checks : c.key if c.mode == "blocking" && c.enabled]
 }
+
+# Proposes the policy file. It applies only after a different owner or admin approves it in
+# Governance → Policy as code; until then status is "pending". The key needs policy:propose.
+resource "v19_policy" "workspace" {
+  document = file("${path.module}/v19-policy.json")
+}
+
+output "policy_status" {
+  value = v19_policy.workspace.status
+}

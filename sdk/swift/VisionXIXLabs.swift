@@ -80,6 +80,17 @@ public struct VisionXIXLabs {
         try await get("/api/v1/config")
     }
 
+    /// POST /api/v1/policy/requests — propose a policy file (JSON object). A different owner or admin must
+    /// approve it in Governance before it applies. Required scope: `policy:propose`.
+    public func proposePolicy(document: [String: Any]) async throws -> PolicyProposalResponse {
+        try await post("/api/v1/policy/requests", body: ["document": document])
+    }
+
+    /// GET /api/v1/policy/requests/{id} — pending, applied, rejected or stale. Required scope: `policy:propose`.
+    public func policyRequest(id: String) async throws -> PolicyRequestResponse {
+        try await get("/api/v1/policy/requests/\(id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id)")
+    }
+
     public func environmentVariables(slug: String) async throws -> EnvironmentVariablesResponse {
         try await get("/api/v1/environments/\(slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug)/variables")
     }
@@ -309,6 +320,19 @@ public struct WhoamiResponse: Decodable {
         public let ratio: Double?
         public let nearLimit: Bool
     }
+}
+
+public struct PolicyProposalResponse: Decodable {
+    public struct Request: Decodable { public let id: String; public let status: String; public let loosens: Bool; public let existing: Bool }
+    public let ok: Bool
+    public let unchanged: Bool?
+    public let request: Request?
+}
+
+public struct PolicyRequestResponse: Decodable {
+    public struct Request: Decodable { public let id: String; public let status: String; public let loosens: Bool }
+    public let ok: Bool
+    public let request: Request
 }
 
 public struct WorkspaceConfigResponse: Decodable {

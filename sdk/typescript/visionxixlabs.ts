@@ -265,6 +265,24 @@ export class VisionXIXLabs {
     return this.get<WorkspaceConfigResponse>("/api/v1/config");
   }
 
+  /** GET /api/v1/policy: the workspace's policy file (rules and release autopilot) and its digest. Required scope: policy:propose. */
+  getPolicy(): Promise<{ ok: true; document: Record<string, unknown>; digest: string }> {
+    return this.get("/api/v1/policy");
+  }
+
+  /**
+   * POST /api/v1/policy/requests: propose a policy file. Nothing applies until a different owner or admin
+   * approves it in Governance. Returns { unchanged: true } when it already matches. Required scope: policy:propose.
+   */
+  proposePolicy(document: Record<string, unknown>): Promise<{ ok: true; unchanged: true } | { ok: true; request: { id: string; status: "pending"; loosens: boolean; existing: boolean } }> {
+    return this.post("/api/v1/policy/requests", { document });
+  }
+
+  /** GET /api/v1/policy/requests/{id}: pending, applied, rejected or stale. Required scope: policy:propose. */
+  getPolicyRequest(id: string): Promise<{ ok: true; request: { id: string; status: string; loosens: boolean; decidedAt: string | null; createdAt: string } }> {
+    return this.get(`/api/v1/policy/requests/${encodeURIComponent(id)}`);
+  }
+
   /**
    * POST /api/v1/environments/freeze — stop deployments now, e.g. from an incident workflow. Only starts a
    * freeze; ending one early stays with workspace owners and admins. Required scope: freeze:start.

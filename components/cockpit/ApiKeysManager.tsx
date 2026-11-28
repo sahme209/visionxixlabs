@@ -10,6 +10,7 @@ const SCOPES = [
   { id: "checks:report", label: "Report deployment check results (CI)" },
   { id: "config:read", label: "Read configuration as code (environments, variables, checks)" },
   { id: "freeze:start", label: "Start a deployment freeze (incident tools; ending one stays in the cockpit)" },
+  { id: "policy:propose", label: "Propose policy changes (Terraform; a different admin approves in Governance)" },
 ] as const;
 type Key = { id: string; name: string; prefix: string; env: string; scopes: string[]; createdBy: string; lastUsedAt: string | null; expiresAt: string | null; revokedAt: string | null; createdAt: string };
 
