@@ -97,7 +97,7 @@ describe("feature flag changes", () => {
     expect(evaluateGatewayPolicy(act("flag_change", "staging")).decision).toBe("allow");
     const prod = evaluateGatewayPolicy(act("flag_change", "production"));
     expect(prod).toMatchObject({ decision: "require_approval", riskLevel: "medium" });
-    expect(applyProductionFreeze(prod, act("flag_change", "production"), [{ environment: "Production", reason: "Incident", until: null }]).decision).toBe("deny");
+    expect(applyProductionFreeze(prod, act("flag_change", "production"), [{ environment: "Production", reason: "Incident", until: "2026-12-01T00:00:00.000Z" }]).decision).toBe("deny");
     expect(evaluateGatewayPolicy(act("flag_change", "unknown")).decision).toBe("require_approval");
   });
 });
