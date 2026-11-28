@@ -280,7 +280,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17",
+      "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else.",
@@ -290,6 +290,7 @@
         "GitHub repository scope",
         "Agent authority",
         "AWS ECS authority",
+        "Custom roles",
         "Trust questions"
       ]
     },

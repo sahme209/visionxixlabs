@@ -1515,6 +1515,8 @@ model OrgMembership {
   organizationId String
   role           OrgRole   @default(read_only)
   providerScopes String[]  @default([]) // empty = all providers; ["aws","gcp"] = restricted
+  /// Optional WorkspaceCustomRole that removes capabilities from this member's built-in role.
+  customRoleId   String?
   invitedBy      String?
   acceptedAt     DateTime?
   createdAt      DateTime  @default(now())
@@ -5779,5 +5781,23 @@ model WorkspaceMcpServer {
   updatedAt        DateTime  @updatedAt
 
   @@unique([organizationId, registryName])
+  @@index([organizationId])
+}
+
+/// A workspace-defined role: a built-in role with some capabilities removed. It can only restrict;
+/// it never grants anything the member's built-in role lacks. Enforced where desktop requests are
+/// authorized; if it cannot be read, the request is refused.
+model WorkspaceCustomRole {
+  id                   String   @id @default(cuid())
+  organizationId       String
+  name                 String
+  description          String   @default("")
+  /// Capabilities removed from the member's built-in role.
+  removedCapabilities  String[] @default([])
+  createdByUserId      String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([organizationId, name])
   @@index([organizationId])
 }

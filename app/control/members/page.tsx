@@ -19,6 +19,7 @@ import { prisma } from "@/lib/db";
 import { ROLE_LABEL, ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
 import { BROWSER_NAVIGATION_FIELDS, matchesBrowserNavigationMembership, parseBrowserNavigationArrival, parseBrowserNavigationIntent } from "@/lib/desktop/browserNavigationIntent";
 import { TeamInviteButton } from "@/components/workforce/TeamInviteButton";
+import { CustomRolesPanel } from "@/components/cockpit/CustomRolesPanel";
 import { capabilitiesForRole, DESKTOP_CAPABILITIES, type DesktopCapability } from "@/lib/desktop/desktopAuthorization";
 
 const CAPABILITY_LABEL: Record<DesktopCapability, string> = {
@@ -41,6 +42,7 @@ function isAdminRole(r: string | null | undefined): boolean {
 
 interface MemberRow {
   id: string;
+  userId: string;
   email: string;
   role: string;
   isSelf: boolean;
@@ -117,6 +119,7 @@ export default async function TeamPage({
     const emailByUserId = new Map(users.map((u) => [u.id, u.email]));
     members = rows.map((r) => ({
       id: r.id,
+      userId: String(r.userId),
       email: emailByUserId.get(r.userId) ?? "(no email)",
       role: r.role,
       isSelf: String(r.userId) === String(ctx.userId),
@@ -257,6 +260,13 @@ export default async function TeamPage({
           )}
         </ul>
       </section>
+
+      {!membersUnavailable && !navigation && (
+        <section aria-labelledby="custom-roles-heading" className="mb-6 rounded-xl border border-white/8 bg-white/1.5 p-5">
+          <h2 id="custom-roles-heading" className="text-sm font-medium text-zinc-100">Custom roles</h2>
+          <div className="mt-3"><CustomRolesPanel members={members.filter((m) => m.acceptedAt).map((m) => ({ userId: m.userId, email: m.email, role: m.role }))} /></div>
+        </section>
+      )}
 
       {/* Invite */}
       {canManage && !navigation && (

@@ -678,28 +678,35 @@
    "title": "Workspace roles",
    "text": "Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
+   "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d"
   },
   {
    "href": "/docs/permissions-model#github",
    "title": "GitHub repository scope",
    "text": "The GitHub App installation determines which repositories are available. For a repository action, the service mints a short-lived token scoped to the selected repository rather than reusing a broad user token.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
+   "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d"
   },
   {
    "href": "/docs/permissions-model#agent",
    "title": "Agent authority",
    "text": "The decision loop may execute registered low-risk reads. Medium- and high-risk tools create proposals. In the separate-execution preview, an authorized independent reviewer records the decision, then the original requester uses Execute when the action is supported and current checks pass. An approval record is not evidence that a provider action ran.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
+   "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d"
   },
   {
    "href": "/docs/permissions-model#aws",
    "title": "AWS ECS authority",
    "text": "V19 dispatches the tenant workflow; GitHub Actions OIDC assumes the environment's configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.",
    "source": "app/docs/permissions-model/page.tsx",
-   "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17"
+   "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d"
+  },
+  {
+   "href": "/docs/permissions-model#custom-roles",
+   "title": "Custom roles",
+   "text": "Under Members , owners and admins can define custom roles. A custom role takes a member's built-in role and removes capabilities from it, for example an operator who can deploy but cannot use the emergency production bypass. It never adds a capability the built-in role lacks. Custom roles apply to operators, security reviewers, finance viewers and read-only members; owners and admins keep their full role. The desktop app's requests are checked against the reduced set on every call. If a member's custom role cannot be read, the request is refused rather than allowed. Deleting a custom role returns its members to their built-in role. Creating, changing, deleting and assigning custom roles are recorded in the audit log. A workspace can have up to 25 custom roles.",
+   "source": "app/docs/permissions-model/page.tsx",
+   "sourceSha256": "93a04586714b7125f7e221cfbdc3cc80d9844cfdd0980a67fb22eac1245ef34d"
   },
   {
    "href": "/docs/plugin-manifest#fields",

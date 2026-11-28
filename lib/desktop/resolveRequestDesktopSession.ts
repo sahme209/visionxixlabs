@@ -118,6 +118,8 @@ async function selfHealPersonalWorkspaceMembership(userId: string, organizationI
     }
 }
 
+const readCustomRoleRestriction = createCustomRoleRestrictionReader(prisma as unknown as CustomRoleRepo);
+
 /**
  * Resolves an authenticated native-app session without leaking token parse
  * failures into a 500 response. Expired, revoked, malformed, and unknown
@@ -125,6 +127,7 @@ async function selfHealPersonalWorkspaceMembership(userId: string, organizationI
  */
 export const resolveRequestDesktopSession = createDesktopSessionResolverCore({
  tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession },
- readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,
+ readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess, readCustomRoleRestriction,
 }, authenticateApiKey, log);
 import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore";
+import { createCustomRoleRestrictionReader, type CustomRoleRepo } from "./customRoleRestrictionReader";
