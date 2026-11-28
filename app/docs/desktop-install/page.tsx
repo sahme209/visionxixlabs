@@ -136,6 +136,16 @@ hdiutil detach /tmp/v19`}</pre>
   "updateNotices": false
 }`}</pre>
         <p>Every setting is optional. <code>allowedWorkspaceIds</code> limits V19 on that computer to your company&apos;s workspaces: signing in to any other workspace shows a locked screen with only Sign out. <code>updateNotices: false</code> hides the latest-release check, because your team decides when to upgrade. <code>managedBy</code> appears in Settings. If the file exists but cannot be read, or contains a setting V19 does not recognize, V19 stays locked and asks people to contact IT, so a broken file never silently removes a restriction. Find your workspace ID in the cockpit under Settings → Security.</p>
+        <p>Ready-made scripts write the file with the right encoding and permissions. Each one checks its values first and refuses anything V19 would not accept, so it never leaves a file that locks every computer:</p>
+        <ul className="list-disc space-y-1 pl-5 text-zinc-400">
+          <li><a className="text-white underline underline-offset-2" href="/enterprise/v19-policy-windows.ps1" download>v19-policy-windows.ps1</a>: an Intune platform script or Configuration Manager script, run as SYSTEM. Only Administrators and SYSTEM can change the folder; everyone else can read it.</li>
+          <li><a className="text-white underline underline-offset-2" href="/enterprise/v19-policy-macos.sh" download>v19-policy-macos.sh</a>: a Jamf policy script (parameters 4 to 6), or an Intune macOS shell script.</li>
+          <li><a className="text-white underline underline-offset-2" href="/enterprise/v19-policy-linux.sh" download>v19-policy-linux.sh</a>: for Ansible, Puppet or any root shell.</li>
+        </ul>
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`powershell -ExecutionPolicy Bypass -File v19-policy-windows.ps1 -ManagedBy "Example Health IT" -AllowedWorkspaceIds org_your_workspace_id -UpdateNotices:$false
+sudo bash v19-policy-macos.sh "Example Health IT" "org_your_workspace_id" false`}</pre>
+        <h3 className="mt-5 text-[15px] font-medium text-white">Network and proxies</h3>
+        <p>V19 connects only to <code>visionxixlabs.com</code> over HTTPS (port 443); allow that domain and its subdomains through your firewall. Sign-in opens the person&apos;s default browser and returns through the <code>axiom-agent://</code> link, which the installer registers. V19 uses the computer&apos;s proxy settings on Windows and macOS, and the <code>HTTPS_PROXY</code> environment variable on Linux. It trusts the operating system&apos;s certificate store, so certificates your company adds for TLS inspection are honored without extra setup.</p>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">
