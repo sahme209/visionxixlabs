@@ -16,7 +16,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     items: ["Failing when the last three finished runs failed.", "Degraded for stuck or untracked runs, with the reason shown."] },
   { date: "2026-11-27", area: "Desktop", title: "V19 desktop 0.1.26", href: "/download",
     summary: "The latest desktop release with this month's visual and workflow changes, for macOS, Windows and Linux.",
-    items: ["macOS builds are signed and notarized.", "Installed apps show when a newer release is available."] },
+    items: ["The macOS app passes signing and notarization checks during the build; see the release record for installer signing details.", "Installed apps show when a newer release is available."] },
   { date: "2026-11-27", area: "Cockpit", title: "Check library", href: "/docs/releaseops",
     summary: "Start from reviewed checks such as Trivy, Grype, Checkov, Hadolint, the OWASP ZAP baseline and Lighthouse.",
     items: ["Each GitHub Action is pinned to the commit of a published release.", "Picking one fills the form; nothing is saved until you add it."] },
