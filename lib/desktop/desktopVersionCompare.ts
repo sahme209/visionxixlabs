@@ -1,4 +1,4 @@
-/** Compare the installed desktop version with the latest published release tag ("desktop-v0.1.28"). Pure. */
+/** Compare the installed desktop version with the latest published release tag ("desktop-v0.1.29"). Pure. */
 export type UpdateState = { kind: "current"; latest: string } | { kind: "available"; latest: string } | { kind: "ahead"; latest: string } | { kind: "unknown" };
 
 function parse(version: string): number[] | null {
