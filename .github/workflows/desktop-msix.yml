@@ -91,7 +91,8 @@ jobs:
           "signtool=$signtool" >> $env:GITHUB_OUTPUT
 
       - name: Install-test with a throwaway certificate
-        shell: pwsh
+        # Windows PowerShell 5.1: the Appx install commands do not load in PowerShell 7.
+        shell: powershell
         env:
           PACKAGE: ${{ steps.pack.outputs.package }}
           SIGNTOOL: ${{ steps.pack.outputs.signtool }}

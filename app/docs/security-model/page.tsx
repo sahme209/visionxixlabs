@@ -57,6 +57,11 @@ export default function SecurityModelPage() {
         </ul>
       </DocSection>
 
+      <DocSection id="self-hosted" title="Run V19 on your own servers (preview)" kicker="08 · Deployment">
+        <p>The repository includes a self-hosted kit in <code>deploy/self-hosted</code>: a container image for the web app and API, PostgreSQL, a one-time database migration step and an optional local AI service (Ollama). Copy <code>.env.example</code> to <code>.env</code>, set a database password, the public address and two long random secrets, then run <code>docker compose up -d --build</code>. The app listens on port 3000 on the host; put your own TLS reverse proxy in front of it. Use the cockpit and the Agent service through the browser; the desktop app currently connects only to visionxixlabs.com.</p>
+        <p>For an environment without internet access, build the image where you have access, move it with <code>docker save</code> and <code>docker load</code>, and use the local AI profile so no model provider is contacted. Connectors to cloud services (GitHub, AWS and others) still need network access to those services. This is a preview: sign-in providers, email, billing and backups are yours to configure, and a deployment-specific security review is still needed.</p>
+      </DocSection>
+
       <DocFooterNav prev={{ href: "/docs/aws-setup", label: "AWS setup" }} next={{ href: "/docs/troubleshooting", label: "Troubleshooting" }} />
       <DocFeedback />
     </>

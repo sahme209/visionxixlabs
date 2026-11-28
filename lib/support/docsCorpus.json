@@ -937,49 +937,56 @@
    "title": "Desktop authentication",
    "text": "The installed application uses a browser approval handoff and scoped application session. The website is not a customer sign-in product. A packaged PKCE, expiry, logout, replay, recovery, and OS-keychain journey still requires exact-build verification.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#connectors",
    "title": "Connector permissions",
    "text": "A connector's code status is not its live availability status. GitHub access is installation- and repository-scoped. AWS ECS deployment requires a configured environment target, tenant workflow, and OIDC role. Azure and GCP production deployment paths are not released. Repository visibility, pull-request approval, merge authority, workflow dispatch, environment approval, release publication, and change management are distinct permissions. Each server-side action must enforce its own authorization.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#secrets",
    "title": "Secret handling",
    "text": "Secret-redaction utilities protect supported contact, logging, and operational paths. They do not prove that every field, connector, backup, export, or third-party system is safe for confidential data. Operators must use tenant policy and provider-specific credential guidance.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#tenants",
    "title": "Tenant boundaries",
    "text": "Organization identifiers and tenant checks exist across core repositories and services. “Tenant isolated” is not treated as globally verified until every query, cache, background job, export, backup, restore, and administrator path has been exercised against a configured deployment.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#audit",
    "title": "Audit and evidence",
    "text": "Supported workflows can record actor, action, rationale, timestamp, and outcome data. Hash and export utilities exist, but coverage varies by workflow. An audit record is product evidence; it is not an independent auditor's attestation or proof that a customer is compliant.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#retention",
    "title": "Retention, deletion, and recovery",
    "text": "Consistent customer-configurable retention, deletion, backup, and restore behavior is not yet verified across every store. Do not rely on an informal retention period or deletion promise; confirm the configured deployment and record the result in the verification report.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/security-model#compliance",
    "title": "Compliance posture",
    "text": "No SOC 2, ISO 27001, HIPAA, or other independent certification is currently claimed. Control-mapping code is a product feature, not a certification or active audit. No BAA, DPA, data-residency, SSO entitlement, or commercial tier is promised without approved documentation. Customers remain responsible for their own legal, risk, and compliance decisions.",
    "source": "app/docs/security-model/page.tsx",
-   "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10"
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
+  },
+  {
+   "href": "/docs/security-model#self-hosted",
+   "title": "Run V19 on your own servers (preview)",
+   "text": "The repository includes a self-hosted kit in deploy/self-hosted : a container image for the web app and API, PostgreSQL, a one-time database migration step and an optional local AI service (Ollama). Copy .env.example to .env , set a database password, the public address and two long random secrets, then run docker compose up -d --build . The app listens on port 3000 on the host; put your own TLS reverse proxy in front of it. Use the cockpit and the Agent service through the browser; the desktop app currently connects only to visionxixlabs.com. For an environment without internet access, build the image where you have access, move it with docker save and docker load , and use the local AI profile so no model provider is contacted. Connectors to cloud services (GitHub, AWS and others) still need network access to those services. This is a preview: sign-in providers, email, billing and backups are yours to configure, and a deployment-specific security review is still needed.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5"
   },
   {
    "href": "/docs/settings#profile",

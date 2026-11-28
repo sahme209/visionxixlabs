@@ -1,0 +1,64 @@
+# V19 self-hosted: PostgreSQL, a one-shot database setup step (deploy/self-hosted/migrate.mjs) and the app.
+# The app shares the database container's network, so it reaches PostgreSQL on localhost and the
+# app's database TLS rules (verified TLS for any non-local host) stay unchanged.
+#   cp .env.example .env   # then fill it in
+#   docker compose up -d --build
+# The app listens on http://localhost:3000 (put your own TLS reverse proxy in front for real use).
+name: v19
+services:
+  db:
+    image: postgres:17.6-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: v19
+      POSTGRES_USER: v19
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - v19-db:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:3000:3000" # the app's port, published from the shared network namespace
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U v19 -d v19"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  migrate:
+    image: v19-self-hosted:local
+    build:
+      context: ../..
+      dockerfile: deploy/self-hosted/Dockerfile
+    network_mode: service:db
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://v19:${POSTGRES_PASSWORD}@127.0.0.1:5432/v19
+    command: ["node", "deploy/self-hosted/migrate.mjs"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    image: v19-self-hosted:local
+    network_mode: service:db
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://v19:${POSTGRES_PASSWORD}@127.0.0.1:5432/v19
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # Optional local AI for offline use: docker compose --profile local-ai up -d
+  # Then set OLLAMA_BASE_URL=http://127.0.0.1:11434 in .env and pull a model inside the container.
+  ollama:
+    image: ollama/ollama:0.12.3
+    profiles: ["local-ai"]
+    network_mode: service:db
+    volumes:
+      - v19-ollama:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  v19-db:
+  v19-ollama:
