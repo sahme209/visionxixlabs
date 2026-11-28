@@ -9,7 +9,7 @@ vi.mock('@tauri-apps/plugin-shell',()=>({open:ports.open}));
 vi.mock('../../../desktop/src/lib/preferences',()=>({readDesktopPreferences:async()=>({theme:'dark',interface_density:'comfortable',notifications_enabled:false}),writeDesktopPreferences:ports.write}));
 import {SettingsView} from '../../../desktop/src/views/SettingsView';
 const show=()=>render(createElement(SettingsView,{identity:{organizationId:'ws_internal_version_fixture',capabilities:[]} as never}));
-beforeEach(()=>{vi.clearAllMocks();ports.invoke.mockImplementation(async(command:string)=>{if(command==='plugin:app|version')return '7.8.9';throw Error('unexpected_native_read')});ports.open.mockResolvedValue(undefined)});
+beforeEach(()=>{vi.clearAllMocks();ports.invoke.mockImplementation(async(command:string)=>{if(command==='plugin:app|version')return '7.8.9';if(command==='get_managed_policy')return {status:'none'};throw Error('unexpected_native_read')});ports.open.mockResolvedValue(undefined)});
 afterEach(()=>cleanup());
 
 it('reports the installed native version, not the source candidate, without opening or writing anything',async()=>{
@@ -17,7 +17,8 @@ it('reports the installed native version, not the source candidate, without open
   await screen.findByText('7.8.9');
   expect(screen.getByText('Installed version')).toBeTruthy();
   expect(screen.queryByText('0.1.23')).toBeNull();
-  expect(ports.invoke).toHaveBeenCalledExactlyOnceWith('plugin:app|version');
+  expect(ports.invoke.mock.calls.filter(([command])=>command==='plugin:app|version')).toHaveLength(1);
+  expect(ports.invoke.mock.calls.every(([command])=>['plugin:app|version','get_managed_policy'].includes(command))).toBe(true);
   expect(ports.open).not.toHaveBeenCalled();expect(ports.write).not.toHaveBeenCalled();
   expect(screen.getByText(/Website deployments do not replace this installed app/)).toBeTruthy();
 });

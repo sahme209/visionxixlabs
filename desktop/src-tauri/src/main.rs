@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod managed_policy;
 mod cloud;
 mod computer_observation;
 mod application_focus;
@@ -53,6 +54,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_system_info,
+            managed_policy::get_managed_policy,
             ticket_export::export_ticket_csv,
             application_focus::computer_observation_focus_subscribe,
             computer_input::computer_input_status,

@@ -23,6 +23,8 @@ import { RepositoryWorkspaceView } from "./views/RepositoryWorkspaceView";
 import { BatchesWorkspaceView } from "./views/BatchesWorkspaceView";
 import { DesktopSignInView } from "./views/DesktopSignInView";
 import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
+import { useManagedPolicy } from "./lib/managedPolicyStore";
+import { workspaceAllowed } from "./lib/managedPolicy";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
 import { createCredentialVerificationCoordinator, type CredentialVerificationCoordinator } from "./lib/credentialVerificationCoordinator";
 import { signOutDesktopCredentials } from "./lib/activeDesktopCredential";
@@ -61,6 +63,7 @@ export default function App() {
   const appMounted = useRef(false);
   const [signOutStatus, setSignOutStatus] = useState<{context: typeof desktopClient.config; failed: boolean} | null>(null);
   const credentialVerification = useRef<CredentialVerificationCoordinator | null>(null);
+  const managedPolicy = useManagedPolicy();
 
   useEffect(() => {
     appMounted.current = true;
@@ -169,6 +172,22 @@ export default function App() {
           setAuthState("unauthenticated");
         }}
       />
+    );
+  }
+  if (!managedPolicy) return <BootScreen status="Checking organization settings" />;
+  const policyDecision = workspaceAllowed(managedPolicy, identity.organizationId);
+  if (policyDecision !== "allowed") {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-axiom-bg p-6 text-white">
+        <section aria-labelledby="managed-policy-heading" className="w-full max-w-lg rounded-xl border border-white/10 bg-zinc-950 p-6">
+          <h1 id="managed-policy-heading" className="text-xl font-semibold">{policyDecision === "not_allowed" ? "This workspace isn't allowed on this computer" : "Your organization's V19 settings could not be read"}</h1>
+          <p role="alert" className="mt-4 text-sm leading-6 text-zinc-300">{policyDecision === "not_allowed"
+            ? `${managedPolicy.kind === "ok" && managedPolicy.policy.managedBy ? managedPolicy.policy.managedBy : "Your organization"} limits V19 on this computer to its own workspaces. Sign out and sign in with your work account.`
+            : "V19 stays locked until the settings file your IT team installed can be read. Contact your IT team."}</p>
+          {managedPolicy.kind !== "none" && <p className="mt-3 font-mono text-[11px] text-zinc-500">{managedPolicy.path}</p>}
+          <button type="button" className="mt-5 rounded-lg border border-white/20 px-4 py-2 text-sm" onClick={() => void signOut(false, credentialContext)}>Sign out</button>
+        </section>
+      </main>
     );
   }
   return <AuthenticatedWorkspace identity={identity} verifiedConfig={credentialContext} onSignOut={() => signOut(true, credentialContext)} />;
