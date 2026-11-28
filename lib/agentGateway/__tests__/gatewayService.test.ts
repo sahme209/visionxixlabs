@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const db = vi.hoisted(() => ({ create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), keyFind: vi.fn(), audit: vi.fn(), envs: vi.fn(async () => [] as unknown[]) }));
-vi.mock("@/lib/db", () => ({ prisma: { agentGatewayRequest: { create: db.create, findFirst: db.findFirst, findMany: db.findMany, updateMany: db.updateMany }, apiKey: { findFirst: db.keyFind }, environment: { findMany: db.envs } } }));
+const db = vi.hoisted(() => ({ create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), keyFind: vi.fn(), audit: vi.fn(), envs: vi.fn(async () => [] as unknown[]), autopilot: vi.fn(async () => null as unknown) }));
+vi.mock("@/lib/db", () => ({ prisma: { agentGatewayRequest: { create: db.create, findFirst: db.findFirst, findMany: db.findMany, updateMany: db.updateMany }, apiKey: { findFirst: db.keyFind }, environment: { findMany: db.envs }, workspaceReleaseAutopilot: { findUnique: db.autopilot } } }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: db.audit }));
 const hooks = vi.hoisted(() => ({ dispatch: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: hooks.dispatch }));
@@ -34,6 +34,21 @@ describe("agent gateway service", () => {
     const withoutModel = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship", agentName: "claude-code", model: "x", tools: ["git"] }, NOW);
     expect(withoutModel.ok && withoutModel.request.actionDigest).toBe(r.ok && r.request.actionDigest); // passport facts never change the approval digest
     expect(await createGatewayRequest(caller, { actionKind: "read", target: "x", summary: "y", tools: "git" }, NOW)).toEqual({ ok: false, error: "invalid_tools" });
+  });
+
+  it("lets the reviewed release autopilot allow a contained staging deploy, and fails closed on read errors", async () => {
+    const ship = { actionKind: "deploy", environment: "staging", target: "acme/web", summary: "Ship", changedFiles: ["src/app/page.tsx"] };
+    db.autopilot.mockResolvedValueOnce({ deployEnvironments: ["staging"], maxFiles: 5 });
+    const allowed = await createGatewayRequest(caller, ship, NOW);
+    expect(allowed.ok && allowed.request).toMatchObject({ status: "approved", policyDecision: "allow", mayProceed: true });
+    expect(db.create.mock.calls[0][0].data.policyReasons.at(-1)).toMatch(/release autopilot/);
+    expect(db.create.mock.calls[0][0].data.reviewTriage).toMatchObject({ lane: "auto" });
+    db.autopilot.mockRejectedValueOnce(new Error("db"));
+    const pending = await createGatewayRequest(caller, ship, NOW);
+    expect(pending.ok && pending.request).toMatchObject({ status: "pending", mayProceed: false });
+    db.autopilot.mockResolvedValueOnce({ deployEnvironments: ["staging"], maxFiles: 5 });
+    const prod = await createGatewayRequest(caller, { ...ship, environment: "production" }, NOW);
+    expect(prod.ok && prod.request).toMatchObject({ status: "pending" });
   });
 
   it("denies an agent's production deploy while a production environment is frozen", async () => {

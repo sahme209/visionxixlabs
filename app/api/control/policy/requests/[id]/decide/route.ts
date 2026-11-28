@@ -5,8 +5,8 @@ import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import type { CorrelationId, OrganizationId, UserId } from "@/lib/domain/ids";
 import { prisma } from "@/lib/db";
-import { parsePolicyDocument, planPolicyApply, policyDigest } from "@/lib/releaseops/policyAsCode";
-import { policyAdminContext } from "../../../shared";
+import { autopilotFromDocument, parsePolicyDocument, planPolicyApply, policyDigest } from "@/lib/releaseops/policyAsCode";
+import { policyAdminContext, readAutopilot } from "../../../shared";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -38,7 +38,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return r.count === 1 ? { status: 200, result: "rejected" } as const : { status: 409, error: "request_already_decided" } as const;
       }
       const rules = await tx.policyRule.findMany({ where: { organizationId: ctx.organizationId }, orderBy: { key: "asc" }, take: 500, select: ruleSelect });
-      if (await policyDigest(rules) !== req.baseDigest) {
+      const autopilot = await readAutopilot(ctx.organizationId, tx as never);
+      if (await policyDigest(rules, autopilot) !== req.baseDigest) {
         await tx.policyChangeRequest.updateMany({ where: { id, organizationId: ctx.organizationId, status: "pending" }, data: { status: "stale", decidedByUserId: ctx.userId, decidedAt } });
         return { status: 409, error: "policy_changed_since_request" } as const;
       }
@@ -52,6 +53,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           const { key, ...fields } = op.rule;
           await tx.policyRule.upsert({ where: { organizationId_key: { organizationId: ctx.organizationId, key } }, create: { organizationId: ctx.organizationId, key, ...fields, source: "policy_file" }, update: { ...fields, source: "policy_file" } });
         }
+      }
+      const nextAutopilot = autopilotFromDocument(parsed.document);
+      if (JSON.stringify(nextAutopilot) !== JSON.stringify(autopilot)) {
+        const data = { deployEnvironments: nextAutopilot?.deployEnvironments ?? [], maxFiles: nextAutopilot?.maxFiles ?? 0, appliedRequestId: id };
+        await tx.workspaceReleaseAutopilot.upsert({ where: { organizationId: ctx.organizationId }, create: { organizationId: ctx.organizationId, ...data }, update: data });
       }
       return { status: 200, result: "applied" } as const;
     }, { timeout: 15000, maxWait: 5000 });

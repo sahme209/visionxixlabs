@@ -19,7 +19,7 @@ export default function AgentGatewayDocsPage() {
   <DocSection id="decisions" kicker="02" title="How requests are decided">
    <dl className="space-y-4">
     <div><dt className="font-semibold text-white">Allowed</dt><dd>Low-risk work such as reading code, editing a branch or opening a pull request in development or staging.</dd></div>
-    <div><dt className="font-semibold text-white">Needs approval</dt><dd>Merges, dependency changes, infrastructure, deploys, data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval.</dd></div>
+    <div><dt className="font-semibold text-white">Needs approval</dt><dd>Merges, dependency changes, infrastructure, deploys (unless <a href="#release-autopilot" className="underline underline-offset-4">release autopilot</a> covers them), data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval.</dd></div>
     <div><dt className="font-semibold text-white">Denied</dt><dd>Reading production secrets and deleting production resources. These are never approvable through the gateway. While a production environment is frozen, production deploys, merges, infrastructure changes and data migrations are denied too, with the freeze&apos;s reason.</dd></div>
    </dl>
   </DocSection>
@@ -40,6 +40,10 @@ export default function AgentGatewayDocsPage() {
   </DocSection>
   <DocSection id="triage" kicker="07" title="Review lanes by blast radius">
    <p>Each request is sorted into a review lane the moment it arrives, with a one-line reason. <em>Allowed by policy</em> needs no review. <em>Quick look</em> is a contained change outside production. <em>Careful review</em> is a production change, a high-risk action or a moderate blast radius. <em>Two approvers</em> is a production change that touches many areas, touches migrations, auth, secrets, CI or infrastructure, or is a data migration, infrastructure change or delete. In that lane the first approval is recorded and the request stays pending until a different admin approves too. Lanes only ever add review; they never remove what policy requires.</p>
+  </DocSection>
+  <DocSection id="release-autopilot" kicker="08" title="Release autopilot">
+   <p>A workspace can let agents deploy small, contained changes to development or staging without waiting for a person. Add an <code>autopilot</code> section to the policy file, for example <code>{`"autopilot": { "deploy": { "environments": ["staging"], "maxFiles": 10 } }`}</code>, and propose it from Governance → Policy as code. Turning autopilot on or widening it is marked as loosening governance, and a different owner or admin must approve it before it applies. A policy file without the section turns autopilot off.</p>
+   <p>An agent deploy is then allowed only when all of these hold: the environment is one the rule names, the agent listed the changed files, there are no more than <code>maxFiles</code> of them, the blast radius is contained, and no file touches migrations, CI, auth, infrastructure or secrets. Otherwise it waits for review as before. Production is never covered: the policy file refuses it. If the rule cannot be read, deploys wait for review. Each request records the reason it was allowed, and agents still report the outcome.</p>
   </DocSection>
   <DocFooterNav prev={{href:"/docs/approval-workflow",label:"Approval workflow"}} next={{href:"/docs/trust-tools",label:"Trust tools"}} />
  </>;

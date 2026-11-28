@@ -1,10 +1,10 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-const m = vi.hoisted(() => ({ ctx: vi.fn(), rules: vi.fn(), create: vi.fn(), audit: vi.fn() }));
+const m = vi.hoisted(() => ({ ctx: vi.fn(), rules: vi.fn(), create: vi.fn(), audit: vi.fn(), autopilot: vi.fn(async () => null as unknown) }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => true }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
-vi.mock("../../shared", () => ({ policyAdminContext: m.ctx, readPolicyRules: m.rules }));
+vi.mock("../../shared", () => ({ policyAdminContext: m.ctx, readPolicyRules: m.rules, readAutopilot: m.autopilot }));
 vi.mock("@/lib/db", () => ({ prisma: { policyChangeRequest: { create: m.create, findMany: vi.fn(async () => []) } } }));
 import { POST } from "../route";
 const rule = (key: string, over: Record<string, unknown> = {}) => ({ key, label: key, severity: "high", blocking: true, exceptionAllowed: false, approverRole: null, evidenceRequired: true, enabled: true, description: null, ...over });

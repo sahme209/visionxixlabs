@@ -7,7 +7,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_p", userId: "u", email: "a@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => io.admin }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => io.sameOrigin }));
-vi.mock("@/lib/db", () => ({ prisma: { policyRule: { findMany: io.findMany }, policyViolation: { findMany: io.violations } } }));
+vi.mock("@/lib/db", () => ({ prisma: { policyRule: { findMany: io.findMany }, policyViolation: { findMany: io.violations }, workspaceReleaseAutopilot: { findUnique: async () => null } } }));
 import { GET } from "../export/route";
 import { POST } from "../diff/route";
 

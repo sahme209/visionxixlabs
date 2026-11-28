@@ -2946,6 +2946,17 @@ model Environment {
 
 /// A reviewed change to the workspace's policy rules, proposed as a policy file. Applied only after a
 /// different owner or admin approves it, and only if the rules still match the digest it was reviewed against.
+/// Release autopilot for one workspace, set only by an applied two-person policy change. Empty
+/// deployEnvironments means off. Never covers production (the policy file schema refuses it).
+model WorkspaceReleaseAutopilot {
+  organizationId     String   @id
+  deployEnvironments String[] @default([])
+  maxFiles           Int      @default(0)
+  /// The policy change request that last set it.
+  appliedRequestId   String?
+  updatedAt          DateTime @updatedAt
+}
+
 model PolicyChangeRequest {
   id              String    @id @default(cuid())
   organizationId  String

@@ -23,10 +23,27 @@ export const policyRuleSchema = z.object({
 }).strict();
 export type PolicyRuleSpec = z.infer<typeof policyRuleSchema>;
 
+/**
+ * Release autopilot: agent deploys that policy may allow without a person, only to development or
+ * staging (never production) and only for contained changes of at most `maxFiles` files. Turning it on
+ * or widening it is a loosening change, so it goes through the same two-person review as any rule.
+ */
+export const AUTOPILOT_ENVIRONMENTS = ["development", "staging"] as const;
+export const autopilotSchema = z.object({
+  deploy: z.object({
+    environments: z.array(z.enum(AUTOPILOT_ENVIRONMENTS)).min(1).max(2).refine((e) => new Set(e).size === e.length, "list each environment once"),
+    maxFiles: z.number().int().min(1).max(50),
+  }).strict(),
+}).strict();
+export type AutopilotSpec = z.infer<typeof autopilotSchema>;
+/** Stored form; null when autopilot is off. */
+export interface StoredAutopilot { deployEnvironments: string[]; maxFiles: number }
+
 export const policyDocumentSchema = z.object({
   kind: z.literal(POLICY_DOCUMENT_KIND),
   version: z.literal(POLICY_DOCUMENT_VERSION),
   rules: z.array(policyRuleSchema).max(500),
+  autopilot: autopilotSchema.optional(),
 }).strict().superRefine((doc, ctx) => {
   const seen = new Set<string>();
   doc.rules.forEach((rule, index) => {
@@ -38,8 +55,20 @@ export type PolicyDocument = z.infer<typeof policyDocumentSchema>;
 
 interface StoredRule { key: string; label: string; severity: string; blocking: boolean; exceptionAllowed: boolean; approverRole: string | null; evidenceRequired: boolean; enabled: boolean; description: string | null }
 
+/** Normalizes a stored autopilot row: empty or invalid means off. */
+export function readStoredAutopilot(row: { deployEnvironments: string[]; maxFiles: number } | null | undefined): StoredAutopilot | null {
+  if (!row) return null;
+  const envs = [...new Set(row.deployEnvironments.filter((e) => (AUTOPILOT_ENVIRONMENTS as readonly string[]).includes(e)))].sort();
+  return envs.length && Number.isInteger(row.maxFiles) && row.maxFiles >= 1 && row.maxFiles <= 50 ? { deployEnvironments: envs, maxFiles: row.maxFiles } : null;
+}
+
+/** The stored form a reviewed document asks for (a document without an autopilot section turns it off). */
+export function autopilotFromDocument(doc: PolicyDocument): StoredAutopilot | null {
+  return doc.autopilot ? { deployEnvironments: [...doc.autopilot.deploy.environments].sort(), maxFiles: doc.autopilot.deploy.maxFiles } : null;
+}
+
 /** Canonical, sorted, stable JSON so the same rules always produce the same file (clean Git diffs). */
-export function exportPolicyDocument(rules: readonly StoredRule[]): string {
+export function exportPolicyDocument(rules: readonly StoredRule[], autopilot: StoredAutopilot | null = null): string {
   const doc = {
     kind: POLICY_DOCUMENT_KIND,
     version: POLICY_DOCUMENT_VERSION,
@@ -47,6 +76,8 @@ export function exportPolicyDocument(rules: readonly StoredRule[]): string {
       key: r.key, label: r.label, severity: r.severity, blocking: r.blocking, exceptionAllowed: r.exceptionAllowed,
       approverRole: r.approverRole, evidenceRequired: r.evidenceRequired, enabled: r.enabled, description: r.description,
     })),
+    // Only present when on, so workspaces without autopilot keep byte-identical files and digests.
+    ...(autopilot ? { autopilot: { deploy: { environments: [...autopilot.deployEnvironments].sort(), maxFiles: autopilot.maxFiles } } } : {}),
   };
   return JSON.stringify(doc, null, 2) + "\n";
 }
@@ -66,13 +97,15 @@ export interface PolicyDiff {
   removed: string[];
   changed: Array<{ key: string; fields: Array<{ field: keyof PolicyRuleSpec; from: unknown; to: unknown }> }>;
   unchanged: number;
-  /** Changes that loosen governance (blocking turned off, rule disabled or removed, exceptions newly allowed). */
+  /** Changes that loosen governance (blocking turned off, rule disabled or removed, exceptions newly allowed, autopilot widened). */
   loosening: string[];
+  /** Release autopilot before and after, when it changes. */
+  autopilot?: { from: StoredAutopilot | null; to: StoredAutopilot | null };
 }
 
 const FIELDS: Array<keyof PolicyRuleSpec> = ["label", "severity", "blocking", "exceptionAllowed", "approverRole", "evidenceRequired", "enabled", "description"];
 
-export function diffPolicy(current: readonly StoredRule[], proposed: PolicyDocument): PolicyDiff {
+export function diffPolicy(current: readonly StoredRule[], proposed: PolicyDocument, currentAutopilot: StoredAutopilot | null = null): PolicyDiff {
   const now = new Map(current.map((r) => [r.key, r]));
   const next = new Map(proposed.rules.map((r) => [r.key, r]));
   const diff: PolicyDiff = { added: [], removed: [], changed: [], unchanged: 0, loosening: [] };
@@ -89,13 +122,25 @@ export function diffPolicy(current: readonly StoredRule[], proposed: PolicyDocum
   }
   for (const key of now.keys()) if (!next.has(key)) { diff.removed.push(key); diff.loosening.push(`${key}: removed`); }
   diff.removed.sort();
+  const to = autopilotFromDocument(proposed);
+  if (JSON.stringify(currentAutopilot) !== JSON.stringify(to)) {
+    diff.autopilot = { from: currentAutopilot, to };
+    const added = (to?.deployEnvironments ?? []).filter((e) => !(currentAutopilot?.deployEnvironments ?? []).includes(e));
+    if (added.length) diff.loosening.push(`release autopilot: agents may deploy contained changes to ${added.join(" and ")} without review`);
+    if (to && currentAutopilot && to.maxFiles > currentAutopilot.maxFiles) diff.loosening.push(`release autopilot: allows up to ${to.maxFiles} files (was ${currentAutopilot.maxFiles})`);
+  }
   return diff;
 }
 
+/** True when the document changes nothing (rules and autopilot). */
+export function isPolicyDiffEmpty(diff: PolicyDiff): boolean {
+  return !diff.added.length && !diff.changed.length && !diff.removed.length && !diff.autopilot;
+}
+
 /** Step 2: SHA-256 of the canonical export, so a request can be applied only to the rules it was reviewed against. */
-export async function policyDigest(rules: readonly StoredRule[]): Promise<string> {
+export async function policyDigest(rules: readonly StoredRule[], autopilot: StoredAutopilot | null = null): Promise<string> {
   const { createHash } = await import("node:crypto");
-  return createHash("sha256").update(exportPolicyDocument(rules)).digest("hex");
+  return createHash("sha256").update(exportPolicyDocument(rules, autopilot)).digest("hex");
 }
 
 export type PolicyApplyOp =
