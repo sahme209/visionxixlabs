@@ -34,6 +34,16 @@ export default function MembersDocsPage() {
    </ul>
    <p>When the directory adds someone, V19 records them as provisioned but grants nothing: they still join through an invite, and their role comes from the workspace. When the directory deactivates or removes someone, V19 signs them out of every desktop session in this workspace straight away and suspends their membership. The record and the audit trail are kept. The workspace owner is never suspended by SCIM, so a directory mistake cannot lock you out. Reactivating someone in the directory does not restore access by itself: an admin re-admits them. Every change appears in the audit log with the API key that made it. API keys expire after at most 90 days, so put a reminder in your directory to replace the token.</p>
   </DocSection>
+  <DocSection id="sso" kicker="06" title="Company sign-in (single sign-on with OIDC)">
+   <p>People at your company can sign in to V19 through your own identity provider, such as Microsoft Entra ID, Okta or Google Workspace, using OpenID Connect. Set it up in four steps; until all four pass, nobody can sign in this way.</p>
+   <ol className="list-decimal space-y-1 pl-5 text-zinc-400">
+    <li>In your identity provider, register a web application with the redirect URI <code>https://visionxixlabs.com/api/sso/oidc/callback</code>. Add the connection in V19 with your issuer URL, your email domains and a role rule for each group (no default role is ever given). Then enter the client ID and client secret. The secret is stored encrypted and never shown again.</li>
+    <li>Prove you own each email domain: publish the TXT record V19 shows (at <code>_v19-verification.yourdomain.com</code>) and choose Verify domains. Public mail domains such as gmail.com can never be used.</li>
+    <li>Run a test sign-in with a work account. A test never signs anyone in; it only confirms the round trip works.</li>
+    <li>Activate the connection within 24 hours of a passing test.</li>
+   </ol>
+   <p>After that, people choose the SSO button on the sign-in page and enter their work email. Their role comes from your rules each time they sign in. A company sign-in can create a new account, but it never takes over an existing V19 account that is not already in your workspace. Anyone your directory deprovisioned through SCIM is refused. Microsoft Entra ID does not include an MFA claim by default; if you enforce MFA with Conditional Access, turn off &quot;Require an MFA claim&quot; on the connection. Changing the client secret pauses the connection until a new test passes.</p>
+  </DocSection>
   <DocFooterNav prev={{href:"/docs/workspaces",label:"Workspaces"}} next={{href:"/docs/governance-approvals",label:"Governance approvals"}} />
  </>;
 }

@@ -16,6 +16,7 @@
 
 import { isMissingTable } from "@/lib/releaseops/releaseListResponder";
 import type { RoleMappingRule } from "./enterpriseIdentityContract";
+import { DNS_RECORD_PREFIX, domainVerificationValue } from "./oidc/tenantSsoAdmin";
 
 export const ALL_ORG_ROLES = ["owner", "admin", "operator", "security_reviewer", "finance_viewer", "read_only"] as const;
 export type OrgRoleName = (typeof ALL_ORG_ROLES)[number];
@@ -71,7 +72,17 @@ export async function buildIdentityProviderListResponse(
   organizationId: string,
 ): Promise<{ status: number; body: ListBody }> {
   try {
-    const providers = await repo.tenantIdentityProvider.findMany({ where: { organizationId }, orderBy: { createdAt: "asc" } });
+    const rows = await repo.tenantIdentityProvider.findMany({ where: { organizationId }, orderBy: { createdAt: "asc" } });
+    // Never send the encrypted OIDC client secret to any client; say only whether one is set.
+    const providers = rows.map((row) => {
+      const { encryptedClientSecret, ...rest } = row as TenantIdentityProviderRow & { encryptedClientSecret?: string | null };
+      const verified = (rest as { verifiedDomains?: string[] }).verifiedDomains ?? [];
+      return {
+        ...rest,
+        clientSecretSet: typeof encryptedClientSecret === "string" && encryptedClientSecret.length > 0,
+        domainVerification: rest.managedDomains.map((domain) => ({ domain, record: `${DNS_RECORD_PREFIX}.${domain}`, value: domainVerificationValue(rest.organizationId, domain), verified: verified.includes(domain) })),
+      } as TenantIdentityProviderRow;
+    });
     return { status: 200, body: { ok: true, data: { providers } } };
   } catch (err) {
     if (isMissingTable(err)) return { status: 503, body: { ok: false, error: "migration_pending" } };

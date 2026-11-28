@@ -587,35 +587,42 @@
    "title": "Roles",
    "text": "Owner : full control, one per workspace; ownership moves only through an explicit handoff. Admin : manages members, billing, integrations and every engineer setting. Operator : runs scans, approves engineer actions and configures the workforce, but cannot manage billing or members. Security reviewer : reads findings, approvals and the audit trail, and can vote on approvals but not start engineer actions. Finance viewer : reads cost recommendations and panels, with no write access. Read-only : reads dashboards; no vote, run or manage.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24"
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
   },
   {
    "href": "/docs/members#invite",
    "title": "Invite a teammate",
    "text": "Enter an email address, choose a role (Operator by default) and choose Create invitation link . V19 does not email the link: copy it and send it yourself. The owner role cannot be given by invitation. Starting in the paired app? See workspace access in desktop Settings for the account and workspace checks on the browser shortcut. Invitation links expire after 7 days. Removing a member also voids every earlier invitation for that email.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24"
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
   },
   {
    "href": "/docs/members#change",
    "title": "Change a role or remove someone",
    "text": "Use Update or Remove on a member's row. You cannot change your own role or the owner's. If V19 cannot confirm the audit record for a change, it says so; check the member list before trying again, because the change may already have happened. If your workspace is enrolled in Governance, promotions and new invitations wait until membership changes have reviewed Governance coverage. Demoting and removing members always work, so you can reduce access at any time.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24"
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
   },
   {
    "href": "/docs/members#requests",
    "title": "Access requests",
    "text": "Members can ask for a higher role through Ask V19. Owners and admins see requests from the last 30 days under Access requests , with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24"
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
   },
   {
    "href": "/docs/members#scim",
    "title": "Provision people from your identity provider (SCIM)",
    "text": "Microsoft Entra ID, Okta and other SCIM 2.0 directories can keep your V19 workspace in step with your company directory. Create an API key with the scim:provision scope under API keys, then in your identity provider's provisioning settings enter: Tenant or base URL: https://visionxixlabs.com/api/scim/v2 Secret token: the API key (sent as a bearer token) Matching attribute: userName (the person's email). Users only; group provisioning is not used. When the directory adds someone, V19 records them as provisioned but grants nothing: they still join through an invite, and their role comes from the workspace. When the directory deactivates or removes someone, V19 signs them out of every desktop session in this workspace straight away and suspends their membership. The record and the audit trail are kept. The workspace owner is never suspended by SCIM, so a directory mistake cannot lock you out. Reactivating someone in the directory does not restore access by itself: an admin re-admits them. Every change appears in the audit log with the API key that made it. API keys expire after at most 90 days, so put a reminder in your directory to replace the token.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "b0164a0eb2791b9d0e21fd09efb17f2b01f6d9d24f9901fce7d47cfcfaaeee24"
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
+  },
+  {
+   "href": "/docs/members#sso",
+   "title": "Company sign-in (single sign-on with OIDC)",
+   "text": "People at your company can sign in to V19 through your own identity provider, such as Microsoft Entra ID, Okta or Google Workspace, using OpenID Connect. Set it up in four steps; until all four pass, nobody can sign in this way. In your identity provider, register a web application with the redirect URI https://visionxixlabs.com/api/sso/oidc/callback . Add the connection in V19 with your issuer URL, your email domains and a role rule for each group (no default role is ever given). Then enter the client ID and client secret. The secret is stored encrypted and never shown again. Prove you own each email domain: publish the TXT record V19 shows (at _v19-verification.yourdomain.com ) and choose Verify domains. Public mail domains such as gmail.com can never be used. Run a test sign-in with a work account. A test never signs anyone in; it only confirms the round trip works. Activate the connection within 24 hours of a passing test. After that, people choose the SSO button on the sign-in page and enter their work email. Their role comes from your rules each time they sign in. A company sign-in can create a new account, but it never takes over an existing V19 account that is not already in your workspace. Anyone your directory deprovisioned through SCIM is refused. Microsoft Entra ID does not include an MFA claim by default; if you enforce MFA with Conditional Access, turn off \"Require an MFA claim\" on the connection. Changing the client secret pauses the connection until a new test",
+   "source": "app/docs/members/page.tsx",
+   "sourceSha256": "944b609bb8bb8838d2e61f89a255223246018fceb2576f046aade65284c7e6e2"
   },
   {
    "href": "/docs/oauth-setup#overview",

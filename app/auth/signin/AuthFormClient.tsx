@@ -215,8 +215,11 @@ function SignInForm() {
           </button>
         </form>
 
-        {enabledProviders && (enabledProviders.github || enabledProviders.cognito || enabledProviders.gitlab) && (
+        {enabledProviders && (
           <div role="group" aria-label="Other sign-in methods" className="absolute left-0 right-0 top-full mt-3 flex justify-center gap-3">
+            <a href={`/auth/sso?callbackUrl=${encodeURIComponent(callbackUrl)}`} aria-label="Sign in with your company (SSO)" title="Company SSO" className={secondaryProviderClass}>
+              <SsoMark className="h-4 w-4" />
+            </a>
             {enabledProviders.github && (
               <button
                 type="button"

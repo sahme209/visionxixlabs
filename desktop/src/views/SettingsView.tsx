@@ -55,7 +55,7 @@ import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
 import { normalizeAiProviderStatus, toggleApprovedModel, setApprovedGatewayDefault, removeUnavailableGatewayApprovals, isModelApproved, isConcreteGatewayModelId, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
-import { markNotificationPrefDirty, notifyResult, type NotificationRequestResult } from "../lib/notifications";
+import { markNotificationPrefDirty, notifyResult, openExternal, type NotificationRequestResult } from "../lib/notifications";
 import {
   readDesktopPreferences,
   writeDesktopPreferences,
@@ -1907,6 +1907,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
  */
 interface IdentityProviderListItem {
   id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null;
+  oidcClientId?: string | null; clientSecretSet?: boolean; lastTestAssertionAt?: string | null;
+  domainVerification?: Array<{ domain: string; record: string; value: string; verified: boolean }>;
 }
 
 function IdentitySection() {
@@ -1924,11 +1926,11 @@ function IdentitySection() {
 
   return (
     <div>
-      <SectionHeading title="Identity" detail="Enterprise SSO (OIDC/SAML) and SCIM lifecycle config — design-only until a real metadata exchange ships. No sign-in path reads this yet; connecting a provider here never grants anyone access on its own." />
+      <SectionHeading title="Identity" detail="Company sign-in through your identity provider (OIDC) and SCIM provisioning. A connection signs no one in until its client is set, every domain is verified, a test sign-in passes and you activate it." />
       {loadError && <p role="alert" className="mb-4 text-[12px] text-rose-300">{loadError}</p>}
       <Group label="Configured identity providers">
         {providers === null && loadError === null && <ActionRow title="Loading…" detail="Checking configured providers." action={null} />}
-        {providers !== null && providers.length === 0 && <ActionRow title="No identity provider configured" detail="Add one below. It stays pending — sign-in is unaffected until a later phase ships the live OIDC/SAML client." action={null} />}
+        {providers !== null && providers.length === 0 && <ActionRow title="No identity provider configured" detail="Add one below. It stays pending, and sign-in is unaffected, until you finish the setup steps and activate it." action={null} />}
         {(providers ?? []).map((p) => (
           <ActionRow
             key={p.id}
@@ -1938,9 +1940,62 @@ function IdentitySection() {
           />
         ))}
       </Group>
+      {(providers ?? []).filter((p) => p.protocol === "oidc" && !p.revokedAt && p.status !== "revoked").map((p) => <OidcSetupPanel key={p.id} provider={p} onChanged={load} />)}
       <NewIdentityProviderForm onCreated={load} />
       <ScimPreviewPanel />
     </div>
+  );
+}
+
+/** The four steps that make a company OIDC connection usable: client, domains, test, activate. */
+function OidcSetupPanel({ provider, onChanged }: { provider: IdentityProviderListItem; onChanged: () => void }) {
+  const [clientId, setClientId] = useState(provider.oidcClientId ?? "");
+  const [clientSecret, setClientSecret] = useState("");
+  const [testEmail, setTestEmail] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  async function run(step: string, fn: () => Promise<{ ok: boolean; error?: string }>, done: string) {
+    setBusy(step); setMessage(null);
+    try {
+      const r = await fn();
+      setMessage(r.ok ? done : (r.error ?? "That step did not complete."));
+      if (r.ok) onChanged();
+    } finally { setBusy(null); }
+  }
+  const inputClass = "w-full rounded-md border border-white/10 bg-black/30 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600";
+  const button = "rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/10 disabled:opacity-50";
+  const testAge = provider.lastTestAssertionAt ? Date.now() - new Date(provider.lastTestAssertionAt).getTime() : null;
+  return (
+    <Group label={`Set up company sign-in: ${provider.issuerOrEntityId}`}>
+      <div className="space-y-4 px-4 py-3.5 text-xs text-zinc-400">
+        <p>Register this redirect URI with your identity provider: <code className="text-zinc-200">https://visionxixlabs.com/api/sso/oidc/callback</code></p>
+        <div className="space-y-2">
+          <p className="text-zinc-200">1. Client {provider.clientSecretSet ? "(secret set)" : ""}</p>
+          <input aria-label="OIDC client ID" className={inputClass} placeholder="Client ID" value={clientId} onChange={(e) => setClientId(e.target.value)} />
+          <input aria-label="OIDC client secret" type="password" autoComplete="off" className={inputClass} placeholder={provider.clientSecretSet ? "New client secret" : "Client secret"} value={clientSecret} onChange={(e) => setClientSecret(e.target.value)} />
+          <button type="button" className={button} disabled={busy !== null || !clientId.trim() || !clientSecret} onClick={() => void run("client", async () => { const r = await desktopClient.setIdentityProviderOidcClient(provider.id, { clientId: clientId.trim(), clientSecret }); setClientSecret(""); return r; }, "Client saved. Run a new test sign-in.")}>{busy === "client" ? "Saving…" : "Save client"}</button>
+        </div>
+        <div className="space-y-2">
+          <p className="text-zinc-200">2. Prove each domain with a DNS TXT record</p>
+          <ul className="space-y-1">
+            {(provider.domainVerification ?? []).map((d) => (
+              <li key={d.domain} className="break-all"><span className={d.verified ? "text-emerald-300" : "text-zinc-300"}>{d.verified ? "Verified" : "Not verified"}</span> · <code>{d.record}</code> TXT <code className="select-all text-zinc-200">{d.value}</code></li>
+            ))}
+          </ul>
+          <button type="button" className={button} disabled={busy !== null} onClick={() => void run("domains", () => desktopClient.verifyIdentityProviderDomains(provider.id), "Domain records checked.")}>{busy === "domains" ? "Checking…" : "Verify domains"}</button>
+        </div>
+        <div className="space-y-2">
+          <p className="text-zinc-200">3. Test sign-in {testAge !== null && testAge < 86_400_000 ? "(passed in the last 24 hours)" : ""}</p>
+          <input aria-label="Work email for the test" className={inputClass} placeholder="you@company.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
+          <button type="button" className={button} disabled={busy !== null || !testEmail.includes("@")} onClick={() => void run("test", async () => { const r = await desktopClient.testIdentityProvider(provider.id, testEmail.trim()); if (r.ok) await openExternal(r.data.redirectUrl); return r; }, "Finish the test in your browser, then come back and refresh.")}>{busy === "test" ? "Opening…" : "Test in browser"}</button>
+        </div>
+        <div className="space-y-2">
+          <p className="text-zinc-200">4. Activate {provider.status === "active" ? "(active)" : ""}</p>
+          <button type="button" className={button} disabled={busy !== null || provider.status === "active"} onClick={() => void run("activate", () => desktopClient.activateIdentityProvider(provider.id), "Company sign-in is active.")}>{busy === "activate" ? "Activating…" : "Activate"}</button>
+        </div>
+        {message && <p role="status" className="text-zinc-300">{message}</p>}
+      </div>
+    </Group>
   );
 }
 
