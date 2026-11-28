@@ -89,6 +89,20 @@ class VisionXIXLabs:
         """GET /api/v1/release-gate — current release-gate verdict."""
         return self._get("/api/v1/release-gate")
 
+    def get_policy(self) -> Dict[str, Any]:
+        """GET /api/v1/policy — the policy file (rules and release autopilot) and its digest. Scope: policy:propose."""
+        return self._get("/api/v1/policy")
+
+    def propose_policy(self, document: Dict[str, Any]) -> Dict[str, Any]:
+        """POST /api/v1/policy/requests — propose a policy file. A different owner or admin must approve it
+        in Governance before it applies. Returns {"unchanged": True} when it already matches. Scope: policy:propose."""
+        return self._post("/api/v1/policy/requests", {"document": document})
+
+    def get_policy_request(self, request_id: str) -> Dict[str, Any]:
+        """GET /api/v1/policy/requests/{id} — pending, applied, rejected or stale. Scope: policy:propose."""
+        from urllib.parse import quote
+        return self._get(f"/api/v1/policy/requests/{quote(request_id, safe='')}")
+
     def workspace_config(self) -> Dict[str, Any]:
         """GET /api/v1/config — environments, variable sets, variables and checks as code.
 
