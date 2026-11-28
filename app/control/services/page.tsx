@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { buildServiceCatalog } from "@/lib/releaseops/serviceCatalog";
 import { formatRunMinutes, summarizeDeliveryHealth, type DeliveryHealth } from "@/lib/releaseops/deliveryHealth";
 import { StatusDot } from "@/components/cockpit/StatusDot";
+import { openIncidentsByRepository, rankScorecards, scoreService, type ScoreGrade, type ScoreState } from "@/lib/releaseops/serviceScorecard";
 import { TONE_DOT, toneFor } from "@/lib/cockpit/statusTone";
 import { ROLLOUT_STRATEGIES } from "@/lib/releaseops/kubernetesRolloutTemplates";
 import { SERVERLESS_PLATFORMS } from "@/lib/releaseops/serverlessDeployTemplates";
@@ -13,6 +14,13 @@ export const dynamic = "force-dynamic";
 const OUTCOME: Record<string, { label: string; tone: string }> = {
   succeeded: { label: "succeeded", tone: "text-emerald-300" }, failed: { label: "failed", tone: "text-red-300" },
   in_progress: { label: "in progress", tone: "text-sky-300" }, other: { label: "other", tone: "text-zinc-300" },
+};
+
+const GRADE: Record<ScoreGrade, { label: string; tone: "success" | "attention" | "failed" | "idle" }> = {
+  strong: { label: "Strong", tone: "success" }, fair: { label: "Fair", tone: "attention" }, weak: { label: "Needs work", tone: "failed" }, unknown: { label: "Not enough data", tone: "idle" },
+};
+const CHECK_MARK: Record<ScoreState, { mark: string; tone: string; label: string }> = {
+  pass: { mark: "✓", tone: "text-emerald-300", label: "Passes" }, fail: { mark: "✕", tone: "text-rose-300", label: "Fails" }, unknown: { mark: "–", tone: "text-zinc-500", label: "Unknown" },
 };
 
 const HEALTH: Record<DeliveryHealth, { label: string; tone: "success" | "attention" | "failed" | "idle" }> = {
@@ -32,7 +40,16 @@ export default async function ServicesPage() {
       prisma.deploymentExecution.findMany({ where: { organizationId, createdAt: { gte: since } }, orderBy: { createdAt: "desc" }, take: 2000, select: { repositoryFullName: true, environmentId: true, sourceCommitSha: true, status: true, conclusion: true, createdAt: true } }),
       prisma.environment.findMany({ where: { organizationId }, select: { id: true, name: true, displayOrder: true } }),
     ]);
-    return buildServiceCatalog(repos.map((r) => ({ id: r.id, fullName: `${r.remoteOwner}/${r.remoteName}`, defaultBranch: r.defaultBranch, codeownersPresent: r.codeownersPresent, protectedBranches: r.protectedBranches })), components, executions, environments);
+    const catalog = buildServiceCatalog(repos.map((r) => ({ id: r.id, fullName: `${r.remoteOwner}/${r.remoteName}`, defaultBranch: r.defaultBranch, codeownersPresent: r.codeownersPresent, protectedBranches: r.protectedBranches })), components, executions, environments);
+    const incidentsByRepo = await (async () => {
+      const incidents = await prisma.deploymentIncident.findMany({ where: { organizationId, status: { in: ["open", "mitigated"] } }, take: 1000, select: { releaseId: true, status: true } });
+      const releases = incidents.length ? await prisma.release.findMany({ where: { organizationId, id: { in: [...new Set(incidents.map((i) => i.releaseId))] } }, select: { id: true, evidenceRepositoryId: true } }) : [];
+      return openIncidentsByRepository(incidents, releases);
+    })().catch(() => null);
+    const idByName = new Map(repos.map((r) => [`${r.remoteOwner}/${r.remoteName}`, r.id]));
+    const now = new Date();
+    const scorecards = rankScorecards(catalog.rows.map((row) => scoreService(row, incidentsByRepo === null ? null : incidentsByRepo.get(idByName.get(row.repository) ?? "") ?? 0, now)));
+    return { ...catalog, scorecards };
   })().catch(() => null);
   const health = await (async () => {
     const [runs, environments] = await Promise.all([
@@ -63,6 +80,23 @@ export default async function ServicesPage() {
               {h.lastRunAt && <p className="mt-2 text-[11px] text-zinc-500">Last run {new Date(h.lastRunAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p>}
             </li>))}</ul>}
       </section>
+      {data !== null && data.scorecards.length > 0 && (
+        <section aria-labelledby="scorecards-heading" className="mt-8">
+          <h2 id="scorecards-heading" className="text-base font-medium">Scorecards</h2>
+          <p className="mt-1 max-w-2xl text-sm text-zinc-400">Six checks per service from recorded data: ownership, guardrails, delivery and open incidents. Unknown never counts as a pass. Weakest first.</p>
+          <ul className="mt-3 grid gap-3 md:grid-cols-2">{data.scorecards.map((c) => (
+            <li key={c.repository} className={`rounded-xl border p-4 ${c.grade === "weak" ? "border-rose-400/30" : c.grade === "fair" ? "border-amber-300/30" : "border-white/8"}`}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="truncate font-mono text-xs text-zinc-100">{c.repository}</p>
+                <span className="flex shrink-0 items-center gap-2 text-xs"><span className="tabular-nums text-zinc-300">{c.passed}/{c.known}</span><StatusDot tone={GRADE[c.grade].tone} label={GRADE[c.grade].label} /></span>
+              </div>
+              <ul className="mt-3 grid gap-1 text-xs sm:grid-cols-2">{c.checks.map((k) => (
+                <li key={k.id} className="flex gap-2" title={k.detail}><span aria-hidden className={CHECK_MARK[k.state].tone}>{CHECK_MARK[k.state].mark}</span><span className="text-zinc-300"><span className="sr-only">{CHECK_MARK[k.state].label}: </span>{k.label}<span className="block text-[11px] text-zinc-500">{k.detail}</span></span></li>))}
+              </ul>
+              {c.nextStep && <p className="mt-3 border-t border-white/[0.06] pt-2 text-xs text-zinc-400"><span className="text-zinc-200">Next:</span> {c.nextStep}</p>}
+            </li>))}
+          </ul>
+        </section>)}
       {data === null ? <p role="status" className="mt-8 text-sm text-zinc-400">The service catalog could not be read. Nothing is shown rather than an estimate.</p>
         : data.rows.length === 0 ? <p className="mt-8 text-sm text-zinc-400">No repositories are connected yet. Connect a repository in the desktop app to see it here.</p>
         : (
