@@ -109,6 +109,35 @@ sudo rpm -i ./V19-0.1.27-1.x86_64.rpm`}</pre>
         <p>The current desktop installer does not update automatically. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">V19 release notes</a> before upgrading.</p>
       </DocSection>
 
+      <DocSection id="enterprise" title="Deploy V19 across your organization" kicker="07">
+        <p>IT teams can push V19 from their own software catalog or company app store with Microsoft Intune, Configuration Manager (SCCM), Jamf or their Linux package tooling. Every installer is listed with its SHA-256 checksum and a detached GPG signature on the release page; verify them before you add a package to your catalog.</p>
+        <h3 className="mt-5 text-[15px] font-medium text-white">Windows (Intune, SCCM, other tools)</h3>
+        <p>Use the <code>.msi</code>. It installs for all users under Program Files and keeps the same upgrade code in every release, so a newer MSI replaces the older one. In Intune, add it as a line-of-business app; Intune detects it by its product code. Silent install and removal:</p>
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`msiexec /i V19_0.1.27_x64_en-US.msi /qn /norestart
+msiexec /x V19_0.1.27_x64_en-US.msi /qn /norestart`}</pre>
+        <p>The installers are not yet Authenticode-signed, so SmartScreen can warn when people install by hand; managed installs are not affected. The Microsoft Store edition (V19 Studio), once listed, is signed by Microsoft and can be deployed from Intune as a Microsoft Store app.</p>
+        <h3 className="mt-5 text-[15px] font-medium text-white">macOS (Jamf, Intune)</h3>
+        <p>The disk images are signed and notarized. Deploy the <code>.dmg</code> directly where your tool supports disk images, such as Intune&apos;s macOS app (DMG) type, or turn it into a package for Jamf:</p>
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`hdiutil attach V19_0.1.27_aarch64.dmg -nobrowse -mountpoint /tmp/v19
+pkgbuild --component /tmp/v19/V19.app --install-location /Applications V19-0.1.27.pkg
+hdiutil detach /tmp/v19`}</pre>
+        <h3 className="mt-5 text-[15px] font-medium text-white">Linux</h3>
+        <p>Add the <code>.deb</code> or <code>.rpm</code> to your internal repository and install it with your configuration tooling, for example <code>apt install ./V19_0.1.27_amd64.deb</code> or <code>dnf install ./V19-0.1.27-1.x86_64.rpm</code>.</p>
+        <h3 className="mt-5 text-[15px] font-medium text-white">Organization settings</h3>
+        <p>From V19 0.1.28, IT can place a settings file on each computer. V19 reads it when it starts, and people cannot change it without administrator rights:</p>
+        <ul className="list-disc space-y-1 pl-5 text-zinc-400">
+          <li>Windows: <code>%ProgramData%\VisionXIXLabs\V19\policy.json</code></li>
+          <li>macOS: <code>/Library/Application Support/VisionXIXLabs/V19/policy.json</code></li>
+          <li>Linux: <code>/etc/v19/policy.json</code></li>
+        </ul>
+        <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 whitespace-pre-wrap wrap-anywhere">{`{
+  "managedBy": "Example Health IT",
+  "allowedWorkspaceIds": ["org_your_workspace_id"],
+  "updateNotices": false
+}`}</pre>
+        <p>Every setting is optional. <code>allowedWorkspaceIds</code> limits V19 on that computer to your company&apos;s workspaces: signing in to any other workspace shows a locked screen with only Sign out. <code>updateNotices: false</code> hides the latest-release check, because your team decides when to upgrade. <code>managedBy</code> appears in Settings. If the file exists but cannot be read, or contains a setting V19 does not recognize, V19 stays locked and asks people to contact IT, so a broken file never silently removes a restriction. Find your workspace ID in the cockpit under Settings → Security.</p>
+      </DocSection>
+
       <DocSection id="trust" title="Trust questions">
         <TrustGrid
           items={[

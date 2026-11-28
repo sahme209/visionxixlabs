@@ -49,6 +49,7 @@ import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, t
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
 import { DESKTOP_DISTRIBUTION } from "../lib/distribution";
+import { useManagedPolicy } from "../lib/managedPolicyStore";
 import { isScheduledDeployDue, nextOpeningAfterRefusal } from "../../../lib/releaseops/scheduledDeploy";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
@@ -320,6 +321,7 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
   onOpenExecutionLimits: () => void;
 }) {
   const [installedVersion, setInstalledVersion] = useState<string | null>();
+  const managedPolicy = useManagedPolicy();
   const [releasePageError, setReleasePageError] = useState(false);
   const mounted = useRef(false);
   useEffect(() => {
@@ -397,10 +399,13 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
     <section className="studio-settings-overview-links" aria-label="About this app">
       <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
-      <LatestReleaseRow installedVersion={installedVersion} />
+      {managedPolicy?.kind === "ok" && managedPolicy.policy.managedBy && <InfoRow label="Managed by" value={managedPolicy.policy.managedBy} />}
+      {managedPolicy?.kind === "ok" && !managedPolicy.policy.updateNotices
+        ? <InfoRow label="Desktop updates" value="Handled by your organization" />
+        : <><LatestReleaseRow installedVersion={installedVersion} />
       {DESKTOP_DISTRIBUTION === "microsoft_store"
         ? <InfoRow label="Desktop updates" value="Installed from the Microsoft Store, which installs updates" />
-        : <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />}
+        : <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />}</>}
     </section>
     {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
     </div>

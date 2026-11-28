@@ -123,7 +123,7 @@ it('keeps all ten customer screens navigable when data services are unavailable,
  expect(home.getAttribute('aria-current')).toBe('page');
  await waitFor(()=>expect(requests.some(request=>request.path==='/api/desktop/access')).toBe(true));
  expect(requests.every(request=>request.method==='GET'||request.method==='HEAD')).toBe(true);
- expect(ports.native.mock.calls.every(([command])=>['default_repos_directory','list_local_repositories','plugin:app|version'].includes(command))).toBe(true);
+ expect(ports.native.mock.calls.every(([command])=>['default_repos_directory','list_local_repositories','plugin:app|version','get_managed_policy'].includes(command))).toBe(true);
  expect(ports.native.mock.calls.filter(([command])=>command==='plugin:app|version')).toHaveLength(1);
  expect(screen.queryByText('7.8.9')).toBeNull(); // Settings was closed again.
  expect(ports.open).not.toHaveBeenCalled();
