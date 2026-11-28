@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
-import { completeCallback, redeemTicket, safeCallback, signInReady, startSignIn, ticketHash, type AttemptRow, type ProviderRow, type SsoDeps } from "../tenantSsoService";
+import { completeCallback, completeSamlResponse, redeemTicket, safeCallback, signInReady, startSignIn, ticketHash, type AttemptRow, type ProviderRow, type SsoDeps } from "../tenantSsoService";
 import { stateKey } from "../tenantOidc";
+import { metadataXml, idp as samlIdp, response as samlResponse } from "../../saml/__tests__/samlFixture";
 
 const ISSUER = "https://login.example-idp.com/t1/v2.0";
 const DISCOVERY = { issuer: ISSUER, authorization_endpoint: "https://login.example-idp.com/authorize", token_endpoint: "https://login.example-idp.com/token", jwks_uri: "https://login.example-idp.com/keys" };
@@ -134,5 +135,19 @@ describe("company sign-in (OIDC)", () => {
   it("keeps callback paths on this site", () => {
     expect(safeCallback("/desktop/pair/x")).toBe("/desktop/pair/x");
     for (const bad of ["https://evil.example", "//evil.example", "/\\evil", 5]) expect(safeCallback(bad)).toBe("/control");
+  });
+
+  it("signs a person in over SAML with the same workspace rules, bound to the one AuthnRequest sent", async () => {
+    const t = await setup({ protocol: "saml", oidcClientId: null, encryptedClientSecret: null, metadataDocument: metadataXml(samlIdp.certBody), roleMappingJson: [{ claimKey: "groups", claimValue: "engineering", role: "operator" }] });
+    const start = await startSignIn(t.deps, { email: "member@example.com", callbackUrl: "/control", redirectUri: REDIRECT, origin: "https://visionxixlabs.com", mode: "signin" });
+    expect(start.ok).toBe(true);
+    const url = new URL((start as { redirectUrl: string }).redirectUrl);
+    const relayState = url.searchParams.get("RelayState")!;
+    const { inflateRawSync } = await import("node:zlib");
+    const requestXml = inflateRawSync(Buffer.from(url.searchParams.get("SAMLRequest")!, "base64")).toString();
+    const requestId = /ID="([^"]+)"/.exec(requestXml)![1];
+    const ok = await completeSamlResponse(t.deps, { relayState, samlResponse: samlResponse({ requestId, email: "member@example.com" }), origin: "https://visionxixlabs.com" });
+    expect(ok).toMatchObject({ ok: true, kind: "ticket", callbackUrl: "/control" });
+    expect(await completeSamlResponse(t.deps, { relayState, samlResponse: samlResponse({ requestId, email: "member@example.com" }), origin: "https://visionxixlabs.com" })).toEqual({ ok: false, reason: "sso.state_expired_or_used" });
   });
 });
