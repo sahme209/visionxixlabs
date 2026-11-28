@@ -264,7 +264,7 @@
     {
       "href": "/docs/security-model",
       "source": "app/docs/security-model/page.tsx",
-      "sourceSha256": "6411035ef901bb44d87c406cf3ef604a9e664b9cba0c15730ac1864279449c10",
+      "sourceSha256": "bb678545f3a966f4016ff9dd1b86ec166996468bf862ca746a318e37249ab0c5",
       "fields": [
         "The current V19 security model.",
         "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",
@@ -275,7 +275,8 @@
         "Tenant boundaries",
         "Audit and evidence",
         "Retention, deletion, and recovery",
-        "Compliance posture"
+        "Compliance posture",
+        "Run V19 on your own servers (preview)"
       ]
     },
     {

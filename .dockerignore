@@ -1,0 +1,15 @@
+# Build context for deploy/self-hosted/Dockerfile.
+.git
+node_modules
+.next
+.vercel
+.env
+.env.*
+!.env.example
+coverage
+work
+docs/recovery
+desktop/node_modules
+desktop/dist
+desktop/src-tauri/target
+**/*.log
