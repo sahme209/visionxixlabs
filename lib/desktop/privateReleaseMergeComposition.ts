@@ -17,6 +17,7 @@ import { createPrivateDesktopTokenCodec } from "./privateDesktopToken";
 import { createPrivateDesktopSessionService } from "./privateDesktopSession";
 import { createPrivatePrismaDesktopSessionStore } from "./privateDesktopSessionStore.prisma";
 import { createPrivateRequestDesktopSessionResolver } from "./privateRequestDesktopSessionResolver";
+import { createCustomRoleRestrictionReader, type CustomRoleRepo } from "./customRoleRestrictionReader";
 import { createPrivateDesktopCommercialAccessReader, type PrivateBillingConfiguration } from "./privateDesktopCommercialAccess";
 import { createReleaseProviderMergeCoordinatorCore } from "./releaseProviderMergeCoordinatorCore";
 import {createPrivateMergeExecutionCoverage,PRIVATE_MERGE_EXECUTION_FACTORIES} from "@/lib/governance/intelligence/privateMergeExecutionCoverage";
@@ -45,6 +46,7 @@ function composePrivateReleaseMerge(resources: PrivateReleaseMergeResources,fixt
     repo: client, tokenCodec, sessions,
     readDesktopCommercialAccess: createPrivateDesktopCommercialAccessReader(client, resources.billing),
     selfHealPersonalWorkspaceMembership: null,
+    readCustomRoleRestriction: createCustomRoleRestrictionReader(client as unknown as CustomRoleRepo),
   });
   const githubAuth = createPrivateGithubAppAuth({
     configuration: createPrivatePlatformGithubAppConfiguration({ repo: client, vault }),

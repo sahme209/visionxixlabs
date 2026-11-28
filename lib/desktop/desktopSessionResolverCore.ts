@@ -5,6 +5,7 @@ type ApiAuthenticator = (input: { authorizationHeader: string | null; sourceIp: 
 import type { createPrivateDesktopTokenCodec } from "./privateDesktopToken";
 import type { createPrivateDesktopSessionService } from "./privateDesktopSession";
 import { capabilitiesForRole, hasDesktopCapability, isWorkspaceAdminRole, type DesktopCapability, type DesktopWorkspaceRole } from "./desktopAuthorization";
+import { restrictCapabilities } from "./customRoleCapabilities";
 function bearerFromHeader(header: string | null): string | null {
  const trimmed = header?.trim();
  return trimmed?.toLowerCase().startsWith("bearer ") ? trimmed.slice(7).trim() || null : null;
@@ -52,6 +53,8 @@ export interface SessionResolverDependencies {
  readActiveWorkspaceRole: (userId: string, organizationId: string) => Promise<DesktopWorkspaceRole | null>;
  selfHealPersonalWorkspaceMembership: ((userId: string, organizationId: string) => Promise<void>) | null;
  readDesktopCommercialAccess: (organizationId: string) => Promise<{ allowed: boolean }>;
+ /** Capabilities a workspace custom role removes from the member's built-in role; "unavailable" refuses the request. */
+ readCustomRoleRestriction?: (userId: string, organizationId: string) => Promise<{ removed: string[] } | "unavailable">;
 }
 export function createDesktopSessionResolverCore(deps: SessionResolverDependencies, authenticateApiKey: ApiAuthenticator | null, log: { info: (message: string, fields: any) => void; error: (message: string, fields: any) => void }) {
  const { tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession }, readActiveWorkspaceRole, readDesktopCommercialAccess } = deps;
@@ -128,7 +131,13 @@ export function createDesktopSessionResolverCore(deps: SessionResolverDependenci
             log.info("workspace admin role required but absent", { route: options.route, organizationId: session.organizationId, userId: session.userId });
             return undefined;
         }
-        if (options.requiredCapability && !hasDesktopCapability(role, options.requiredCapability)) {
+        const restriction = deps.readCustomRoleRestriction && role ? await deps.readCustomRoleRestriction(String(session.userId), String(session.organizationId)) : { removed: [] as string[] };
+        if (restriction === "unavailable") {
+            log.info("custom role could not be read", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+            return undefined;
+        }
+        const capabilities = role ? restrictCapabilities(capabilitiesForRole(role), restriction.removed) : [];
+        if (options.requiredCapability && (!hasDesktopCapability(role, options.requiredCapability) || !capabilities.includes(options.requiredCapability))) {
             log.info("required workspace capability absent", {
                 route: options.route,
                 organizationId: session.organizationId,
@@ -145,7 +154,7 @@ export function createDesktopSessionResolverCore(deps: SessionResolverDependenci
             organizationId: session.organizationId,
             credentialKind: "desktop_session",
             role,
-            capabilities: role ? capabilitiesForRole(role) : [],
+            capabilities,
         };
         if (options.requireActiveAccess !== false) {
             const access = await readDesktopCommercialAccess(principal.organizationId);

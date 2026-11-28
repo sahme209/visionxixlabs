@@ -68,3 +68,32 @@ export function roadmapCandidates(input: { topUnanswered: ReadonlyArray<{ exampl
   for (const a of input.atRisk) out.push({ kind: "follow_up", title: `Follow up with ${a.label}`, reason: a.reason, weight: 5 });
   return out.sort((a, b) => b.weight - a.weight).slice(0, limit);
 }
+
+export interface CohortRow { cohortWeek: string; size: number; retained: Array<number | null> }
+/**
+ * Weekly signup cohorts and the share of each that was active in each following week (week 0 is the
+ * signup week). Weeks that have not happened yet are null. Activity is any recorded deployment or AI
+ * usage. Percentages are whole numbers.
+ */
+export function cohortRetention(signups: ReadonlyArray<{ org: string; at: Date }>, activity: ReadonlyArray<{ org: string; at: Date }>, weeks: number, now: Date): CohortRow[] {
+  const WEEK = 7 * 86_400_000;
+  const start = now.getTime() - weeks * WEEK;
+  const weekOf = (d: Date) => Math.floor((d.getTime() - start) / WEEK);
+  const cohorts = new Map<number, Set<string>>();
+  for (const s of signups) { const w = weekOf(s.at); if (w >= 0 && w < weeks) { if (!cohorts.has(w)) cohorts.set(w, new Set()); cohorts.get(w)!.add(s.org); } }
+  const activeIn = new Map<number, Set<string>>();
+  for (const a of activity) { const w = weekOf(a.at); if (w >= 0 && w < weeks) { if (!activeIn.has(w)) activeIn.set(w, new Set()); activeIn.get(w)!.add(a.org); } }
+  const rows: CohortRow[] = [];
+  for (let w = 0; w < weeks; w++) {
+    const members = cohorts.get(w); if (!members?.size) continue;
+    const retained: Array<number | null> = [];
+    for (let k = 0; k < weeks; k++) {
+      const week = w + k;
+      if (week >= weeks) { retained.push(null); continue; }
+      const act = activeIn.get(week);
+      retained.push(Math.round(([...members].filter((o) => act?.has(o)).length / members.size) * 100));
+    }
+    rows.push({ cohortWeek: new Date(start + w * WEEK).toISOString().slice(0, 10), size: members.size, retained });
+  }
+  return rows;
+}

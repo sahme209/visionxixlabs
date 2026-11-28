@@ -48,6 +48,11 @@ export default function PermissionsModelPage() {
         <p>V19 dispatches the tenant workflow; GitHub Actions OIDC assumes the environment&apos;s configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.</p>
       </DocSection>
 
+      <DocSection id="custom-roles" title="Custom roles" kicker="05">
+        <p>Under <strong>Members</strong>, owners and admins can define custom roles. A custom role takes a member&apos;s built-in role and removes capabilities from it, for example an operator who can deploy but cannot use the emergency production bypass. It never adds a capability the built-in role lacks. Custom roles apply to operators, security reviewers, finance viewers and read-only members; owners and admins keep their full role.</p>
+        <DocFigure src="/docs/cockpit/custom-roles.webp" alt="The Custom roles section on the Members page with one role and the new-role form" caption="Custom roles on Members for a synthetic workspace: one role that removes agent approval and the emergency bypass, and the form for a new role." width={1600} height={1000} />
+        <p>The desktop app&apos;s requests are checked against the reduced set on every call. If a member&apos;s custom role cannot be read, the request is refused rather than allowed. Deleting a custom role returns its members to their built-in role. Creating, changing, deleting and assigning custom roles are recorded in the audit log. A workspace can have up to 25 custom roles.</p>
+      </DocSection>
       <DocSection id="trust" title="Trust questions">
         <TrustGrid items={[
           { question: "Does sign-in grant GitHub write?", answer: "No. GitHub installation, repository scope, role checks, and approval are separate." },

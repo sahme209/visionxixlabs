@@ -46,7 +46,8 @@ describe("desktop billing portal current management authority", () => {
     mocks.readPlan.mockClear(); mocks.portal.mockClear();
     mocks.membership.mockResolvedValue({ acceptedAt: new Date(), role: "read_only" });
     expect((await POST(request())).status).toBe(401);
-    expect(mocks.membership).toHaveBeenCalledTimes(2);
+    // One role read per request, plus one custom-role read on the request that resolved a role.
+    expect(mocks.membership).toHaveBeenCalledTimes(3);
     expect(mocks.readPlan).not.toHaveBeenCalled(); expect(mocks.portal).not.toHaveBeenCalled();
   });
 

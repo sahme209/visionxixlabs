@@ -10,7 +10,7 @@ CREATE TABLE "User" (
 CREATE TABLE "OrgMembership" (
  "id" TEXT PRIMARY KEY, "userId" TEXT NOT NULL, "organizationId" TEXT NOT NULL,
  "role" "OrgRole" NOT NULL DEFAULT 'read_only', "providerScopes" TEXT[] NOT NULL DEFAULT '{}',
- "invitedBy" TEXT, "acceptedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ "customRoleId" TEXT, "invitedBy" TEXT, "acceptedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
  "updatedAt" TIMESTAMP(3) NOT NULL, UNIQUE("userId","organizationId")
 );
 CREATE TABLE "SecureAuditRecord" (

@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { BusinessOverview as Overview } from "@/lib/founder/founderBusiness";
 import { roadmapCandidates } from "@/lib/founder/business";
 import { AutoRefresh } from "./AutoRefresh";
+import { SupportDrafts } from "./SupportDrafts";
+import { ARR_GOAL_CENTS, REVENUE_MULTIPLE, formatMonths, growthPlan } from "@/lib/founder/growth";
 
 const usd = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: cents < 10_000 ? 2 : 0 }).format(cents / 100);
 const num = (n: number) => n.toLocaleString("en-US");
@@ -71,6 +73,8 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
         <Kpi label="AI margin, 30 days" value={ai ? (ai.marginPct === null ? "No AI billed" : `${ai.marginPct}%`) : "Unavailable"} sub={ai ? `${usd(ai.billedCents)} billed · ${usd(ai.costCents)} cost · ${num(ai.calls30)} calls` : undefined} tone={ai?.marginPct == null ? null : ai.marginPct >= 0 ? "good" : "bad"} />
       </div>
 
+      {r && <GrowthPath plan={growthPlan({ mrrListCents: r.mrrListCents, last30Cents: r.last30Cents, previous30Cents: r.previous30Cents, paidWorkspaces: r.paidWorkspaces, activeWorkspaces: c?.funnel.steps[3]?.count ?? 0, aiCostCents: ai?.costCents ?? 0, aiBilledCents: ai?.billedCents ?? 0 })} />}
+
       <section aria-labelledby="agents-heading" className="rounded-2xl border border-sky-400/20 bg-sky-400/[0.04] p-5">
         <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="agents-heading" className="text-base font-medium text-zinc-50">Agents running the company</h2><Link href="/founder/blueprint" className="text-xs text-zinc-300 underline underline-offset-4">Open the operations map</Link></div>
         <p className="mt-0.5 text-xs text-zinc-400">{autopilot === null ? "The autopilot state could not be read." : autopilot.paused ? "The autopilot is paused. Resume it on the operations map." : "The autopilot runs every hour on its own. Steps that spend money or contact people outside the company wait for you."}</p>
@@ -105,6 +109,14 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
             <Bars label="Signups per week, last 12 weeks" data={c.signupsWeekly.map((w) => ({ key: w.week.slice(5), value: w.count }))} format={num} />
             <h3 className="mt-4 text-xs font-medium text-zinc-300">Activation</h3>
             <ol className="mt-2 space-y-1.5">{c.funnel.steps.map((st) => <li key={st.label} className="text-xs"><div className="flex justify-between text-zinc-300"><span>{st.label}</span><span className="tabular-nums">{num(st.count)}{st.pct !== null ? ` · ${st.pct}%` : ""}</span></div><div className="mt-0.5 h-1.5 rounded-full bg-white/5"><div className="h-1.5 rounded-full bg-sky-400/70" style={{ width: `${st.pct ?? 0}%` }} /></div></li>)}</ol>
+            <h3 className="mt-4 text-xs font-medium text-zinc-300">Weekly retention</h3>
+            {c.retention === null ? <p className="mt-1 text-sm text-amber-300">Activity could not be read.</p> : c.retention.length === 0 ? <p className="mt-1 text-sm text-zinc-500">No signups in the last 8 weeks.</p> : (
+              <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[420px] text-center text-[11px] tabular-nums">
+                <caption className="sr-only">Share of each weekly signup cohort active in each following week</caption>
+                <thead className="text-zinc-500"><tr><th scope="col" className="pb-1 text-left font-normal">Signup week</th><th scope="col" className="pb-1 font-normal">Size</th>{c.retention[0].retained.map((_, k) => <th key={k} scope="col" className="pb-1 font-normal">W{k}</th>)}</tr></thead>
+                <tbody>{c.retention.map((row) => <tr key={row.cohortWeek}><th scope="row" className="py-0.5 pr-2 text-left font-normal text-zinc-300">{row.cohortWeek.slice(5)}</th><td className="text-zinc-300">{row.size}</td>{row.retained.map((v, k) => <td key={k} className="p-0.5">{v === null ? "" : <span className="block rounded px-1 py-0.5 text-zinc-100" style={{ backgroundColor: `rgba(56,189,248,${0.08 + (v / 100) * 0.55})` }}>{v}%</span>}</td>)}</tr>)}</tbody>
+              </table></div>)}
+            <p className="mt-1 text-[11px] text-zinc-500">Active means a recorded deployment or AI use that week.</p>
             <h3 className="mt-4 text-xs font-medium text-zinc-300">At risk</h3>
             {c.atRisk.length === 0 ? <p className="mt-1 text-sm text-zinc-500">No paying workspace looks at risk.</p> : <ul className="mt-1 space-y-1 text-xs">{c.atRisk.map((a, i) => <li key={i} className="flex justify-between gap-3"><span className="text-zinc-200">{a.label}</span><span className="text-amber-200">{a.reason}</span></li>)}</ul>}
           </>}
@@ -137,10 +149,33 @@ export function BusinessOverview({ data, autopilot }: { data: Overview; autopilo
               <Table caption="Most asked unanswered questions" head={["Question", "Times"]} rows={s.topUnanswered.map((q) => [q.example, num(q.count)])} />
               <Table caption="Contact requests by source" head={["Source", "Requests"]} rows={s.leadsBySource.map((l) => [l.source.replaceAll("_", " "), num(l.count)])} />
             </div>
+            {s.topUnanswered.length > 0 && <SupportDrafts />}
           </>}
         </Section>
       </div>
       <p className="text-[11px] text-zinc-500">Workspaces are shown by the end of their id, without names or emails. Recurring revenue uses list prices from active plans; collected revenue comes from payment and billing records.</p>
     </div>
+  );
+}
+
+function GrowthPath({ plan }: { plan: ReturnType<typeof growthPlan> }) {
+  const pct = (f: number | null, digits = 1) => (f === null ? "—" : `${(f * 100).toFixed(digits)}%`);
+  return (
+    <section aria-labelledby="growth-heading" className="rounded-2xl border border-white/8 bg-[#0f0f0f] p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="growth-heading" className="text-base font-medium text-zinc-50">Path to a $2B company</h2>
+        <p className="text-xs text-zinc-500">Goal: {usd(ARR_GOAL_CENTS)} a year in revenue, about $2B at {REVENUE_MULTIPLE}× revenue</p>
+      </div>
+      <div className="mt-3 h-2 rounded-full bg-white/5" role="img" aria-label={`${plan.progressPct.toFixed(3)}% of the way to the annual revenue goal`}><div className="h-2 rounded-full bg-sky-400" style={{ width: `${Math.max(plan.progressPct, plan.arrCents > 0 ? 0.5 : 0)}%` }} /></div>
+      <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div><dt className="text-xs text-zinc-400">Annual run-rate now</dt><dd className="mt-0.5 text-xl tabular-nums text-zinc-50">{usd(plan.arrCents)}</dd><dd className="text-[11px] text-zinc-500">Recurring plans plus the last 30 days collected, ×12</dd></div>
+        <div><dt className="text-xs text-zinc-400">Growth, month on month</dt><dd className={`mt-0.5 text-xl tabular-nums ${plan.monthlyGrowth === null ? "text-zinc-400" : plan.monthlyGrowth >= 0 ? "text-emerald-300" : "text-rose-300"}`}>{plan.monthlyGrowth === null ? "Not enough history" : pct(plan.monthlyGrowth)}</dd></div>
+        <div><dt className="text-xs text-zinc-400">Needed to reach the goal in 5 years</dt><dd className="mt-0.5 text-xl tabular-nums text-zinc-50">{plan.neededMonthlyGrowth5y === null ? "First revenue needed" : `${pct(plan.neededMonthlyGrowth5y)} a month`}</dd></div>
+        <div><dt className="text-xs text-zinc-400">Unit economics</dt><dd className="mt-0.5 text-sm tabular-nums text-zinc-200">{plan.arpaMonthlyCents === null ? "No paying workspaces yet" : `${usd(plan.arpaMonthlyCents)} a month per paying workspace`}</dd><dd className="text-[11px] text-zinc-500">{plan.aiCostPerActiveWorkspaceCents === null ? "" : `AI cost ${usd(plan.aiCostPerActiveWorkspaceCents)} per active workspace`}{plan.aiGrossMarginPct === null ? "" : ` · AI margin ${plan.aiGrossMarginPct}%`}</dd></div>
+      </dl>
+      <h3 className="mt-4 text-xs font-medium text-zinc-300">Milestones at the current pace</h3>
+      <ol className="mt-2 grid gap-2 sm:grid-cols-4">{plan.milestones.map((m) => <li key={m.arrCents} className={`rounded-lg border px-3 py-2 text-xs ${m.reached ? "border-emerald-400/30 bg-emerald-400/5" : "border-white/8"}`}><p className="tabular-nums text-zinc-100">{usd(m.arrCents)} a year</p><p className={m.reached ? "text-emerald-300" : "text-zinc-400"}>{formatMonths(m.monthsAtCurrentGrowth)}</p></li>)}</ol>
+      <p className="mt-3 text-[11px] text-zinc-500">A projection from the last two months of recorded revenue, not a forecast. It changes as revenue comes in.</p>
+    </section>
   );
 }

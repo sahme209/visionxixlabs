@@ -174,7 +174,7 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "5a67302f4648d4cf58181f8e35999eab567b3c659d03a5797a5a5b9a32ef5173",
+      "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a",
       "fields": [
         "ReleaseOps overview.",
         "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
@@ -280,7 +280,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "9c804e6e143ddbfd5c0da09d1e6d64ef13e722a1cf9bff474b7e2b26db54ec17",
+      "sourceSha256": "2525b35a42bfbe7e2162b88685d6883aaaaa088bf4bad0756cf6aa6c81db42aa",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else.",
@@ -290,6 +290,7 @@
         "GitHub repository scope",
         "Agent authority",
         "AWS ECS authority",
+        "Custom roles",
         "Trust questions"
       ]
     },
@@ -412,7 +413,7 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "e775db01fb4f24c1ea6ea988502eeee39c8414fc48fab9fed971a8b394b3ffe9",
+      "sourceSha256": "6ed7d3c024841b7a20478001d302c1d0d4b863915c5b73f7199b8a4aa573082a",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",

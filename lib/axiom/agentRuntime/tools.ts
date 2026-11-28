@@ -112,6 +112,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "read_deployment_checks_workflow",
+    description: "Read the GitHub Actions workflow V19 generates from this workspace's enabled deployment checks: its repository path and full YAML. Use it to propose adding or updating that file through the normal branch, commit and pull request approvals. It never writes anything.",
+    argsSchemaHint: "{} — no arguments.",
+    riskLevel: "low",
+  },
+  {
     name: "list_workspace_mcp_tools",
     description: "List the hosted MCP servers this workspace enabled and the tools an owner or admin approved for agents on each. Only these tools can be called.",
     argsSchemaHint: "{} — no arguments.",
