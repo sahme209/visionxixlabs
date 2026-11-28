@@ -30,6 +30,18 @@ describe("/api/control/checks", () => {
     const body = await (await GET()).json();
     expect(body.data.latestResults["health-probe"]).toEqual({ status: "failed", checkVersion: 1, runUrl: null, reportedAt: "2026-11-26T10:00:00.000Z" });
   });
+  it("GET shows a cost estimate with the previous estimate for a different commit", async () => {
+    m.findMany.mockResolvedValue([{ key: "infra-cost", name: "Cost", kind: "cost_estimate", stage: "validate", mode: "blocking", spec: { tool: "infracost", path: "infra", maxMonthlyIncreaseUsd: 10 }, enabled: true, version: 1, updatedAt: new Date() }]);
+    const at = (d: string) => new Date(`2026-11-2${d}T10:00:00Z`);
+    m.resultsFindMany.mockResolvedValueOnce([
+      { checkKey: "infra-cost", checkVersion: 1, status: "failed", runUrl: null, reportedAt: at("8"), releaseRef: "c3", monthlyCostCents: 9000, statusReason: "over_cost_limit" },
+      { checkKey: "infra-cost", checkVersion: 1, status: "passed", runUrl: null, reportedAt: at("7"), releaseRef: "c3", monthlyCostCents: 8000, statusReason: null },
+      { checkKey: "infra-cost", checkVersion: 1, status: "passed", runUrl: null, reportedAt: at("6"), releaseRef: "c2", monthlyCostCents: 5000, statusReason: null },
+      { checkKey: "infra-cost", checkVersion: 1, status: "passed", runUrl: null, reportedAt: at("5"), releaseRef: "c1", monthlyCostCents: 1000, statusReason: null },
+    ]);
+    const body = await (await GET()).json();
+    expect(body.data.latestResults["infra-cost"]).toEqual({ status: "failed", checkVersion: 1, runUrl: null, reportedAt: "2026-11-28T10:00:00.000Z", monthlyCostCents: 9000, previousMonthlyCostCents: 5000, statusReason: "over_cost_limit" });
+  });
   it("refuses non-admins and invalid specs without writing", async () => {
     m.ctx.mockResolvedValue({ ...admin, roles: ["viewer"] });
     expect((await POST(req("POST", { check: smoke }))).status).toBe(403);

@@ -48,6 +48,7 @@ export function PolicyAsCodePanel() {
           {d.changed.length > 0 && <ul className="space-y-1 font-mono text-xs">{d.changed.map((c) => <li key={c.key}>{c.key}: {c.fields.map((f) => `${f.field} ${JSON.stringify(f.from)} → ${JSON.stringify(f.to)}`).join(", ")}</li>)}</ul>}
           {d.added.length > 0 && <p className="text-xs">Added: {d.added.map((r) => r.key).join(", ")}</p>}
           {d.removed.length > 0 && <p className="text-xs">Removed: {d.removed.join(", ")}</p>}
+          {d.autopilot && <p className="text-xs">Release autopilot: {autopilotText(d.autopilot.from)} → {autopilotText(d.autopilot.to)}</p>}
           {d.backtest === null ? <p className="text-xs text-zinc-400">Past releases could not be read, so no backtest is shown.</p>
             : d.backtest && <div className="rounded-lg border border-white/10 p-3 text-xs">
               <p className="font-medium text-zinc-200">Backtest · releases with recorded violations in the last 90 days</p>
@@ -69,7 +70,12 @@ export function PolicyAsCodePanel() {
   );
 }
 
-interface ChangeRequest { id: string; loosens: boolean; status: string; proposedByUserId: string; createdAt: string; diffJson: { added: Array<{ key: string }>; removed: string[]; changed: Array<{ key: string }>; loosening: string[] } }
+interface ChangeRequest { id: string; loosens: boolean; status: string; proposedByUserId: string; createdAt: string; diffJson: { added: Array<{ key: string }>; removed: string[]; changed: Array<{ key: string }>; loosening: string[]; autopilot?: { from: Autopilot | null; to: Autopilot | null } } }
+type Autopilot = { deployEnvironments: string[]; maxFiles: number };
+/** "staging, up to 5 files" or "off". */
+export function autopilotText(a: Autopilot | null): string {
+  return a ? `agent deploys to ${a.deployEnvironments.join(" and ")}, up to ${a.maxFiles} file${a.maxFiles === 1 ? "" : "s"}` : "off";
+}
 
 function PolicyChangeRequests({ refresh }: { refresh: number }) {
   const [data, setData] = useState<{ viewerUserId: string; requests: ChangeRequest[] } | null | "unavailable">(null);
@@ -106,6 +112,7 @@ function PolicyChangeRequests({ refresh }: { refresh: number }) {
                   {r.diffJson.added.map((a) => <li key={`a-${a.key}`}>adds {a.key}</li>)}
                   {r.diffJson.changed.map((c) => <li key={`c-${c.key}`}>changes {c.key}</li>)}
                   {r.diffJson.removed.map((k) => <li key={`r-${k}`}>disables {k}</li>)}
+                  {r.diffJson.autopilot && <li key="autopilot">release autopilot: {autopilotText(r.diffJson.autopilot.from)} → {autopilotText(r.diffJson.autopilot.to)}</li>}
                   {r.diffJson.loosening.map((l) => <li key={`l-${l}`} className="text-amber-300">{l}</li>)}
                 </ul></details>}
             </div>

@@ -48,6 +48,8 @@ import { findRollbackTarget, rollbackCommitMatches, type RollbackTarget } from "
 import { desktopClient, type DatabaseChangeEvidence, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { StatusIconChip } from "../components/StatusBadge";
 import { desktopUpdateState } from "../../../lib/desktop/desktopVersionCompare";
+import { DESKTOP_DISTRIBUTION } from "../lib/distribution";
+import { isScheduledDeployDue, nextOpeningAfterRefusal } from "../../../lib/releaseops/scheduledDeploy";
 import { useSearchShortcut } from "../lib/useSearchShortcut";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
@@ -396,7 +398,9 @@ function GeneralSection({ identity, onOpenSection, prefs, preferenceReadFailed, 
       <h2>About this app</h2>
       <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
       <LatestReleaseRow installedVersion={installedVersion} />
-      <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />
+      {DESKTOP_DISTRIBUTION === "microsoft_store"
+        ? <InfoRow label="Desktop updates" value="Installed from the Microsoft Store, which installs updates" />
+        : <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />}
     </section>
     {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
     </div>
@@ -1574,6 +1578,9 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [readinessError, setReadinessError] = useState<string | null>(null);
   const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass"; databaseChanges?: DatabaseChangeEvidence } | null>(null);
   const [deploying, setDeploying] = useState(false);
+  /** A deployment held until the change window opens. Lives only while the app is open; every gate is checked again when it is sent. */
+  const [scheduledDeploy, setScheduledDeploy] = useState<{ at: string; form: string } | null>(null);
+  const [nextWindowOpen, setNextWindowOpen] = useState<string | null>(null);
   const [blockingChecks, setBlockingChecks] = useState<Array<{ key: string; name: string; kind: string; stage: string; enforced: boolean }> | "unavailable" | null>(null);
   useEffect(() => {
     let live = true;
@@ -1692,6 +1699,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         idempotencyKey: deployOperationRef.current.key,
       });
       if (!result.ok && result.error === "stability_warning_active") setStabilityRequired(true);
+      setNextWindowOpen(result.ok ? null : nextOpeningAfterRefusal(result.error, environment.changeWindowRule ?? null, new Date()));
       if (!result.ok) {
         setDeployError(result.error === "deployment_outcome_unknown"
           ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
@@ -1723,6 +1731,17 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
       setDeploying(false);
     }
   }
+
+  const deployFormKey = JSON.stringify({ deployRepo, environmentId, sourceRef, sourceKind, pullRequestNumber, promotedFromExecutionId, emergencyBypass });
+  useEffect(() => {
+    if (!scheduledDeploy) return;
+    if (scheduledDeploy.form !== deployFormKey) { setScheduledDeploy(null); setDeployError("The scheduled deployment was cancelled because the deployment details changed."); return; }
+    const tick = () => { if (isScheduledDeployDue(scheduledDeploy.at, new Date())) { setScheduledDeploy(null); void triggerDeploy(); } };
+    const timer = window.setInterval(tick, 15_000);
+    tick();
+    return () => window.clearInterval(timer);
+    // triggerDeploy reads the current form; the form key above cancels the schedule if it changes.
+  }, [scheduledDeploy, deployFormKey]);
 
   async function checkReadiness() {
     setCheckingReadiness(true); setReadinessError(null); setReadiness(null);
@@ -1839,6 +1858,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         {execution && execution.environmentId === environmentId && <ReleaseHealthPanel key={execution.id} defaultRelease={execution.sourceRef ?? ""} commit={execution.sourceCommitSha} rollback={rollbackTarget?.kind === "target" ? { commit: rollbackTarget.to.sourceCommitSha!, prepare: () => prepareRollback(rollbackTarget.to.sourceRef!, rollbackTarget.to.sourceKind === "tag" ? "tag" : "branch") } : null} />}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Workflow dispatched, but tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
+        {!scheduledDeploy && nextWindowOpen && !deploying && <button data-help-id="settings.deploy.schedule-window" type="button" onClick={() => { setScheduledDeploy({ at: nextWindowOpen, form: deployFormKey }); setDeployError(null); }} className="self-start rounded-lg border border-white/15 px-3 py-1.5 text-[12px] text-zinc-200 hover:bg-white/5">Deploy when the window opens ({new Date(nextWindowOpen).toUTCString().replace(":00 GMT", " UTC")})</button>}
+        {scheduledDeploy && <p role="status" className="text-[12px] text-zinc-300">Scheduled for {new Date(scheduledDeploy.at).toUTCString().replace(":00 GMT", " UTC")}. Keep V19 open and signed in: it sends this deployment then, and every gate (policy, checks, rings, window, approvals) is checked again. <button type="button" onClick={() => setScheduledDeploy(null)} className="underline underline-offset-2">Cancel</button></p>}
         {execution && execution.environmentId === environmentId && (
           <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/2.5 p-3 text-[12px]">
             <div className="flex items-center justify-between gap-3">

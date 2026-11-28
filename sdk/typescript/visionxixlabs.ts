@@ -89,6 +89,8 @@ export interface CheckResultInput {
   releaseRef?: string;
   /** Unique per check run, e.g. `${runId}-${attempt}-${checkKey}`; retries with the same key record once. */
   idempotencyKey: string;
+  /** Cost estimate checks only: estimated monthly cost in US dollars. V19 decides pass or fail against the check's limit. */
+  monthlyCostUsd?: number;
 }
 
 export interface FreezeDeploymentsInput {
@@ -106,7 +108,7 @@ export type FreezeDeploymentsResponse =
   | { ok: true; duplicate: true; summary: string };
 
 export type CheckResultResponse =
-  | { ok: true; recorded: true; currentVersion: number; stale: boolean }
+  | { ok: true; recorded: true; currentVersion: number; stale: boolean; recordedStatus?: "passed" | "failed" | "error"; statusReason?: "over_cost_limit" | "cost_missing" | null; monthlyCostDeltaCents?: number | null }
   | { ok: true; recorded: false; duplicate: true };
 
 export interface ReleaseGateResponse {
@@ -469,7 +471,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 
 // ------------------------------------------- Agent governance gateway types
 
-export type AgentActionKind = "read" | "code_change" | "open_pull_request" | "merge" | "dependency_change" | "infra_change" | "deploy" | "data_migration" | "secret_access" | "delete_resource" | "run_command";
+export type AgentActionKind = "read" | "code_change" | "open_pull_request" | "merge" | "dependency_change" | "infra_change" | "deploy" | "data_migration" | "secret_access" | "delete_resource" | "run_command" | "flag_change";
 export interface AgentActionInput { actionKind: AgentActionKind; environment?: "development" | "staging" | "production" | "unknown"; target: string; summary: string; agentName?: string; changedFiles?: string[]; /** Change passport: model the agent runs as (never changes the approval). */ model?: string; /** Change passport: up to 20 tool names used. */ tools?: string[] }
 export interface AgentPolicy { decision: "allow" | "require_approval" | "deny"; riskLevel: "low" | "medium" | "high"; reasons: string[] }
 export interface AgentPolicyResponse { ok: boolean; policy?: AgentPolicy; error?: string }

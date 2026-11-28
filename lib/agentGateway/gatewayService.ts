@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import type { Prisma } from "@/lib/prismaClient";
 import { buildChangePassport, readChangePassport } from "./changePassport";
 import { triageRequest, type Triage } from "./reviewTriage";
+import { applyReleaseAutopilot } from "./releaseAutopilot";
+import { readStoredAutopilot, type StoredAutopilot } from "@/lib/releaseops/policyAsCode";
 import { evaluateChangeWindow, parseChangeWindowRule } from "@/lib/releaseops/environmentChangeWindow";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
@@ -57,6 +59,11 @@ async function productionFreezes(organizationId: string, now: Date) {
   } catch { return []; }
 }
 
+/** The workspace's release autopilot rule. Fails closed to off on read errors, so a request waits for review. */
+async function releaseAutopilot(organizationId: string): Promise<StoredAutopilot | null> {
+  try { return readStoredAutopilot(await prisma.workspaceReleaseAutopilot.findUnique({ where: { organizationId }, select: { deployEnvironments: true, maxFiles: true } })); } catch { return null; }
+}
+
 export function checkPolicy(raw: unknown): { ok: true; policy: PolicyResult; impact: unknown } | { ok: false; error: string } {
   const parsed = parseGatewayAction(raw);
   if (!parsed.ok) return parsed;
@@ -69,7 +76,8 @@ export async function checkPolicyForCaller(caller: GatewayCaller, raw: unknown, 
   const parsed = parseGatewayAction(raw);
   if (!parsed.ok) return parsed;
   const { impact, ...basePolicy } = evaluateGatewayPolicyWithImpact(parsed.value);
-  return { ok: true as const, policy: applyProductionFreeze(basePolicy, parsed.value, await productionFreezes(caller.organizationId, now)), impact };
+  const withAutopilot = applyReleaseAutopilot(basePolicy, parsed.value, impact, await releaseAutopilot(caller.organizationId));
+  return { ok: true as const, policy: applyProductionFreeze(withAutopilot, parsed.value, await productionFreezes(caller.organizationId, now)), impact };
 }
 
 export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, now = new Date()) {
@@ -77,7 +85,8 @@ export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, 
   if (!parsed.ok) return parsed;
   const { agentName, changedFiles, agentModel, agentTools, ...action } = parsed.value;
   const { impact, ...basePolicy } = evaluateGatewayPolicyWithImpact({ ...action, changedFiles });
-  const policy = applyProductionFreeze(basePolicy, action, await productionFreezes(caller.organizationId, now));
+  const withAutopilot = applyReleaseAutopilot(basePolicy, action, impact, await releaseAutopilot(caller.organizationId));
+  const policy = applyProductionFreeze(withAutopilot, action, await productionFreezes(caller.organizationId, now));
   // The key's creator is the accountable owner of what its agent asks for. Best-effort: unknown stays null.
   const ownerUserId = await (async () => (await prisma.apiKey.findFirst({ where: { id: caller.apiKeyId, organizationId: caller.organizationId }, select: { createdBy: true } }))?.createdBy ?? null)().catch(() => null);
   const triage = triageRequest({ actionKind: action.actionKind, environment: action.environment, policy, impact });

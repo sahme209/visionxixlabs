@@ -6,49 +6,56 @@
    "title": "Connect an agent",
    "text": "A workspace owner or admin creates a key on Control → API keys with governance:read and governance:request . Add https://visionxixlabs.com/api/v1/mcp to the agent as a remote MCP server with the header Authorization: Bearer vxlk_live_… . The agent then sees four tools: axiom_check_policy , axiom_request_approval , axiom_get_approval and axiom_record_outcome . The same operations exist as REST endpoints under /api/v1/governance and in the SDKs.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#decisions",
    "title": "How requests are decided",
-   "text": "Allowed Low-risk work such as reading code, editing a branch or opening a pull request in development or staging. Needs approval Merges, dependency changes, infrastructure, deploys, data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval. Denied Reading production secrets and deleting production resources. These are never approvable through the gateway. While a production environment is frozen, production deploys, merges, infrastructure changes and data migrations are denied too, with the freeze's reason.",
+   "text": "Allowed Low-risk work such as reading code, editing a branch, opening a pull request or changing a feature flag in development or staging. Needs approval Production feature flag changes ( flag_change ), merges, dependency changes, infrastructure, deploys (unless release autopilot covers them), data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval. Denied Reading production secrets and deleting production resources. These are never approvable through the gateway. While a production environment is frozen, production deploys, merges, infrastructure changes, data migrations and feature flag changes are denied too, with the freeze's reason.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#approve",
    "title": "Approve or reject",
    "text": "Pending requests appear on Control → Agent gateway , with optional webhook alerts ( agent_gateway.request_pending ). An owner or admin who did not create the agent's key decides. Approval covers the exact action and file list, and expires after 24 hours. The agent proceeds only when mayProceed is true, then reports succeeded , failed or abandoned . Each agent gets a scorecard; its trust level is evidence only and never changes what policy allows.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#ci",
    "title": "Gate a CI deploy",
    "text": "Without MCP, use the CLI: vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh . It exits 0 only when the action is allowed or approved.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#firewall",
    "title": "Agent firewall",
    "text": "The top of Control → Agent gateway lists the rules V19 always enforces for agents. Agents never receive provider credentials: their keys can only ask, and V19 runs an approved action with its own short-lived token. Writes and deployments run only after a person approves that exact action. An approved Agent deployment faces the same change window, freezes, deployment checks and rings as a person's, with no emergency bypass. Production secret reads and deletes are always refused. Below the rules, V19 lists anything in your workspace that weakens them, each with the fix: API keys that can start pipelines without the gateway, agent keys that never expire, production environments without an approval policy, and production environments without a change window.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#passport",
    "title": "Change passport",
    "text": "Every agent request carries a change passport, recorded when the request arrives: which agent made it, the model it reports (V19 never guesses one), the tools it used, and the person accountable for it. For an external agent, that person is whoever created its API key; for V19's own Agent, it is the person who asked. Agents can send model and tools with a request. The passport is shown on each request with who decided it, and a digest lets you check it later. These facts are not part of what is approved, so they never change an approval. When an Agent proposal deploys to an environment that is frozen, outside its change window or has an unreadable window rule, the desktop proposal card says so before you approve, with the freeze reason and the next opening. It is advisory: the gate is checked again when the deployment is dispatched.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/agent-gateway#triage",
    "title": "Review lanes by blast radius",
    "text": "Each request is sorted into a review lane the moment it arrives, with a one-line reason. Allowed by policy needs no review. Quick look is a contained change outside production. Careful review is a production change, a high-risk action or a moderate blast radius. Two approvers is a production change that touches many areas, touches migrations, auth, secrets, CI or infrastructure, or is a data migration, infrastructure change or delete. In that lane the first approval is recorded and the request stays pending until a different admin approves too. Lanes only ever add review; they never remove what policy requires.",
    "source": "app/docs/agent-gateway/page.tsx",
-   "sourceSha256": "47e7c3e47334849a165ca9721f47419dad4f49bfdc5385789a9cde673dd9efe6"
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
+  },
+  {
+   "href": "/docs/agent-gateway#release-autopilot",
+   "title": "Release autopilot",
+   "text": "A workspace can let agents deploy small, contained changes to development or staging without waiting for a person. Add an autopilot section to the policy file, for example {`\"autopilot\": { \"deploy\": }`} , and propose it from Governance → Policy as code. Turning autopilot on or widening it is marked as loosening governance, and a different owner or admin must approve it before it applies. A policy file without the section turns autopilot off. An agent deploy is then allowed only when all of these hold: the environment is one the rule names, the agent listed the changed files, there are no more than maxFiles of them, the blast radius is contained, and no file touches migrations, CI, auth, infrastructure or secrets. Otherwise it waits for review as before. Production is never covered: the policy file refuses it. If the rule cannot be read, deploys wait for review. Each request records the reason it was allowed, and agents still report the outcome.",
+   "source": "app/docs/agent-gateway/page.tsx",
+   "sourceSha256": "fef9aba14a3eaae6a70734327b14d1ba7ba3e8fc5c732eefe44ed3771fc408d3"
   },
   {
    "href": "/docs/api-keys#create",
@@ -769,98 +776,105 @@
    "title": "The deployment lifecycle",
    "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#catalogs",
    "title": "What users manage",
    "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#availability",
    "title": "Availability rules",
    "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#deployment-checks",
    "title": "Deployment checks per stage",
    "text": "In the cockpit, Checks lets owners and admins attach checks to each release stage (Plan, Validate, Approve, Deploy, Verify and Recover): smoke tests with an expected status and latency, health checks against a metric threshold, migration dry runs in a named workflow job, custom scripts in your repository, manual checklists, security scans (your scanner, with the most critical and high findings allowed) supply-chain evidence (an SBOM, SLSA provenance or both, verified by your tool) resilience experiments (for example a chaos test with AWS FIS or Chaos Mesh, run under your own safeguards) and GitHub Actions from the marketplace (any action, pinned to a full 40-character commit SHA, with plain name=value inputs; expressions such as secrets are refused). Owners and admins can also describe a check in plain language under Draft with AI ; the workspace's governed AI fills the form with a draft that passes the same validation, and nothing is saved until they add it. Start from the library offers reviewed starting checks, such as Trivy, Grype, Checkov, Hadolint, the OWASP ZAP baseline scan, Lighthouse, a health smoke test and a production change checklist. Each GitHub Action there is pinned to the commit of a published release, with a link to that release; picking one fills the form, and entries with example addresses say what to change first. Each check is blocking or advisory and keeps a version that increases with every edit, so a release can record exactly which checks applied. V",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#tenant-fan-out",
    "title": "Tenants, tags and fan-out",
    "text": "In the desktop app, under Settings → Environments, owners and admins can tag each environment with lowercase key:value labels such as tenant:acme , region:eu or ring:1 . Saving uses the same governed configuration path as creating an environment, and an edit is refused if someone changed the tags in the meantime. Tenant fan-out preview takes a selector (all terms must match, and key:* matches any value) and lists the matching environments in ring order, with untagged rings last. It is a plan only: each environment still deploys on its own with its own policy, checks and approvals. Rings are enforced: before the desktop app dispatches to an environment tagged ring:N (N above 0), at least one environment tagged ring:N-1 must have completed a successful deployment of the same repository and commit. Otherwise nothing is dispatched. Untagged environments and ring 0 are not gated, and the audited emergency bypass skips the ring check. To keep environments in Git, open Variables in the cockpit and choose Download environments file under Environments as code . The file lists each environment's name, tier, order, tags and change window. Paste an edited file and choose Preview environments file to see new and changed environments, environments the file leaves out (they are kept, never deleted) and anything that loosens deployment gates, such as removing a change window, a freeze or a ring tag. An existing environment's tier cannot be changed from a file. Owners and admins can apply the",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#database-changes",
    "title": "Database changes in a deployment",
    "text": "When you check readiness for a deployment in the desktop app, V19 compares the commit with the last successful deployment of the same repository to the same environment and lists any changed migration files (for example Prisma, Rails, Alembic, Flyway, Liquibase, Supabase or Drizzle migrations). Review the migration and its rollback before dispatching. This is advisory evidence: custom layouts may not be recognised, a comparison lists at most 300 files, and the first deployment to an environment cannot be compared. To make a migration review mandatory, attach a blocking migration dry run check.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#change-windows",
    "title": "Change windows and freezes",
-   "text": "In the desktop app, under Settings → Environments, owners and admins can give an environment a change window: the days it opens on and one or more times in UTC (for example 22:00-02:00 , which crosses midnight from the day it starts), plus freezes written as 2026-12-20 to 2027-01-02: Holiday freeze . The editor shows whether deployments are allowed right now and when the window next opens. Saving uses the governed configuration path, and an edit is refused if someone changed the window in the meantime. The desktop app refuses to dispatch outside the window or during a freeze, before any GitHub work starts. A freeze always wins over a window. A rule that cannot be read refuses deployments until it is fixed, rather than silently allowing them. The audited production emergency bypass still works. Queuing a deployment to run automatically when the window opens is not available yet; dispatch it once the window is open. Every refusal at a release gate (window, freeze, stability warning, checks or rings) also sends a deployment.blocked webhook, so a Slack or pager bridge can tell the team. To stop deployments quickly, for example during an incident, owners and admins can use Deployment freeze on the cockpit Overview. Choose production (environments with the prod tier) or every environment, how long (1 hour to 7 days) and a reason, then choose Freeze deployments . V19 adds that freeze to each environment's change window and keeps its existing windows and freezes. Members see every ac",
+   "text": "In the desktop app, under Settings → Environments, owners and admins can give an environment a change window: the days it opens on and one or more times in UTC (for example 22:00-02:00 , which crosses midnight from the day it starts), plus freezes written as 2026-12-20 to 2027-01-02: Holiday freeze . The editor shows whether deployments are allowed right now and when the window next opens. Saving uses the governed configuration path, and an edit is refused if someone changed the window in the meantime. The desktop app refuses to dispatch outside the window or during a freeze, before any GitHub work starts. A freeze always wins over a window. A rule that cannot be read refuses deployments until it is fixed, rather than silently allowing them. The audited production emergency bypass still works. When a deployment is refused because the window is closed or a freeze is active, the desktop app offers Deploy when the window opens with the next opening time. Keep the app open and signed in: it sends the same deployment a few seconds after the window opens, and every gate (policy, checks, rings, window and approvals) is checked again then. Changing the deployment details cancels it, and nothing is sent if the app is closed; V19 does not deploy unattended from its servers. Every refusal at a release gate (window, freeze, stability warning, checks or rings) also sends a deployment.blocked webhook, so a Slack or pager bridge can tell the team. To stop deployments quickly, for example du",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#kubernetes-templates",
    "title": "Kubernetes rolling, blue/green and canary",
-   "text": "Services also shows Delivery health for each environment over the last 30 days: runs, the share that succeeded, the median run time, and runs that look stuck (queued over 30 minutes or running over 2 hours) or lost tracking. An environment is failing when its last three finished runs failed or fewer than half of at least four finished runs succeeded, and degraded when anything else needs a look. It is built from recorded runs, not from the live state of your systems. In the cockpit, Services generates a GitHub Actions workflow for a Kubernetes rolling update, a blue/green switch or a canary. Commit it to your repository and add a KUBE_CONFIG repository secret scoped to the namespace: cluster access stays in your CI, and V19 never holds it. V19 dispatches the workflow only after the environment's policy, checks, rings, change window and approvals pass. A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running so you can switch back. A canary runs the new image in a small canary Deployment, watches readiness and restarts for the minutes you choose, promotes to the main Deployment, and always scales the canary back to zero. The workflow uses only kubectl and checks the image reference before using it.",
+   "text": "Services also shows Delivery health for each environment over the last 30 days: runs, the share that succeeded, the median run time, and runs that look stuck (queued over 30 minutes or running over 2 hours) or lost tracking. An environment is failing when its last three finished runs failed or fewer than half of at least four finished runs succeeded, and degraded when anything else needs a look. It is built from recorded runs, not from the live state of your systems. Scorecards grade each service on six checks: an owning team is recorded, CODEOWNERS is present, the default branch is protected, it was delivered in the last 30 days, at least 80% of its recent finished runs succeeded, and no incident linked to its releases is open or mitigated. A check without enough data shows as unknown and never counts as a pass. Weakest services come first, and each card names the next step for its first failing check. In the cockpit, Services generates a GitHub Actions workflow for a Kubernetes rolling update, a blue/green switch or a canary. Commit it to your repository and add a KUBE_CONFIG repository secret scoped to the namespace: cluster access stays in your CI, and V19 never holds it. V19 dispatches the workflow only after the environment's policy, checks, rings, change window and approvals pass. A rolling update undoes itself if the rollout does not become ready. Blue/green deploys to the idle colour, waits for it, then switches the Service selector; the previous colour keeps running",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
+  },
+  {
+   "href": "/docs/releaseops#runbooks",
+   "title": "Runbooks",
+   "text": "The cockpit's Runbooks page keeps your team's procedures for failed deploys, incidents, freezes and routine work. Each runbook has a key, when it applies, and steps. Each step says what to do and the approval it needs: none, one admin, or two different admins. Start from a template (a failed deploy, freezing production during an incident, rotating a leaked API key) or write your own. Owners and admins edit runbooks; every edit increases the version, and an edit is refused if someone changed the runbook in the meantime. Steps that contain destructive commands, such as rm -rf / , DROP TABLE or terraform destroy , are refused. Choose Download runbooks file to keep them in Git. The desktop Agent can read enabled runbooks to suggest the right one. V19 does not run runbooks in your systems: a step that changes something is done by a person, or by an agent through the gateway with its own approvals.",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#evidence-pack",
    "title": "Release evidence pack",
    "text": "In the cockpit, Insights → Export release evidence downloads one JSON file for a repository commit: every recorded deployment of it (environment, who, when, policy, reviewed pull request, configuration fingerprint and outcome), every check result CI reported for it, and audit events on those deployments. Configuration values are not included, only their fingerprints. Missing evidence is listed under gaps rather than invented. The file carries a SHA-256 digest of its canonical JSON (sorted keys, without the export time), so exporting the same records again gives the same digest and an auditor can recompute it. Every export is recorded in the audit log.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#gitops",
    "title": "Argo CD and Flux",
    "text": "V19 includes read-only clients for Argo CD (applications in one project) and Flux (Kustomizations in one namespace through the Kubernetes API). They compare the commit the GitOps controller reports as applied with the commit V19 recorded for the environment, and explain whether they match, the controller is behind, it applied something V19 did not deploy, it is unhealthy, or reconciliation is suspended. V19 never syncs, reconciles, rolls back or suspends. Connect them under Release signals (see below); live acceptance with a real Argo CD instance or cluster is still pending.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#stability-warning",
    "title": "Stability early warning",
    "text": "V19 compares the change failure rate of releases finished in the last 7 days with the 90 days before. When at least three recent releases failed, rolled back or had an incident reported against them, and the recent rate is at least 20% and well above the earlier rate, Overview and Insights show a stability warning. While it is active, the desktop app asks for a reason before a production deployment and records that reason in the audit log. If release records cannot be read, nothing is blocked.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#serverless-templates",
    "title": "Lambda, Cloud Run and Azure Functions",
    "text": "In the cockpit, Services also generates serverless deploy workflows. For AWS Lambda, it publishes a new version, sends it a share of traffic on an alias named live , and moves all traffic back if that version reports errors. For Google Cloud Run, it deploys a revision with no traffic, sends it a share, watches readiness, then moves all traffic to it. For Azure Functions, it deploys to a staging slot, checks a health path, and swaps it into production. Each workflow signs in to your cloud with short-lived OIDC federation that you configure in your account. The workflow reads the role, service account or client IDs from repository variables, so no cloud keys are stored in GitHub or V19. The official sign-in actions are pinned to exact commits. As with every template, V19 dispatches the workflow only after the environment's gates pass.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#verification-signals",
    "title": "Verification signals from Sentry and Datadog",
    "text": "V19 includes read-only clients for Sentry (unresolved issues first seen in a release) and Datadog (monitor states for a service tag). A verification step combines them with Verify-stage check results into one verdict: healthy, investigate or unhealthy, with the reasons. Signals that are not connected are listed as missing, never assumed healthy. V19 never resolves, mutes or edits anything in those tools. Connect them under Release signals (see below); live acceptance with real accounts is still pending.",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops#release-signals",
    "title": "Connect release signals",
    "text": "In the desktop app, under Settings, Release signals connects Argo CD, Flux, PagerDuty, Opsgenie, Sentry, Datadog, LaunchDarkly, Unleash and Jenkins. Each card asks only for what that tool needs, for example the Datadog site, a monitor tag and read-only keys. When you connect, V19 checks the credential with one small read before saving it, then stores it encrypted for this workspace. Secret fields are cleared after every attempt and are never shown again. Every connection is read-only. Use the least access each tool offers: a read-only token, a reader role, or a scope such as monitors_read . V19 never syncs, pages, acknowledges, resolves, mutes or toggles anything. You can replace or disconnect a connection at any time. After a deployment, the desktop deploy form offers Check release health . Enter the release name your tools use (it starts as the deployed tag or branch). V19 then reads every connected signal at once: open PagerDuty and Opsgenie incidents, new Sentry issues first seen in that release, alerting Datadog monitors, LaunchDarkly temporary flags still on after 30 days or Unleash flags marked stale but still on, and Verify-stage check results for the commit. It shows one verdict with the reasons. A tool that is not connected, or does not answer, is listed as not available and never counted as healthy. The Agent can read the same release health with its read-only read_release_health tool when you ask how a release is doing, the state of connected Argo CD and Flux appl",
    "source": "app/docs/releaseops/page.tsx",
-   "sourceSha256": "897cc39e425d95296865f7c78196376dc8923102c946371a31db85ffe79f301a"
+   "sourceSha256": "b7590a147bbbc955143ccc1a976c85f29f77685507021aa0ffeea5af6c78c493"
   },
   {
    "href": "/docs/releaseops/connectors#rotation",

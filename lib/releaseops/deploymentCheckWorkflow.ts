@@ -6,6 +6,9 @@
  */
 import type { CheckKind, CheckStage } from "./deploymentChecks";
 
+/** infracost/actions/setup at release v5.0.1, verified 2026-11-28. */
+export const INFRACOST_SETUP = "infracost/actions/setup@a5783eb98adc93aa7a0049fce0abb06fdd30770a";
+
 export const CHECK_WORKFLOW_PATH = ".github/workflows/v19-deployment-checks.yml";
 
 export interface GeneratableCheck { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; enabled: boolean; version: number; spec: Record<string, unknown> }
@@ -63,6 +66,22 @@ function job(c: GeneratableCheck): string[] | { skip: string } {
         `        uses: ${String(s.action)}@${String(s.commit)}`,
         ...(inputs.length ? [`        with:`, ...inputs] : [])];
     }
+    case "cost_estimate":
+      return [...head, `      COST_PATH: ${q(s.path)}`,
+        `    steps:`,
+        `      - uses: actions/checkout@v4`,
+        `        with:`,
+        `          persist-credentials: false`,
+        `      - uses: ${INFRACOST_SETUP}`,
+        `        with:`,
+        "          api-key: ${{ secrets.INFRACOST_API_KEY }}",
+        `      - name: Estimate monthly cost`,
+        `        run: |`,
+        `          set -euo pipefail`,
+        `          infracost breakdown --path "$COST_PATH" --format json --out-file "$RUNNER_TEMP/infracost.json"`,
+        `          cost=$(jq -r '.totalMonthlyCost // empty' "$RUNNER_TEMP/infracost.json")`,
+        `          echo "Estimated monthly cost: $cost USD"`,
+        `          echo "V19_MONTHLY_COST_USD=$cost" >> "$GITHUB_ENV"`];
     case "migration_dry_run":
       return { skip: `runs in its own workflow (${String(s.workflowPath)}, job ${String(s.job)}) so its database access stays separate; start it there for this stage` };
     case "health_check":
@@ -103,7 +122,10 @@ function reportStep(c: GeneratableCheck): string[] {
     "          duration=$(( $(date +%s%3N) - ${V19_STARTED_MS:-$(date +%s%3N)} ))",
     "          jq -n --arg key \"$V19_CHECK_KEY\" --argjson version \"$V19_CHECK_VERSION\" --arg stage \"$CHECK_STAGE\" --arg status \"$status\" \\",
     "            --argjson duration \"$duration\" --arg run \"$RUN_URL\" --arg idem \"$RUN_KEY-$V19_CHECK_KEY\" --arg ref \"$GITHUB_SHA\" \\",
-    "            '{checkKey:$key, checkVersion:$version, stage:$stage, status:$status, durationMs:$duration, runUrl:$run, idempotencyKey:$idem, releaseRef:$ref}' \\",
+    ...(c.kind === "cost_estimate"
+      ? ["            --arg cost \"${V19_MONTHLY_COST_USD:-}\" \\",
+        "            '{checkKey:$key, checkVersion:$version, stage:$stage, status:$status, durationMs:$duration, runUrl:$run, idempotencyKey:$idem, releaseRef:$ref} + (if $cost == \"\" then {} else {monthlyCostUsd: ($cost | tonumber)} end)' \\"]
+      : ["            '{checkKey:$key, checkVersion:$version, stage:$stage, status:$status, durationMs:$duration, runUrl:$run, idempotencyKey:$idem, releaseRef:$ref}' \\"]),
     "          | curl -fsS --max-time 20 -X POST -H \"Authorization: Bearer $V19_API_KEY\" -H 'Content-Type: application/json' --data @- \"$V19_URL/api/v1/checks/results\"",
   ];
 }

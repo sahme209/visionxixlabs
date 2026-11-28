@@ -15,6 +15,7 @@ const groups = [
     { href: "/control/services", label: "Services", icon: Boxes },
     { href: "/control/variables", label: "Variables", icon: SlidersHorizontal },
     { href: "/control/checks", label: "Checks", icon: ListChecks },
+    { href: "/control/runbooks", label: "Runbooks", icon: BookOpen },
     { href: "/control/ai-agents", label: "AI & Agents", icon: Bot },
     { href: "/control/agent-gateway", label: "Agent gateway", icon: Bot },
     { href: "/control/trust-tools", label: "Trust tools", icon: ShieldCheck },

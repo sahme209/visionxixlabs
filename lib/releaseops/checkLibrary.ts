@@ -40,6 +40,11 @@ export const CHECK_LIBRARY: readonly LibraryEntry[] = [
     source: gh("bridgecrewio/checkov-action", "v12.1347.0"),
   },
   {
+    id: "infracost-estimate", category: "Infrastructure", summary: "Estimates the monthly cloud cost of your Terraform with Infracost. V19 fails the release when the increase over the previous estimate is above your limit. Needs an INFRACOST_API_KEY secret in your CI.",
+    check: { key: "infra-cost", name: "Infrastructure cost estimate", kind: "cost_estimate", stage: "validate", mode: "blocking", spec: { tool: "infracost", path: "infra", maxMonthlyIncreaseUsd: 500 } },
+    source: { release: "v5.0.1", url: "https://github.com/infracost/actions/releases/tag/v5.0.1", verifiedOn: "2026-11-28" }, edit: ["path", "maxMonthlyIncreaseUsd"],
+  },
+  {
     id: "hadolint-dockerfile", category: "Containers", summary: "Lints the Dockerfile with Hadolint and fails on errors.",
     check: { key: "hadolint", name: "Dockerfile lint", kind: "marketplace_action", stage: "validate", mode: "advisory", spec: { action: "hadolint/hadolint-action", commit: "06be81baf89a55ffd0e24b8f04a4185738dd3387", inputs: ["dockerfile=Dockerfile", "failure-threshold=error"] } },
     source: gh("hadolint/hadolint-action", "v3.5.0"), edit: ["inputs"],

@@ -94,10 +94,11 @@ public struct VisionXIXLabs {
 
     /// POST /api/v1/checks/results — report one deployment check run from CI as evidence.
     /// Required scope: `checks:report`. Idempotent on `idempotencyKey`.
-    public func reportCheckResult(checkKey: String, checkVersion: Int, stage: String, status: String, idempotencyKey: String, durationMs: Int? = nil, runUrl: String? = nil) async throws -> CheckResultResponse {
+    public func reportCheckResult(checkKey: String, checkVersion: Int, stage: String, status: String, idempotencyKey: String, durationMs: Int? = nil, runUrl: String? = nil, monthlyCostUsd: Double? = nil) async throws -> CheckResultResponse {
         var body: [String: Any] = ["checkKey": checkKey, "checkVersion": checkVersion, "stage": stage, "status": status, "idempotencyKey": idempotencyKey]
         if let durationMs { body["durationMs"] = durationMs }
         if let runUrl { body["runUrl"] = runUrl }
+        if let monthlyCostUsd { body["monthlyCostUsd"] = monthlyCostUsd }
         return try await post("/api/v1/checks/results", body: body)
     }
 
@@ -353,6 +354,10 @@ public struct CheckResultResponse: Decodable {
     public let duplicate: Bool?
     public let currentVersion: Int?
     public let stale: Bool?
+    /// Cost estimate checks: the status V19 recorded, why it differs from CI's, and the change from the previous estimate.
+    public let recordedStatus: String?
+    public let statusReason: String?
+    public let monthlyCostDeltaCents: Int?
 }
 
 public struct ReleaseGateResponse: Decodable {

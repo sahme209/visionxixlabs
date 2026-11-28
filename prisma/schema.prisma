@@ -2946,6 +2946,38 @@ model Environment {
 
 /// A reviewed change to the workspace's policy rules, proposed as a policy file. Applied only after a
 /// different owner or admin approves it, and only if the rules still match the digest it was reviewed against.
+/// Release autopilot for one workspace, set only by an applied two-person policy change. Empty
+/// deployEnvironments means off. Never covers production (the policy file schema refuses it).
+model WorkspaceReleaseAutopilot {
+  organizationId     String   @id
+  deployEnvironments String[] @default([])
+  maxFiles           Int      @default(0)
+  /// The policy change request that last set it.
+  appliedRequestId   String?
+  updatedAt          DateTime @updatedAt
+}
+
+/// Workspace runbook: a versioned procedure (steps with the approval each needs). V19 does not run it.
+model WorkspaceRunbook {
+  id              String   @id @default(cuid())
+  organizationId  String
+  key             String
+  title           String
+  /// manual | incident | deployment_failed | freeze | scheduled
+  trigger         String
+  /// [{ title, detail, approval: none | one_admin | two_admins }]
+  steps           Json
+  enabled         Boolean  @default(true)
+  /// Increments on every edit.
+  version         Int      @default(1)
+  updatedByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
 model PolicyChangeRequest {
   id              String    @id @default(cuid())
   organizationId  String
@@ -3008,6 +3040,10 @@ model DeploymentCheckResult {
   idempotencyKey  String
   apiKeyId        String
   reportedAt      DateTime @default(now())
+  /// Cost estimate checks: estimated monthly cost in US cents, as reported by CI.
+  monthlyCostCents Int?
+  /// Why V19 recorded a status different from the one CI reported (over_cost_limit | cost_missing).
+  statusReason    String?
 
   @@unique([organizationId, idempotencyKey])
   @@index([organizationId, checkKey, reportedAt])

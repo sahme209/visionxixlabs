@@ -1,6 +1,7 @@
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
+import { readStoredAutopilot, type StoredAutopilot } from "@/lib/releaseops/policyAsCode";
 
 export async function policyAdminContext() {
   const context = await currentContext();
@@ -21,4 +22,9 @@ export async function readBacktestHistory(organizationId: string, now = new Date
   const rows = await (prisma as unknown as { policyViolation: { findMany(args: unknown): Promise<Array<{ releaseId: string; exceptionGrantedAt: Date | null; rule: { key: string } }>> } })
     .policyViolation.findMany({ where: { organizationId, detectedAt: { gte: since } }, take: 20_000, select: { releaseId: true, exceptionGrantedAt: true, rule: { select: { key: true } } } });
   return { violations: rows.map((r) => ({ releaseId: r.releaseId, ruleKey: r.rule.key, exceptionGranted: r.exceptionGrantedAt !== null })), releaseIds: rows.map((r) => r.releaseId) };
+}
+
+/** The workspace's release autopilot, or null when off. */
+export async function readAutopilot(organizationId: string, client: { workspaceReleaseAutopilot: { findUnique(args: unknown): Promise<{ deployEnvironments: string[]; maxFiles: number } | null> } } = prisma as never): Promise<StoredAutopilot | null> {
+  return readStoredAutopilot(await client.workspaceReleaseAutopilot.findUnique({ where: { organizationId }, select: { deployEnvironments: true, maxFiles: true } }));
 }

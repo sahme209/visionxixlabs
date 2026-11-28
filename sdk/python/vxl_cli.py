@@ -667,7 +667,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     p_ask = sub.add_parser("ask", help="Ask the agent gateway before acting. Exits 0 only when allowed or approved.")
-    p_ask.add_argument("action_kind", choices=["read", "code_change", "open_pull_request", "merge", "dependency_change", "infra_change", "deploy", "data_migration", "secret_access", "delete_resource", "run_command"])
+    p_ask.add_argument("action_kind", choices=["read", "code_change", "open_pull_request", "merge", "dependency_change", "infra_change", "deploy", "data_migration", "secret_access", "delete_resource", "run_command", "flag_change"])
     p_ask.add_argument("--target", required=True, help="Repository, service or resource.")
     p_ask.add_argument("--summary", required=True, help="One or two sentences describing the exact change.")
     p_ask.add_argument("--env", default="unknown", choices=["development", "staging", "production", "unknown"])

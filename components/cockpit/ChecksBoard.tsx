@@ -2,11 +2,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { StatusDot } from "./StatusDot";
 import { toneFor } from "@/lib/cockpit/statusTone";
+import { formatCents, formatDelta } from "@/lib/releaseops/costEstimate";
 import { LIBRARY_CATEGORIES, libraryFor, type LibraryEntry } from "@/lib/releaseops/checkLibrary";
 import { CHECK_KINDS, CHECK_STAGES, KIND_LABEL, STAGE_LABEL, type CheckKind, type CheckStage } from "@/lib/releaseops/deploymentChecks";
 
 interface Check { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; spec: Record<string, unknown>; enabled: boolean; version: number }
-interface LatestResult { status: string; checkVersion: number; runUrl: string | null; reportedAt: string }
+interface LatestResult { status: string; checkVersion: number; runUrl: string | null; reportedAt: string; monthlyCostCents?: number; previousMonthlyCostCents?: number; statusReason?: string }
 interface Board { canEdit: boolean; latestResults?: Record<string, LatestResult> | null; checks: Check[]; coverage: { stages: Array<{ stage: CheckStage; blocking: number; advisory: number }>; uncovered: CheckStage[] } }
 interface Draft { key: string; name: string; kind: CheckKind; stage: CheckStage; mode: "blocking" | "advisory"; fields: Record<string, string>; enabled: boolean; expectedVersion?: number }
 
@@ -20,6 +21,7 @@ const FIELDS: Record<CheckKind, Array<{ name: string; label: string; placeholder
   resilience_experiment: [{ name: "tool", label: "Tool", placeholder: "Gremlin, Chaos Mesh, AWS FIS…" }, { name: "experiment", label: "Experiment", placeholder: "Stop one task and confirm recovery" }, { name: "environmentScope", label: "Runs in", placeholder: "non_production", options: ["non_production", "production"] }],
   supply_chain: [{ name: "evidence", label: "Evidence", placeholder: "sbom", options: ["sbom", "slsa_provenance", "sbom_and_provenance"] }, { name: "verifier", label: "Verified by", placeholder: "cosign, slsa-verifier, syft…" }],
   security_scan: [{ name: "tool", label: "Scanner", placeholder: "Snyk, Trivy, CodeQL…" }, { name: "maxCritical", label: "Max critical findings", placeholder: "0", numeric: true }, { name: "maxHigh", label: "Max high findings", placeholder: "0", numeric: true }],
+  cost_estimate: [{ name: "tool", label: "Estimated with", placeholder: "infracost", options: ["infracost"] }, { name: "path", label: "Infrastructure code path", placeholder: "infra" }, { name: "maxMonthlyIncreaseUsd", label: "Max monthly increase (USD)", placeholder: "500", numeric: true }],
 };
 const EMPTY: Draft = { key: "", name: "", kind: "smoke_test", stage: "verify", mode: "blocking", fields: {}, enabled: true };
 const ERRORS: Record<string, string> = {
@@ -28,6 +30,8 @@ const ERRORS: Record<string, string> = {
   check_changed: "Someone changed or removed this check after you loaded it. The list has been reloaded.",
   check_limit_reached: "This workspace has reached its check limit.",
 };
+
+const formatUsd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
 
 function specFrom(d: Draft): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -52,6 +56,7 @@ function summary(c: Check): string {
     case "resilience_experiment": return `${s.experiment} with ${s.tool} (${String(s.environmentScope).replaceAll("_", " ")})`;
     case "supply_chain": return `${String(s.evidence).replaceAll("_", " ")} verified by ${s.verifier}`;
     case "security_scan": return `${s.tool} · at most ${s.maxCritical} critical, ${s.maxHigh} high`;
+    case "cost_estimate": return `Infracost on ${s.path} · fails above +${formatUsd(Number(s.maxMonthlyIncreaseUsd))}/month`;
   }
 }
 
@@ -177,7 +182,7 @@ function LatestResultLine({ check, latest }: { check: Check; latest: LatestResul
   if (latest === "unavailable") return <p className="mt-1 text-xs text-zinc-400">Results could not be read.</p>;
   if (!latest) return <p className="mt-1 text-xs text-zinc-400">No result recorded yet.</p>;
   const when = new Date(latest.reportedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-  return <p className="mt-1 text-xs text-zinc-400">Last result: <StatusDot tone={toneFor(latest.status)} label={latest.status} className="text-xs" /> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}</p>;
+  return <p className="mt-1 text-xs text-zinc-400">Last result: <StatusDot tone={toneFor(latest.status)} label={latest.status} className="text-xs" /> · {when}{latest.checkVersion !== check.version && <> · <span className="text-amber-300">ran version {latest.checkVersion}, current is {check.version}</span></>}{latest.runUrl && <> · <a href={latest.runUrl} className="underline underline-offset-2" target="_blank" rel="noreferrer">CI run</a></>}{latest.monthlyCostCents !== undefined && <><br /><span className="text-zinc-300">Estimated {formatCents(latest.monthlyCostCents)}/month</span>{latest.previousMonthlyCostCents !== undefined && <> · {formatDelta(latest.monthlyCostCents - latest.previousMonthlyCostCents)} from the previous commit</>}</>}{latest.statusReason === "over_cost_limit" && <> · <span className="text-rose-300">over the increase limit, so V19 recorded it as failed</span></>}{latest.statusReason === "cost_missing" && <> · <span className="text-amber-300">no cost was reported, so V19 recorded an error</span></>}</p>;
 }
 
 function ConfirmChecklist({ check, onRecorded }: { check: Check; onRecorded: () => void }) {

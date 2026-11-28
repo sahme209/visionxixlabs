@@ -3,12 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { policyDigest } from "@/lib/releaseops/policyAsCode";
 
-const m = vi.hoisted(() => ({ ctx: vi.fn(), audit: vi.fn(), findFirst: vi.fn(), updateMany: vi.fn(), rules: vi.fn(), ruleUpdateMany: vi.fn(), upsert: vi.fn(), queryRaw: vi.fn() }));
+const m = vi.hoisted(() => ({ ctx: vi.fn(), audit: vi.fn(), findFirst: vi.fn(), updateMany: vi.fn(), rules: vi.fn(), ruleUpdateMany: vi.fn(), upsert: vi.fn(), queryRaw: vi.fn(), autopilot: vi.fn(async () => null as unknown), autopilotUpsert: vi.fn() }));
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: () => true }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: m.audit }));
-vi.mock("../../../../shared", () => ({ policyAdminContext: m.ctx }));
+vi.mock("../../../../shared", () => ({ policyAdminContext: m.ctx, readAutopilot: m.autopilot }));
 vi.mock("@/lib/db", () => {
-  const tx = { $executeRaw: m.queryRaw, policyChangeRequest: { findFirst: m.findFirst, updateMany: m.updateMany }, policyRule: { findMany: m.rules, updateMany: m.ruleUpdateMany, upsert: m.upsert } };
+  const tx = { $executeRaw: m.queryRaw, policyChangeRequest: { findFirst: m.findFirst, updateMany: m.updateMany }, policyRule: { findMany: m.rules, updateMany: m.ruleUpdateMany, upsert: m.upsert }, workspaceReleaseAutopilot: { upsert: m.autopilotUpsert } };
   return { prisma: { $transaction: async (fn: (t: typeof tx) => Promise<unknown>) => fn(tx) } };
 });
 import { POST } from "../route";
@@ -52,4 +52,19 @@ describe("policy change request decisions", () => {
     expect(await (await call("reject")).json()).toEqual({ ok: true, data: { result: "rejected" } });
     expect(m.rules).not.toHaveBeenCalled();
   });
+  it("applies a reviewed autopilot rule with the rules, and leaves it alone when unchanged", async () => {
+    m.findFirst.mockResolvedValueOnce({ status: "pending", proposedByUserId: "author", baseDigest: await policyDigest(current), documentJson: { kind: "v19.policy", version: 1, rules: current, autopilot: { deploy: { environments: ["staging"], maxFiles: 4 } } } });
+    expect((await call("approve")).status).toBe(200);
+    expect(m.autopilotUpsert).toHaveBeenCalledWith({ where: { organizationId: "org1" }, create: { organizationId: "org1", deployEnvironments: ["staging"], maxFiles: 4, appliedRequestId: "req1" }, update: { deployEnvironments: ["staging"], maxFiles: 4, appliedRequestId: "req1" } });
+    m.autopilotUpsert.mockClear();
+    await call("approve");
+    expect(m.autopilotUpsert).not.toHaveBeenCalled();
+  });
+  it("is stale when autopilot changed since review", async () => {
+    m.autopilot.mockResolvedValueOnce({ deployEnvironments: ["staging"], maxFiles: 2 });
+    const r = await call("approve");
+    expect((await r.json()).error).toBe("policy_changed_since_request");
+    expect(m.autopilotUpsert).not.toHaveBeenCalled();
+  });
 });
+

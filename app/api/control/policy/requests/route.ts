@@ -5,8 +5,8 @@ import { record as auditRecord } from "@/lib/audit/secureAudit";
 import type { CorrelationId, OrganizationId, UserId } from "@/lib/domain/ids";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/lib/prismaClient";
-import { diffPolicy, parsePolicyDocument, policyDigest } from "@/lib/releaseops/policyAsCode";
-import { policyAdminContext, readPolicyRules } from "../shared";
+import { diffPolicy, isPolicyDiffEmpty, parsePolicyDocument, policyDigest } from "@/lib/releaseops/policyAsCode";
+import { policyAdminContext, readAutopilot, readPolicyRules } from "../shared";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,10 +34,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const parsed = parsePolicyDocument(text);
   if (!parsed.ok) return NextResponse.json({ ok: false, error: "policy_document_invalid", issues: parsed.errors }, { status: 422, headers: noStore });
   try {
-    const rules = await readPolicyRules(ctx.organizationId);
-    const diff = diffPolicy(rules, parsed.document);
-    if (!diff.added.length && !diff.changed.length && !diff.removed.length) return NextResponse.json({ ok: false, error: "policy_unchanged" }, { status: 409, headers: noStore });
-    const row = await prisma.policyChangeRequest.create({ data: { organizationId: ctx.organizationId, documentJson: parsed.document as unknown as Prisma.InputJsonValue, baseDigest: await policyDigest(rules), diffJson: diff as unknown as Prisma.InputJsonValue, loosens: diff.loosening.length > 0, proposedByUserId: ctx.userId }, select: { id: true } });
+    const [rules, autopilot] = await Promise.all([readPolicyRules(ctx.organizationId), readAutopilot(ctx.organizationId)]);
+    const diff = diffPolicy(rules, parsed.document, autopilot);
+    if (isPolicyDiffEmpty(diff)) return NextResponse.json({ ok: false, error: "policy_unchanged" }, { status: 409, headers: noStore });
+    const row = await prisma.policyChangeRequest.create({ data: { organizationId: ctx.organizationId, documentJson: parsed.document as unknown as Prisma.InputJsonValue, baseDigest: await policyDigest(rules, autopilot), diffJson: diff as unknown as Prisma.InputJsonValue, loosens: diff.loosening.length > 0, proposedByUserId: ctx.userId }, select: { id: true } });
     try { await auditRecord({ organizationId: ctx.organizationId as OrganizationId, actorUserId: ctx.userId as UserId, action: "policy.update", outcome: "success", entityRef: `policy_change_request:${row.id}`, correlationId: randomUUID() as CorrelationId, detail: { kind: "policy_change_requested", added: diff.added.length, changed: diff.changed.length, removed: diff.removed.length, loosens: diff.loosening.length > 0 } }); } catch { /* best-effort */ }
     return NextResponse.json({ ok: true, data: { id: row.id } }, { status: 201, headers: noStore });
   } catch {

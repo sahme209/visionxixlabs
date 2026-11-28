@@ -7,7 +7,7 @@ describe("TOOL_REGISTRY", () => {
     expect(names).toEqual([
       "call_workspace_mcp_tool", "check_deploy_status", "commit_github_file", "commit_github_files", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
-      "inspect_github_repository", "list_airflow_dags", "list_argo_templates", "list_argo_workflows", "list_cloud_accounts", "list_dagster_jobs", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "list_prefect_flows", "list_workspace_mcp_tools", "open_github_pull_request",
+      "inspect_github_repository", "list_airflow_dags", "list_argo_templates", "list_argo_workflows", "list_cloud_accounts", "list_dagster_jobs", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "list_prefect_flows", "list_workspace_mcp_tools", "list_workspace_runbooks", "open_github_pull_request",
       "preview_scim_lifecycle", "read_airflow_runs", "read_airflow_tasks", "read_aws_inventory", "read_ci_jobs", "read_dagster_runs", "read_deployment_checks_workflow", "read_github_file", "read_gitops_state", "read_prefect_flow_runs", "read_prefect_task_runs", "read_release_health", "search_github_code", "search_microsoft_docs", "trigger_aws_deploy",
     ]);
   });
