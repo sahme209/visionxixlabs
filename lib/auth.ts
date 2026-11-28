@@ -15,6 +15,7 @@ import { decodeIdTokenClaims } from "./identity/decodeIdTokenClaims";
 import { evaluateSsoSignIn, type SsoSignInRepo } from "./identity/ssoSignInGate";
 import { ALL_ORG_ROLES } from "./identity/identityProviderResponder";
 import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "./billing/organizationSeatClaim";
+import { redeemTicket, type SsoDeps } from "./identity/oidc/tenantSsoService";
 
 import { attestCanonicalIdentity, canonicalIdentity } from "./auth/canonicalIdentity";
 import { googleLinkContext } from "./auth/googleLinkContext";
@@ -75,6 +76,26 @@ function buildProviders(): NextAuthOptions["providers"] {
         const verifiedUser = { id: user.id, email: user.email, name: user.name, image: user.image };
         attestCanonicalIdentity(verifiedUser, user, "credentials");
         return verifiedUser;
+      },
+    }),
+    // Company sign-in (per-workspace OIDC). The browser holds a one-time ticket issued only after
+    // /api/sso/oidc/callback verified the company's ID token, role mapping and seat; redeeming it
+    // here is the only way that flow mints a session (lib/identity/oidc/tenantSsoService.ts).
+    CredentialsProvider({
+      id: "sso-ticket",
+      name: "Company sign-in",
+      credentials: { ticket: { label: "Ticket", type: "text" } },
+      async authorize(credentials) {
+        try {
+          const user = await redeemTicket({ db: prisma as unknown as SsoDeps["db"] }, credentials?.ticket);
+          if (!user) return null;
+          const verifiedUser = { id: user.id, email: user.email, name: user.name, image: user.image };
+          attestCanonicalIdentity(verifiedUser, user, "sso-ticket", user.id);
+          return verifiedUser;
+        } catch {
+          console.error("[NextAuth sso-ticket] ticket_unavailable");
+          return null;
+        }
       },
     }),
   ];
@@ -345,6 +366,9 @@ export const authOptions: NextAuthOptions = {
           });
         }
         return true;
+      }
+      if (account?.provider === "sso-ticket") {
+        return account.type === "credentials" && canonicalIdentity(user, "sso-ticket", account.providerAccountId) !== null;
       }
       return account?.provider === "credentials"
         && account.type === "credentials"

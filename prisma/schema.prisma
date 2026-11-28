@@ -1565,6 +1565,12 @@ model TenantIdentityProvider {
   roleMappingJson     Json
   requireMfaClaim     Boolean                  @default(true)
   lastTestAssertionAt DateTime?
+  /// OIDC client id registered with the company's identity provider (OIDC only).
+  oidcClientId          String?
+  /// OIDC client secret, encrypted with a context bound to this provider row. Never returned by any API.
+  encryptedClientSecret String?                @db.Text
+  /// Managed domains proven by a DNS TXT record. Activation requires every managed domain here.
+  verifiedDomains       String[]                 @default([])
   configuredByUserId  String
   revokedAt           DateTime?
   createdAt           DateTime                 @default(now())
@@ -1573,6 +1579,30 @@ model TenantIdentityProvider {
   @@unique([organizationId, protocol])
   @@index([organizationId, status])
   @@index([issuerOrEntityId])
+}
+
+/// One company sign-in attempt (OIDC authorization code flow). The id is a hash of the state value;
+/// the nonce and PKCE verifier are stored encrypted and the row is consumed exactly once. After a
+/// verified callback it carries a one-time ticket (stored as a hash) that the browser exchanges for a
+/// normal session within two minutes.
+model SsoLoginAttempt {
+  id               String    @id
+  providerId       String
+  organizationId   String
+  /// "signin" or "test" (an admin testing a pending connection; never signs anyone in).
+  mode             String
+  encryptedSecrets String    @db.Text
+  callbackUrl      String
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  consumedAt       DateTime?
+  ticketHash       String?   @unique
+  userId           String?
+  ticketExpiresAt  DateTime?
+  ticketConsumedAt DateTime?
+
+  @@index([expiresAt])
+  @@index([providerId])
 }
 
 /// SCIM-provisioned identity record — separate from OrgMembership so a

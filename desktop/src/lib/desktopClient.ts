@@ -1533,7 +1533,11 @@ export class DesktopClient {
   }
 
   listIdentityProviders(): Promise<ApiResult<{
-    providers: Array<{ id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null }>;
+    providers: Array<{
+      id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null;
+      oidcClientId?: string | null; clientSecretSet?: boolean; lastTestAssertionAt?: string | null;
+      domainVerification?: Array<{ domain: string; record: string; value: string; verified: boolean }>;
+    }>;
   }>> {
     return this.get("/api/desktop/identity-providers");
   }
@@ -1543,6 +1547,22 @@ export class DesktopClient {
     roleMapping: Array<{ claimKey: string; claimValue: string; role: string }>; requireMfaClaim: boolean;
   }): Promise<ApiResult<{ id: string; protocol: string; status: string }>> {
     return this.post("/api/desktop/identity-providers", input);
+  }
+
+  setIdentityProviderOidcClient(id: string, input: { clientId: string; clientSecret: string }): Promise<ApiResult<{ id: string; clientSecretSet: boolean; testRequired: boolean }>> {
+    return this.put(`/api/desktop/identity-providers/${encodeURIComponent(id)}/oidc-client`, input);
+  }
+
+  verifyIdentityProviderDomains(id: string): Promise<ApiResult<{ results: Array<{ domain: string; verified: boolean; reason?: string }> }>> {
+    return this.post(`/api/desktop/identity-providers/${encodeURIComponent(id)}/verify-domains`, {});
+  }
+
+  testIdentityProvider(id: string, email: string): Promise<ApiResult<{ redirectUrl: string }>> {
+    return this.post(`/api/desktop/identity-providers/${encodeURIComponent(id)}/test`, { email });
+  }
+
+  activateIdentityProvider(id: string): Promise<ApiResult<{ id: string; status: string }>> {
+    return this.post(`/api/desktop/identity-providers/${encodeURIComponent(id)}/activate`, {});
   }
 
   revokeIdentityProvider(id: string): Promise<ApiResult<{ id: string; status: string }>> {
