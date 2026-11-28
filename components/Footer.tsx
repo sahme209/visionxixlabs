@@ -18,6 +18,7 @@ const columns = [
       ["Product demos", "/demo"],
       ["Documentation", "/docs"],
       ["Getting started", "/docs/getting-started"],
+      ["What's new", "/changelog"],
       ["Resources", "/resources"],
       ["Desktop updates", "/docs/desktop-install#updates"],
     ],

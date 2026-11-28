@@ -5,6 +5,8 @@ import {githubPullRequestReviewFromArgs} from "../../../lib/tauri/agentGithubPul
 import {githubBranchReviewFromArgs} from "../../../lib/tauri/agentGithubBranchReview";
 import {AgentApprovedActions} from "../components/AgentApprovedActions";
 import { aiUsageText } from "../lib/aiUsageText";
+import { DictationButton } from "../components/DictationButton";
+import { appendTranscript } from "../lib/dictation";
 import {useDismissibleDetails} from "../lib/useDismissibleDetails";
 import { Disclosure } from "../components/Disclosure";
 import {AgentMessageContent} from "../components/AgentMessageContent";
@@ -1397,6 +1399,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, d
             rows={2}
             className="agent-prompt-input min-h-[64px] flex-1 resize-none rounded-xl border-0 bg-transparent px-4 py-4 text-sm text-zinc-100 placeholder:text-zinc-500 outline-hidden disabled:opacity-50"
           />
+          <DictationButton disabled={loadingConversation || !conversationId || Boolean(pendingProposal)} onPhrase={phrase => setInput(current => appendTranscript(current, phrase))} />
           <button data-help-id="agent.workspace.send"
             type="button"
             onClick={submitDraft}

@@ -13,6 +13,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
+import { DictationButton } from "@/components/dictation/DictationButton";
+import { appendTranscript } from "@/lib/dictation/dictation";
 import { containsSupportSecret, SUPPORT_SECRET_NOTICE } from "@/lib/support/secretQuestion";
 import { stageSupportContactDraft, SUPPORT_CONTACT_HREF } from "@/lib/support/contactDraft";
 import { classifySupportAction, SUPPORT_ACTION_INFO, type SupportAction } from "@/lib/support/supportActions";
@@ -406,6 +408,7 @@ export default function AIChatWidget() {
                 readOnly={loading}
                 className="min-w-0 flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-base md:text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300"
               />
+              <DictationButton disabled={loading} onPhrase={(p) => setInput((cur) => appendTranscript(cur, p))} />
               <button
                 onClick={sendMessage}
                 disabled={!input.trim() || loading}
