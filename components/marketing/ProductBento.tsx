@@ -57,3 +57,15 @@ export const SECURITY_TILES: readonly ScreenTile[] = [
 export function SecurityScreens() {
   return <ScreenGallery id="security-screens-title" eyebrow="In the product" title="The controls, on screen" lead="Where these boundaries show up in the cockpit. Synthetic workspace data." tiles={SECURITY_TILES} />;
 }
+
+export const CAPABILITY_TILES: readonly ScreenTile[] = [
+  { src: "/docs/desktop/deployments.webp", title: "Prepare the playbook", body: "Steps, checks and approvals sit next to the deployment they gate.", href: "/docs/releaseops", wide: true, focus: "center 30%" },
+  { src: "/docs/desktop/agent.webp", title: "Understand the change", body: "Ask about a repository; the agent reads it and explains before acting.", href: "/docs/ask-axiom", wide: false, focus: "center 25%" },
+  { src: "/docs/cockpit/governance.webp", title: "Expose risk and authority", body: "Policy limits and approvers, visible before anything runs.", href: "/docs/governance-approvals", wide: false, focus: "center 20%" },
+  { src: "/docs/cockpit/checks.webp", title: "Guide, do not pretend", body: "Checks run in your CI and report back against the exact commit.", href: "/docs/releaseops", wide: false, focus: "center 20%" },
+  { src: "/docs/cockpit/audit-security.webp", title: "Prove what happened", body: "Who acted, what was decided and what happened.", href: "/docs/audit-logs", wide: false, focus: "center 20%" },
+];
+
+export function CapabilityScreens() {
+  return <ScreenGallery id="capability-screens-title" eyebrow="In the product" title="Each step, on screen" lead="The playbook above, as it appears in the desktop app and the cockpit. Synthetic workspace data." tiles={CAPABILITY_TILES} />;
+}

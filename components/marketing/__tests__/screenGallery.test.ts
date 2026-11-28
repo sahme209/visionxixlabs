@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { HOME_TILES, SECURITY_TILES } from "../ProductBento";
+import { CAPABILITY_TILES, HOME_TILES, SECURITY_TILES } from "../ProductBento";
 
 describe("screen galleries", () => {
-  for (const [name, tiles] of [["home", HOME_TILES], ["security", SECURITY_TILES]] as const) {
+  for (const [name, tiles] of [["home", HOME_TILES], ["security", SECURITY_TILES], ["capabilities", CAPABILITY_TILES]] as const) {
     it(`${name}: every image exists and links to a guide`, () => {
       for (const t of tiles) {
         expect(existsSync(join(process.cwd(), "public", t.src)), t.src).toBe(true);

@@ -15,6 +15,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageHero } from "@/components/marketing/PageHero";
+import { CapabilityScreens } from "@/components/marketing/ProductBento";
 import { useMemo, useState } from "react";
 
 interface Capability {
@@ -174,6 +175,7 @@ export function CapabilitiesClient() {
         </div>
       </section>
 
+      <CapabilityScreens />
       <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
         <details className="surface-glass group rounded-2xl p-6 md:p-8">
           <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
